@@ -1,0 +1,6 @@
+Products.MeetingLiege Changelog
+===============================
+
+3.2.0 (unreleased)
+------------------
+- Nothing yet

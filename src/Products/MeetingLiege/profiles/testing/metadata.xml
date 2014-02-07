@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<metadata>
+ <version>testing</version>
+ <dependencies>
+  <dependency>profile-Products.MeetingLalouviere:default</dependency>
+ </dependencies>
+</metadata>

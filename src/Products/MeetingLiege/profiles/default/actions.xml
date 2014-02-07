@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<object name="portal_actions" meta_type="Plone Actions Tool"
+   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+ <action-provider name="portal_actions" />
+ <object name="portal_tabs" meta_type="CMF Action Category">
+  <property name="title"></property>
+  <object name="meeting-config-college_action" meta_type="CMF Action" i18n:domain="PloneMeeting">
+   <property name="title" i18n:translate="">Meeting config Lalouviere College</property>
+   <property name="description" i18n:translate=""></property>
+   <property name="url_expr">python:portal.portal_plonemeeting.getPloneMeetingFolder("meeting-config-college").absolute_url()</property>
+   <property name="icon_expr"></property>
+   <property name="available_expr">python:portal.portal_plonemeeting.showPloneMeetingTab("meeting-config-college")</property>
+   <property name="permissions">
+    <element value="View"/>
+   </property>
+   <property name="visible">True</property>
+  </object>
+ </object>
+ <object name="portal_tabs" meta_type="CMF Action Category">
+  <property name="title"></property>
+  <object name="meeting-config-council_action" meta_type="CMF Action" i18n:domain="PloneMeeting">
+   <property name="title" i18n:translate="">Meeting config Lalouviere Council</property>
+   <property name="description" i18n:translate=""></property>
+   <property name="url_expr">python:portal.portal_plonemeeting.getPloneMeetingFolder("meeting-config-council").absolute_url()</property>
+   <property name="icon_expr"></property>
+   <property name="available_expr">python:portal.portal_plonemeeting.showPloneMeetingTab("meeting-config-council")</property>
+   <property name="permissions">
+    <element value="View"/>
+   </property>
+   <property name="visible">True</property>
+  </object>
+ </object>
+ <object name="document_actions" meta_type="CMF Action Category">
+  <property name="title"></property>
+  <object name="follow-up-dashboard" meta_type="CMF Action" i18n:domain="PloneMeeting">
+   <property name="title" i18n:translate="">Dashboard</property>
+   <property name="description" i18n:translate=""></property>
+   <property name="url_expr">string:${object_url}/generateDashboard</property>
+   <property name="icon_expr">string:$portal_url/dashboard.gif</property>
+   <property name="available_expr">python:context.REQUEST.form.get('search', '') == 'searchitemsfollowupdashboard'</property>
+   <property name="permissions">
+    <element value="View"/>
+   </property>
+   <property name="visible">True</property>
+  </object>
+ </object>
+</object>

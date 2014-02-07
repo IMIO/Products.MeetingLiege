@@ -1,0 +1,16 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+           i18n_domain="MeetingLalouviere">
+
+    <include file="configure.zcml"/>
+    <include package="Products.PloneMeeting"/>
+
+    <genericsetup:registerProfile
+        name="testing"
+        title="MeetingLalouviere / Testing profile"
+        description="Testing profile for MeetingLalouviere (PloneMeeting profile)"
+        directory="profiles/testing"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        for="Products.CMFCore.interfaces.ISiteRoot"/>
+
+</configure>

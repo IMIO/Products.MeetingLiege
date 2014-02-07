@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<object name="portal_skins"
+        meta_type="Plone Skins Tool"
+        allow_any="False"
+        cookie_persistence="False"
+        request_varname="plone_skin">
+
+ <object name="meetinglalouviere_images"
+         meta_type="Filesystem Directory View"
+         directory="MeetingLalouviere/skins/meetinglalouviere_images"/>
+ <object name="meetinglalouviere_styles"
+         meta_type="Filesystem Directory View"
+         directory="MeetingLalouviere/skins/meetinglalouviere_styles"/>
+ <object name="meetinglalouviere_templates"
+         meta_type="Filesystem Directory View"
+         directory="MeetingLalouviere/skins/meetinglalouviere_templates"/>
+ 
+ <skin-path name="*">
+  <layer insert-after="custom" 
+         name="meetinglalouviere_images"/>
+  <layer insert-after="custom" 
+         name="meetinglalouviere_styles"/>
+  <layer insert-after="custom" 
+         name="meetinglalouviere_templates"/>
+ </skin-path>
+
+</object>

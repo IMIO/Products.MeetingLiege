@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<import-steps>
+ <import-step id="installMeetingLalouviere" version="20110215-01"
+              handler="Products.MeetingLalouviere.setuphandlers.installMeetingLalouviere"
+              title="Install MeetingLalouviere.">
+  Install MeetingLalouviere.
+ </import-step>
+
+ <import-step id="initializetool-MeetingLalouviere" version="20110215-01"
+              handler="Products.MeetingLalouviere.setuphandlers.initializeTool"
+              title="Initialize MeetingLalouviere with examples.">
+  <dependency step="installMeetingLalouviere"/>
+  Initialize portal_plonemeeting folders for La Louviere.
+ </import-step>
+ <import-step id="finalizeInstanceMeetingLalouviere" version="20131114-01"
+              handler="Products.MeetingLalouviere.setuphandlers.finalizeInstance"
+              title="Finalize instance.">
+  <dependency step="initializetool-MeetingCommunes"/>
+  Finalize instance.
+ </import-step>
+</import-steps>

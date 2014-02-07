@@ -6,9 +6,8 @@
 
   <!-- ##code-section configure.zcml.header -->
   <!-- registerTranslations before including package Products.PloneMeeting
-       so Products.MeetingCommunes can overrides Products.PloneMeeting translations -->
+       so Products.MeetingLiege can overrides Products.PloneMeeting translations -->
   <i18n:registerTranslations directory="locales" />
-  <include package=".browser" />
   <include package="Products.CMFPlacefulWorkflow"/>
   <include package="communesplone.iconified_document_actions"/>
   <include package="plonetheme.imioapps"/>

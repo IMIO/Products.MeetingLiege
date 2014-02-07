@@ -23,94 +23,29 @@
 # 02110-1301, USA.
 #
 # ------------------------------------------------------------------------------
-from sets import Set
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
 from zope.interface import implements
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.atapi import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, \
     MeetingItemWorkflowConditions, MeetingItemWorkflowActions
-from Products.PloneMeeting.utils import checkPermission, sendMail, getLastEvent, prepareSearchValue
-from Products.PloneMeeting.config import ITEM_NO_PREFERRED_MEETING_VALUE
+from Products.PloneMeeting.utils import checkPermission, sendMail, getLastEvent
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, \
     MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
 from Products.PloneMeeting.interfaces import IMeetingCustom, IMeetingItemCustom, \
     IMeetingConfigCustom, IMeetingGroupCustom
-from Products.MeetingLalouviere.interfaces import \
-    IMeetingItemCollegeLalouviereWorkflowConditions, IMeetingItemCollegeLalouviereWorkflowActions,\
-    IMeetingCollegeLalouviereWorkflowConditions, IMeetingCollegeLalouviereWorkflowActions, \
-    IMeetingItemCouncilLalouviereWorkflowConditions, IMeetingItemCouncilLalouviereWorkflowActions,\
-    IMeetingCouncilLalouviereWorkflowConditions, IMeetingCouncilLalouviereWorkflowActions
-from Products.MeetingLalouviere.config import COUNCIL_COMMISSION_IDS, \
-    COUNCIL_COMMISSION_IDS_2013, COUNCIL_MEETING_COMMISSION_IDS_2013, COMMISSION_EDITORS_SUFFIX
+from Products.MeetingLiege.interfaces import \
+    IMeetingItemCollegeLiegeWorkflowConditions, IMeetingItemCollegeLiegeWorkflowActions,\
+    IMeetingCollegeLiegeWorkflowConditions, IMeetingCollegeLiegeWorkflowActions, \
+    IMeetingItemCouncilLiegeWorkflowConditions, IMeetingItemCouncilLiegeWorkflowActions,\
+    IMeetingCouncilLiegeWorkflowConditions, IMeetingCouncilLiegeWorkflowActions
 
 # disable most of wfAdaptations
 customWfAdaptations = ('archiving', 'local_meeting_managers', 'return_to_proposing_group', )
 MeetingConfig.wfAdaptations = customWfAdaptations
-
-# configure parameters for the returned_to_proposing_group wfAdaptation
-# we keep also 'itemfrozen' and 'itempublished' in case this should be activated for meeting-config-college...
-from Products.PloneMeeting.model import adaptations
-RETURN_TO_PROPOSING_GROUP_FROM_ITEM_STATES = ('presented', 'itemfrozen', 'itempublished',
-                                              'item_in_committee', 'item_in_council', )
-adaptations.RETURN_TO_PROPOSING_GROUP_FROM_ITEM_STATES = RETURN_TO_PROPOSING_GROUP_FROM_ITEM_STATES
-RETURN_TO_PROPOSING_GROUP_CUSTOM_PERMISSIONS = {
-    # view permissions
-    'Access contents information':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    'View':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    'PloneMeeting: Read decision':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    'PloneMeeting: Read optional advisers':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    'PloneMeeting: Read decision annex':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    'PloneMeeting: Read item observations':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    'MeetingLalouviere: Read commission transcript':
-    ('Manager', 'MeetingManager', 'MeetingMember', 'MeetingServiceHead', 'MeetingOfficeManager',
-     'MeetingDivisionHead', 'MeetingDirector', 'MeetingReviewer', 'MeetingObserverLocal', 'Reader', ),
-    # edit permissions
-    'Modify portal content':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Write decision':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'Review portal content':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'Add portal content':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Add annex':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Add MeetingFile':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Write decision annex':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Write optional advisers':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Write optional advisers':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    # MeetingManagers edit permissions
-    'Delete objects':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'PloneMeeting: Write item observations':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-    'MeetingLalouviere: Write commission transcript':
-    ('Manager', 'MeetingMember', 'MeetingOfficeManager', 'MeetingManager', ),
-}
-
-adaptations.RETURN_TO_PROPOSING_GROUP_CUSTOM_PERMISSIONS = RETURN_TO_PROPOSING_GROUP_CUSTOM_PERMISSIONS
 
 
 class CustomMeeting(Meeting):
@@ -119,14 +54,6 @@ class CustomMeeting(Meeting):
 
     implements(IMeetingCustom)
     security = ClassSecurityInfo()
-
-    # define same validator for every preMeetingDate_X than the one used for preMeetingDate
-    Meeting.validate_preMeetingDate_2 = Meeting.validate_preMeetingDate
-    Meeting.validate_preMeetingDate_3 = Meeting.validate_preMeetingDate
-    Meeting.validate_preMeetingDate_4 = Meeting.validate_preMeetingDate
-    Meeting.validate_preMeetingDate_5 = Meeting.validate_preMeetingDate
-    Meeting.validate_preMeetingDate_6 = Meeting.validate_preMeetingDate
-    Meeting.validate_preMeetingDate_7 = Meeting.validate_preMeetingDate
 
     def __init__(self, item):
         self.context = item
@@ -197,306 +124,11 @@ class CustomMeeting(Meeting):
                 items = res
             return items
 
-    security.declarePublic('getAvailableItems')
-    def getAvailableItems(self):
-        '''Items are available to the meeting no matter the meeting state (except 'closed').
-           In the 'created' state, every validated items are availble, in other states, only items
-           for wich the specific meeting is selected as preferred will appear.'''
-        meeting = self.getSelf()
-        if meeting.queryState() not in ('created', 'frozen', 'in_committee', 'in_council', 'decided'):
-            return []
-        meetingConfig = meeting.portal_plonemeeting.getMeetingConfig(meeting)
-        # First, get meetings accepting items for which the date is lower or
-        # equal to the date of this meeting (self)
-        meetings = meeting.portal_catalog(
-            portal_type=meetingConfig.getMeetingTypeName(),
-            getDate={'query': meeting.getDate(), 'range': 'max'},
-            )
-        meetingUids = [b.getObject().UID() for b in meetings]
-        # if the meeting is 'in_committee' or 'in_council'
-        # we only accept items for wich the preferredMeeting is the current meeting
-        if not meeting.queryState() in ('in_committee', 'in_council', ):
-            meetingUids.append(ITEM_NO_PREFERRED_MEETING_VALUE)
-        # Then, get the items whose preferred meeting is None or is among
-        # those meetings.
-        itemsUids = meeting.portal_catalog(
-            portal_type=meetingConfig.getItemTypeName(),
-            review_state='validated',
-            getPreferredMeeting=meetingUids,
-            sort_on="modified")
-        if meeting.queryState() in ('frozen', 'decided'):
-            # Oups. I can only take items which are "late" items.
-            res = []
-            for uid in itemsUids:
-                if uid.getObject().wfConditions().isLateFor(meeting):
-                    res.append(uid)
-        else:
-            res = itemsUids
-        return res
-
-    #helper methods used in templates
-    security.declarePublic('getNormalCategories')
-    def getNormalCategories(self):
-        '''Returns the 'normal' categories'''
-        mc = self.portal_plonemeeting.getMeetingConfig(self)
-        categories = mc.getCategories(onlySelectable=False)
-        res = []
-        firstSupplCatIds = self.getFirstSupplCategories()
-        secondSupplCatIds = self.getSecondSupplCategories()
-        thirdSupplCatIds = self.getThirdSupplCategories()
-        for cat in categories:
-            catId = cat.getId()
-            if not catId in firstSupplCatIds and \
-               not catId in secondSupplCatIds and \
-               not catId in thirdSupplCatIds:
-                res.append(catId)
-        return res
-    Meeting.getNormalCategories=getNormalCategories
-
-    security.declarePublic('getFirstSupplCategories')
-    def getFirstSupplCategories(self):
-        '''Returns the '1er-supplement' categories'''
-        mc = self.portal_plonemeeting.getMeetingConfig(self)
-        categories = mc.getCategories(onlySelectable=False)
-        res = []
-        for cat in categories:
-            catId = cat.getId()
-            if catId.endswith('1er-supplement'):
-                res.append(catId)
-        return res
-    Meeting.getFirstSupplCategories=getFirstSupplCategories
-
-    security.declarePublic('getSecondSupplCategories')
-    def getSecondSupplCategories(self):
-        '''Returns the '2eme-supplement' categories'''
-        mc = self.portal_plonemeeting.getMeetingConfig(self)
-        categories = mc.getCategories(onlySelectable=False)
-        res = []
-        for cat in categories:
-            catId = cat.getId()
-            if catId.endswith('2eme-supplement'):
-                res.append(catId)
-        return res
-    Meeting.getSecondSupplCategories=getSecondSupplCategories
-
-    security.declarePublic('getThirdSupplCategories')
-    def getThirdSupplCategories(self):
-        '''Returns the '3eme-supplement' categories'''
-        mc = self.portal_plonemeeting.getMeetingConfig(self)
-        categories = mc.getCategories(onlySelectable=False)
-        res = []
-        for cat in categories:
-            catId = cat.getId()
-            if catId.endswith('3eme-supplement'):
-                res.append(catId)
-        return res
-    Meeting.getThirdSupplCategories=getThirdSupplCategories
-
-    security.declarePublic('getNumberOfItems')
-    def getNumberOfItems(self, itemUids, privacy='*', categories=[], late=False):
-        '''Returns the number of items depending on parameters.
-           This is used in templates'''
-        for elt in itemUids:
-            if elt == '':
-                itemUids.remove(elt)
-        #no filtering, return the items ordered
-        if not categories and privacy == '*':
-            return self.getItemsInOrder(late=late, uids=itemUids)
-        # Either, we will have to filter the state here and check privacy
-        filteredItemUids = []
-        uid_catalog = self.uid_catalog
-        for itemUid in itemUids:
-            obj = uid_catalog(UID=itemUid)[0].getObject()
-            if not (privacy == '*' or obj.getPrivacy() == privacy):
-                continue
-            elif not (categories == [] or obj.getCategory() in categories):
-                continue
-            filteredItemUids.append(itemUid)
-        return len(filteredItemUids)
-    Meeting.getNumberOfItems=getNumberOfItems
-
-    def getItemsFirstSuppl(self, itemUids, privacy='public'):
-        '''Returns the items presented as first supplement'''
-        normalCategories = self.getNormalCategories()
-        firstSupplCategories = self.getFirstSupplCategories()
-        firstNumber = self.getNumberOfItems(itemUids,
-                                            privacy=privacy,
-                                            categories=normalCategories) + 1
-        return self.adapted().getPrintableItems(itemUids,
-                                                privacy=privacy,
-                                                categories=firstSupplCategories,
-                                                firstNumber=firstNumber,
-                                                renumber=True)
-    Meeting.getItemsFirstSuppl = getItemsFirstSuppl
-
-    def getItemsSecondSuppl(self, itemUids, privacy='public'):
-        '''Returns the items presented as second supplement'''
-        normalCategories = self.getNormalCategories()
-        firstSupplCategories = self.getFirstSupplCategories()
-        secondSupplCategories = self.getSecondSupplCategories()
-        firstNumber = self.getNumberOfItems(itemUids,
-                                            privacy=privacy,
-                                            categories=normalCategories+firstSupplCategories) + 1
-        return self.adapted().getPrintableItems(itemUids,
-                                                privacy=privacy,
-                                                categories=secondSupplCategories,
-                                                firstNumber=firstNumber,
-                                                renumber=True)
-    Meeting.getItemsSecondSuppl = getItemsSecondSuppl
-
-    def getItemsThirdSuppl(self, itemUids, privacy='public'):
-        '''Returns the items presented as third supplement'''
-        normalCategories = self.getNormalCategories()
-        firstSupplCategories = self.getFirstSupplCategories()
-        secondSupplCategories = self.getSecondSupplCategories()
-        thirdSupplCategories = self.getThirdSupplCategories()
-        firstNumber = self.getNumberOfItems(itemUids,
-                                            privacy=privacy,
-                                            categories=normalCategories+firstSupplCategories+secondSupplCategories) + 1
-        return self.adapted().getPrintableItems(itemUids,
-                                                privacy=privacy,
-                                                categories=thirdSupplCategories,
-                                                firstNumber=firstNumber,
-                                                renumber=True)
-    Meeting.getItemsThirdSuppl = getItemsThirdSuppl
-
-    security.declarePublic('getLabelDescription')
-    def getLabelDescription(self):
-        '''Returns the label to use for field MeetingItem.description
-          The label is different between college and council'''
-        if self.portal_type == 'MeetingItemCouncil':
-            return self.utranslate("MeetingLalouviere_label_councildescription", domain="PloneMeeting")
-        else:
-            return self.utranslate("PloneMeeting_label_description", domain="PloneMeeting")
-    MeetingItem.getLabelDescription = getLabelDescription
-
-    security.declarePublic('getLabelCategory')
-    def getLabelCategory(self):
-        '''Returns the label to use for field MeetingItem.category
-          The label is different between college and council'''
-        if self.portal_type == 'MeetingItemCouncil':
-            return self.utranslate("MeetingLalouviere_label_councilcategory", domain="PloneMeeting")
-        else:
-            return self.utranslate("PloneMeeting_label_category", domain="PloneMeeting")
-    MeetingItem.getLabelCategory = getLabelCategory
-
-    security.declarePublic('getLabelObservations')
-    def getLabelObservations(self):
-        '''Returns the label to use for field Meeting.observations
-           The label is different between college and council'''
-        if self.portal_type == 'MeetingCouncil':
-            return self.utranslate("MeetingLalouviere_label_meetingcouncilobservations", domain="PloneMeeting")
-        else:
-            return self.utranslate("PloneMeeting_label_meetingObservations", domain="PloneMeeting")
-    Meeting.getLabelObservations = getLabelObservations
-
-    security.declarePublic('getCommissionTitle')
-    def getCommissionTitle(self, commissionNumber=1):
-        '''
-          Given a commissionNumber, return the commission title depending on corresponding categories
-        '''
-        meeting = self.getSelf()
-        commissionCategories = meeting.getCommissionCategories()
-        if not len(commissionCategories) >= commissionNumber:
-            return ''
-        commissionCat = commissionCategories[commissionNumber-1]
-        # build title
-        if isinstance(commissionCat, tuple):
-            res = 'Commission ' + '/'.join([subcat.Title().replace('Commission ', '') for subcat in commissionCat])
-        else:
-            res = commissionCat.Title()
-        return res
-
-    security.declarePublic('getCommissionCategories')
-    def getCommissionCategories(self):
-        '''Returns the list of categories used for Commissions.
-           Since june 2013, some commission are aggregating several categories, in this case,
-           a sublist of categories is returned...'''
-        mc = self.portal_plonemeeting.getMeetingConfig(self)
-        # creating a new Meeting or editing an existing meeting with date >= june 2013
-        if not self.getDate() or \
-           (self.getDate().year() >= 2013 and self.getDate().month() > 5) or \
-           (self.getDate().year() > 2013):
-            # since 2013 commissions does NOT correspond to commission as MeetingItem.category
-            # several MeetingItem.category are taken for one single commission...
-            commissionCategoryIds = COUNCIL_MEETING_COMMISSION_IDS_2013
-        else:
-            commissionCategoryIds = COUNCIL_COMMISSION_IDS
-
-        res = []
-        for categoryId in commissionCategoryIds:
-            # check if we have subcategories, aka a commission made of several categories
-            if isinstance(categoryId, tuple):
-                res2 = []
-                for subcatId in categoryId:
-                    res2.append(getattr(mc.categories, subcatId))
-                res.append(tuple(res2))
-            else:
-                res.append(getattr(mc.categories, categoryId))
-        return tuple(res)
-    Meeting.getCommissionCategories = getCommissionCategories
-
     security.declarePublic('showAllItemsAtOnce')
     def showAllItemsAtOnce(self):
         '''Monkeypatch for hiding the allItemsAtOnce field.'''
         return False
     Meeting.showAllItemsAtOnce = showAllItemsAtOnce
-
-    security.declarePrivate('getDefaultPreMeetingAssembly')
-    def getDefaultPreMeetingAssembly(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly = getDefaultPreMeetingAssembly
-
-    security.declarePrivate('getDefaultPreMeetingAssembly_2')
-    def getDefaultPreMeetingAssembly_2(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_2_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly_2 = getDefaultPreMeetingAssembly_2
-
-    security.declarePrivate('getDefaultPreMeetingAssembly_3')
-    def getDefaultPreMeetingAssembly_3(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_3_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly_3 = getDefaultPreMeetingAssembly_3
-
-    security.declarePrivate('getDefaultPreMeetingAssembly_4')
-    def getDefaultPreMeetingAssembly_4(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_4_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly_4 = getDefaultPreMeetingAssembly_4
-
-    security.declarePrivate('getDefaultPreMeetingAssembly_5')
-    def getDefaultPreMeetingAssembly_5(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_5_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly_5 = getDefaultPreMeetingAssembly_5
-
-    security.declarePrivate('getDefaultPreMeetingAssembly_6')
-    def getDefaultPreMeetingAssembly_6(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_6_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly_6 = getDefaultPreMeetingAssembly_6
-
-    security.declarePrivate('getDefaultPreMeetingAssembly_7')
-    def getDefaultPreMeetingAssembly_7(self):
-        '''Returns the default value for field 'preMeetingAssembly.'''
-        if self.attributeIsUsed('preMeetingAssembly'):
-            return self.portal_plonemeeting.getMeetingConfig(self).getPreMeetingAssembly_7_default()
-        return ''
-    Meeting.getDefaultPreMeetingAssembly_7 = getDefaultPreMeetingAssembly_7
 
 
 class CustomMeetingItem(MeetingItem):
@@ -530,205 +162,12 @@ class CustomMeetingItem(MeetingItem):
     def __init__(self, item):
         self.context = item
 
-    security.declarePublic('listFollowUps')
-    def listFollowUps(self):
-        '''List available values for vocabulary of the 'followUp' field.'''
-        d = 'PloneMeeting'
-        u = self.utranslate
-        res = DisplayList((
-            ("follow_up_no", u('follow_up_no', domain=d)),
-            ("follow_up_yes", u('follow_up_yes', domain=d)),
-            ("follow_up_provided", u('follow_up_provided', domain=d)),
-            ("follow_up_provided_not_printed", u('follow_up_provided_not_printed', domain=d)),
-        ))
-        return res
-    MeetingItem.listFollowUps = listFollowUps
-
-    security.declarePublic('mayBeLinkedToTasks')
-    def mayBeLinkedToTasks(self):
-        '''See doc in interfaces.py.'''
-        item = self.getSelf()
-        res = False
-        if (item.queryState() in ('accepted', 'refused', 'delayed', 'accepted_but_modified', )):
-            res = True
-        return res
-
-    def getMeetingDate(self):
-        '''Returns the meeting date if any (used for portal_catalog metadata getMeetingDate).'''
-        if not self.portal_type in ['MeetingItemCollege', 'MeetingItemCouncil', ]:
-            return ''
-        else:
-            return self.hasMeeting() and self.getMeeting().getDate() or ''
-    MeetingItem.getMeetingDate = getMeetingDate
-
-    security.declarePublic('activateFollowUp')
-    def activateFollowUp(self):
-        '''Activate follow-up by setting followUp to 'follow_up_yes'.'''
-        self.setFollowUp('follow_up_yes')
-        #initialize the neededFollowUp field with the available content of the 'decision' field
-        if not self.getNeededFollowUp():
-            self.setNeededFollowUp(self.getDecision())
-        self.reindexObject(idxs=['getFollowUp', ])
-        return self.REQUEST.RESPONSE.redirect(self.absolute_url() + '#followup')
-    MeetingItem.activateFollowUp = activateFollowUp
-
-    security.declarePublic('deactivateFollowUp')
-    def deactivateFollowUp(self):
-        '''Deactivate follow-up by setting followUp to 'follow_up_no'.'''
-        self.setFollowUp('follow_up_no')
-        self.reindexObject(idxs=['getFollowUp', ])
-        return self.REQUEST.RESPONSE.redirect(self.absolute_url() + '#followup')
-    MeetingItem.deactivateFollowUp = deactivateFollowUp
-
-    security.declarePublic('confirmFollowUp')
-    def confirmFollowUp(self):
-        '''Confirm follow-up by setting followUp to 'follow_up_provided'.'''
-        self.setFollowUp('follow_up_provided')
-        self.reindexObject(idxs=['getFollowUp', ])
-        return self.REQUEST.RESPONSE.redirect(self.absolute_url() + '#followup')
-    MeetingItem.confirmFollowUp = confirmFollowUp
-
-    security.declarePublic('followUpNotPrinted')
-    def followUpNotPrinted(self):
-        '''While follow-up is confirmed, we may specify that we do not want it printed in the dashboard.'''
-        self.setFollowUp('follow_up_provided_not_printed')
-        self.reindexObject(idxs=['getFollowUp', ])
-        return self.REQUEST.RESPONSE.redirect(self.absolute_url() + '#followup')
-    MeetingItem.followUpNotPrinted = followUpNotPrinted
-
-    security.declarePublic('onDuplicatedFromConfig')
-    def onDuplicatedFromConfig(self, usage):
-        '''Hook when a recurring item is added to a meeting'''
-        # Recurring items added when the meeting is 'in_council' need
-        # to be set in council also.  By default they are just 'presented'
-        if not self.context.portal_type == 'MeetingItemCouncil':
-            return
-        if usage == 'as_recurring_item' and self.context.getMeeting().queryState() == 'in_committee':
-            item = self.getSelf()
-            if item.queryState() == 'presented':
-                self.context.portal_workflow.doActionFor(item, 'setItemInCommittee')
-            if item.queryState() == 'item_in_committee':
-                self.context.portal_workflow.doActionFor(item, 'setItemInCouncil')
-
-    security.declarePublic('onDuplicated')
-    def onDuplicated(self, original):
-        '''Hook when a item is duplicated (called by MeetingItem.clone).'''
-        # while an item is cloned to the meeting-config-council,
-        # add the council specific 'motivation' at the top of existing 'motivation'
-        item = self.getSelf()
-        # only apply if we are actually creating a MeetingItemCouncil from another MeetingConfig
-        if not (item.portal_type == 'MeetingItemCouncil' and original.portal_type != 'MeetingItemCouncil'):
-            return
-        existingMotivation = item.getMotivation()
-        defaultCouncilMotivation = item.Schema()['motivation'].getDefault(item)
-        item.setMotivation(defaultCouncilMotivation + '<p>&nbsp;</p><p>&nbsp;</p>' + existingMotivation)
-
-    security.declareProtected('Modify portal content', 'onEdit')
-    def onEdit(self, isCreated):
-        '''Depending on the selected Council commission (category),
-           give the 'MeetingCommissionEditor' role to the relevant Plone group'''
-        #if the current category id startswith a given Plone group, this is the correspondance
-        #for example, category 'commission-travaux' correspond to Plone group 'commission-travaux_COMMISSION_EDITORS_SUFFIX'
-        #category 'commission-travaux-1er-supplement' correspond to Plone group 'commission-travaux_COMMISSION_EDITORS_SUFFIX'
-        #first, remove previously set local roles for the Plone group commission
-        #this is only done for MeetingItemCouncil
-        if not self.context.portal_type == 'MeetingItemCouncil':
-            return
-        #existing commission Plone groups
-        commissionEditorsGroupIds = [(commissionId + COMMISSION_EDITORS_SUFFIX) for commissionId in Set(COUNCIL_COMMISSION_IDS).union(Set(COUNCIL_COMMISSION_IDS_2013))]
-        commissionPloneGroupIds = [groupId for groupId in self.context.portal_groups.getGroupIds() if groupId in commissionEditorsGroupIds]
-        toRemove = []
-        for principalId, localRoles in self.context.get_local_roles():
-            if (principalId in commissionPloneGroupIds):
-                toRemove.append(principalId)
-        self.context.manage_delLocalRoles(toRemove)
-        #now add the new local roles
-        for groupId in commissionPloneGroupIds:
-            if self.context.getCategory().startswith(groupId[:-len(COMMISSION_EDITORS_SUFFIX)]):
-                #we found the relevant group
-                self.context.manage_addLocalRoles(groupId, ('MeetingCommissionEditor',))
-
-    security.declarePublic('getCertifiedSignatures')
-    def getCertifiedSignatures(self):
-        '''Returns certified signatures taking delegations into account.'''
-        tool = getToolByName(self, 'portal_plonemeeting')
-        mc = tool.getMeetingConfig(self)
-        globalCertifiedSignatures = mc.getCertifiedSignatures().split('\n')
-        # we need to return 6 values but by default, certifiedSignatures contains 4 values...
-        if len(globalCertifiedSignatures) == 4:
-            globalCertifiedSignatures = globalCertifiedSignatures[0:1] + ['',] + globalCertifiedSignatures[1:3] + ['',] + globalCertifiedSignatures[3:4]
-        specificSignatures = self.getProposingGroup(theObject=True).getSignatures().split('\n')
-        specificSignaturesLength = len(specificSignatures)
-        # just take specific/delegation signatures into account if there are 3 (just redefined the first signatory) or 6 (redefined at least second signatory) available values
-        if not specificSignaturesLength == 12:
-            return globalCertifiedSignatures
-        else:
-            res = []
-            for elt in enumerate(specificSignatures):
-                index = elt[0]
-                line = elt[1]
-                if not line.strip() == '-':
-                    res.append(line)
-                else:
-                    if index > 5:
-                        index = index - 6
-                    res.append(globalCertifiedSignatures[index])
-            return res
-    MeetingItem.getCertifiedSignatures = getCertifiedSignatures
-
-    security.declarePublic('getCollegeItem')
-    def getCollegeItem(self):
-        '''Returns the predecessor item that was in the college.'''
-        item = self.getSelf()
-        predecessor = item.getPredecessor()
-        collegeItem = None
-        while predecessor:
-            if predecessor.portal_type == 'MeetingItemCollege':
-                collegeItem = predecessor
-                break
-        return collegeItem
-
-    security.declarePublic('isPrivacyViewable')
-    def isPrivacyViewable(self):
-        '''Override so privacy is not taken into account while accessing an item.
-           We just need privacy to be an information here, not an access management.'''
-        return True
-    MeetingItem.isPrivacyViewable = isPrivacyViewable
-
-    security.declarePublic('getMeetingsAcceptingItems')
-    def getMeetingsAcceptingItems(self):
-        '''Overrides the default method so we only display meetings that are
-           in the 'created' or 'frozen' state.'''
-        pmtool = getToolByName(self.context, "portal_plonemeeting")
-        catalogtool = getToolByName(self.context, "portal_catalog")
-        meetingPortalType = pmtool.getMeetingConfig(self.context).getMeetingTypeName()
-        # If the current user is a meetingManager (or a Manager),
-        # he is able to add a meetingitem to a 'decided' meeting.
-        review_state = ['created', 'frozen', ]
-        member = self.context.portal_membership.getAuthenticatedMember()
-        if member.has_role('MeetingManager') or member.has_role('Manager'):
-            review_state.extend(('decided', 'in_committee', 'in_council', ))
-        res = catalogtool.unrestrictedSearchResults(
-            portal_type=meetingPortalType,
-            review_state=review_state,
-            sort_on='getDate')
-        # Frozen meetings may still accept "late" items.
-        return res
-
     security.declarePublic('getIcons')
     def getIcons(self, inMeeting, meeting):
         '''Check docstring in PloneMeeting interfaces.py.'''
         item = self.getSelf()
-        res=[]
+        res = []
         itemState = item.queryState()
-        #add some icons specific for dashboard if we are actually on the dashboard...
-        if itemState in item.itemDecidedStates and \
-           item.REQUEST.form.get('topicId', '') == 'searchitemsfollowupdashboard':
-            itemFollowUp = item.getFollowUp()
-            if itemFollowUp == 'follow_up_yes':
-                res.append(('follow_up_yes.png', 'follow_up_needed_icon_title'))
-            elif itemFollowUp == 'follow_up_provided':
-                res.append(('follow_up_provided.png', 'follow_up_provided_icon_title'))
         # Default PM item icons
         res = res + MeetingItem.getIcons(item, inMeeting, meeting)
         # Add our icons for accepted_but_modified and pre_accepted
@@ -767,214 +206,6 @@ class CustomMeetingConfig(MeetingConfig):
     def __init__(self, item):
         self.context = item
 
-    #we need to be able to give an advice in the initial_state for Council...
-    from Products.PloneMeeting.MeetingConfig import MeetingConfig
-    MeetingConfig.listItemStatesInitExcepted = MeetingConfig.listItemStates
-
-    security.declarePublic('searchReviewableItems')
-    def searchReviewableItems(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Returns a list of items that the user could review.'''
-        member = self.portal_membership.getAuthenticatedMember()
-        groups = self.portal_groups.getGroupsForPrincipal(member)
-        #the logic is :
-        #a user is reviewer for his level of hierarchy and every levels below in a group
-        #so find the different groups (a user could be divisionhead in groupA and director in groupB)
-        #and find the different states we have to search for this group (proposingGroup of the item)
-        reviewSuffixes = ('_reviewers', '_directors', '_divisionheads', '_officemanagers', '_serviceheads', )
-        statesMapping = {'_reviewers': ('proposed_to_servicehead', 'proposed_to_officemanager', 'proposed_to_divisionhead', 'proposed_to_director'),
-                         '_directors': ('proposed_to_servicehead', 'proposed_to_officemanager', 'proposed_to_divisionhead', 'proposed_to_director'),
-                         '_divisionheads': ('proposed_to_servicehead', 'proposed_to_officemanager', 'proposed_to_divisionhead'),
-                         '_officemanagers': ('proposed_to_servicehead', 'proposed_to_officemanager'),
-                         '_serviceheads': 'proposed_to_servicehead'}
-        foundGroups = {}
-        #check that we have a real PM group, not "echevins", or "Administrators"
-        for group in groups:
-            realPMGroup = False
-            for reviewSuffix in reviewSuffixes:
-                if group.endswith(reviewSuffix):
-                    realPMGroup = True
-                    break
-            if not realPMGroup:
-                continue
-            #remove the suffix
-            groupPrefix = '_'.join(group.split('_')[:-1])
-            if not groupPrefix in foundGroups:
-                foundGroups[groupPrefix] = ''
-        #now we have the differents services (equal to the MeetingGroup id) the user is in
-        strgroups = str(groups)
-        for foundGroup in foundGroups:
-            for reviewSuffix in reviewSuffixes:
-                if "%s%s" % (foundGroup, reviewSuffix) in strgroups:
-                    foundGroups[foundGroup] = reviewSuffix
-                    break
-        #now we have in the dict foundGroups the group the user is in, in the key and the highest level in the value
-        res = []
-        for foundGroup in foundGroups:
-            params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
-                      'getProposingGroup': foundGroup,
-                      'review_state': statesMapping[foundGroups[foundGroup]],
-                      'sort_on': sortKey,
-                      'sort_order': sortOrder
-                     }
-            # Manage filter
-            if filterKey:
-                params[filterKey] = prepareSearchValue(filterValue)
-            # update params with kwargs
-            params.update(kwargs)
-            # Perform the query in portal_catalog
-            brains = self.portal_catalog(**params)
-            res.extend(brains)
-        return res
-    MeetingConfig.searchReviewableItems = searchReviewableItems
-
-    security.declarePublic('searchCorrectedItems')
-    def searchCorrectedItems(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Returns a list of items freshly corrected.'''
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
-                  'previous_review_state': 'returned_to_service',
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder
-                  }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchCorrectedItems = searchCorrectedItems
-
-    security.declarePublic('searchItemsOfCommission')
-    def searchItemsOfMyCommissions(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Return a list of items i'm commissionTranscript writer of
-           (user is in Plone group with id 'commission-foo_COMMISSION_EDITORS_SUFFIX)'''
-        #get every commission I'm transcript editor for
-        commissionEditorsGroupIds = [(commissionId + COMMISSION_EDITORS_SUFFIX) for commissionId in Set(COUNCIL_COMMISSION_IDS).union(Set(COUNCIL_COMMISSION_IDS_2013))]
-        res = []
-        member = self.portal_membership.getAuthenticatedMember()
-        for groupId in member.getGroups():
-            if groupId in commissionEditorsGroupIds:
-                res.append(groupId)
-        #a commission groupId correspond to a category but with an additional suffix (COMMISSION_EDITORS_SUFFIX)
-        cats = [cat[:-len(COMMISSION_EDITORS_SUFFIX)] for cat in res]
-        #we add the corresponding '1er-supplement' suffixed cat too
-        cats = cats + [cat+'-1er-supplement' for cat in cats]
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
-                  'getCategory': cats,
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder
-                  }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsOfMyCommissions = searchItemsOfMyCommissions
-
-    security.declarePublic('searchItemsOfCommission')
-    def searchItemsOfMyCommissionsToEdit(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Return a list of items i'm commissionTranscript writer of
-           (user is in Plone group with id 'commission-foo_COMMISSION_EDITORS_SUFFIX)
-           and I can actually edit (in state 'in_committee')'''
-        #get every commission I'm transcript editor for
-        commissionEditorsGroupIds = [(commissionId + COMMISSION_EDITORS_SUFFIX) for commissionId in Set(COUNCIL_COMMISSION_IDS).union(Set(COUNCIL_COMMISSION_IDS_2013))]
-        res = []
-        member = self.portal_membership.getAuthenticatedMember()
-        for groupId in member.getGroups():
-            if groupId in commissionEditorsGroupIds:
-                res.append(groupId)
-        #a commission groupId correspond to a category but with an additional suffix (COMMISSION_EDITORS_SUFFIX)
-        cats = [cat[:-len(COMMISSION_EDITORS_SUFFIX)] for cat in res]
-        #we add the corresponding '1er-supplement' suffixed cat too
-        cats = cats + [cat+'-1er-supplement' for cat in cats]
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
-                  'getCategory': cats,
-                  'review_state': 'item_in_committee',
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder
-                  }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsOfMyCommissionsToEdit = searchItemsOfMyCommissionsToEdit
-
-    security.declarePublic('searchItemsForDashboard')
-    def searchItemsForDashboard(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Returns a list of items that will be used for the dashboard.'''
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
-                  'review_state': ['accepted', 'refused', 'delayed', 'accepted_but_modified', ],
-                  'getFollowUp': ['follow_up_yes', 'follow_up_provided', ],
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder
-                  }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        brains = self.portal_catalog(**params)
-        # sort elements by proposing-group keeping order from MeetingGroups
-        existingGroupIds = self.portal_plonemeeting.objectIds('MeetingGroup')
-
-        def sortBrainsByMeetingDate(x,y):
-            '''First sort by meetingDate.'''
-            return cmp(y.getMeetingDate, x.getMeetingDate)
-
-        def sortBrainsByProposingGroup(x,y):
-            '''Second sort by proposing group (of the same meetingDate).'''
-            if not x.getMeetingDate == y.getMeetingDate:
-                return 0
-            else:
-                return cmp(existingGroupIds.index(x.getProposingGroup), existingGroupIds.index(y.getProposingGroup))
-
-        brains = list(brains)
-        # sort first by meeting date
-        brains.sort(sortBrainsByMeetingDate)
-        # then by proposing group
-        brains.sort(sortBrainsByProposingGroup)
-        return brains
-    MeetingConfig.searchItemsForDashboard = searchItemsForDashboard
-
-    security.declarePublic('searchItemsToValidate')
-    def searchItemsToValidate(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''See docstring in Products.PloneMeeting.MeetingConfig.
-           We override it here because relevant groupIds and wf state are no the same...'''
-        member = self.portal_membership.getAuthenticatedMember()
-        groupIds = self.portal_groups.getGroupsForPrincipal(member)
-        res = []
-        for groupId in groupIds:
-            # XXX change by MeetingLalouviere
-            # if groupId.endswith('_reviewers'):
-            if groupId.endswith('_directors'):
-                # append group name without suffix
-                res.append(groupId[:-10])
-        # if we use pre_validation, the state in which are items to validate is 'prevalidated'
-        # if not using the WFAdaptation 'pre_validation', the items are in state 'proposed'
-        usePreValidationWFAdaptation = 'pre_validation' in self.getWorkflowAdaptations()
-        params = {'portal_type': self.getItemTypeName(),
-                  'getProposingGroup': res,
-                  # XXX change by MeetingLalouviere
-                  # 'review_state': usePreValidationWFAdaptation and ('prevalidated', ) or ('proposed', ),
-                  'review_state': usePreValidationWFAdaptation and ('prevalidated', ) or ('proposed_to_director', ),
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder
-                  }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsToValidate = searchItemsToValidate
-
 
 class CustomMeetingGroup(MeetingGroup):
     '''Adapter that adapts a meetingGroup implementing IMeetingGroup to the
@@ -986,19 +217,12 @@ class CustomMeetingGroup(MeetingGroup):
     def __init__(self, item):
         self.context = item
 
-    security.declarePrivate('validate_signatures')
-    def validate_signatures(self, value):
-        '''Validate the MeetingGroup.signatures field.'''
-        if value.strip() and not len(value.split('\n')) == 12:
-            return self.utranslate('signatures_length_error', domain='PloneMeeting')
-    MeetingGroup.validate_signatures = validate_signatures
 
-
-class MeetingCollegeLalouviereWorkflowActions(MeetingWorkflowActions):
+class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingCollegeWorkflowActions'''
 
-    implements(IMeetingCollegeLalouviereWorkflowActions)
+    implements(IMeetingCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
     def _adaptEveryItemsOnMeetingClosure(self):
@@ -1035,11 +259,11 @@ class MeetingCollegeLalouviereWorkflowActions(MeetingWorkflowActions):
         pass
 
 
-class MeetingCollegeLalouviereWorkflowConditions(MeetingWorkflowConditions):
+class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingCollegeWorkflowConditions'''
 
-    implements(IMeetingCollegeLalouviereWorkflowConditions)
+    implements(IMeetingCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
     security.declarePublic('mayFreeze')
@@ -1077,6 +301,7 @@ class MeetingCollegeLalouviereWorkflowConditions(MeetingWorkflowConditions):
             res = True
         return res
 
+    security.declarePublic('mayCorrect')
     def mayCorrect(self):
         '''Take the default behaviour except if the meeting is frozen
            we still have the permission to correct it.'''
@@ -1091,11 +316,11 @@ class MeetingCollegeLalouviereWorkflowConditions(MeetingWorkflowConditions):
         return res
 
 
-class MeetingItemCollegeLalouviereWorkflowActions(MeetingItemWorkflowActions):
+class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingItemCollegeWorkflowActions'''
 
-    implements(IMeetingItemCollegeLalouviereWorkflowActions)
+    implements(IMeetingItemCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
     security.declarePrivate('doAccept_but_modify')
@@ -1130,24 +355,12 @@ class MeetingItemCollegeLalouviereWorkflowActions(MeetingItemWorkflowActions):
     def doProposeToDivisionHead(self, stateChange):
         pass
 
-    security.declarePrivate('doValidateByBudgetImpactReviewer')
-    def doValidateByBudgetImpactReviewer(self, stateChange):
-        pass
 
-    security.declarePrivate('doProposeToBudgetImpactReviewer')
-    def doProposeToBudgetImpactReviewer(self, stateChange):
-        pass
-
-    security.declarePrivate('doAsk_advices_by_itemcreator')
-    def doAsk_advices_by_itemcreator(self, stateChange):
-        pass
-
-
-class MeetingItemCollegeLalouviereWorkflowConditions(MeetingItemWorkflowConditions):
+class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingItemCollegeWorkflowConditions'''
 
-    implements(IMeetingItemCollegeLalouviereWorkflowConditions)
+    implements(IMeetingItemCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
     def __init__(self, item):
@@ -1225,16 +438,6 @@ class MeetingItemCollegeLalouviereWorkflowConditions(MeetingItemWorkflowConditio
                     res = True
         return res
 
-    security.declarePublic('mayWaitAdvices')
-    def mayWaitAdvices(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
-
     security.declarePublic('mayProposeToServiceHead')
     def mayProposeToServiceHead(self):
         """
@@ -1288,32 +491,12 @@ class MeetingItemCollegeLalouviereWorkflowConditions(MeetingItemWorkflowConditio
             res = True
         return res
 
-    security.declarePublic('mayValidateByBudgetImpactReviewer')
-    def mayValidateByBudgetImpactReviewer(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
 
-    security.declarePublic('mayProposeToBudgetImpactReviewer')
-    def mayProposeToBudgetImpactReviewer(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
-
-
-class MeetingCouncilLalouviereWorkflowActions(MeetingWorkflowActions):
+class MeetingCouncilLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingCouncilWorkflowActions'''
 
-    implements(IMeetingCouncilLalouviereWorkflowActions)
+    implements(IMeetingCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
     security.declarePrivate('doSetInCommittee')
@@ -1366,11 +549,11 @@ class MeetingCouncilLalouviereWorkflowActions(MeetingWorkflowActions):
         pass
 
 
-class MeetingCouncilLalouviereWorkflowConditions(MeetingWorkflowConditions):
+class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingCouncilWorkflowConditions'''
 
-    implements(IMeetingCouncilLalouviereWorkflowConditions)
+    implements(IMeetingCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
     def __init__(self, meeting):
@@ -1429,11 +612,11 @@ class MeetingCouncilLalouviereWorkflowConditions(MeetingWorkflowConditions):
         return res
 
 
-class MeetingItemCouncilLalouviereWorkflowActions(MeetingItemWorkflowActions):
+class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingItemCouncilWorkflowActions'''
 
-    implements(IMeetingItemCouncilLalouviereWorkflowActions)
+    implements(IMeetingItemCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
     security.declarePrivate('doProposeToDirector')
@@ -1498,11 +681,11 @@ class MeetingItemCouncilLalouviereWorkflowActions(MeetingItemWorkflowActions):
         pass
 
 
-class MeetingItemCouncilLalouviereWorkflowConditions(MeetingItemWorkflowConditions):
+class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingItemCouncilWorkflowConditions'''
 
-    implements(IMeetingItemCouncilLalouviereWorkflowConditions)
+    implements(IMeetingItemCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
     def __init__(self, item):
@@ -1542,7 +725,7 @@ class MeetingItemCouncilLalouviereWorkflowConditions(MeetingItemWorkflowConditio
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             if self.context.hasMeeting() and \
-               (self.context.getMeeting().queryState() in \
+               (self.context.getMeeting().queryState() in
                ('in_committee', 'in_council', 'closed')):
                 res = True
         return res
@@ -1556,7 +739,7 @@ class MeetingItemCouncilLalouviereWorkflowConditions(MeetingItemWorkflowConditio
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             if self.context.hasMeeting() and \
-               (self.context.getMeeting().queryState() in \
+               (self.context.getMeeting().queryState() in
                ('in_council', 'closed')):
                 res = True
         return res
@@ -1647,12 +830,12 @@ InitializeClass(CustomMeetingItem)
 InitializeClass(CustomMeeting)
 InitializeClass(CustomMeetingConfig)
 InitializeClass(CustomMeetingGroup)
-InitializeClass(MeetingCollegeLalouviereWorkflowActions)
-InitializeClass(MeetingCollegeLalouviereWorkflowConditions)
-InitializeClass(MeetingItemCollegeLalouviereWorkflowActions)
-InitializeClass(MeetingItemCollegeLalouviereWorkflowConditions)
-InitializeClass(MeetingCouncilLalouviereWorkflowActions)
-InitializeClass(MeetingCouncilLalouviereWorkflowConditions)
-InitializeClass(MeetingItemCouncilLalouviereWorkflowActions)
-InitializeClass(MeetingItemCouncilLalouviereWorkflowConditions)
+InitializeClass(MeetingCollegeLiegeWorkflowActions)
+InitializeClass(MeetingCollegeLiegeWorkflowConditions)
+InitializeClass(MeetingItemCollegeLiegeWorkflowActions)
+InitializeClass(MeetingItemCollegeLiegeWorkflowConditions)
+InitializeClass(MeetingCouncilLiegeWorkflowActions)
+InitializeClass(MeetingCouncilLiegeWorkflowConditions)
+InitializeClass(MeetingItemCouncilLiegeWorkflowActions)
+InitializeClass(MeetingItemCouncilLiegeWorkflowConditions)
 # ------------------------------------------------------------------------------

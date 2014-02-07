@@ -27,6 +27,8 @@ from Products.PloneMeeting.exportimport.content import ToolInitializer
 def isNotMeetingLiegeProfile(context):
     return context.readDataFile("MeetingLiege_marker.txt") is None
 
+
+
 def updateRoleMappings(context):
     """after workflow changed update the roles mapping. this is like pressing
     the button 'Update Security Setting' and portal_workflow"""
@@ -46,6 +48,7 @@ def postInstall(context):
     reinstallPloneMeetingSkin(context, site)
     # reorder skins so we are sure that the meetinglalouviere_xxx skins are just under custom
     reorderSkinsLayers(context, site)
+
 
 
 ##code-section FOOT

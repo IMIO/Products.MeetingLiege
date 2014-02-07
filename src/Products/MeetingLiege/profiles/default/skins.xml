@@ -8,13 +8,22 @@
 
  <object name="meetinglalouviere_images"
          meta_type="Filesystem Directory View"
-         directory="MeetingLalouviere/skins/meetinglalouviere_images"/>
+         directory="MeetingLiege/skins/meetinglalouviere_images"/>
  <object name="meetinglalouviere_styles"
          meta_type="Filesystem Directory View"
-         directory="MeetingLalouviere/skins/meetinglalouviere_styles"/>
+         directory="MeetingLiege/skins/meetinglalouviere_styles"/>
  <object name="meetinglalouviere_templates"
          meta_type="Filesystem Directory View"
-         directory="MeetingLalouviere/skins/meetinglalouviere_templates"/>
+         directory="MeetingLiege/skins/meetinglalouviere_templates"/>
+ <object name="meetingliege_images"
+         meta_type="Filesystem Directory View"
+         directory="MeetingLiege/skins/meetingliege_images"/>
+ <object name="meetingliege_styles"
+         meta_type="Filesystem Directory View"
+         directory="MeetingLiege/skins/meetingliege_styles"/>
+ <object name="meetingliege_templates"
+         meta_type="Filesystem Directory View"
+         directory="MeetingLiege/skins/meetingliege_templates"/>
  
  <skin-path name="*">
   <layer insert-after="custom" 
@@ -23,6 +32,12 @@
          name="meetinglalouviere_styles"/>
   <layer insert-after="custom" 
          name="meetinglalouviere_templates"/>
+  <layer insert-after="custom" 
+         name="meetingliege_images"/>
+  <layer insert-after="custom" 
+         name="meetingliege_styles"/>
+  <layer insert-after="custom" 
+         name="meetingliege_templates"/>
  </skin-path>
 
 </object>

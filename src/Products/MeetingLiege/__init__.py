@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: MeetingLalouviere.py
+# File: MeetingLiege.py
 #
 # Copyright (c) 2014 by Imio.be
 # Generator: ArchGenXML Version 2.7
@@ -40,8 +40,18 @@ import logging
 logger = logging.getLogger('MeetingLiege')
 logger.debug('Installing Product')
 
+import os
+import os.path
+from Globals import package_home
+import Products.CMFPlone.interfaces
+from Products.Archetypes import listTypes
+from Products.Archetypes.atapi import *
+from Products.Archetypes.utils import capitalize
 from Products.CMFCore import DirectoryView
-from Products.MeetingLiege.config import product_globals
+from Products.CMFCore import permissions as cmfpermissions
+from Products.CMFCore import utils as cmfutils
+from Products.CMFPlone.utils import ToolInit
+from config import *
 
 DirectoryView.registerDirectory('skins', product_globals)
 
@@ -60,3 +70,4 @@ def initialize(context):
 
     ##code-section custom-init-bottom #fill in your manual code here
     ##/code-section custom-init-bottom
+

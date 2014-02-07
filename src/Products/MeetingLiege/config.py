@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: config.py
+# File: MeetingLiege.py
 #
 # Copyright (c) 2014 by Imio.be
 # Generator: ArchGenXML Version 2.7
@@ -46,14 +46,12 @@ PRODUCT_DEPENDENCIES = []
 ##code-section config-bottom #fill in your manual code here
 from Products.PloneMeeting import config as PMconfig
 LIEGEROLES = {}
-LIEGEROLES['budgetimpactreviewers'] = 'MeetingBudgetImpactReviewer'
-LIEGEROLES['serviceheads'] = 'MeetingServiceHead'
-LIEGEROLES['officemanagers'] = 'MeetingOfficeManager'
-LIEGEROLES['divisionheads'] = 'MeetingDivisionHead'
+LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
+LIEGEROLES['internatlreviewers'] = 'MeetingInternalReviewer'
 LIEGEROLES['directors'] = 'MeetingDirector'
-LIEGEROLES['followupwriters'] = 'MeetingFollowUpWriter'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
+##/code-section config-bottom
 
 
 # Load custom configuration not managed by archgenxml

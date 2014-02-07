@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="meetingcollegelalouviere_workflow"
-             title="meetingcollegelalouviere_workflow"
+<dc-workflow workflow_id="meetingcollegeliege_workflow"
+             title="meetingcollegeliege_workflow"
              state_variable="review_state"
              initial_state="created"
              xmlns:i18n="http://xml.zope.org/namespaces/i18n"

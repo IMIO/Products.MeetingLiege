@@ -48,7 +48,7 @@ from Products.PloneMeeting import config as PMconfig
 LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
 LIEGEROLES['internatlreviewers'] = 'MeetingInternalReviewer'
-LIEGEROLES['directors'] = 'MeetingDirector'
+LIEGEROLES['reviewers'] = 'MeetingReviewer'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 ##/code-section config-bottom

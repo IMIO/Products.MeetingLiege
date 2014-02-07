@@ -3,12 +3,12 @@
   <roles>
     <role name="MeetingAdminReviewer"/>
     <role name="MeetingBudgetImpactEditor"/>
-    <role name="MeetingDirector"/>
     <role name="MeetingInternalReviewer"/>
     <role name="MeetingManager"/>
     <role name="MeetingMember"/>
     <role name="MeetingObserverGlobal"/>
     <role name="MeetingObserverLocal"/>
+    <role name="MeetingReviewer"/>
 <!-- ##code-section roles -->
 <!-- ##/code-section roles -->
   </roles>

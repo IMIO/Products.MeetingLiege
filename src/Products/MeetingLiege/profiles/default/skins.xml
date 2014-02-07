@@ -6,15 +6,6 @@
         cookie_persistence="False"
         request_varname="plone_skin">
 
- <object name="meetinglalouviere_images"
-         meta_type="Filesystem Directory View"
-         directory="MeetingLiege/skins/meetinglalouviere_images"/>
- <object name="meetinglalouviere_styles"
-         meta_type="Filesystem Directory View"
-         directory="MeetingLiege/skins/meetinglalouviere_styles"/>
- <object name="meetinglalouviere_templates"
-         meta_type="Filesystem Directory View"
-         directory="MeetingLiege/skins/meetinglalouviere_templates"/>
  <object name="meetingliege_images"
          meta_type="Filesystem Directory View"
          directory="MeetingLiege/skins/meetingliege_images"/>
@@ -26,12 +17,6 @@
          directory="MeetingLiege/skins/meetingliege_templates"/>
  
  <skin-path name="*">
-  <layer insert-after="custom" 
-         name="meetinglalouviere_images"/>
-  <layer insert-after="custom" 
-         name="meetinglalouviere_styles"/>
-  <layer insert-after="custom" 
-         name="meetinglalouviere_templates"/>
   <layer insert-after="custom" 
          name="meetingliege_images"/>
   <layer insert-after="custom" 

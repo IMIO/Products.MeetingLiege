@@ -46,7 +46,7 @@ def postInstall(context):
     reinstallPloneMeeting(context, site)
     # Reinstall the skin
     reinstallPloneMeetingSkin(context, site)
-    # reorder skins so we are sure that the meetinglalouviere_xxx skins are just under custom
+    # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
 
 
@@ -57,11 +57,11 @@ def logStep(method, context):
 
 
 def isNotMeetingLiegeLiegeProfile(context):
-    return context.readDataFile("MeetingLiege_lalouviere_marker.txt") is None
+    return context.readDataFile("MeetingLiege_liege_marker.txt") is None
 
 
 def installMeetingLiege(context):
-    """ Run the default profile before bing able to run the lalouviere profile"""
+    """ Run the default profile before bing able to run the liege profile"""
     if isNotMeetingLiegeLiegeProfile(context):
         return
 

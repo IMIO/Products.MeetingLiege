@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <import-steps>
- <import-step id="installMeetingLalouviere" version="20110215-01"
-              handler="Products.MeetingLalouviere.setuphandlers.installMeetingLalouviere"
-              title="Install MeetingLalouviere.">
-  Install MeetingLalouviere.
+ <import-step id="installMeetingLiege" version="20140207-01"
+              handler="Products.MeetingLiege.setuphandlers.installMeetingLiege"
+              title="Install MeetingLiege.">
+  Install MeetingLiege.
  </import-step>
 
- <import-step id="initializetool-MeetingLalouviere" version="20110215-01"
-              handler="Products.MeetingLalouviere.setuphandlers.initializeTool"
-              title="Initialize MeetingLalouviere with examples.">
-  <dependency step="installMeetingLalouviere"/>
-  Initialize portal_plonemeeting folders for La Louviere.
+ <import-step id="initializetool-MeetingLiege" version="20140207-01"
+              handler="Products.MeetingLiege.setuphandlers.initializeTool"
+              title="Initialize MeetingLiege with examples.">
+  <dependency step="installMeetingLiege"/>
+  Initialize portal_plonemeeting folders for Liege.
  </import-step>
- <import-step id="finalizeInstanceMeetingLalouviere" version="20131114-01"
-              handler="Products.MeetingLalouviere.setuphandlers.finalizeInstance"
+ <import-step id="finalizeInstanceMeetingLiege" version="20140207-01"
+              handler="Products.MeetingLiege.setuphandlers.finalizeInstance"
               title="Finalize instance.">
-  <dependency step="initializetool-MeetingCommunes"/>
+  <dependency step="initializetool-MeetingLiege"/>
   Finalize instance.
  </import-step>
 </import-steps>

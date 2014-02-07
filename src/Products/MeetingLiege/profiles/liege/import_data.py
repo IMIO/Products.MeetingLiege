@@ -145,10 +145,8 @@ collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er E
 collegeMeeting.categories = []
 collegeMeeting.shortName = 'College'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
-collegeMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss',
-                                     'motivation', 'neededFollowUp', 'providedFollowUp', ]
-collegeMeeting.xhtmlTransformFields = ('description', 'detailedDescription', 'decision',
-                                       'observations', 'interventions', 'commissionTranscript')
+collegeMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss', 'motivation', ]
+collegeMeeting.xhtmlTransformFields = ('description', 'detailedDescription', 'decision', 'observations', )
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'

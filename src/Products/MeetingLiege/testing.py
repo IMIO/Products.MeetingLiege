@@ -2,24 +2,24 @@
 from plone.testing import z2, zca
 from plone.app.testing import PloneWithPackageLayer
 from plone.app.testing import FunctionalTesting
-import Products.MeetingLalouviere
+import Products.MeetingLiege
 
 
-MLL_ZCML = zca.ZCMLSandbox(filename="testing.zcml",
-                           package=Products.MeetingLalouviere,
-                           name='MLL_ZCML')
+ML_ZCML = zca.ZCMLSandbox(filename="testing.zcml",
+                          package=Products.MeetingLiege,
+                          name='ML_ZCML')
 
-MLL_Z2 = z2.IntegrationTesting(bases=(z2.STARTUP, MLL_ZCML),
-                               name='MLL_Z2')
+ML_Z2 = z2.IntegrationTesting(bases=(z2.STARTUP, ML_ZCML),
+                              name='ML_Z2')
 
-MLL_TESTING_PROFILE = PloneWithPackageLayer(
+ML_TESTING_PROFILE = PloneWithPackageLayer(
     zcml_filename="testing.zcml",
-    zcml_package=Products.MeetingLalouviere,
-    additional_z2_products=('Products.MeetingLalouviere',
+    zcml_package=Products.MeetingLiege,
+    additional_z2_products=('Products.MeetingLiege',
                             'Products.PloneMeeting',
                             'Products.CMFPlacefulWorkflow'),
-    gs_profile_id='Products.MeetingLalouviere:testing',
-    name="MLL_TESTING_PROFILE")
+    gs_profile_id='Products.MeetingLiege:testing',
+    name="ML_TESTING_PROFILE")
 
-MLL_TESTING_PROFILE_FUNCTIONAL = FunctionalTesting(
-    bases=(MLL_TESTING_PROFILE,), name="MLL_TESTING_PROFILE_FUNCTIONAL")
+ML_TESTING_PROFILE_FUNCTIONAL = FunctionalTesting(
+    bases=(ML_TESTING_PROFILE,), name="ML_TESTING_PROFILE_FUNCTIONAL")

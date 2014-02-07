@@ -1,7 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="MeetingLalouviere">
+    i18n_domain="MeetingLiege">
 
   <include package="Products.GenericSetup" file="meta.zcml" />
 
@@ -10,33 +10,25 @@
 
   <genericsetup:registerProfile
       name="default"
-      title="MeetingLalouviere"
+      title="MeetingLiege"
       directory="profiles/default"
-      description="Extension profile for MeetingLalouviere."
+      description="Extension profile for MeetingLiege."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
-  
+
   <!-- ##code-section profiles.zcml-bottom #fill in your manual code here -->
   <genericsetup:registerProfile
-   name="lalouviere"
-   title="PloneMeeting / For La Louviere"
-   description="PloneMeeting for City College and Council of La Louviere"
+   name="liege"
+   title="PloneMeeting / For Liege"
+   description="PloneMeeting for City College and Council of Liege"
    provides="Products.GenericSetup.interfaces.EXTENSION"
    for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
   <genericsetup:registerProfile
    name="testing"
-   title="PloneMeeting / Unit testing profile for La Louviere"
-   description="MeetingLalouviere unit testing profile"
+   title="PloneMeeting / Unit testing profile for Liege"
+   description="MeetingLiege unit testing profile"
    for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-  <genericsetup:upgradeStep
-      title="Go to MeetingLalouviere 3.0"
-      description=""
-      source="*"
-      destination="3.0"
-      handler="Products.MeetingLalouviere.migrations.migrate_to_3_0.migrate"
-      profile="Products.MeetingLalouviere:default" />
 
   <!-- ##/code-section profiles.zcml-bottom -->
 

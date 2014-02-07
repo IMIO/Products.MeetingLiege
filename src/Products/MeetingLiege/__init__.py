@@ -2,7 +2,7 @@
 #
 # File: MeetingLalouviere.py
 #
-# Copyright (c) 2013 by CommunesPlone
+# Copyright (c) 2014 by Imio.be
 # Generator: ArchGenXML Version 2.7
 #            http://plone.org/products/archgenxml
 #
@@ -24,7 +24,7 @@
 # 02110-1301, USA.
 #
 
-__author__ = """Gauthier Bastien <g.bastien@imio.be>, Stephan Geulette <s.geulette@imio.be>"""
+__author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 
@@ -37,21 +37,11 @@ __docformat__ = 'plaintext'
 #       use the protected code section at the bottom of initialize().
 
 import logging
-logger = logging.getLogger('MeetingLalouviere')
+logger = logging.getLogger('MeetingLiege')
 logger.debug('Installing Product')
 
-import os
-import os.path
-from Globals import package_home
-import Products.CMFPlone.interfaces
-from Products.Archetypes import listTypes
-from Products.Archetypes.atapi import *
-from Products.Archetypes.utils import capitalize
 from Products.CMFCore import DirectoryView
-from Products.CMFCore import permissions as cmfpermissions
-from Products.CMFCore import utils as cmfutils
-from Products.CMFPlone.utils import ToolInit
-from config import *
+from Products.MeetingLiege.config import product_globals
 
 DirectoryView.registerDirectory('skins', product_globals)
 
@@ -70,4 +60,3 @@ def initialize(context):
 
     ##code-section custom-init-bottom #fill in your manual code here
     ##/code-section custom-init-bottom
-

@@ -9,4 +9,4 @@ rm ../configure.zcml
 mv ../tmp.zcml ../configure.zcml
 rm ../generatedsubscribers.zcml
 rm ../wfsubscribers.py
-echo "We do not use wf subsribers for now as PM implemented it differently"
+echo "We do not use wf subscribers for now as PM implemented it differently"

@@ -2,7 +2,7 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five"
            xmlns:i18n="http://namespaces.zope.org/i18n"
-           i18n_domain="MeetingLalouviere">
+           i18n_domain="MeetingLiege">
 
   <!-- ##code-section configure.zcml.header -->
   <!-- registerTranslations before including package Products.PloneMeeting
@@ -17,56 +17,56 @@
 
   <!-- WF actions and conditions for Meeting and MeetingItem for College -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
-           factory="Products.MeetingLalouviere.adapters.MeetingItemCollegeLalouviereWorkflowActions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingItemCollegeLalouviereWorkflowActions"/>
+           factory="Products.MeetingLiege.adapters.MeetingItemCollegeLiegeWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions"/>
 
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
-           factory="Products.MeetingLalouviere.adapters.MeetingItemCollegeLalouviereWorkflowConditions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingItemCollegeLalouviereWorkflowConditions"/>
+           factory="Products.MeetingLiege.adapters.MeetingItemCollegeLiegeWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions"/>
 
   <adapter for="Products.PloneMeeting.interfaces.IMeeting"
-           factory="Products.MeetingLalouviere.adapters.MeetingCollegeLalouviereWorkflowActions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingCollegeLalouviereWorkflowActions"/>
+           factory="Products.MeetingLiege.adapters.MeetingCollegeLiegeWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions"/>
 
   <adapter for="Products.PloneMeeting.interfaces.IMeeting"
-           factory="Products.MeetingLalouviere.adapters.MeetingCollegeLalouviereWorkflowConditions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingCollegeLalouviereWorkflowConditions"/>
+           factory="Products.MeetingLiege.adapters.MeetingCollegeLiegeWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions"/>
 
   <!-- WF actions and conditions for Meeting and MeetingItem for Council -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
-           factory="Products.MeetingLalouviere.adapters.MeetingItemCouncilLalouviereWorkflowActions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingItemCouncilLalouviereWorkflowActions"/>
+           factory="Products.MeetingLiege.adapters.MeetingItemCouncilLiegeWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions"/>
 
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
-           factory="Products.MeetingLalouviere.adapters.MeetingItemCouncilLalouviereWorkflowConditions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingItemCouncilLalouviereWorkflowConditions"/>
+           factory="Products.MeetingLiege.adapters.MeetingItemCouncilLiegeWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions"/>
 
   <adapter for="Products.PloneMeeting.interfaces.IMeeting"
-           factory="Products.MeetingLalouviere.adapters.MeetingCouncilLalouviereWorkflowActions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingCouncilLalouviereWorkflowActions"/>
+           factory="Products.MeetingLiege.adapters.MeetingCouncilLiegeWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions"/>
 
   <adapter for="Products.PloneMeeting.interfaces.IMeeting"
-           factory="Products.MeetingLalouviere.adapters.MeetingCouncilLalouviereWorkflowConditions"
-           provides="Products.MeetingLalouviere.interfaces.IMeetingCouncilLalouviereWorkflowConditions"/>
+           factory="Products.MeetingLiege.adapters.MeetingCouncilLiegeWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions"/>
 
   <!-- Customizations for every Meetings -->
   <adapter for="Products.PloneMeeting.interfaces.IMeeting"
-           factory="Products.MeetingLalouviere.adapters.CustomMeeting"
+           factory="Products.MeetingLiege.adapters.CustomMeeting"
            provides="Products.PloneMeeting.interfaces.IMeetingCustom"/>
 
   <!-- Customizations for every MeetingItems -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
-           factory="Products.MeetingLalouviere.adapters.CustomMeetingItem"
+           factory="Products.MeetingLiege.adapters.CustomMeetingItem"
            provides="Products.PloneMeeting.interfaces.IMeetingItemCustom"/>
 
   <!-- Customizations for every MeetingConfigs -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingConfig"
-           factory="Products.MeetingLalouviere.adapters.CustomMeetingConfig"
+           factory="Products.MeetingLiege.adapters.CustomMeetingConfig"
            provides="Products.PloneMeeting.interfaces.IMeetingConfigCustom"/>
 
   <!-- Customizations for every MeetingGroups -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingGroup"
-           factory="Products.MeetingLalouviere.adapters.CustomMeetingGroup"
+           factory="Products.MeetingLiege.adapters.CustomMeetingGroup"
            provides="Products.PloneMeeting.interfaces.IMeetingGroupCustom"/>
 
   <!-- ##/code-section configure.zcml.header -->
@@ -78,9 +78,6 @@
 
 
   <!-- ##code-section configure.zcml.core -->
-  <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
-                   Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-              handler=".events.onMeetingItemTransition"/>
   <!-- ##/code-section configure.zcml.core -->
 
 </configure>

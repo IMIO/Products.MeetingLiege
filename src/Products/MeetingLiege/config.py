@@ -9,7 +9,7 @@
 # GNU General Public License (GPL)
 #
 
-__author__ = """Gauthier Bastien <g.bastien@imio.be>, Stephan Geulette <s.geulette@imio.be>"""
+__author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 
@@ -24,7 +24,6 @@ __docformat__ = 'plaintext'
 
 from Products.CMFCore.permissions import setDefaultRoles
 ##code-section config-head #fill in your manual code here
-import os
 ##/code-section config-head
 
 
@@ -47,55 +46,18 @@ PRODUCT_DEPENDENCIES = []
 ##code-section config-bottom #fill in your manual code here
 from Products.PloneMeeting import config as PMconfig
 LIEGEROLES = {}
-LALOUVIEREROLES['budgetimpactreviewers'] = 'MeetingBudgetImpactReviewer'
-LALOUVIEREROLES['serviceheads'] = 'MeetingServiceHead'
-LALOUVIEREROLES['officemanagers'] = 'MeetingOfficeManager'
-LALOUVIEREROLES['divisionheads'] = 'MeetingDivisionHead'
-LALOUVIEREROLES['directors'] = 'MeetingDirector'
-LALOUVIEREROLES['followupwriters'] = 'MeetingFollowUpWriter'
-PMconfig.MEETINGROLES.update(LALOUVIEREROLES)
+LIEGEROLES['budgetimpactreviewers'] = 'MeetingBudgetImpactReviewer'
+LIEGEROLES['serviceheads'] = 'MeetingServiceHead'
+LIEGEROLES['officemanagers'] = 'MeetingOfficeManager'
+LIEGEROLES['divisionheads'] = 'MeetingDivisionHead'
+LIEGEROLES['directors'] = 'MeetingDirector'
+LIEGEROLES['followupwriters'] = 'MeetingFollowUpWriter'
+PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
-
-# see doc in Products.PloneMeeting.config.py
-RETURN_TO_PROPOSING_GROUP_MAPPINGS = {'backTo_item_in_committee_from_returned_to_proposing_group': ['in_committee', ],
-                                      'backTo_item_in_council_from_returned_to_proposing_group': ['in_council', ],
-                                      }
-PMconfig.RETURN_TO_PROPOSING_GROUP_MAPPINGS.update(RETURN_TO_PROPOSING_GROUP_MAPPINGS)
-
-
-# url of the DEF application
-DEFURL = os.environ.get('DEFURL', 'http://192.168.1.106/def')
-
-# ids of commissions used as categories for MeetingItemCouncil
-# before 2013, commission ids were :
-COUNCIL_COMMISSION_IDS = ('commission-travaux', 'commission-enseignement',
-                          'commission-cadre-de-vie-et-logement', 'commission-ag',
-                          'commission-finances-et-patrimoine', 'commission-police',
-                          'commission-speciale',)
-# until 2013, commission ids are :
-# changes are about 'commission-enseignement', 'commission-cadre-de-vie-et-logement' and
-# 'commission-finances-et-patrimoine' that are splitted in smaller commissions
-COUNCIL_COMMISSION_IDS_2013 = ('commission-ag', 'commission-finances', 'commission-enseignement',
-                               'commission-culture', 'commission-sport', 'commission-sante',
-                               'commission-police', 'commission-cadre-de-vie', 'commission-patrimoine',
-                               'commission-travaux', 'commission-speciale',)
-# commissions taken into account on the Meeting
-# since 2013, some commissions are made of several categories...
-COUNCIL_MEETING_COMMISSION_IDS_2013 = ('commission-travaux',
-                                       ('commission-ag', 'commission-finances', 'commission-enseignement',
-                                        'commission-culture', 'commission-sport', 'commission-sante',),
-                                       ('commission-cadre-de-vie', 'commission-patrimoine',),
-                                       'commission-police',
-                                       'commission-speciale',)
-
-
-# suffix of specific groups containing commission transcript editors
-COMMISSION_EDITORS_SUFFIX = '_commissioneditors'
-##/code-section config-bottom
 
 
 # Load custom configuration not managed by archgenxml
 try:
-    from Products.MeetingLalouviere.AppConfig import *
+    from Products.MeetingLiege.AppConfig import *
 except ImportError:
     pass

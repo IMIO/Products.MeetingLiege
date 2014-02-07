@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
-# Copyright (c) 2011 by CommunesPlone.org
+# Copyright (c) 2014 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -20,7 +20,7 @@
 # 02110-1301, USA.
 #
 
-__author__ = """Gauthier Bastien <gbastien@commune.sambreville.be>"""
+__author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 # ------------------------------------------------------------------------------
@@ -30,9 +30,9 @@ from Products.PloneMeeting.interfaces import \
 
 
 # ------------------------------------------------------------------------------
-class IMeetingItemCollegeLalouviereWorkflowActions(IMeetingItemWorkflowActions):
+class IMeetingItemCollegeLiegeWorkflowActions(IMeetingItemWorkflowActions):
     '''This interface represents a meeting item as viewed by the specific
-       item workflow that is defined in this MeetingCommunes product.'''
+       item workflow that is defined in this MeetingLiege product.'''
     def doPresent():
         """
           Triggered while doing the 'present' transition
@@ -47,9 +47,9 @@ class IMeetingItemCollegeLalouviereWorkflowActions(IMeetingItemWorkflowActions):
         """
 
 
-class IMeetingItemCollegeLalouviereWorkflowConditions(IMeetingItemWorkflowConditions):
+class IMeetingItemCollegeLiegeWorkflowConditions(IMeetingItemWorkflowConditions):
     '''This interface represents a meeting item as viewed by the specific
-       item workflow that is defined in this MeetingCommunes product.'''
+       item workflow that is defined in this MeetingLiege product.'''
     def mayDecide():
         """
           Guard for the 'decide' transition
@@ -68,9 +68,9 @@ class IMeetingItemCollegeLalouviereWorkflowConditions(IMeetingItemWorkflowCondit
         """
 
 
-class IMeetingCollegeLalouviereWorkflowActions(IMeetingWorkflowActions):
+class IMeetingCollegeLiegeWorkflowActions(IMeetingWorkflowActions):
     '''This interface represents a meeting as viewed by the specific meeting
-       workflow that is defined in this MeetingCommunes product.'''
+       workflow that is defined in this MeetingLiege product.'''
     def doClose():
         """
           Triggered while doing the 'close' transition
@@ -89,9 +89,9 @@ class IMeetingCollegeLalouviereWorkflowActions(IMeetingWorkflowActions):
         """
 
 
-class IMeetingCollegeLalouviereWorkflowConditions(IMeetingWorkflowConditions):
+class IMeetingCollegeLiegeWorkflowConditions(IMeetingWorkflowConditions):
     '''This interface represents a meeting as viewed by the specific meeting
-       workflow that is defined in this MeetingCommunes product.'''
+       workflow that is defined in this MeetingLiege product.'''
     def mayFreeze():
         """
           Guard for the 'freeze' transition
@@ -114,9 +114,9 @@ class IMeetingCollegeLalouviereWorkflowConditions(IMeetingWorkflowConditions):
         """
 
 
-class IMeetingCouncilLalouviereWorkflowActions(IMeetingWorkflowActions):
+class IMeetingCouncilLiegeWorkflowActions(IMeetingWorkflowActions):
     '''This interface represents a meeting as viewed by the specific meeting
-       workflow that is defined in this MeetingCommunes product.'''
+       workflow that is defined in this MeetingLiege product.'''
     def doClose():
         """
           Triggered while doing the 'close' transition
@@ -135,9 +135,9 @@ class IMeetingCouncilLalouviereWorkflowActions(IMeetingWorkflowActions):
         """
 
 
-class IMeetingCouncilLalouviereWorkflowConditions(IMeetingWorkflowConditions):
+class IMeetingCouncilLiegeWorkflowConditions(IMeetingWorkflowConditions):
     '''This interface represents a meeting as viewed by the specific meeting
-       workflow that is defined in this MeetingCommunes product.'''
+       workflow that is defined in this MeetingLiege product.'''
     def mayFreeze():
         """
           Guard for the 'freeze' transition
@@ -160,18 +160,18 @@ class IMeetingCouncilLalouviereWorkflowConditions(IMeetingWorkflowConditions):
         """
 
 
-class IMeetingItemCouncilLalouviereWorkflowActions(IMeetingItemWorkflowActions):
+class IMeetingItemCouncilLiegeWorkflowActions(IMeetingItemWorkflowActions):
     '''This interface represents a meeting item as viewed by the specific
-       item workflow that is defined in this MeetingCommunes product.'''
+       item workflow that is defined in this MeetingLiege product.'''
     def doPresent():
         """
           Triggered while doing the 'present' transition
         """
 
 
-class IMeetingItemCouncilLalouviereWorkflowConditions(IMeetingItemWorkflowConditions):
+class IMeetingItemCouncilLiegeWorkflowConditions(IMeetingItemWorkflowConditions):
     '''This interface represents a meeting item as viewed by the specific
-       item workflow that is defined in this MeetingCommunes product.'''
+       item workflow that is defined in this MeetingLiege product.'''
     def mayDecide():
         """
           Guard for the 'decide' transition

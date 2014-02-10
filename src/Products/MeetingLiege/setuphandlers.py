@@ -60,8 +60,9 @@ def isMeetingLiegeConfigureProfile(context):
     return context.readDataFile("MeetingLiege_liege_marker.txt") or \
         context.readDataFile("MeetingLiege_testing_marker.txt")
 
+
 def installMeetingLiege(context):
-    """ Run the default profile before bing able to run the liege profile"""
+    """ Run the default profile before being able to run the liege profile"""
     if not isMeetingLiegeConfigureProfile(context):
         return
 
@@ -74,7 +75,7 @@ def reinstallPloneMeeting(context, site):
     '''Reinstall PloneMeeting so after install methods are called and applied,
        like performWorkflowAdaptations for example.'''
 
-    if not isMeetingLiegeConfigureProfile(context):
+    if isNotMeetingLiegeProfile(context):
         return
 
     logStep("reinstallPloneMeeting", context)
@@ -123,7 +124,7 @@ def reorderSkinsLayers(context, site):
        Reinstall Products.plonemeetingskin and re-apply MeetingLiege skins.xml step
        as the reinstallation of MeetingLiege and PloneMeeting changes the portal_skins layers order
     """
-    if not isMeetingLiegeConfigureProfile(context):
+    if isNotMeetingLiegeProfile(context) and not isMeetingLiegeConfigureProfile(context):
         return
 
     logStep("reorderSkinsLayers", context)

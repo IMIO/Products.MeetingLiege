@@ -1910,7 +1910,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">itemfreeze</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayItemFreeze()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayFreeze()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="preAccept"
@@ -1994,7 +1994,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">remove</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayRemove()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="validate"

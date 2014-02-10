@@ -32,3 +32,34 @@ msgstr "Point Collège communal"
 msgid "MeetingItemCouncil"
 msgstr "Point Conseil communal"
 
+#. Default: "Ask advices"
+msgid "askAdvicesByItemCreator"
+msgstr "Demander les avis"
+
+#. Default: "Waiting advices"
+msgid "itemcreated_waiting_advices"
+msgstr "En attente des avis"
+
+#. Default: "Propose to administrative reviewer"
+msgid "proposeToAdministrativeReviewer"
+msgstr "Proposer au validateur administratif"
+
+#. Default: "Propose to director"
+msgid "proposeToDirector"
+msgstr "Proposer à la direction"
+
+#. Default: "Propose to internal reviewer"
+msgid "proposeToInternalReviewer"
+msgstr "Proposer au validateur interne"
+
+#. Default: "Proposed to administrative reviewer"
+msgid "proposed_to_administrative_reviewer"
+msgstr "Proposé au validateur administratif"
+
+#. Default: "Proposed to director"
+msgid "proposed_to_director"
+msgstr "Propose à la direction"
+
+#. Default: "Proposed to internal reviewer"
+msgid "proposed_to_internal_reviewer"
+msgstr "Proposé au validateur interne"

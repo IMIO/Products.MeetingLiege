@@ -27,3 +27,36 @@ msgstr ""
 #. Default: "MeetingItemCouncil"
 msgid "MeetingItemCouncil"
 msgstr ""
+
+#. Default: "Ask advices"
+msgid "askAdvicesByItemCreator"
+msgstr ""
+
+#. Default: "Waiting advices"
+msgid "itemcreated_waiting_advices"
+msgstr ""
+
+#. Default: "Propose to administrative reviewer"
+msgid "proposeToAdministrativeReviewer"
+msgstr ""
+
+#. Default: "Proposed to administrative reviewer"
+msgid "proposed_to_administrative_reviewer"
+msgstr ""
+
+#. Default: "Propose to internal reviewer"
+msgid "proposeToInternalReviewer"
+msgstr ""
+
+#. Default: "Proposed to internal reviewer"
+msgid "proposed_to_internal_reviewer"
+msgstr ""
+
+#. Default: "Propose to director"
+msgid "proposeToDirector"
+msgstr ""
+
+#. Default: "Proposed to director"
+msgid "proposed_to_director"
+msgstr ""
+

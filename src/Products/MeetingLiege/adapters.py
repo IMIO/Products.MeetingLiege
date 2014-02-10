@@ -324,24 +324,31 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     implements(IMeetingItemCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('doAccept_but_modify')
-    def doAccept_but_modify(self, stateChange):
+
+    security.declarePrivate('doWaitAdvices')
+    def doAskAdvicesByItemCreator(self, stateChange):
+        pass
+
+    security.declarePrivate('doProposeToAdministrativeReviewer')
+    def doProposeToAdministrativeReviewer(self, stateChange):
+        ''' '''
+        pass
+
+    security.declarePrivate('doProposeToInternalReviewer')
+    def doProposeToInternalReviewer(self, stateChange):
+        ''' '''
         pass
 
     security.declarePrivate('doPreAccept')
     def doPre_accept(self, stateChange):
         pass
 
+    security.declarePrivate('doAccept_but_modify')
+    def doAccept_but_modify(self, stateChange):
+        pass
+
     security.declarePrivate('doRemove')
     def doRemove(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToServiceHead')
-    def doProposeToServiceHead(self, stateChange):
-        pass
-
-    security.declarePrivate('doWaitAdvices')
-    def doWaitAdvices(self, stateChange):
         pass
 
     security.declarePrivate('doProposeToDirector')
@@ -375,19 +382,22 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                                                'validate',
                                                'present')
 
-    security.declarePublic('mayDecide')
-    def mayDecide(self):
-        '''We may decide an item if the linked meeting is in the 'decided'
-           state.'''
-        res = False
-        meeting = self.context.getMeeting()
-        if checkPermission(ReviewPortalContent, self.context) and \
-           meeting and (meeting.queryState() in ['decided', 'closed', 'decisions_published', ]):
-            res = True
-        return res
-
     security.declarePublic('mayProposeToAdminstrativeReviewer')
     def mayProposeToAdminstrativeReviewer(self):
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+                res = True
+        return res
+
+    security.declarePublic('mayProposeToInternalReviewer')
+    def mayProposeToInternalReviewer(self):
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+                res = True
+        return res
+
+    security.declarePublic('mayProposeToDirector')
+    def mayProposeToDirector(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
                 res = True
@@ -418,15 +428,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = False
         return res
 
-    security.declarePublic('mayFreeze')
-    def mayFreeze(self):
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-            if self.context.hasMeeting() and \
-               (self.context.getMeeting().queryState() in ('frozen', 'decided', 'closed')):
-                res = True
-        return res
-
     security.declarePublic('mayCorrect')
     def mayCorrect(self):
         # Check with the default PloneMeeting method and our test if res is
@@ -451,59 +452,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                         res = True
                 else:
                     res = True
-        return res
-
-    security.declarePublic('mayProposeToServiceHead')
-    def mayProposeToServiceHead(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
-
-    security.declarePublic('mayProposeToOfficeManager')
-    def mayProposeToOfficeManager(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
-
-    security.declarePublic('mayProposeToDivisionHead')
-    def mayProposeToDivisionHead(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
-
-    security.declarePublic('mayProposeToDirector')
-    def mayProposeToDirector(self):
-        """
-          Check that the user has the 'Review portal content'
-        """
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-                res = True
-        return res
-
-    security.declarePublic('mayRemove')
-    def mayRemove(self):
-        """
-          We may remove an item if the linked meeting is in the 'decided'
-          state.  For now, this is the same behaviour as 'mayDecide'
-        """
-        res = False
-        meeting = self.context.getMeeting()
-        if checkPermission(ReviewPortalContent, self.context) and \
-           meeting and (meeting.queryState() in ['decided', 'closed']):
-            res = True
         return res
 
 

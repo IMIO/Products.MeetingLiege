@@ -1,141 +1,177 @@
 /* <dtml-with base_properties> (do not remove this :) */
 /* <dtml-call "REQUEST.set('portal_url', portal_url())"> (not this either :) */
 
-#portal-logo {
-    margin: 0.3em 0em -2.5em 0.3em !important;
-}
-
-#portal-globalnav {
-    padding-left: 5.5em !important;
-}
-
-#premeetings dd.collapsibleContent {
-    margin-left: 0;
-}
-
 /* Colors on states */
 /* Items */
-.state-itemcreated, .label-state-itemcreated {
-    color: red !important;
-}
-
+.state-itemcreated, .label-state-itemcreated,
 .state-itemcreated_waiting_advices, .label-state-itemcreated_waiting_advices {
     color: red !important;
 }
-
-.state-proposed_to_budgetimpact_reviewer, .label-state-proposed_to_budgetimpact_reviewer {
-    color: red !important;
+#plone-contentmenu-workflow .state-itemcreated,
+#plone-contentmenu-workflow .state-itemcreated_waiting_advices {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: red;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid red;
 }
 
-.state-proposed_to_servicehead, .label-state-proposed_to_servicehead {
-    color: #FFA500 !important;
-}
-
-.state-item_in_committee {
-    color: black !important;
-}
-
-.state-item_in_council {
-    color: black !important;
-}
-
-.state-proposed_to_officemanager, .label-state-proposed_to_officemanager {
-    color: #FFA500 !important;
-}
-
-.state-proposed_to_divisionhead, .label-state-proposed_to_divisionhead {
-    color: #FFA500 !important;
-}
-
+.state-proposed_to_administrative_reviewer, .label-state-proposed_to_administrative_reviewer,
+.state-proposed_to_internal_reviewer, .label-state-proposed_to_internal_reviewer,
 .state-proposed_to_director, .label-state-proposed_to_director {
-    color: #FFA500 !important;
+    color: DarkOrange !important;
+}
+#plone-contentmenu-workflow .state-proposed_to_administrative_reviewer,
+#plone-contentmenu-workflow .state-proposed_to_internal_reviewer,
+#plone-contentmenu-workflow .state-proposed_to_director{
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: DarkOrange;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid DarkOrange;
 }
 
 .state-validated, .label-state-validated {
     color: blue !important;
 }
+#plone-contentmenu-workflow .state-validated {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: blue;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid blue;
+}
 
 .state-presented, .label-state-presented {
     color: brown !important;
 }
+#plone-contentmenu-workflow .state-presented {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: brown;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid brown;
+}
 
-.state-itemfrozen, .label-state-itemfrozen, .state-returned_to_service {
-    color: cornflowerBlue !important;
+#plone-contentmenu-workflow .state-itemfrozen {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: cornflowerBlue;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid cornflowerBlue;
 }
 
 .state-accepted, .label-state-accepted {
     color: green !important;
 }
+#plone-contentmenu-workflow .state-accepted {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: green;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid green;
+}
 
 .state-accepted_but_modified, .label-state-accepted_but_modified {
     color: green !important;
+}
+#plone-contentmenu-workflow .state-accepted_but_modified {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: green;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid green;
 }
 
 .state-pre_accepted, .label-state-pre_accepted {
     color: green !important;
 }
-
-.actionMenuHeader .state-accepted_but_modified {
-    color: green !important;
-    background: transparent url(&dtml-portal_url;/accepted_but_modified.png) no-repeat scroll 0 3px;
-    padding: 1px 0 1px 18px !important;
+#plone-contentmenu-workflow .state-pre_accepted {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: green;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid green;
 }
 
-.state-delayed {
+.state-delayed, .label-state-delayed {
     color: grey !important;
 }
+#plone-contentmenu-workflow .state-delayed,
+#plone-contentmenu-workflow .state-returned_to_proposing_group {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: grey;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid grey;
+}
 
-.state-refused {
+.state-refused, .label-state-refused {
     color: violet !important;
+}
+#plone-contentmenu-workflow .state-refused {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: violet;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid violet;
 }
 
 /* Colors on states */
 /* Meetings */
-.state-created {
+.state-created, .label-state-created {
     color: red !important;
 }
+#plone-contentmenu-workflow .state-created {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: red;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid red;
+}
 
-.state-frozen {
+.state-frozen, .label-state-frozen {
     color: cornflowerBlue !important;
 }
+#plone-contentmenu-workflow .state-frozen {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: cornflowerBlue;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid cornflowerBlue;
+}
 
-.state-decided {
+.state-decided, .label-state-decided {
     color: black !important;
 }
+#plone-contentmenu-workflow .state-decided {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: black;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid black;
+}
 
-.state-closed {
+.state-decisions_published, .label-state-decisions_published {
+    color: #436976 !important;
+}
+#plone-contentmenu-workflow .state-decisions_published {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: #436976;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid #436976;
+}
+
+.state-closed, .label-state-closed {
     color: grey !important;
 }
-
-/* Add a highlight-red style useable in FCKeditor to highlight modified elements */
-.highlight-red {
-    color:red;
-}
-
-/* input used for Title is to big, use "120%" instead of "160%" to put more text into it */
-#archetypes-fieldname-title input, input#form\.title {
-    font-size: 120%;
-}
-
-.follow_up_no {
-background: transparent url(&dtml-portal_url;/follow_up_no.png) no-repeat scroll 0 1px;
-padding: 1px 0 1px 18px;
-color: grey;
-font-weight: bold;
-}
-
-.follow_up_yes {
-background: transparent url(&dtml-portal_url;/follow_up_yes.png) no-repeat scroll 0 1px;
-padding: 1px 0 1px 18px;
-color: red;
-font-weight: bold;
-}
-
-.follow_up_provided, .follow_up_provided_not_printed {
-background: transparent url(&dtml-portal_url;/follow_up_provided.png) no-repeat scroll 0 1px;
-padding: 1px 0 1px 18px;
-color: green;
-font-weight: bold;
+#plone-contentmenu-workflow .state-closed {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    background-color: grey;
+    padding: 0 0.5em;
+    color: white !important;
+    border: 2px solid grey;
 }
 
 /* </dtml-with> */

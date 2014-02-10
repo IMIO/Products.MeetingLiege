@@ -44,3 +44,4 @@ msgstr "Collège"
 #. Default: "MeetingItemCouncil"
 msgid "predecessor_MeetingItemCouncil"
 msgstr "Conseil"
+

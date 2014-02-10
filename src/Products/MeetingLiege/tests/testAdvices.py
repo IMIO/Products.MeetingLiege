@@ -21,11 +21,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #
-from Products.MeetingLalouviere.tests.MeetingLalouviereTestCase import MeetingLalouviereTestCase
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testAdvices import testAdvices as mcta
 
 
-class testAdvices(MeetingLalouviereTestCase, mcta):
+class testAdvices(MeetingLiegeTestCase, mcta):
     '''Tests various aspects of advices management.
        Advices are enabled for PloneGov Assembly, not for PloneMeeting Assembly.'''
 

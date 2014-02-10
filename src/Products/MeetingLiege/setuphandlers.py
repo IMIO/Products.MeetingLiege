@@ -56,13 +56,13 @@ def logStep(method, context):
     logger.info("Applying '%s' in profile '%s'" % (method, '/'.join(context._profile_path.split(os.sep)[-3:])))
 
 
-def isNotMeetingLiegeLiegeProfile(context):
-    return context.readDataFile("MeetingLiege_liege_marker.txt") is None
-
+def isMeetingLiegeConfigureProfile(context):
+    return context.readDataFile("MeetingLiege_liege_marker.txt") or \
+        context.readDataFile("MeetingLiege_testing_marker.txt")
 
 def installMeetingLiege(context):
     """ Run the default profile before bing able to run the liege profile"""
-    if isNotMeetingLiegeLiegeProfile(context):
+    if not isMeetingLiegeConfigureProfile(context):
         return
 
     logStep("installMeetingLiege", context)
@@ -74,7 +74,7 @@ def reinstallPloneMeeting(context, site):
     '''Reinstall PloneMeeting so after install methods are called and applied,
        like performWorkflowAdaptations for example.'''
 
-    if isNotMeetingLiegeProfile(context):
+    if not isMeetingLiegeConfigureProfile(context):
         return
 
     logStep("reinstallPloneMeeting", context)
@@ -92,7 +92,7 @@ def _installPloneMeeting(context):
 def initializeTool(context):
     '''Initialises the PloneMeeting tool based on information from the current
        profile.'''
-    if isNotMeetingLiegeLiegeProfile(context):
+    if not isMeetingLiegeConfigureProfile(context):
         return
 
     logStep("initializeTool", context)
@@ -105,7 +105,7 @@ def reinstallPloneMeetingSkin(context, site):
        Reinstall Products.plonemeetingskin as the reinstallation of MeetingCommunes
        change the portal_skins layers order
     """
-    if isNotMeetingLiegeProfile(context):
+    if not isMeetingLiegeConfigureProfile(context):
         return
 
     logStep("reinstallPloneMeetingSkin", context)
@@ -123,7 +123,7 @@ def reorderSkinsLayers(context, site):
        Reinstall Products.plonemeetingskin and re-apply MeetingLiege skins.xml step
        as the reinstallation of MeetingLiege and PloneMeeting changes the portal_skins layers order
     """
-    if isNotMeetingLiegeProfile(context) and isNotMeetingLiegeLiegeProfile(context):
+    if not isMeetingLiegeConfigureProfile(context):
         return
 
     logStep("reorderSkinsLayers", context)
@@ -150,7 +150,7 @@ def reorderCss(context):
        Make sure CSS are correctly reordered in portal_css so things
        work as expected...
     """
-    if isNotMeetingLiegeProfile(context) and isNotMeetingLiegeLiegeProfile(context):
+    if not isMeetingLiegeConfigureProfile(context):
         return
 
     site = context.getSite()

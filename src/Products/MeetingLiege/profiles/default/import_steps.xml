@@ -8,7 +8,7 @@
     id="MeetingLiege-Update-RoleMappings" 
     handler="Products.MeetingLiege.setuphandlers.updateRoleMappings"
     title="Update Workflow role mappings for MeetingLiege"
-    version="2014-02-10T14:27:38.182771">
+    version="2014-02-10T15:39:15.447648">
    <dependency step="MeetingLiege-QI-dependencies"/>
    updates the workflow role mappings for MeetingLiege
  </import-step>
@@ -17,18 +17,18 @@
     id="MeetingLiege-postInstall" 
     handler="Products.MeetingLiege.setuphandlers.postInstall"
     title="manual coded post-install for MeetingLiege"
-    version="2014-02-10T14:27:38.182771">
+    version="2014-02-10T15:39:15.447648">
    <dependency step="MeetingLiege-QI-dependencies"/>
    manual coded post-install for MeetingLiege
  </import-step>
 
 <!-- ##code-section ADDITIONALSTEPS -->
  <import-step
-    id="MeetingLalouviere-reorderCss"
-    handler="Products.MeetingLalouviere.setuphandlers.reorderCss"
+    id="MeetingLiege-reorderCss"
+    handler="Products.MeetingLiege.setuphandlers.reorderCss"
     title="Make sure CSS order is correct."
-    version="2013-11-14T14:00:00.000000">
-   <dependency step="MeetingCommunes-postInstall"/>
+    version="2014-02-10T15:00:00.000000">
+   <dependency step="MeetingLiege-postInstall"/>
    Make sure CSS order is correct.
  </import-step>
 <!-- ##/code-section ADDITIONALSTEPS -->

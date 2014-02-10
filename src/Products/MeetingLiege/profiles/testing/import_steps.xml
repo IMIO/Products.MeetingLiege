@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 <import-steps>
- <import-step id="initializetool-MeetingLalouviere" version="20110215-01"
-              handler="Products.MeetingLalouviere.setuphandlers.initializeTool"
-              title="Initialize MeetingLalouviere with examples.">
-  Initialize portal_plonemeeting folders for La Louviere.
+ <import-step id="installMeetingLiege" version="20140210-01"
+              handler="Products.MeetingLiege.setuphandlers.installMeetingLiege"
+              title="Install MeetingLiege.">
+  Install Liege.
+ </import-step>
+ <import-step id="initializetool-MeetingLiege" version="20140210-01"
+              handler="Products.MeetingLiege.setuphandlers.initializeTool"
+              title="Initialize MeetingLiege with examples.">
+  <dependency step="installMeetingLiege"/>
+  Initialize portal_plonemeeting folders.
  </import-step>
 
 </import-steps>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <metadata>
-  <version>3.0a.8</version>
+  <version>3.0a.10</version>
   <!-- ##code-section METADATA -->
   <dependencies>
     <dependency>profile-plonetheme.imioapps:plonemeetingskin</dependency>

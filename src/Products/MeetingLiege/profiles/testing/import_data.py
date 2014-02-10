@@ -7,14 +7,20 @@ annexe = MeetingFileTypeDescriptor('annexe', 'Annexe', 'attach.png', '')
 annexeBudget = MeetingFileTypeDescriptor('annexeBudget', 'Article Budgetaire', 'budget.png', '')
 annexeCahier = MeetingFileTypeDescriptor('annexeCahier', 'Cahier des Charges', 'cahier.gif', '')
 itemAnnex = MeetingFileTypeDescriptor('item-annex', 'Other annex(es)', 'attach.png', '')
-annexeDecision = MeetingFileTypeDescriptor('annexeDecision', 'Annexe a la decision', 'attach.png', '', True)
+annexeDecision = MeetingFileTypeDescriptor('annexeDecision', 'Annexe a la decision', 'attach.png', '', 'item_decision')
 # Some type of annexes taken from the default PloneMeeting test profile
 marketingAnalysis = MeetingFileTypeDescriptor(
-    'marketing-annex', 'Marketing annex(es)', 'attach.png', '', True,
+    'marketing-annex', 'Marketing annex(es)', 'attach.png', '', 'item_decision',
     active=False)
 overheadAnalysis = MeetingFileTypeDescriptor(
     'overhead-analysis', 'Administrative overhead analysis',
     'attach.png', '')
+# Advice annexes types
+adviceAnnex = MeetingFileTypeDescriptor(
+    'advice-annex', 'Advice annex(es)', 'attach.png', '', 'advice')
+adviceLegalAnalysis = MeetingFileTypeDescriptor(
+    'advice-legal-analysis', 'Advice legal analysis', 'attach.png', '', 'advice')
+
 
 # Pod templates ----------------------------------------------------------------
 agendaTemplate = PodTemplateDescriptor('agendaTemplate', 'Meeting agenda')
@@ -46,18 +52,12 @@ categories = [
 ]
 
 # Users and groups -------------------------------------------------------------
-admin = UserDescriptor('admin', ['Manager', 'MeetingManager'])
 pmManager = UserDescriptor('pmManager', ['MeetingManager'])
 pmCreator1 = UserDescriptor('pmCreator1', [])
 pmCreator1b = UserDescriptor('pmCreator1b', [])
 pmReviewer1 = UserDescriptor('pmReviewer1', [])
-pmServiceHead1 = UserDescriptor('pmServiceHead1', [])
-pmOfficeManager1 = UserDescriptor('pmOfficeManager1', [])
-pmDivisionHead1 = UserDescriptor('pmDivisionHead1', [])
-pmDirector1 = UserDescriptor('pmDirector1', [])
 pmCreator2 = UserDescriptor('pmCreator2', [])
 pmReviewer2 = UserDescriptor('pmReviewer2', [])
-pmDirector2 = UserDescriptor('pmDirector2', [])
 pmAdviser1 = UserDescriptor('pmAdviser1', [])
 voter1 = UserDescriptor('voter1', [], fullname='M. Voter One')
 voter2 = UserDescriptor('voter2', [], fullname='M. Voter Two')
@@ -69,38 +69,22 @@ plonemeeting_assembly_powerobservers = PloneGroupDescriptor('meeting-config-coun
 powerobserver1.ploneGroups = [plonemeeting_assembly_powerobservers, ]
 powerobserver2 = UserDescriptor('powerobserver2', [], fullname='M. Power Observer2')
 
-# Add a vintage group
-endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)
-
-developers = GroupDescriptor('developers', 'Developers', 'Devel', givesMandatoryAdviceOn="python:False")
+developers = GroupDescriptor('developers', 'Developers', 'Devel')
 developers.creators.append(pmCreator1)
 developers.creators.append(pmCreator1b)
 developers.creators.append(pmManager)
-developers.creators.append(admin)
-developers.serviceheads.append(pmReviewer1)
-developers.serviceheads.append(pmServiceHead1)
-developers.officemanagers.append(pmOfficeManager1)
-developers.divisionheads.append(pmDivisionHead1)
-developers.directors.append(pmDirector1)
-developers.directors.append(pmReviewer1)
-developers.directors.append(pmManager)
-developers.directors.append(admin)
 developers.reviewers.append(pmReviewer1)
 developers.reviewers.append(pmManager)
-developers.reviewers.append(admin)
 developers.observers.append(pmReviewer1)
 developers.observers.append(pmManager)
-developers.observers.append(admin)
 developers.advisers.append(pmAdviser1)
 developers.advisers.append(pmManager)
 setattr(developers, 'signatures', 'developers signatures')
 setattr(developers, 'echevinServices', 'developers')
 
 #give an advice on recurring items
-vendors = GroupDescriptor('vendors', 'Vendors', 'Devil', givesMandatoryAdviceOn="python: item.id == 'recurringagenda1'")
+vendors = GroupDescriptor('vendors', 'Vendors', 'Devil')
 vendors.creators.append(pmCreator2)
-vendors.directors.append(pmReviewer2)
-vendors.directors.append(pmDirector2)
 vendors.reviewers.append(pmReviewer2)
 vendors.observers.append(pmReviewer2)
 vendors.advisers.append(pmReviewer2)
@@ -112,11 +96,13 @@ developers.observers.append(voter1)
 developers.observers.append(voter2)
 vendors.observers.append(voter1)
 vendors.observers.append(voter2)
+# Add a vintage group
+endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)
 
 pmManager_observer = MeetingUserDescriptor('pmManager',
-                                           duty='Secretaire de la Chancellerie',
+                                           duty='Secrétaire de la Chancellerie',
                                            usages=['assemblyMember'])
-cadranel_signer = MeetingUserDescriptor('cadranel', duty='Secretaire',
+cadranel_signer = MeetingUserDescriptor('cadranel', duty='Secrétaire',
                                         usages=['assemblyMember', 'signer'],
                                         signatureImage='SignatureCadranel.jpg',
                                         signatureIsDefault=True)
@@ -126,61 +112,59 @@ muser_voter1 = MeetingUserDescriptor('voter1', duty='Voter1',
 muser_voter2 = MeetingUserDescriptor('voter2', duty='Voter2',
                                      usages=['assemblyMember', 'voter', ])
 
-
 # Meeting configurations -------------------------------------------------------
 # college
 collegeMeeting = MeetingConfigDescriptor(
-    'meeting-config-college', 'Collège Communal',
-    'Collège communal', isDefault=True)
+    'meeting-config-college', 'College Communal',
+    'College communal', isDefault=True)
 collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
-collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
+collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, Secrétaire communal'
+collegeMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
 collegeMeeting.categories = categories
 collegeMeeting.shortName = 'College'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, itemAnnex,
-                                   annexeDecision, overheadAnalysis, marketingAnalysis]
-collegeMeeting.usedItemAttributes = ('toDiscuss', 'associatedGroups', 'itemIsSigned', 'motivation', )
-collegeMeeting.xhtmlTransformFields = ('description', 'detailedDescription', 'decision',
-                                       'observations', 'interventions', 'commissionTranscript')
+                                   annexeDecision, overheadAnalysis, marketingAnalysis,
+                                   adviceAnnex, adviceLegalAnalysis]
+collegeMeeting.usedItemAttributes = ('toDiscuss', 'associatedGroups', 'itemIsSigned',)
+collegeMeeting.xhtmlTransformFields = ('MeetingItem.description',
+                                       'MeetingItem.detailedDescription',
+                                       'MeetingItem.decision',
+                                       'MeetingItem.observations',
+                                       'Meeting.observations', )
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
-collegeMeeting.itemWorkflow = 'meetingitemcollegelalouviere_workflow'
-collegeMeeting.meetingWorkflow = 'meetingcollegelalouviere_workflow'
-collegeMeeting.itemConditionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingItemCollegeLalouviereWorkflowConditions'
-collegeMeeting.itemActionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingItemCollegeLalouviereWorkflowActions'
-collegeMeeting.meetingConditionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingCollegeLalouviereWorkflowConditions'
-collegeMeeting.meetingActionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingCollegeLalouviereWorkflowActions'
-collegeMeeting.itemTopicStates = ('itemcreated', 'proposed_to_servicehead', 'proposed_to_officemanager',
-                                  'proposed_to_divisionhead', 'proposed_to_director', 'validated',
-                                  'presented', 'itemfrozen', 'accepted', 'refused',
-                                  'delayed', 'pre_accepted', 'removed',)
+collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
+collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
+collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
+collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
+collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
+collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
+collegeMeeting.transitionsToConfirm = []
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
-collegeMeeting.itemAdviceStates = ('validated',)
-collegeMeeting.recordItemHistoryStates = ['', ]
-collegeMeeting.useGroupsAsCategories = True
+collegeMeeting.recordItemHistoryStates = []
 collegeMeeting.maxShownMeetings = 5
 collegeMeeting.maxDaysDecisions = 60
 collegeMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
-collegeMeeting.useAdvices = True
+collegeMeeting.useAdvices = False
+collegeMeeting.itemAdviceStates = ['proposed', ]
+collegeMeeting.itemAdviceEditStates = ['proposed', 'validated']
+collegeMeeting.itemAdviceViewStates = ['presented', ]
 collegeMeeting.enforceAdviceMandatoriness = False
-collegeMeeting.enableAdviceInvalidation = False
-collegeMeeting.useCopies = True
-collegeMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
 collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
 collegeMeeting.useGroupsAsCategories = True
-collegeMeeting.defaultMeetingItemMotivation = """<p>Vu l'arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux; dit le code de la démocratie locale et de la décentralisation;</p>
-<p>Vu le décret du 27 mai 2004 portant confirmation dudit arrêté du gouvernement Wallon du 22 avril 2004;</p>
-<p>Vu la nouvelle Loi communale;</p> <p>Vu l'article 123 de la nouvelle Loi communale;</p>
-<p>Vu l'article L1123-23 du code de la Démocratie locale et de la Décentralisation;</p>"""
-collegeMeeting.meetingUsers = []
+collegeMeeting.meetingPowerObserversStates = ('frozen', 'published', 'decided', 'closed')
+collegeMeeting.useCopies = True
+collegeMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
 collegeMeeting.podTemplates = [agendaTemplate, decisionsTemplate, itemTemplate]
-collegeMeeting.meetingConfigsToCloneTo = ['meeting-config-council']
+collegeMeeting.meetingConfigsToCloneTo = ['meeting-config-council', ]
+
 collegeMeeting.recurringItems = [
     RecurringItemDescriptor(
         id='recItem1',
@@ -200,103 +184,100 @@ collegeMeeting.recurringItems = [
 
     RecurringItemDescriptor(
         id='template1',
-        title='Template 1',
-        description='Template 1',
+        title='Tutelle CPAS',
+        description='Tutelle CPAS',
         category='',
         proposingGroup='developers',
         templateUsingGroups=['developers', 'vendors'],
         usages=['as_template_item', ],
-        decision="""<p>Template 1.</p>"""),
+        decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
+<p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>
+<p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du XXX ont été reçues le XXX dans le cadre de la tutelle générale sur les centres publics d'action sociale :</p>
+<p>- ...;</p>
+<p>- ...;</p>
+<p>- ...</p>
+<p>Attendu que ces décisions sont conformes à la loi et à l'intérêt général;</p>
+<p>Déclare à l'unanimité que :</p>
+<p><strong>Article 1er :</strong></p>
+<p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes à la loi et à l'intérêt général et qu'il n'y a, dès lors, pas lieu de les annuler.</p>
+<p><strong>Article 2 :</strong></p>
+<p>Copie de la présente délibération sera transmise au Bureau permanent/Conseil de l'Action sociale.</p>"""),
     RecurringItemDescriptor(
         id='template2',
-        title='Template 2',
-        description='Template 2',
+        title='Contrôle médical systématique agent contractuel',
+        description='Contrôle médical systématique agent contractuel',
         category='',
         proposingGroup='vendors',
         templateUsingGroups=['vendors', ],
         usages=['as_template_item', ],
         decision="""
-            <p>Template 2.</p>"""),
+            <p>Vu la loi du 26 mai 2002 instituant le droit à l’intégration sociale;</p>
+<p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges relatif au marché de services portant sur le contrôle des agents communaux absents pour raisons médicales;</p>
+<p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour la mission de contrôle médical des agents de l’Administration communale;</p>
+<p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière systématique et pour une période d’essai d’un trimestre;</p>
+<p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, avec la mention « XXX »;</p>
+<p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le rapport de contrôle mentionnant l’absence de XXX ce XXX à XXX;</p>
+<p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système de contrôle systématique que le médecin-contrôleur;</p>
+<p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite du médecin-contrôleur;</p>
+<p>DECIDE :</p>
+<p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de lui rappeler ses obligations en la matière.</p>
+<p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par le Secrétaire communal au Collège de transformer les jours de congés de maladie en absence injustifiée (retenue sur traitement avec application de la loi du 26 mai 2002 citée ci-dessus).</p>
+<p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>"""),
 ]
 
 # Conseil communal
 councilMeeting = MeetingConfigDescriptor(
     'meeting-config-council', 'Conseil Communal',
     'Conseil Communal')
-councilMeeting.assembly = """M.J.GOBERT, Bourgmestre-Président
-Mme A.SABBATINI, MM.J.GODIN, O.DESTREBECQ, G.HAINE,
-Mmes A.DUPONT, F.GHIOT, M.J.C.WARGNIE, Echevins
-Mme D.STAQUET, Présidente du CPAS
-M.B.LIEBIN, Mme C.BURGEON, MM.M.DUBOIS, Y.DRUGMAND,
-G.MAGGIORDOMO, O.ZRIHEN, M.DI MATTIA, Mme T.ROTOLO, M.F.ROMEO,
-Mmes M.HANOT, I.VAN STEEN, MM.J.KEIJZER, A.FAGBEMI,
-A.GAVA, A.POURBAIX, L.DUVAL, J.CHRISTIAENS, M.VAN HOOLAND,
-Mme F.RMILI, MM.P.WATERLOT, A.BUSCEMI, L.WIMLOT,
-Mme C.BOULANGIER, M.V.LIBOIS, Mme A.M.MARIN, MM.A.GOREZ,
-J.P.MICHIELS, C.DELPLANCQ, Mmes F.VERMEER, L.BACCARELLA D'URSO,
-M.C.LICATA et Mme M.ROLAND, Conseillers communaux
-M.R.ANKAERT, Secrétaire
-En présence de M.L.DEMOL, Chef de Corps, en ce qui concerne les points « Police »"""
-councilMeeting.signatures = """Le Secrétaire,
-R.ANKAERT
-Le Président,
-J.GOBERT"""
-councilMeeting.defaultMeetingItemMotivation = """<p>Le Conseil,</p>
-<p>&nbsp;</p>
-<p>Vu, d'une part, l'arrêté du Gouvernement  Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux et d'autre part, le décret du 27 mai 2004 portant  confirmation dudit arrêté;</p>
-<p>&nbsp;</p>
-<p>Vu l'article 117 de la nouvelle Loi Communale;</p>
-<p>&nbsp;</p>
-<p>Vu l'article L 1122-30 du Code de Démocratie Locale et de la Décentralisation;</p>"""
+councilMeeting.assembly = 'Default assembly'
+councilMeeting.signatures = 'Default signatures'
+councilMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
 councilMeeting.categories = categories
 councilMeeting.shortName = 'Council'
-councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, itemAnnex, annexeDecision]
-councilMeeting.xhtmlTransformFields = ('description', 'detailedDescription', 'decision', 'observations',
-                                       'interventions', 'commissionTranscript')
+councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier,
+                                   itemAnnex, annexeDecision, adviceAnnex, adviceLegalAnalysis]
+councilMeeting.xhtmlTransformFields = ('MeetingItem.description',
+                                       'MeetingItem.detailedDescription',
+                                       'MeetingItem.decision',
+                                       'MeetingItem.observations',
+                                       'Meeting.observations', )
 councilMeeting.xhtmlTransformTypes = ('removeBlanks',)
-councilMeeting.usedItemAttributes = ['oralQuestion', 'itemInitiator', 'observations',
-                                     'privacy', 'itemAssembly', 'itemIsSigned',
-                                     'motivation', ]
-councilMeeting.usedMeetingAttributes = (
-    'place', 'observations', 'signatures', 'assembly', 'preMeetingDate', 'preMeetingPlace', 'preMeetingAssembly',
-    'preMeetingDate_2', 'preMeetingPlace_2', 'preMeetingAssembly_2', 'preMeetingDate_3', 'preMeetingPlace_3',
-    'preMeetingAssembly_3', 'preMeetingDate_4', 'preMeetingPlace_4', 'preMeetingAssembly_4', 'preMeetingDate_5',
-    'preMeetingPlace_5', 'preMeetingAssembly_5', 'preMeetingDate_6', 'preMeetingPlace_6', 'preMeetingAssembly_6',
-    'preMeetingDate_7', 'preMeetingPlace_7', 'preMeetingAssembly_7', 'startDate', 'endDate', )
-councilMeeting.recordMeetingHistoryStates = []
-councilMeeting.workflowAdaptations = ['return_to_proposing_group', ]
-councilMeeting.itemWorkflow = 'meetingitemcouncillalouviere_workflow'
-councilMeeting.meetingWorkflow = 'meetingcouncillalouviere_workflow'
-councilMeeting.itemConditionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingItemCouncilLalouviereWorkflowConditions'
-councilMeeting.itemActionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingItemCouncilLalouviereWorkflowActions'
-councilMeeting.meetingConditionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingCouncilLalouviereWorkflowConditions'
-councilMeeting.meetingActionsInterface = 'Products.MeetingLalouviere.interfaces.IMeetingCouncilLalouviereWorkflowActions'
-#show every items states
-councilMeeting.itemTopicStates = ('itemcreated', 'proposed_to_director', 'validated', 'presented', 'itemfrozen',
-                                  'item_in_committee', 'item_in_council', 'returned_to_service', 'accepted',
-                                  'accepted_but_modified', 'refused', 'delayed')
-councilMeeting.meetingTopicStates = ('created', 'frozen', 'in_committee')
-councilMeeting.decisionTopicStates = ('in_council', 'closed')
-councilMeeting.itemAdviceStates = ('proposed_to_director', 'validated',)
-councilMeeting.recordItemHistoryStates = ['', ]
+councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
+councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
+councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'
+councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions'
+councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
+councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
+councilMeeting.transitionsToConfirm = []
+councilMeeting.meetingTopicStates = ('created', 'frozen', 'published')
+councilMeeting.decisionTopicStates = ('decided', 'closed')
+councilMeeting.itemAdviceStates = ('validated',)
+councilMeeting.recordItemHistoryStates = []
 councilMeeting.maxShownMeetings = 5
 councilMeeting.maxDaysDecisions = 60
 councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 councilMeeting.itemDocFormats = ('odt', 'pdf')
 councilMeeting.meetingDocFormats = ('odt', 'pdf')
-councilMeeting.useAdvices = True
-councilMeeting.enforceAdviceMandatoriness = False
-councilMeeting.enableAdviceInvalidation = False
-councilMeeting.useCopies = True
-councilMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
-councilMeeting.itemPowerObserversStates = collegeMeeting.itemPowerObserversStates
-councilMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified']
-councilMeeting.podTemplates = []
-councilMeeting.transitionsToConfirm = ['MeetingItem.return_to_service', ]
+councilMeeting.usedItemAttributes = ('toDiscuss', 'associatedGroups', 'itemIsSigned',)
 councilMeeting.sortingMethodOnAddItem = 'on_categories'
 councilMeeting.useGroupsAsCategories = False
+councilMeeting.useAdvices = True
+councilMeeting.itemAdviceStates = ['proposed', ]
+councilMeeting.itemAdviceEditStates = ['proposed', 'validated']
+councilMeeting.itemAdviceViewStates = ['presented', ]
+councilMeeting.transitionReinitializingDelays = 'backToItemCreated'
+councilMeeting.enforceAdviceMandatoriness = False
+councilMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
+councilMeeting.itemPowerObserversStates = collegeMeeting.itemPowerObserversStates
+councilMeeting.meetingPowerObserversStates = collegeMeeting.meetingPowerObserversStates
+councilMeeting.useCopies = True
+councilMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
+councilMeeting.useVotes = True
 councilMeeting.meetingUsers = [muser_voter1, muser_voter2, ]
 councilMeeting.recurringItems = []
+
+#no recurring items for this meetingConfig, only for tests !!!
+#so we can test a meetingConfig with recurring items (college) and without (council)
 
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',

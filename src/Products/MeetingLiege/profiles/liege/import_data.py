@@ -136,7 +136,7 @@ groups[6].advisers.append(agentTrav)
 # college
 collegeMeeting = MeetingConfigDescriptor(
     'meeting-config-college', 'Collège Communal',
-    'Collège communal', isDefault=True)
+    'Collège Communal', isDefault=True)
 collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
@@ -178,8 +178,54 @@ collegeMeeting.useGroupsAsCategories = True
 collegeMeeting.recurringItems = []
 collegeMeeting.meetingUsers = []
 
+# council
+councilMeeting = MeetingConfigDescriptor(
+    'meeting-config-council', 'Conseil Communal',
+    'Conseil Communal', isDefault=True)
+councilMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
+                          'Charles Exemple - 1er Echevin,\n' \
+                          'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
+                          'Jacqueline Exemple, Responsable du CPAS'
+councilMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
+councilMeeting.categories = []
+councilMeeting.shortName = 'College'
+councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
+councilMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss', 'motivation', ]
+councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
+                                       'MeetingItem.decision', 'MeetingItem.observations', )
+councilMeeting.xhtmlTransformTypes = ('removeBlanks',)
+councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
+councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
+councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'
+councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions'
+councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
+councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
+councilMeeting.meetingTopicStates = ('created', 'frozen')
+councilMeeting.decisionTopicStates = ('decided', 'closed')
+councilMeeting.itemAdviceStates = ('validated',)
+councilMeeting.itemAdviceEditStates = ('validated',)
+councilMeeting.maxShownMeetings = 5
+councilMeeting.maxDaysDecisions = 60
+councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'
+councilMeeting.itemDocFormats = ('odt', 'pdf')
+councilMeeting.meetingDocFormats = ('odt', 'pdf')
+councilMeeting.useAdvices = False
+councilMeeting.enforceAdviceMandatoriness = False
+councilMeeting.enableAdviceInvalidation = False
+councilMeeting.useCopies = True
+councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
+                                       groups[1].getIdSuffixed('reviewers'),
+                                       groups[2].getIdSuffixed('reviewers'),
+                                       groups[4].getIdSuffixed('reviewers')]
+councilMeeting.podTemplates = collegeTemplates
+councilMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
+councilMeeting.useGroupsAsCategories = True
+councilMeeting.recurringItems = []
+councilMeeting.meetingUsers = []
+
+
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
-                                 meetingConfigs=(collegeMeeting, ),
+                                 meetingConfigs=(collegeMeeting, councilMeeting),
                                  groups=groups)
 data.unoEnabledPython = '/usr/bin/python'
 data.usedColorSystem = 'state_color'

@@ -2,6 +2,6 @@
 <metadata>
  <version>testing</version>
  <dependencies>
-  <dependency>profile-Products.MeetingLalouviere:default</dependency>
+  <dependency>profile-Products.MeetingLiege:default</dependency>
  </dependencies>
 </metadata>

@@ -410,7 +410,7 @@
         title="itemcreated"
         i18n:attributes="title">
   <exit-transition transition_id="proposeToAdministrativeReviewer"/>
-  <exit-transition transition_id="ask_advices_by_itemcreator"/>
+  <exit-transition transition_id="askAdvicesByItemCreator"/>
   <exit-transition transition_id="validate"/>
   <permission-map name="Access contents information"
                   acquired="False">
@@ -1793,14 +1793,14 @@
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="ask_advices_by_itemcreator"
-             title="ask_advices_by_itemcreator"
+ <transition transition_id="askAdvicesByItemCreator"
+             title="askAdvicesByItemCreator"
              new_state="itemcreated_waiting_advices"
              trigger="USER"
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">ask_advices_by_itemcreator</action>
+  <action url="" category="workflow" i18n:translate="">askAdvicesByItemCreator</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayWaitAdvices()</guard-expression>
   </guard>
@@ -2006,7 +2006,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">validate</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayProposeToSecretariat()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayValidate()</guard-expression>
   </guard>
  </transition>
  <variable variable_id="action" for_catalog="False"

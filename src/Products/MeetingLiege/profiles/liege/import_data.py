@@ -188,7 +188,7 @@ councilMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 councilMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
 councilMeeting.categories = []
-councilMeeting.shortName = 'College'
+councilMeeting.shortName = 'Council'
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
 councilMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss', 'motivation', ]
 councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',

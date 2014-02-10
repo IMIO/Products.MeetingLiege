@@ -18,11 +18,11 @@ msgstr ""
 # portal_tabs
 #. Default: "College"
 msgid "Meeting config College"
-msgstr ""
+msgstr "Collège communal"
 
 #. Default: "Council"
 msgid "Meeting config Council"
-msgstr ""
+msgstr "Conseil communal"
 
 # object_buttons
 #. Default: "Send to council"
@@ -44,4 +44,3 @@ msgstr "Collège"
 #. Default: "MeetingItemCouncil"
 msgid "predecessor_MeetingItemCouncil"
 msgstr "Conseil"
-

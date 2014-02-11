@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from DateTime import DateTime
 from Products.PloneMeeting.profiles import *
+
+today = DateTime().strftime('%Y/%m/%d')
 
 # File types -------------------------------------------------------------------
 annexe = MeetingFileTypeDescriptor('annexe', 'Annexe',
@@ -157,10 +160,36 @@ collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IM
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
+collegeMeeting.itemsListVisibleColumns = ['state', 'proposingGroupAcronym', 'advices',
+                                          'annexes', 'annexesDecision', 'actions']
+collegeMeeting.itemColumns = ['creationDate', 'creator', 'state', 'annexes', 'annexesDecision',
+                              'proposingGroupAcronym', 'advices', 'actions', 'meeting']
 collegeMeeting.itemAdviceStates = ('validated',)
 collegeMeeting.itemAdviceEditStates = ('validated',)
-collegeMeeting.maxShownMeetings = 5
-collegeMeeting.maxDaysDecisions = 60
+collegeMeeting.itemAdviceViewStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
+                                       'itemcreated_waiting_advices', 'itemfrozen', 'proposed_to_director',
+                                       'proposed_to_administrative_reviewer', 'proposed_to_internal_reviewer',
+                                       'presented', 'refused', 'delayed', 'removed', 'validated')
+collegeMeeting.customAdvisers = [
+    {'row_id': 'unique_id_002',
+     'group': 'dirfin',
+     'for_item_created_from': today,
+     'delay': '5',
+     'delay_left_alert': '2',
+     'delay_label': 'Incidence financière >= 22.000€', },
+    {'row_id': 'unique_id_003',
+     'group': 'dirfin',
+     'for_item_created_from': today,
+     'delay': '10',
+     'delay_left_alert': '4',
+     'delay_label': 'Incidence financière >= 22.000€', },
+    {'row_id': 'unique_id_004',
+     'group': 'dirfin',
+     'for_item_created_from': today,
+     'delay': '20',
+     'delay_left_alert': '4',
+     'delay_label': 'Incidence financière >= 22.000€', }, ]
+collegeMeeting.powerAdvisersGroups = ('dirgen', 'dirfin')
 collegeMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
@@ -171,7 +200,11 @@ collegeMeeting.useCopies = True
 collegeMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[1].getIdSuffixed('reviewers'),
                                        groups[2].getIdSuffixed('reviewers'),
-                                       groups[4].getIdSuffixed('reviewers')]
+                                       groups[3].getIdSuffixed('reviewers'),
+                                       groups[4].getIdSuffixed('reviewers'),
+                                       groups[5].getIdSuffixed('reviewers'),
+                                       groups[6].getIdSuffixed('reviewers'), ]
+collegeMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
 collegeMeeting.podTemplates = collegeTemplates
 collegeMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
 collegeMeeting.useGroupsAsCategories = True
@@ -205,10 +238,6 @@ councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IM
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
-councilMeeting.itemAdviceStates = ('validated',)
-councilMeeting.itemAdviceEditStates = ('validated',)
-councilMeeting.maxShownMeetings = 5
-councilMeeting.maxDaysDecisions = 60
 councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 councilMeeting.itemDocFormats = ('odt', 'pdf')
 councilMeeting.meetingDocFormats = ('odt', 'pdf')
@@ -219,7 +248,11 @@ councilMeeting.useCopies = True
 councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[1].getIdSuffixed('reviewers'),
                                        groups[2].getIdSuffixed('reviewers'),
-                                       groups[4].getIdSuffixed('reviewers')]
+                                       groups[3].getIdSuffixed('reviewers'),
+                                       groups[4].getIdSuffixed('reviewers'),
+                                       groups[5].getIdSuffixed('reviewers'),
+                                       groups[6].getIdSuffixed('reviewers'), ]
+councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
 councilMeeting.podTemplates = collegeTemplates
 councilMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
 councilMeeting.useGroupsAsCategories = True

@@ -74,7 +74,7 @@ msgstr "Proposé au validateur administratif"
 
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
-msgstr "Propose à la direction"
+msgstr "Proposé à la direction"
 
 #. Default: "Proposed to internal reviewer"
 msgid "proposed_to_internal_reviewer"

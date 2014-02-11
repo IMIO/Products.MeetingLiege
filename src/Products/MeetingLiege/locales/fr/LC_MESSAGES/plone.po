@@ -32,6 +32,14 @@ msgstr "Point Collège communal"
 msgid "MeetingItemCouncil"
 msgstr "Point Conseil communal"
 
+#. Default: "Accept with modifications"
+msgid "acceptButModify"
+msgstr "Accepter avec modifications"
+
+#. Default: "Accepted with modifications"
+msgid "accepted_but_modified"
+msgstr "Accepté avec modifications"
+
 #. Default: "Ask advices"
 msgid "askAdvicesByItemCreator"
 msgstr "Demander les avis"
@@ -39,6 +47,14 @@ msgstr "Demander les avis"
 #. Default: "Waiting advices"
 msgid "itemcreated_waiting_advices"
 msgstr "En attente des avis"
+
+#. Default: "Pre accept"
+msgid "preAccept"
+msgstr "Accepter provisoirement"
+
+#. Default: "Pre accepted"
+msgid "pre_accepted"
+msgstr "Accepté provisoirement"
 
 #. Default: "Propose to administrative reviewer"
 msgid "proposeToAdministrativeReviewer"
@@ -63,3 +79,11 @@ msgstr "Propose à la direction"
 #. Default: "Proposed to internal reviewer"
 msgid "proposed_to_internal_reviewer"
 msgstr "Proposé au validateur interne"
+
+#. Default: "Remove"
+msgid "remove"
+msgstr "Retirer de la séance"
+
+#. Default: "Removed"
+msgid "removed"
+msgstr "Retiré"

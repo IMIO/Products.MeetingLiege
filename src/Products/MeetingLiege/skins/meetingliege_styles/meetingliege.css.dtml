@@ -94,11 +94,14 @@
     border: 2px solid green;
 }
 
-.state-delayed, .label-state-delayed {
+.state-delayed, .label-state-delayed,
+.state-delayed, .label-state-returned_to_proposing_group,
+.state-removed, .label-state-removed {
     color: grey !important;
 }
 #plone-contentmenu-workflow .state-delayed,
-#plone-contentmenu-workflow .state-returned_to_proposing_group {
+#plone-contentmenu-workflow .state-returned_to_proposing_group,
+#plone-contentmenu-workflow .state-removed {
     border-radius: 0.5em 0.5em 0.5em 0.5em;
     background-color: grey;
     padding: 0 0.5em;

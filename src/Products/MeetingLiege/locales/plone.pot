@@ -60,3 +60,26 @@ msgstr ""
 msgid "proposed_to_director"
 msgstr ""
 
+#. Default: "Accept with modifications"
+msgid "acceptButModify"
+msgstr ""
+
+#. Default: "Accepted with modifications"
+msgid "accepted_but_modified"
+msgstr ""
+
+#. Default: "Pre accept"
+msgid "preAccept"
+msgstr ""
+
+#. Default: "Pre accepted"
+msgid "pre_accepted"
+msgstr ""
+
+#. Default: "Remove"
+msgid "remove"
+msgstr ""
+
+#. Default: "Removed"
+msgid "removed"
+msgstr ""

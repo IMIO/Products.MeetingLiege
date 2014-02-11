@@ -340,11 +340,11 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         pass
 
     security.declarePrivate('doPreAccept')
-    def doPre_accept(self, stateChange):
+    def doPreAccept(self, stateChange):
         pass
 
-    security.declarePrivate('doAccept_but_modify')
-    def doAccept_but_modify(self, stateChange):
+    security.declarePrivate('doAcceptButModify')
+    def doAcceptButModify(self, stateChange):
         pass
 
     security.declarePrivate('doRemove')

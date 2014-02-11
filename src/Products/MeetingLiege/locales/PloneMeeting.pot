@@ -40,3 +40,19 @@ msgstr ""
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr ""
+
+#. Default: "Front page body"
+msgid "front_page_body"
+msgstr ""
+
+#. Default: "Accepted with modifications"
+msgid "icon_help_accepted_but_modified"
+msgstr ""
+
+#. Default: "Pre accepted"
+msgid "icon_help_pre_accepted"
+msgstr ""
+
+#. Default: "Waiting advices"
+msgid "icon_help_itemcreated_waiting_advices"
+msgstr ""

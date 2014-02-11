@@ -83,3 +83,39 @@ msgstr ""
 #. Default: "Removed"
 msgid "removed"
 msgstr ""
+
+#. Default: "Back to created"
+msgid "backToCreated"
+msgstr ""
+
+#. Default: "Back to decided"
+msgid "backToDecided"
+msgstr ""
+
+#. Default: "Back to decisions published"
+msgid "backToDecisionsPublished"
+msgstr ""
+
+#. Default: "Back to frozen"
+msgid "backToFrozen"
+msgstr ""
+
+#. Default: "Back to item created"
+msgid "backToItemCreated"
+msgstr ""
+
+#. Default: "Back to item frozen"
+msgid "backToItemFrozen"
+msgstr ""
+
+#. Default: "Back to presented"
+msgid "backToPresented"
+msgstr ""
+
+#. Default: "Back to proposed to internal reviewer"
+msgid "backToProposedToInternalReviewer"
+msgstr ""
+
+#. Default: "Back to proposed to administrative reviewer"
+msgid "backToProposedToAdministrativeReviewer"
+msgstr ""

@@ -173,27 +173,13 @@ class CustomMeetingItem(MeetingItem):
         res = res + MeetingItem.getIcons(item, inMeeting, meeting)
         # Add our icons for accepted_but_modified and pre_accepted
         if itemState == 'accepted_but_modified':
-            res.append(('accepted_but_modified.png', 'accepted_but_modified'))
+            res.append(('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
         elif itemState == 'pre_accepted':
-            res.append(('pre_accepted.png', 'pre_accepted'))
+            res.append(('pre_accepted.png', 'icon_help_pre_accepted'))
         elif itemState == 'proposed_to_director':
-            res.append(('proposeToDirector.png', 'proposed_to_director'))
-        elif itemState == 'proposed_to_divisionhead':
-            res.append(('proposeToDivisionHead.png', 'proposed_to_divisionhead'))
-        elif itemState == 'proposed_to_officemanager':
-            res.append(('proposeToOfficeManager.png', 'proposed_to_officemanager'))
-        elif itemState == 'item_in_council':
-            res.append(('item_in_council.png', 'item_in_council'))
-        elif itemState == 'item_in_committee':
-            res.append(('item_in_committee.png', 'item_in_committee'))
-        elif itemState == 'proposed_to_servicehead':
-            res.append(('proposeToServiceHead.png', 'proposed_to_servicehead'))
-        elif itemState == 'proposed_to_budgetimpact_reviewer':
-            res.append(('proposeToBudgetImpactReviewer.png', 'proposed_to_budgetimpact_reviewer'))
+            res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
         elif itemState == 'itemcreated_waiting_advices':
-            res.append(('ask_advices_by_itemcreator.png', 'itemcreated_waiting_advices'))
-        elif itemState == 'returned_to_service':
-            res.append(('return_to_service.png', 'returned_to_service'))
+            res.append(('ask_advices_by_itemcreator.png', 'icon_help_itemcreated_waiting_advices'))
         return res
 
 

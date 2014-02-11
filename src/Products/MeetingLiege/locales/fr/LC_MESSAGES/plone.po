@@ -44,6 +44,42 @@ msgstr "Accepté avec modifications"
 msgid "askAdvicesByItemCreator"
 msgstr "Demander les avis"
 
+#. Default: "Back to created"
+msgid "backToCreated"
+msgstr "Remettre 'en création'"
+
+#. Default: "Back to decided"
+msgid "backToDecided"
+msgstr "Remettre en 'rédaction du PV'"
+
+#. Default: "Back to decisions published"
+msgid "backToDecisionsPublished"
+msgstr "Remettre en 'Décisions publiées'"
+
+#. Default: "Back to frozen"
+msgid "backToFrozen"
+msgstr "Remettre en 'Gelé'"
+
+#. Default: "Back to item created"
+msgid "backToItemCreated"
+msgstr "Remettre 'En création'"
+
+#. Default: "Back to item frozen"
+msgid "backToItemFrozen"
+msgstr "Remettre en 'Gelé'"
+
+#. Default: "Back to presented"
+msgid "backToPresented"
+msgstr "Remettre en 'Présenté'"
+
+#. Default: "Back to proposed to administrative reviewer"
+msgid "backToProposedToAdministrativeReviewer"
+msgstr "Remettre en 'Proposé au validateur administratif'"
+
+#. Default: "Back to proposed to internal reviewer"
+msgid "backToProposedToInternalReviewer"
+msgstr "Remettre en 'Proposé au validateur interne'"
+
 #. Default: "Waiting advices"
 msgid "itemcreated_waiting_advices"
 msgstr "En attente des avis"
@@ -87,3 +123,4 @@ msgstr "Retirer de la séance"
 #. Default: "Removed"
 msgid "removed"
 msgstr "Retiré"
+

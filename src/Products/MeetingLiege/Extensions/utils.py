@@ -120,7 +120,7 @@ def import_meetingsUsersAndRoles_from_csv(self, fname=None):
         if row_id not in [ud['userid'] for ud in acl.searchUsers()]:
             newuser = pms.addMember(row_id, row['password'], ('Member',), [])
             member = pms.getMemberById(row_id)
-            member.setMemberProperties({'fullname': row['fullname'], 'email': row['email']}) 
+            member.setMemberProperties({'fullname': row['fullname'], 'email': row['email'], 'description': row['biography']}) 
             out.append("User '%s' is added"%row_id)
         else:
             out.append("User %s already exists" % row_id)
@@ -134,7 +134,11 @@ def import_meetingsUsersAndRoles_from_csv(self, fname=None):
         if row['reviewers']:
             groups.append(grouptitle + '_reviewers')
         if row['advisers']:
-            groups.append(grouptitle + '_advisers')                        
+            groups.append(grouptitle + '_advisers')
+        if row['administrativereviewers']:
+            groups.append(grouptitle + '_administrativereviewers')
+        if row['internatlreviewers']:
+            groups.append(grouptitle + '_internatlreviewers')                        
         for groupid in groups:
             pgr.addPrincipalToGroup(row_id, groupid)
             out.append("    -> Added in group '%s'"%groupid)

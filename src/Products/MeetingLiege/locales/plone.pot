@@ -84,6 +84,14 @@ msgstr ""
 msgid "removed"
 msgstr ""
 
+#. Default: "Delay"
+msgid "delay"
+msgstr ""
+
+#. Default: "Delayed"
+msgid "delayed"
+msgstr ""
+
 #. Default: "Back to created"
 msgid "backToCreated"
 msgstr ""
@@ -104,18 +112,14 @@ msgstr ""
 msgid "backToItemCreated"
 msgstr ""
 
-#. Default: "Back to item frozen"
-msgid "backToItemFrozen"
-msgstr ""
-
-#. Default: "Back to presented"
-msgid "backToPresented"
-msgstr ""
-
 #. Default: "Back to proposed to internal reviewer"
 msgid "backToProposedToInternalReviewer"
 msgstr ""
 
 #. Default: "Back to proposed to administrative reviewer"
 msgid "backToProposedToAdministrativeReviewer"
+msgstr ""
+
+#. Default: "Back to proposed to director"
+msgid "backToProposedToDirector"
 msgstr ""

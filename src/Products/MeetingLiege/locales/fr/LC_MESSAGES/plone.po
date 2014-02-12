@@ -44,14 +44,6 @@ msgstr "Accepté avec modifications"
 msgid "askAdvicesByItemCreator"
 msgstr "Demander les avis"
 
-#. Default: "Back to created"
-msgid "backToCreated"
-msgstr "Remettre 'en création'"
-
-#. Default: "Back to decided"
-msgid "backToDecided"
-msgstr "Remettre en 'rédaction du PV'"
-
 #. Default: "Back to decisions published"
 msgid "backToDecisionsPublished"
 msgstr "Remettre en 'Décisions publiées'"
@@ -64,21 +56,25 @@ msgstr "Remettre en 'Gelé'"
 msgid "backToItemCreated"
 msgstr "Remettre 'En création'"
 
-#. Default: "Back to item frozen"
-msgid "backToItemFrozen"
-msgstr "Remettre en 'Gelé'"
-
-#. Default: "Back to presented"
-msgid "backToPresented"
-msgstr "Remettre en 'Présenté'"
-
 #. Default: "Back to proposed to administrative reviewer"
 msgid "backToProposedToAdministrativeReviewer"
 msgstr "Remettre en 'Proposé au validateur administratif'"
 
+#. Default: "Back to proposed to director"
+msgid "backToProposedToDirector"
+msgstr "Remettre en 'Proposé au directeur'"
+
 #. Default: "Back to proposed to internal reviewer"
 msgid "backToProposedToInternalReviewer"
 msgstr "Remettre en 'Proposé au validateur interne'"
+
+#. Default: "Delay"
+msgid "delay"
+msgstr "Ajourner"
+
+#. Default: "Delayed"
+msgid "delayed"
+msgstr "Ajourné"
 
 #. Default: "Waiting advices"
 msgid "itemcreated_waiting_advices"
@@ -118,9 +114,8 @@ msgstr "Proposé au validateur interne"
 
 #. Default: "Remove"
 msgid "remove"
-msgstr "Retirer de la séance"
+msgstr "Marquer 'sans objet'"
 
 #. Default: "Removed"
 msgid "removed"
-msgstr "Retiré"
-
+msgstr "Sans objet"

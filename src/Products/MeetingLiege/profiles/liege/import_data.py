@@ -152,20 +152,22 @@ collegeMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss',
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
+collegeMeeting. meetingConfigsToCloneTo = ('meeting-config-council', )
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
 collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
 collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
+collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed', 'removed')
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
 collegeMeeting.itemsListVisibleColumns = ['state', 'proposingGroupAcronym', 'advices',
                                           'annexes', 'annexesDecision', 'actions']
 collegeMeeting.itemColumns = ['creationDate', 'creator', 'state', 'annexes', 'annexesDecision',
                               'proposingGroupAcronym', 'advices', 'actions', 'meeting']
-collegeMeeting.itemAdviceStates = ('validated',)
-collegeMeeting.itemAdviceEditStates = ('validated',)
+collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices',)
+collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices',)
 collegeMeeting.itemAdviceViewStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
                                        'itemcreated_waiting_advices', 'itemfrozen', 'proposed_to_director',
                                        'proposed_to_administrative_reviewer', 'proposed_to_internal_reviewer',
@@ -210,6 +212,103 @@ collegeMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
 collegeMeeting.useGroupsAsCategories = True
 collegeMeeting.recurringItems = []
 collegeMeeting.meetingUsers = []
+collegeMeeting.recurringItems = [
+    RecurringItemDescriptor(
+        id='recurringagenda1',
+        title='Approuve le procès-verbal de la séance antérieure',
+        description='Approuve le procès-verbal de la séance antérieure',
+        proposingGroup='',
+        decision='Procès-verbal approuvé'),
+    RecurringItemDescriptor(
+        id='recurringofficialreport1',
+        title='Autorise et signe les bons de commande de la semaine',
+        description='Autorise et signe les bons de commande de la semaine',
+        proposingGroup='',
+        decision='Bons de commande signés'),
+    RecurringItemDescriptor(
+        id='recurringofficialreport2',
+        title='Ordonnance et signe les mandats de paiement de la semaine',
+        description='Ordonnance et signe les mandats de paiement de la semaine',
+        proposingGroup='',
+        decision='Mandats de paiement de la semaine approuvés'),
+    RecurringItemDescriptor(
+        id='template1',
+        title='Tutelle CPAS',
+        description='Tutelle CPAS',
+        proposingGroup='',
+        templateUsingGroups=[],
+        usages=['as_template_item', ],
+        decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
+        <p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>
+        <p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du XXX ont été reçues le XXX dans le cadre de la tutelle générale sur les centres publics d'action sociale :</p>
+        <p>- ...;</p>
+        <p>- ...;</p>
+        <p>- ...</p>
+        <p>Attendu que ces décisions sont conformes à la loi et à l'intérêt général;</p>
+        <p>Déclare à l'unanimité que :</p>
+        <p><strong>Article 1er :</strong></p>
+        <p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes à la loi et à l'intérêt général et qu'il n'y a, dès lors, pas lieu de les annuler.</p>
+        <p><strong>Article 2 :</strong></p>
+        <p>Copie de la présente délibération sera transmise au Bureau permanent/Conseil de l'Action sociale.</p>"""),
+    RecurringItemDescriptor(
+        id='template2',
+        title='Contrôle médical systématique agent contractuel',
+        description='Contrôle médical systématique agent contractuel',
+        proposingGroup='',
+        templateUsingGroups=[],
+        usages=['as_template_item', ],
+        decision="""
+        <p>Vu la loi du 26 mai 2002 instituant le droit à l’intégration sociale;</p>
+        <p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges relatif au marché de services portant sur le contrôle des agents communaux absents pour raisons médicales;</p>
+        <p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour la mission de contrôle médical des agents de l’Administration communale;</p>
+        <p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière systématique et pour une période d’essai d’un trimestre;</p>
+        <p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, avec la mention « XXX »;</p>
+        <p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le rapport de contrôle mentionnant l’absence de XXX ce XXX à XXX;</p>
+        <p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système de contrôle systématique que le médecin-contrôleur;</p>
+        <p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite du médecin-contrôleur;</p>
+        <p>DECIDE :</p>
+        <p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de lui rappeler ses obligations en la matière.</p>
+        <p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par le Secrétaire communal au Collège de transformer les jours de congés de maladie en absence injustifiée (retenue sur traitement avec application de la loi du 26 mai 2002 citée ci-dessus).</p>
+        <p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>"""),
+    RecurringItemDescriptor(
+        id='template4',
+        title='Prestation réduite',
+        description='Prestation réduite',
+        proposingGroup='',
+        templateUsingGroups=[],
+        usages=['as_template_item', ],
+        decision="""<p>Vu la loi de redressement du 22 janvier 1985 (article 99 et suivants) et de l’Arrêté Royal du 12 août 1991 (tel que modifié) relatifs à l’interruption de carrière professionnelle dans l’enseignement;</p>
+        <p>Vu la lettre du XXX par laquelle Madame XXX, institutrice maternelle, sollicite le renouvellement pendant l’année scolaire 2009/2010 de son congé pour prestations réduites mi-temps pour convenances personnelles dont elle bénéficie depuis le 01 septembre 2006;</p>
+        <p>Attendu que le remplacement de l’intéressée&nbsp;est assuré pour la prochaine rentrée scolaire;</p>
+        <p>Vu le décret de la Communauté Française du 13 juillet 1988 portant restructuration de l’enseignement maternel et primaire ordinaires avec effet au 1er octobre 1998;</p>
+        <p>Vu la loi du 29 mai 1959 (Pacte Scolaire) et les articles L1122-19 et L1213-1 du code de la démocratie locale et de la décentralisation;</p>
+        <p>Vu l’avis favorable de l’Echevin de l’Enseignement;</p>
+        <p><b>DECIDE&nbsp;:</b><br><b><br> Article 1<sup>er</sup></b>&nbsp;:</p>
+        <p>Au scrutin secret et à l’unanimité, d’accorder à Madame XXX le congé pour prestations réduites mi-temps sollicité pour convenances personnelles en qualité d’institutrice maternelle aux écoles communales fondamentales&nbsp;&nbsp;de Sambreville (section de XXX).</p>
+        <p><b>Article 2</b> :</p>
+        <p>Une activité lucrative est autorisée durant ce congé qui est assimilé à une période d’activité de service, dans le respect de la réglementation relative au cumul.</p>
+        <p><b>Article 3&nbsp;:</b></p>
+        <p>La présente délibération sera soumise pour accord au prochain Conseil, transmise au Bureau Régional de l’Enseignement primaire et maternel, à&nbsp;l’Inspectrice Cantonale, à la direction concernée et à l’intéressée.</p>"""),
+    RecurringItemDescriptor(
+        id='template5',
+        title='Exemple modèle disponible pour tous',
+        description='Exemple modèle disponible pour tous',
+        proposingGroup='',
+        templateUsingGroups=[],
+        usages=['as_template_item', ],
+        decision="""<p>Vu la loi du XXX;</p>
+        <p>Vu ...;</p>
+        <p>Attendu que ...;</p>
+        <p>Vu le décret de la Communauté Française du ...;</p>
+        <p>Vu la loi du ...;</p>
+        <p>Vu l’avis favorable de ...;</p>
+        <p><b>DECIDE&nbsp;:</b><br><b><br> Article 1<sup>er</sup></b>&nbsp;:</p>
+        <p>...</p>
+        <p><b>Article 2</b> :</p>
+        <p>...</p>
+        <p><b>Article 3&nbsp;:</b></p>
+        <p>...</p>"""),
+]
 
 # council
 councilMeeting = MeetingConfigDescriptor(

@@ -176,8 +176,6 @@ class CustomMeetingItem(MeetingItem):
             res.append(('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
         elif itemState == 'pre_accepted':
             res.append(('pre_accepted.png', 'icon_help_pre_accepted'))
-        elif itemState == 'proposed_to_director':
-            res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
         elif itemState == 'itemcreated_waiting_advices':
             res.append(('ask_advices_by_itemcreator.png', 'icon_help_itemcreated_waiting_advices'))
         return res

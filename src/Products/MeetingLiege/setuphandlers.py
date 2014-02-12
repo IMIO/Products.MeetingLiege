@@ -103,7 +103,7 @@ def initializeTool(context):
 
 def reinstallPloneMeetingSkin(context, site):
     """
-       Reinstall Products.plonemeetingskin as the reinstallation of MeetingCommunes
+       Reinstall Products.plonemeetingskin as the reinstallation of MeetingLiege
        change the portal_skins layers order
     """
     if not isMeetingLiegeConfigureProfile(context):

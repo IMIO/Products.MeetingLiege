@@ -35,7 +35,7 @@ msgstr "Envoyé au Conseil communal"
 
 #. Default: "The cloned item could not be presented to a meeting because no meeting accepting items is available."
 msgid "could_not_present_item_no_meeting_accepting_items"
-msgstr "Le point n'a pas pu être présenté dans une séance car il n'y a aucune séance acceptant des points."
+msgstr "Le point n'a pas pu être présenté dans une séance du Conseil communal car aucune séance n'accepte de points."
 
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"

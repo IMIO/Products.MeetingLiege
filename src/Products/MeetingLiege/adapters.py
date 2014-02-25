@@ -29,6 +29,7 @@ from Globals import InitializeClass
 from zope.interface import implements
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.utils import checkPermission
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
@@ -193,7 +194,7 @@ class CustomMeetingItem(MeetingItem):
         meetingsAcceptingItems = clonedItem.getMeetingsAcceptingItems()
         if not meetingsAcceptingItems:
             plone_utils = getToolByName(clonedItem, 'plone_utils')
-            plone_utils.addPortalMessage('could_not_present_item_no_meeting_accepting_items', 'warning')
+            plone_utils.addPortalMessage(_('could_not_present_item_no_meeting_accepting_items'), 'warning')
             return
         meeting = meetingsAcceptingItems[0]
         # present the item

@@ -64,3 +64,7 @@ msgstr ""
 #. Default: "Waiting advices"
 msgid "icon_help_itemcreated_waiting_advices"
 msgstr ""
+
+#. Default: "The cloned item could not be presented to a meeting because no meeting accepting items is available."
+msgid "could_not_present_item_no_meeting_accepting_items"
+msgstr ""

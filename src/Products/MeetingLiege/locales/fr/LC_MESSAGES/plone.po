@@ -44,6 +44,14 @@ msgstr "Accepté avec modifications"
 msgid "askAdvicesByItemCreator"
 msgstr "Demander les avis"
 
+#. Default: "Back to created"
+msgid "backToCreated"
+msgstr ""
+
+#. Default: "Back to decided"
+msgid "backToDecided"
+msgstr ""
+
 #. Default: "Back to decisions published"
 msgid "backToDecisionsPublished"
 msgstr "Remettre en 'Décisions publiées'"
@@ -119,3 +127,4 @@ msgstr "Marquer 'sans objet'"
 #. Default: "Removed"
 msgid "removed"
 msgstr "Sans objet"
+

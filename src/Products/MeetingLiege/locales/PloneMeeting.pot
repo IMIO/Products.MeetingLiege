@@ -25,6 +25,14 @@ msgstr ""
 msgid "Send to council"
 msgstr ""
 
+#. Default: "The item has been successfully transfered to the council."
+msgid "sendto_meeting-config-council_success"
+msgstr ""
+
+#. Default: "The item has been successfully transfered to the college."
+msgid "sendto_meeting-config-college_success"
+msgstr ""
+
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
 msgstr ""

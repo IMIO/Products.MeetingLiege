@@ -61,3 +61,10 @@ msgstr "Collège"
 msgid "predecessor_MeetingItemCouncil"
 msgstr "Conseil"
 
+#. Default: "The item has been successfully transfered to the college."
+msgid "sendto_meeting-config-college_success"
+msgstr "Le point a été envoyé au Collège communal."
+
+#. Default: "The item has been successfully transfered to the council."
+msgid "sendto_meeting-config-council_success"
+msgstr "Le point a été envoyé au Conseil communal."

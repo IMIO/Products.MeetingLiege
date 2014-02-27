@@ -549,7 +549,7 @@
         title="pre_accepted"
         i18n:attributes="title">
   <exit-transition transition_id="accept"/>
-  <exit-transition transition_id="accept_but_modify"/>
+  <exit-transition transition_id="acceptButModify"/>
   <exit-transition transition_id="backToItemFrozen"/>
   <permission-map name="Access contents information"
                   acquired="False">
@@ -1227,14 +1227,14 @@
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="accept_but_modify"
-             title="accept_but_modify"
+ <transition transition_id="acceptButModify"
+             title="acceptButModify"
              new_state="accepted_but_modified"
              trigger="USER"
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">accept_but_modify</action>
+  <action url="" category="workflow" i18n:translate="">acceptButModify</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>

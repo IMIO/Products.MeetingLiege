@@ -33,10 +33,6 @@ msgstr "Envoyer au Conseil communal"
 msgid "Sent to council"
 msgstr "Envoyé au Conseil communal"
 
-#. Default: "The cloned item could not be presented to a meeting because no meeting accepting items is available."
-msgid "could_not_present_item_no_meeting_accepting_items"
-msgstr "Le point n'a pas pu être présenté dans une séance du Conseil communal car aucune séance n'accepte de points."
-
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Point créé depuis un point Collège"
@@ -72,3 +68,4 @@ msgstr "Le point a été envoyé au Collège communal."
 #. Default: "The item has been successfully transfered to the council."
 msgid "sendto_meeting-config-council_success"
 msgstr "Le point a été envoyé au Conseil communal."
+

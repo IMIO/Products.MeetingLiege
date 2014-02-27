@@ -28,8 +28,6 @@ from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
 from zope.interface import implements
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.utils import checkPermission
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
@@ -179,29 +177,6 @@ class CustomMeetingItem(MeetingItem):
         elif itemState == 'itemcreated_waiting_advices':
             res.append(('ask_advices_by_itemcreator.png', 'icon_help_itemcreated_waiting_advices'))
         return res
-
-    def onDuplicated(self, original):
-        """
-          On duplicated, if new item is a MeetingItemCouncil and original
-          was a MeetingItemCollege, it means that we transfered an item from the college
-          to the council, we need to present it to the next available meeting.
-        """
-        clonedItem = self.getSelf()
-        # if we cloned but not to another mc, we return
-        if original.portal_type == clonedItem.portal_type:
-            return
-        # find next meeting accepting items
-        meetingsAcceptingItems = clonedItem.getMeetingsAcceptingItems()
-        if not meetingsAcceptingItems:
-            plone_utils = getToolByName(clonedItem, 'plone_utils')
-            plone_utils.addPortalMessage(_('could_not_present_item_no_meeting_accepting_items'), 'warning')
-            return
-        meeting = meetingsAcceptingItems[0]
-        # present the item
-        wfTool = getToolByName(clonedItem, 'portal_workflow')
-        # the item is automatically presented to the 'PUBLISHED' meeting
-        clonedItem.REQUEST['PUBLISHED'] = meeting.getObject()
-        wfTool.doActionFor(clonedItem, 'present')
 
 
 class CustomMeetingConfig(MeetingConfig):
@@ -367,13 +342,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def __init__(self, item):
         self.context = item  # Implements IMeetingItem
         self.sm = getSecurityManager()
-        self.useHardcodedTransitionsForPresentingAnItem = True
-        self.transitionsForPresentingAnItem = ('proposeToServiceHead',
-                                               'proposeToOfficeManager',
-                                               'proposeToDivisionHead',
-                                               'proposeToDirector',
-                                               'validate',
-                                               'present')
 
     security.declarePublic('mayProposeToAdminstrativeReviewer')
     def mayProposeToAdminstrativeReviewer(self):
@@ -519,8 +487,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def __init__(self, item):
         self.context = item  # Implements IMeetingItem
         self.sm = getSecurityManager()
-        self.useHardcodedTransitionsForPresentingAnItem = False
-        self.transitionsForPresentingAnItem = ('present', )
 
     security.declarePublic('mayProposeToDirector')
     def mayProposeToDirector(self):

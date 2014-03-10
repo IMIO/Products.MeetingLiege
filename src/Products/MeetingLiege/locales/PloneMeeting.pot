@@ -64,3 +64,15 @@ msgstr ""
 #. Default: "Waiting advices"
 msgid "icon_help_itemcreated_waiting_advices"
 msgstr ""
+
+#. Default: "Proposed to administrative reviewer"
+msgid "icon_help_proposed_to_administrative_reviewer"
+msgstr ""
+
+#. Default: "Proposed to internal reviewer"
+msgid "icon_help_proposed_to_internal_reviewer"
+msgstr ""
+
+#. Default: "Proposed to director"
+msgid "icon_help_proposed_to_director"
+msgstr ""

@@ -53,6 +53,18 @@ msgstr "En attente des avis"
 msgid "icon_help_pre_accepted"
 msgstr "Accepté provisoirement"
 
+#. Default: "Proposed to administrative reviewer"
+msgid "icon_help_proposed_to_administrative_reviewer"
+msgstr "Proposé au validateur administratif"
+
+#. Default: "Proposed to director"
+msgid "icon_help_proposed_to_director"
+msgstr "Proposé à la direction"
+
+#. Default: "Proposed to internal reviewer"
+msgid "icon_help_proposed_to_internal_reviewer"
+msgstr "Proposé au validateur interne"
+
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
 msgstr "Collège"
@@ -68,4 +80,3 @@ msgstr "Le point a été envoyé au Collège communal."
 #. Default: "The item has been successfully transfered to the council."
 msgid "sendto_meeting-config-council_success"
 msgstr "Le point a été envoyé au Conseil communal."
-

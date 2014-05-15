@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
+ <!-- first remove then re-apply so workflows are correct regarding workflow adaptations... -->
+ <object name="meetingadviceliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingcollegeliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingcouncilliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingitemcollegeliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingitemcouncilliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingadviceliege_workflow" meta_type="Workflow"/>
  <object name="meetingcollegeliege_workflow" meta_type="Workflow"/>
  <object name="meetingcouncilliege_workflow" meta_type="Workflow"/>
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow"/>
@@ -18,6 +25,9 @@
   </type>
   <type type_id="MeetingItemCouncil">
      <bound-workflow workflow_id="meetingitemcouncilliege_workflow" />
+  </type>
+  <type type_id="meetingadvice">
+     <bound-workflow workflow_id="meetingadviceliege_workflow" />
   </type>
 <!-- ##code-section workflowbindings -->
 <!-- ##/code-section workflowbindings -->

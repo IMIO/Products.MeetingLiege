@@ -48,6 +48,8 @@ def postInstall(context):
     reinstallPloneMeetingSkin(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
+    # make sure we use the correct workflow for meetingadvice
+    setCorrectWorkflowForAdvices(context, site)
 
 
 
@@ -138,11 +140,24 @@ def reorderSkinsLayers(context, site):
         pass
 
 
+def setCorrectWorkflowForAdvices(context, site):
+    """
+       We use a different workflow for advice, make 'meetingadvice' portal_type use it.
+    """
+    if isNotMeetingLiegeProfile(context) and not isMeetingLiegeConfigureProfile(context):
+        return
+
+    logStep("setCorrectWorkflowForAdvices", context)
+    wfTool = getToolByName(site, 'portal_workflow')
+    wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
+
+
 def finalizeInstance(context):
     """
       Called at the very end of the installation process (after PloneMeeting).
     """
-    reorderSkinsLayers(context, context.getSite())
+    site = context.getSite()
+    reorderSkinsLayers(context, site)
     reorderCss(context)
 
 

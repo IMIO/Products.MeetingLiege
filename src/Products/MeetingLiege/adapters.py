@@ -309,6 +309,15 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         ''' '''
         pass
 
+    security.declarePrivate('doProposeToDirector')
+    def doProposeToDirector(self, stateChange):
+        pass
+
+    security.declarePrivate('doProposeToFinance')
+    def doProposeToFinance(self, stateChange):
+        ''' '''
+        pass
+
     security.declarePrivate('doPreAccept')
     def doPreAccept(self, stateChange):
         pass
@@ -323,18 +332,6 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
 
     security.declarePrivate('doRemove')
     def doRemove(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToDirector')
-    def doProposeToDirector(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToOfficeManager')
-    def doProposeToOfficeManager(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToDivisionHead')
-    def doProposeToDivisionHead(self, stateChange):
         pass
 
 
@@ -365,6 +362,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     security.declarePublic('mayProposeToDirector')
     def mayProposeToDirector(self):
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+                res = True
+        return res
+
+    security.declarePublic('mayProposeToFinance')
+    def mayProposeToFinance(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
                 res = True

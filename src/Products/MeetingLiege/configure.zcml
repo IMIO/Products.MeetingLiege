@@ -5,6 +5,8 @@
            i18n_domain="MeetingLiege">
 
   <!-- ##code-section configure.zcml.header -->
+  <include file="events.zcml" />
+  <include package=".browser" />
   <!-- registerTranslations before including package Products.PloneMeeting
        so Products.MeetingLiege can overrides Products.PloneMeeting translations -->
   <i18n:registerTranslations directory="locales" />

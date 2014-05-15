@@ -1227,18 +1227,6 @@
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="acceptButModify"
-             title="acceptButModify"
-             new_state="accepted_but_modified"
-             trigger="USER"
-             before_script=""
-             after_script=""
-             i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">acceptButModify</action>
-  <guard>
-    <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
-  </guard>
- </transition>
  <transition transition_id="backToItemFrozen"
              title="backToItemFrozen"
              new_state="itemfrozen"

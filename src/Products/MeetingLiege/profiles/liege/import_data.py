@@ -152,14 +152,20 @@ collegeMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss',
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
-collegeMeeting. meetingConfigsToCloneTo = ('meeting-config-council', )
+collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
+                                           'trigger_workflow_transitions_until': '__nothing__'},)
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
 collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
 collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
-collegeMeeting.transitionsForPresentingAnItem = ('present', )
+collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewer',
+                                                 'proposeToInternalReviewer',
+                                                 'proposeToDirector',
+                                                 'validate',
+                                                 'present',
+                                                 )
 collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed', 'removed')
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
@@ -336,12 +342,7 @@ councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeet
 councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions'
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
-councilMeeting.transitionsForPresentingAnItem = ('proposeToServiceHead',
-                                                 'proposeToOfficeManager',
-                                                 'proposeToDivisionHead',
-                                                 'proposeToDirector',
-                                                 'validate',
-                                                 'present')
+councilMeeting.transitionsForPresentingAnItem = ('present', )
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
 councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'

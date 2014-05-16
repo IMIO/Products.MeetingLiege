@@ -1,13 +1,30 @@
-from Products.PloneMeeting.browser.overrides import PloneMeetingDocumentBylineViewlet
+from plone.memoize.view import memoize_contextless
+from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 
 
-class MeetingLiegeDocumentBylineViewlet(PloneMeetingDocumentBylineViewlet):
-    '''
-      Overrides the PloneMeetingDocumentBylineViewlet to display the  to hide it for some layouts.
-    '''
+class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
+    """
+      Specific actions displayed on a meetingadvice.
+    """
+    def __init__(self, context, request):
+        super(MeetingLiegeAdviceActionsPanelView, self).__init__(context, request)
+        self.SECTIONS_TO_RENDER = ['renderTransitions',
+                                   'renderDelete',
+                                   'renderEdit',
+                                   'renderActions', ]
 
-    def show_history(self):
+    def mayDelete(self):
         """
-          Show the history in every cases...
+          Override, check if we have the relevant permission on the advice.
         """
-        return True
+        return self.member.has_permission('Delete objects', self.context)
+
+    @memoize_contextless
+    def _transitionsToConfirm(self):
+        """
+          Override, every transitions of the finance workflow will have to be confirmed (commentable).
+        """
+        toConfirm = ['meetingadvice.proposeToFinancialController',
+                     'meetingadvice.proposeToFinancialReviewer',
+                     'meetingadvice.proposeToFinancialManager', ]
+        return toConfirm

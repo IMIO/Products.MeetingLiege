@@ -22,12 +22,15 @@ def onAdviceTransition(advice, event):
         wfTool = getToolByName(advice, 'portal_workflow')
         wfTool.doActionFor(advice, 'proposeToFinancialController')
         return
+
     # manage finance workflow, just consider relevant transitions
     # if it is not a finance wf transition, return
-    oldStateId = event.old_state.id
+    if not advice.advice_group in ['comptabilite', ]:
+        return
+
     newStateId = event.new_state.id
-    if (oldStateId == 'advice_under_edit' and newStateId == 'advice_given') or \
-       (oldStateId == 'advice_given' and newStateId == 'advice_under_edit'):
+    if newStateId in ('advice_given', 'advice_under_edit'):
+        # XXX remove given roles to finance members
         return
 
     # give 'Reader' role to every members of the _advisers and

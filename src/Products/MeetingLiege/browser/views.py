@@ -10,11 +10,17 @@ class AdviceWFConditionsView(BrowserView):
     """
     security = ClassSecurityInfo()
 
+    def getFinanceGroups(self):
+        '''
+        '''
+        return ['comptabilite', ]
+
     security.declarePublic('mayProposeToFinancialController')
     def mayProposeToFinancialController(self):
         '''
         '''
-        return True
+        if self.advice_group in self.getFinanceGroups():
+            return True
 
 
 InitializeClass(AdviceWFConditionsView)

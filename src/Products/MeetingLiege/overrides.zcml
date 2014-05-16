@@ -3,14 +3,16 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone">
 
-    <!-- Render the document byline -->
-    <browser:viewlet
-        name="plone.belowcontenttitle.documentbyline"
-        for="Products.PloneMeeting.content.advice.IMeetingAdvice"
-        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-        class=".browser.overrides.MeetingLiegeDocumentBylineViewlet"
-        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
-        permission="zope2.View"
-        />
+    <!-- Display the actions panel on the meetingadvice -->
+    <configure package="imio.actionspanel">
+        <browser:page
+            for="Products.PloneMeeting.content.advice.IMeetingAdvice"
+            name="actions_panel"
+            class="Products.MeetingLiege.browser.overrides.MeetingLiegeAdviceActionsPanelView"
+            template="browser/actions_panel.pt"
+            layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
+            allowed_attributes="render"
+            permission="zope2.View" />
+    </configure>
 
 </configure>

@@ -123,3 +123,47 @@ msgstr ""
 #. Default: "Back to proposed to director"
 msgid "backToProposedToDirector"
 msgstr ""
+
+#. Default: "Propose to financialcontroller"
+msgid "proposeToFinancialController"
+msgstr ""
+
+#. Default: "Proposed to financial controller"
+msgid "proposed_to_financial_controller"
+msgstr ""
+
+#. Default: "Propose to financial reviewer"
+msgid "proposeToFinancialReviewer"
+msgstr ""
+
+#. Default: "Proposed to financial reviewer"
+msgid "proposed_to_financial_reviewer"
+msgstr ""
+
+#. Default: "Propose to financial manager"
+msgid "proposeToFinancialManager"
+msgstr ""
+
+#. Default: "Proposed to financial manager"
+msgid "proposed_to_financial_manager"
+msgstr ""
+
+#. Default: "Sign financial advice"
+msgid "signFinancialAdvice"
+msgstr ""
+
+#. Default: "Financial advice signed"
+msgid "financial_advice_signed"
+msgstr ""
+
+#. Default: "Back to proposed to financial controller"
+msgid "backToProposedToFinancialController"
+msgstr ""
+
+#. Default: "Back to proposed to financial reviewer"
+msgid "backToProposedToFinancialReviewer"
+msgstr ""
+
+#. Default: "Back to proposed to financial manager"
+msgid "backToProposedToFinancialManager"
+msgstr ""

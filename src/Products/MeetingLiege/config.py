@@ -51,6 +51,13 @@ LIEGEROLES['internatlreviewers'] = 'MeetingInternalReviewer'
 LIEGEROLES['reviewers'] = 'MeetingReviewer'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
+
+# finance groups ids
+FINANCE_GROUP_IDS = ['comptabilite', ]
+
+FINANCE_GROUPS_SUFFIXES = ('financialcontrollers',
+                           'financialreviewers',
+                           'financialmanagers')
 ##/code-section config-bottom
 
 

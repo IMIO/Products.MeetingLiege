@@ -80,6 +80,39 @@
                   acquired="True">
   </permission-map>
  </state>
+ <state state_id="financial_advice_signed"
+        title="financial_advice_signed"
+        i18n:attributes="title">
+  <exit-transition transition_id="backToProposedToFinancialManager"/>
+  <exit-transition transition_id="giveAdvice"/>
+  <permission-map name="Access contents information"
+                  acquired="True">
+  </permission-map>
+  <permission-map name="Delete objects"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add MeetingFile"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add annex"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="Review portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingManager</permission-role>
+  </permission-map>
+  <permission-map name="View"
+                  acquired="True">
+  </permission-map>
+ </state>
  <state state_id="proposed_to_financial_controller"
         title="proposed_to_financial_controller"
         i18n:attributes="title">
@@ -125,7 +158,7 @@
         title="proposed_to_financial_manager"
         i18n:attributes="title">
   <exit-transition transition_id="backToProposedToFinancialReviewer"/>
-  <exit-transition transition_id="giveAdvice"/>
+  <exit-transition transition_id="signFinancialAdvice"/>
   <exit-transition transition_id="backToProposedToFinancialController"/>
   <permission-map name="Access contents information"
                   acquired="False">
@@ -168,7 +201,7 @@
         i18n:attributes="title">
   <exit-transition transition_id="backToProposedToFinancialController"/>
   <exit-transition transition_id="proposeToFinancialManager"/>
-  <exit-transition transition_id="giveAdvice"/>
+  <exit-transition transition_id="signFinancialAdvice"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -214,6 +247,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">backToAdviceUnderEdit</action>
   <guard>
+    <guard-expression>python:here.mayBackToAdviceUnderEdit()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToFinancialController"
@@ -225,6 +259,19 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">backToProposedToFinancialController</action>
   <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayBackToProposedToFinancialController()</guard-expression>
+  </guard>
+ </transition>
+ <transition transition_id="backToProposedToFinancialManager"
+             title="backToProposedToFinancialManager"
+             new_state="proposed_to_financial_manager"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <action url="" category="workflow" i18n:translate="">backToProposedToFinancialManager</action>
+  <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayBackToProposedToFinancialManager()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToFinancialReviewer"
@@ -236,6 +283,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">backToProposedToFinancialReviewer</action>
   <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayBackToProposedToFinancialReviewer()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="giveAdvice"
@@ -247,6 +295,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">giveAdvice</action>
   <guard>
+    <guard-expression>python:here.mayGiveAdvice()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="proposeToFinancialController"
@@ -258,6 +307,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">proposeToFinancialController</action>
   <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayProposeToFinancialController()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="proposeToFinancialManager"
@@ -269,6 +319,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">proposeToFinancialManager</action>
   <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayProposeToFinancialManager()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="proposeToFinancialReviewer"
@@ -280,6 +331,19 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">proposeToFinancialReviewer</action>
   <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayProposeToFinancialReviewer()</guard-expression>
+  </guard>
+ </transition>
+ <transition transition_id="signFinancialAdvice"
+             title="signFinancialAdvice"
+             new_state="financial_advice_signed"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <action url="" category="workflow" i18n:translate="">signFinancialAdvice</action>
+  <guard>
+    <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').maySignFinancialAdvice()</guard-expression>
   </guard>
  </transition>
  <variable variable_id="action" for_catalog="False"

@@ -65,6 +65,14 @@ msgstr "Proposé à la direction"
 msgid "icon_help_proposed_to_internal_reviewer"
 msgstr "Proposé au validateur interne"
 
+#. Default: "Unfavorable opinion"
+msgid "negative_finance"
+msgstr "Avis finances défavorable"
+
+#. Default: "Favorable opinion"
+msgid "positive_finance"
+msgstr "Avis finances favorable"
+
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
 msgstr "Collège"

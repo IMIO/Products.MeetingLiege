@@ -23,13 +23,19 @@
 # 02110-1301, USA.
 #
 # ------------------------------------------------------------------------------
+from datetime import datetime
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
 from zope.interface import implements
+from zope.i18n import translate
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
+from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
+from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.utils import checkPermission
+from Products.PloneMeeting.utils import workday
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
@@ -40,6 +46,7 @@ from Products.MeetingLiege.interfaces import \
     IMeetingCollegeLiegeWorkflowConditions, IMeetingCollegeLiegeWorkflowActions, \
     IMeetingItemCouncilLiegeWorkflowConditions, IMeetingItemCouncilLiegeWorkflowActions,\
     IMeetingCouncilLiegeWorkflowConditions, IMeetingCouncilLiegeWorkflowActions
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 # disable most of wfAdaptations
 customWfAdaptations = ('return_to_proposing_group',
@@ -184,6 +191,72 @@ class CustomMeetingItem(MeetingItem):
             res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
         return res
 
+    security.declarePublic('getAdvicesGroupsInfosForUser')
+    def getAdvicesGroupsInfosForUser(self):
+        '''Monkeypatch the MeetingItem.getAdvicesGroupsInfosForUser, look for XXX'''
+        def _isStillInDelayToBeAddedEdited(adviceInfo):
+            '''Check if advice for wich we received p_adviceInfo may still be added or edited.'''
+            if not adviceInfo['delay']:
+                return True
+            delay_started_on = self._doClearDayFrom(adviceInfo['delay_started_on'])
+            delay = int(adviceInfo['delay'])
+            tool = getToolByName(self, 'portal_plonemeeting')
+            holidays = tool.getHolidaysAs_datetime()
+            weekends = tool.getNonWorkingDayNumbers()
+            unavailable_weekdays = tool.getUnavailableWeekDaysNumbers()
+            if workday(delay_started_on,
+                       delay,
+                       unavailable_weekdays=unavailable_weekdays,
+                       holidays=holidays,
+                       weekends=weekends) > datetime.now():
+                return True
+            return False
+
+        tool = self.portal_plonemeeting
+        cfg = tool.getMeetingConfig(self)
+        # Advices must be enabled
+        if not cfg.getUseAdvices():
+            return ([], [])
+        # Item state must be within the states allowing to add/edit an advice
+        itemState = self.queryState()
+        # Logged user must be an adviser
+        meetingGroups = tool.getGroupsForUser(suffix='advisers')
+        if not meetingGroups:
+            return ([], [])
+        # Produce the lists of groups to which the user belongs and for which,
+        # - no advice has been given yet (list of advices to add)
+        # - an advice has already been given (list of advices to edit/delete).
+        toAdd = []
+        toEdit = []
+        powerAdvisers = cfg.getPowerAdvisersGroups()
+        for group in meetingGroups:
+            groupId = group.getId()
+            if groupId in self.adviceIndex:
+                adviceType = self.adviceIndex[groupId]['type']
+                if adviceType == NOT_GIVEN_ADVICE_VALUE and \
+                   itemState in group.getItemAdviceStates(cfg) and \
+                   _isStillInDelayToBeAddedEdited(self.adviceIndex[groupId]):
+                    toAdd.append((groupId, group.getName()))
+                if adviceType != NOT_GIVEN_ADVICE_VALUE and \
+                   itemState in group.getItemAdviceEditStates(cfg) and \
+                   _isStillInDelayToBeAddedEdited(self.adviceIndex[groupId]):
+                    # XXX if we are a finance group, check if current member can edit the advice
+                    # begin change by Products.MeetingLiege
+                    if groupId in FINANCE_GROUP_IDS:
+                        member = self.restrictedTraverse('@@plone_portal_state').member()
+                        adviceObj = getattr(self, self.adviceIndex[groupId]['advice_id'])
+                        if not member.has_role('MeetingFinanceEditor', adviceObj):
+                            continue
+                    # end change by Products.MeetingLiege
+                    toEdit.append(groupId)
+            elif groupId in powerAdvisers:
+                # if not in self.adviceIndex, aka not already given
+                # check if group is a power adviser
+                if itemState in group.getItemAdviceStates(cfg):
+                    toAdd.append((groupId, group.getName()))
+        return (toAdd, toEdit)
+    MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the
@@ -194,6 +267,19 @@ class CustomMeetingConfig(MeetingConfig):
 
     def __init__(self, item):
         self.context = item
+
+    def listAdviceTypes(self):
+        d = "PloneMeeting"
+        res = DisplayList((
+            ("positive_finance", translate('positive_finance', domain=d, context=self.REQUEST)),
+            ("negative_finance", translate('negative_finance', domain=d, context=self.REQUEST)),
+            ("positive", translate('positive', domain=d, context=self.REQUEST)),
+            ("positive_with_remarks", translate('positive_with_remarks', domain=d, context=self.REQUEST)),
+            ("negative", translate('negative', domain=d, context=self.REQUEST)),
+            ("nil", translate('nil', domain=d, context=self.REQUEST)),
+        ))
+        return res
+    MeetingConfig.listAdviceTypes = listAdviceTypes
 
 
 class CustomMeetingGroup(MeetingGroup):
@@ -384,19 +470,30 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayValidate')
     def mayValidate(self):
         """
-          Either the Director or the MeetingManager can validate
-          The MeetingManager can bypass the validation process and validate an item
-          that is in the state 'itemcreated'
+          This differs if the item needs finance advice or not.
+          - it does NOT have finance advice : either the Director or the MeetingManager
+            can validate, the MeetingManager can bypass the validation process
+            and validate an item that is in the state 'itemcreated';
+          - it does have a finance advice : it will be automatically validated when
+            the advice will be 'signed' by the finance group or it can be manually validated
+            by the finance if item emergency has been accepted by the finance service.
         """
         res = False
+        tool = getToolByName(self.context, 'portal_plonemeeting')
+        isManager = tool.isManager()
+        item_state = self.context.queryState()
         #first of all, the use must have the 'Review portal content permission'
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             #if the current item state is 'itemcreated', only the MeetingManager can validate
-            member = self.context.portal_membership.getAuthenticatedMember()
-            if self.context.queryState() in ('itemcreated',) and not \
-               (member.has_role('MeetingManager') or member.has_role('Manager')):
+            if item_state == 'itemcreated' and not tool.isManager():
                 res = False
+
+        # special case for item being validated by the finance manager
+        # emergency is accepted and user is a MeetingManager or a finance manager
+        if self.context.getEmergency() == 'emergency_accepted' and \
+           item_state == 'proposedToFinance':
+            pass
         return res
 
     security.declarePublic('mayCorrect')

@@ -15,4 +15,10 @@
             permission="zope2.View" />
     </configure>
 
+    <utility
+      provides="zope.schema.interfaces.IVocabularyFactory"
+      factory=".browser.overrides.AdviceTypeVocabulary"
+      name="Products.PloneMeeting.content.advice.advice_type_vocabulary"
+    />
+
 </configure>

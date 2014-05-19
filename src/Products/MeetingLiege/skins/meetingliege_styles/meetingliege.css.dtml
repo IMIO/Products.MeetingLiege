@@ -18,7 +18,10 @@
 
 .state-proposed_to_administrative_reviewer, .label-state-proposed_to_administrative_reviewer,
 .state-proposed_to_internal_reviewer, .label-state-proposed_to_internal_reviewer,
-.state-proposed_to_director, .label-state-proposed_to_director {
+.state-proposed_to_director, .label-state-proposed_to_director,
+.state-proposed_to_financial_controller, .label-state-proposed_to_financial_controller,
+.state-proposed_to_financial_reviewer, .label-state-proposed_to_financial_reviewer,
+.state-proposed_to_financial_manager, .label-state-proposed_to_financial_manager {
     color: DarkOrange !important;
 }
 #plone-contentmenu-workflow .state-proposed_to_administrative_reviewer,
@@ -31,7 +34,8 @@
     border: 2px solid DarkOrange;
 }
 
-.state-validated, .label-state-validated {
+.state-validated, .label-state-validated,
+.state-financial_advice_signed, .label-state-financial_advice_signed {
     color: blue !important;
 }
 #plone-contentmenu-workflow .state-validated {

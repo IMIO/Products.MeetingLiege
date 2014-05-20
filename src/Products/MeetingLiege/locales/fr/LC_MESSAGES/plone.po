@@ -66,11 +66,11 @@ msgstr "Remettre 'En création'"
 
 #. Default: "Back to proposed to administrative reviewer"
 msgid "backToProposedToAdministrativeReviewer"
-msgstr "Remettre en 'Proposé au validateur administratif'"
+msgstr "Renvoyer au validateur administratif"
 
 #. Default: "Back to proposed to director"
 msgid "backToProposedToDirector"
-msgstr "Remettre en 'Proposé au directeur'"
+msgstr "Renvoyer au directeur"
 
 #. Default: "Back to proposed to financial controller"
 msgid "backToProposedToFinancialController"
@@ -86,7 +86,7 @@ msgstr "Renvoyer au validateur financier"
 
 #. Default: "Back to proposed to internal reviewer"
 msgid "backToProposedToInternalReviewer"
-msgstr "Remettre en 'Proposé au validateur interne'"
+msgstr "Renvoyer au validateur interne"
 
 #. Default: "Delay"
 msgid "delay"
@@ -120,6 +120,10 @@ msgstr "Proposer au validateur administratif"
 msgid "proposeToDirector"
 msgstr "Proposer à la direction"
 
+#. Default: "Propose to finance"
+msgid "proposeToFinance"
+msgstr "Proposer aux finances"
+
 #. Default: "Propose to financialcontroller"
 msgid "proposeToFinancialController"
 msgstr "Proposer au contrôleur financier"
@@ -143,6 +147,10 @@ msgstr "Proposé au validateur administratif"
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
 msgstr "Proposé à la direction"
+
+#. Default: "Proposed to finance"
+msgid "proposed_to_finance"
+msgstr "Proposé aux finances"
 
 #. Default: "Proposed to financial controller"
 msgid "proposed_to_financial_controller"
@@ -171,3 +179,4 @@ msgstr "Sans objet"
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"
 msgstr "Signer l'avis financier"
+

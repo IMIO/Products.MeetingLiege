@@ -56,8 +56,16 @@ msgstr ""
 msgid "proposeToDirector"
 msgstr ""
 
+#. Default: "Propose to finance"
+msgid "proposeToFinance"
+msgstr ""
+
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
+msgstr ""
+
+#. Default: "Proposed to finance"
+msgid "proposed_to_finance"
 msgstr ""
 
 #. Default: "Accept with modifications"

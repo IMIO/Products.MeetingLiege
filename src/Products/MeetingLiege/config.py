@@ -53,7 +53,7 @@ PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 
 # finance groups ids
-FINANCE_GROUP_IDS = ['comptabilite', ]
+FINANCE_GROUP_IDS = ['comptabilite', 'df-controle', ]
 
 FINANCE_GROUPS_SUFFIXES = ('financialcontrollers',
                            'financialreviewers',

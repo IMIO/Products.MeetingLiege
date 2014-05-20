@@ -168,6 +168,18 @@ class CustomMeetingItem(MeetingItem):
     def __init__(self, item):
         self.context = item
 
+    def getFinanceGroupIdsForItem(self):
+        '''Return the finance group ids the advice is asked
+           on current item.'''
+        item = self.getSelf()
+        finance_groups = set(FINANCE_GROUP_IDS)
+        asked_advices = set(item.adviceIndex.keys())
+        groupIds = finance_groups.intersection(asked_advices)
+        if groupIds:
+            return groupIds.pop()
+        else:
+            return None
+
     security.declarePublic('getIcons')
     def getIcons(self, inMeeting, meeting):
         '''Check docstring in PloneMeeting interfaces.py.'''
@@ -189,6 +201,8 @@ class CustomMeetingItem(MeetingItem):
             res.append(('proposeToInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer'))
         elif itemState == 'proposed_to_director':
             res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
+        elif itemState == 'proposed_to_finance':
+            res.append(('proposeToFinance.png', 'icon_help_proposed_to_finance'))
         return res
 
     security.declarePublic('getAdvicesGroupsInfosForUser')
@@ -256,6 +270,60 @@ class CustomMeetingItem(MeetingItem):
                     toAdd.append((groupId, group.getName()))
         return (toAdd, toEdit)
     MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
+
+    security.declarePublic('mayEvaluateCompleteness')
+    def mayEvaluateCompleteness(self):
+        '''Condition for editing 'completeness' field,
+           being able to define if item is 'complete' or 'incomplete'.
+           Completeness can be evaluated by the finance controller.'''
+        # user must be a finance controller
+        item = self.getSelf()
+        if item.isDefinedInTool():
+            return
+        membershipTool = getToolByName(item, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
+        financeGroupId = item.adapted().getFinanceGroupIdsForItem()
+        if not financeGroupId or not '%s_financialcontrollers' % financeGroupId in member.getGroups():
+            return False
+        # advice must not have been added, but must be addable
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        if not financeGroupId in [group[0] for group in toAdd]:
+            return False
+        return True
+
+    security.declarePublic('mayAskCompletenessEvalAgain')
+    def mayAskCompletenessEvalAgain(self):
+        '''Condition for editing 'completeness' field,
+           being able to ask completeness evaluation again when completeness
+           was 'incomplete'.
+           Only the 'internalreviewer' and 'reviewer' may ask completeness
+           evaluation again and again and again...'''
+        # user must be able to edit current item
+        item = self.getSelf()
+        if item.isDefinedInTool():
+            return
+        tool = getToolByName(item, 'portal_plonemeeting')
+        membershipTool = getToolByName(item, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
+        # user must be able to edit the item and must have 'MeetingInternalReviewer'
+        # or 'MeetingReviewer' role
+        if not item.getCompleteness() == 'completeness_incomplete' or \
+           not member.has_permission(ModifyPortalContent, item) or \
+           not (member.has_role('MeetingInternalReviewer', item) or
+                member.has_role('MeetingReviewer', item) or tool.isManager()):
+            return False
+        return True
+
+    security.declarePublic('mayAskEmergency')
+    def mayAskEmergency(self):
+        '''Only directors may ask emergency.'''
+        item = self.getSelf()
+        membershipTool = getToolByName(item, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
+        if item.queryState() == 'proposed_to_director' and \
+           member.has_role('MeetingReviewer', item):
+            return True
+        return False
 
 
 class CustomMeetingConfig(MeetingConfig):
@@ -436,35 +504,39 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToAdminstrativeReviewer(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-                res = True
+            res = True
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
     def mayProposeToInternalReviewer(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-                res = True
+            res = True
         return res
 
     security.declarePublic('mayProposeToDirector')
     def mayProposeToDirector(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-                res = True
+            res = True
         return res
 
     security.declarePublic('mayProposeToFinance')
     def mayProposeToFinance(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-                res = True
+            res = True
+            # check if one of the finance group needs to give advice on
+            # the item, if it is the case, the item must go to finance before being validated
+            if self.context.adapted().getFinanceGroupIdsForItem():
+                return True
         return res
 
     security.declarePublic('mayWaitAdvices')
     def mayWaitAdvices(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-                res = True
+            res = True
         return res
 
     security.declarePublic('mayValidate')
@@ -475,25 +547,34 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             can validate, the MeetingManager can bypass the validation process
             and validate an item that is in the state 'itemcreated';
           - it does have a finance advice : it will be automatically validated when
-            the advice will be 'signed' by the finance group or it can be manually validated
-            by the finance if item emergency has been accepted by the finance service.
+            the advice will be 'signed' by the finance group if the advice type is 'positive_finance'
+            or it can be manually validated by the director if item emergency has been asked
+            and motivated on the item.
         """
         res = False
+        # very special case, we can bypass the guard if a 'mayValidate'
+        # value is found to True in the REQUEST
+        if self.context.REQUEST.get('mayValidate', False):
+            return True
         tool = getToolByName(self.context, 'portal_plonemeeting')
         isManager = tool.isManager()
         item_state = self.context.queryState()
-        #first of all, the use must have the 'Review portal content permission'
+        # first of all, the use must have the 'Review portal content permission'
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            #if the current item state is 'itemcreated', only the MeetingManager can validate
-            if item_state == 'itemcreated' and not tool.isManager():
+            # if the current item state is 'itemcreated', only the MeetingManager can validate
+            if item_state == 'itemcreated' and not isManager:
                 res = False
-
-        # special case for item being validated by the finance manager
-        # emergency is accepted and user is a MeetingManager or a finance manager
-        if self.context.getEmergency() == 'emergency_accepted' and \
-           item_state == 'proposedToFinance':
-            pass
+            # special case for item being validable when emergency is asked on it
+            elif item_state == 'proposed_to_finance' and self.context.getEmergency() == 'no_emergency':
+                res = False
+            elif item_state == 'proposed_to_director':
+                # check if item needs finance advice, if it is the case, the item
+                # must be proposed to finance before being validated
+                if self.context.adapted().getFinanceGroupIdsForItem():
+                    res = False
+            else:
+                res = True
         return res
 
     security.declarePublic('mayCorrect')
@@ -519,6 +600,16 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                     if meetingState != 'closed':
                         res = True
                 else:
+                    res = True
+            # special case for financial controller that can send an item back to
+            # the internal reviewer if it is in state 'proposed_to_finance' and
+            # item is incomplete
+            elif self.context.queryState() == 'proposed_to_finance' and \
+                    self.context.getCompleteness() == 'completeness_incomplete':
+                # user must be a controller of finance group the advice is asked to
+                financeControllerGroupId = '%s_financialcontrollers' % self.context.adapted().getFinanceGroupIdsForItem()
+                member = self.context.restrictedTraverse('@@plone_portal_state').member()
+                if financeControllerGroupId in member.getGroups():
                     res = True
         return res
 

@@ -77,10 +77,18 @@ msgstr ""
 msgid "icon_help_proposed_to_director"
 msgstr ""
 
+#. Default: "Proposed to finance"
+msgid "icon_help_proposed_to_finance"
+msgstr ""
+
 #. Default: "Favorable opinion"
 msgid "positive_finance"
 msgstr ""
 
 #. Default: "Unfavorable opinion"
 msgid "negative_finance"
+msgstr ""
+
+#. Default: "The item has been automatically validated because the relevant finance advice was positive."
+msgid "item_wf_changed_finance_advice_positive"
 msgstr ""

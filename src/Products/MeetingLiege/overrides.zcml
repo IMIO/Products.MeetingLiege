@@ -15,6 +15,18 @@
             permission="zope2.View" />
     </configure>
 
+    <!-- the view that show available delays for an advice on the advices list,
+         adapt so financialmanagers may change delay for an advice -->
+    <configure package="Products.PloneMeeting">
+        <browser:page
+            for="Products.PloneMeeting.interfaces.IMeetingItem"
+            name="advice-available-delays"
+            class="Products.MeetingLiege.browser.overrides.MeetingLiegeAdviceDelaysView"
+            template="browser/templates/advicedelays.pt"
+            layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
+            permission="zope2.View" />
+    </configure>
+
     <utility
       provides="zope.schema.interfaces.IVocabularyFactory"
       factory=".browser.overrides.AdviceTypeVocabulary"

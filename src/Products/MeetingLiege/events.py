@@ -24,13 +24,13 @@ def onAdviceTransition(advice, event):
     if not advice.advice_group in FINANCE_GROUP_IDS:
         return
 
+    wfTool = getToolByName(advice, 'portal_workflow')
     oldStateId = event.old_state.id
     newStateId = event.new_state.id
     # initial_state or going back from 'advice_given', we set automatically the state
     # to 'proposed_to_financial_controller', advice can never be in 'advice_under_edit'
     if not event.transition or \
        newStateId == 'advice_under_edit' and oldStateId == 'advice_given':
-        wfTool = getToolByName(advice, 'portal_workflow')
         # activate transition, check guard_expr
         advice.REQUEST.set('mayProposeToFinancialController', True)
         wfTool.doActionFor(advice, 'proposeToFinancialController')
@@ -46,6 +46,18 @@ def onAdviceTransition(advice, event):
     if newStateId == 'financial_advice_signed':
         # final state of the wf, make sure advice is not more hidden during redaction
         advice.advice_hide_during_redaction = False
+        # if item was still in state 'proposed_to_finance', it is automatically validated
+        # and a specific message is added to the wf history regarding this
+        item = advice.getParentNode()
+        # validate the item if not already the case
+        if item.queryState() == 'proposed_to_finance':
+            item.REQUEST.set('mayValidate', True)
+            wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_positive')
+            item.REQUEST.set('mayValidate', False)
+        else:
+            # we need to updateAdvices so change to
+            # 'advice_hide_during_redaction' is taken into account
+            item.updateAdvices()
 
     # remove given specific local roles when going back to 'advice_given' or 'advice_under_edit'
     if newStateId in ('advice_given', 'advice_under_edit', 'financial_advice_signed', ) and \
@@ -55,7 +67,7 @@ def onAdviceTransition(advice, event):
         advice.manage_delLocalRoles((localRoledGroupId, adviserGroupId))
         return
 
-    if not newStateId in stateToGroupSuffixMappings.values():
+    if not newStateId in stateToGroupSuffixMappings:
         return
 
     # give 'Reader' role to every members of the _advisers and

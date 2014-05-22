@@ -1,8 +1,8 @@
-from Products.PloneMeeting.content.advice import IMeetingAdvice
 from zope.component import queryUtility
-from zope.schema.interfaces import IVocabularyFactory
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from zope.component.hooks import getSite
+from zope.schema.interfaces import IVocabularyFactory
+from Products.PloneMeeting.content.advice import IMeetingAdvice
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
 # override the IMeetingAdvice.advice_hide_during_redaction defaultFactory

@@ -29,7 +29,8 @@
 #plone-contentmenu-workflow .state-proposed_to_administrative_reviewer,
 #plone-contentmenu-workflow .state-proposed_to_internal_reviewer,
 #plone-contentmenu-workflow .state-proposed_to_internal_reviewer_waiting_advices,
-#plone-contentmenu-workflow .state-proposed_to_director {
+#plone-contentmenu-workflow .state-proposed_to_director,
+#plone-contentmenu-workflow .state-proposed_to_finance {
     border-radius: 0.5em 0.5em 0.5em 0.5em;
     background-color: DarkOrange;
     padding: 0 0.5em;
@@ -41,7 +42,8 @@
 .state-financial_advice_signed, .label-state-financial_advice_signed {
     color: blue !important;
 }
-#plone-contentmenu-workflow .state-validated {
+#plone-contentmenu-workflow .state-validated,
+#plone-contentmenu-workflow .state-financial_advice_signed {
     border-radius: 0.5em 0.5em 0.5em 0.5em;
     background-color: blue;
     padding: 0 0.5em;

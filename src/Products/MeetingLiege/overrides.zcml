@@ -15,9 +15,9 @@
             permission="zope2.View" />
     </configure>
 
-    <!-- the view that show available delays for an advice on the advices list,
-         adapt so financialmanagers may change delay for an advice -->
     <configure package="Products.PloneMeeting">
+        <!-- the view that show available delays for an advice on the advices list,
+             adapt so financialmanagers may change delay for an advice -->
         <browser:page
             for="Products.PloneMeeting.interfaces.IMeetingItem"
             name="advice-available-delays"

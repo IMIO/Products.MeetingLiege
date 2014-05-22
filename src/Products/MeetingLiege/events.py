@@ -59,12 +59,19 @@ def onAdviceTransition(advice, event):
             # 'advice_hide_during_redaction' is taken into account
             item.updateAdvices()
 
-    # remove given specific local roles when going back to 'advice_given' or 'advice_under_edit'
+    # when going to a end state, aka a state where advice can not be edited anymore, we
+    # give the 'MeetingFinanceEditor' to the _advisers finance group
+    # so they have read access for the 'advice_substep_number' field, the workflow
+    # will not give any permission to this role but we need the finance group to have this
+    # role on the advice
+    # nevertheless, we remove roles given to the localRoledGroupId
     if newStateId in ('advice_given', 'advice_under_edit', 'financial_advice_signed', ) and \
        not oldStateId in ('advice_given', 'advice_under_edit', 'financial_advice_signed', ):
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, adviserGroupId))
+        if newStateId in ('advice_given', 'financial_advice_signed', ):
+            advice.manage_addLocalRoles(adviserGroupId, ('MeetingFinanceEditor', 'Reader', ))
         return
 
     if not newStateId in stateToGroupSuffixMappings:
@@ -75,6 +82,7 @@ def onAdviceTransition(advice, event):
     # we use a specific 'MeetingFinanceEditor' role because the 'Editor' role is given to entire
     # _advisers group by default in PloneMeeting and it is used for non finance advices
     # finally remove 'MeetingFinanceEditor' given in previous state
+    advice.manage_delLocalRoles((adviserGroupId, ))
     advice.manage_addLocalRoles(adviserGroupId, ('Reader', ))
     advice.manage_addLocalRoles('%s_%s' % (advice.advice_group, stateToGroupSuffixMappings[newStateId]),
                                 ('MeetingFinanceEditor', ))

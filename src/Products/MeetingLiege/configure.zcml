@@ -79,6 +79,10 @@
 
 
   <!-- ##code-section configure.zcml.core -->
+  <permission
+    id="MeetingLiege.access_advice_substep_number"
+    title="MeetingLiege : access advice_substep_number field"
+  />
   <!-- ##/code-section configure.zcml.core -->
 
 </configure>

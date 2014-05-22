@@ -82,7 +82,7 @@ msgstr "Renvoyer au contrôleur financier"
 
 #. Default: "Back to proposed to financial manager"
 msgid "backToProposedToFinancialManager"
-msgstr "Renvoyer au gestionnaire financier"
+msgstr "Renvoyer au directeur financier"
 
 #. Default: "Back to proposed to financial reviewer"
 msgid "backToProposedToFinancialReviewer"
@@ -134,7 +134,7 @@ msgstr "Proposer au contrôleur financier"
 
 #. Default: "Propose to financial manager"
 msgid "proposeToFinancialManager"
-msgstr "Proposer au gestionnaire financier"
+msgstr "Proposer au directeur financier"
 
 #. Default: "Propose to financial reviewer"
 msgid "proposeToFinancialReviewer"
@@ -162,7 +162,7 @@ msgstr "Proposé au contrôleur financier"
 
 #. Default: "Proposed to financial manager"
 msgid "proposed_to_financial_manager"
-msgstr "Proposé au gestionnaire financier"
+msgstr "Proposé au directeur financier"
 
 #. Default: "Proposed to financial reviewer"
 msgid "proposed_to_financial_reviewer"
@@ -187,3 +187,11 @@ msgstr "Sans objet"
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"
 msgstr "Signer l'avis financier"
+
+#. Default: "Validate"
+msgid "validate"
+msgstr "Valider"
+
+#. Default: "Validated"
+msgid "validated"
+msgstr "Validé"

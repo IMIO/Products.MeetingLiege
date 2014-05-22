@@ -74,6 +74,8 @@ class AdviceTypeVocabulary(object):
         """"""
         terms = []
         cfg = context.portal_plonemeeting.getMeetingConfig(context)
+        if not cfg:
+            return SimpleVocabulary(terms)
         usedAdviceTypes = cfg.getUsedAdviceTypes()
         # make sure if an adviceType was used for context and it is no more available, it
         # appears in the vocabulary and is so useable...

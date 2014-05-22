@@ -183,3 +183,11 @@ msgstr ""
 #. Default: "Back to proposed to financial manager"
 msgid "backToProposedToFinancialManager"
 msgstr ""
+
+#. Default: "Validate"
+msgid "validate"
+msgstr ""
+
+#. Default: "Validated"
+msgid "validated"
+msgstr ""

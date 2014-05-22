@@ -61,8 +61,12 @@ msgstr ""
 msgid "icon_help_pre_accepted"
 msgstr ""
 
-#. Default: "Waiting advices"
+#. Default: "Advices asked by creator"
 msgid "icon_help_itemcreated_waiting_advices"
+msgstr ""
+
+#. Default: "Advices asked by internal reviewer"
+msgid "icon_help_proposed_to_internal_reviewer_waiting_advices"
 msgstr ""
 
 #. Default: "Proposed to administrative reviewer"

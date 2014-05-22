@@ -1379,6 +1379,7 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
+   <permission-role>MeetingReviewer</permission-role>
   </permission-map>
   <permission-map name="View"
                   acquired="False">
@@ -1395,6 +1396,127 @@
         title="proposed_to_internal_reviewer"
         i18n:attributes="title">
   <exit-transition transition_id="backToProposedToAdministrativeReviewer"/>
+  <exit-transition transition_id="proposeToDirector"/>
+  <exit-transition transition_id="askAdvicesByInternalReviewer"/>
+  <permission-map name="Access contents information"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+  <permission-map name="Delete objects"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingManager</permission-role>
+  </permission-map>
+  <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add MeetingFile"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add annex"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Read budget infos"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Read decision"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Read decision annex"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Read item observations"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Read optional advisers"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Write budget infos"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingBudgetImpactEditor</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Write decision"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Write decision annex"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Write item observations"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Write optional advisers"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="Review portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+  </permission-map>
+  <permission-map name="View"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingAdminReviewer</permission-role>
+   <permission-role>MeetingInternalReviewer</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
+   <permission-role>Reader</permission-role>
+  </permission-map>
+ </state>
+ <state state_id="proposed_to_internal_reviewer_waiting_advices"
+        title="proposed_to_internal_reviewer_waiting_advices"
+        i18n:attributes="title">
+  <exit-transition transition_id="backToProposedToInternalReviewer"/>
   <exit-transition transition_id="proposeToDirector"/>
   <permission-map name="Access contents information"
                   acquired="False">
@@ -1926,6 +2048,18 @@
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
  </transition>
+ <transition transition_id="askAdvicesByInternalReviewer"
+             title="askAdvicesByInternalReviewer"
+             new_state="proposed_to_internal_reviewer_waiting_advices"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <action url="" category="workflow" i18n:translate="">askAdvicesByInternalReviewer</action>
+  <guard>
+    <guard-expression>python:here.wfConditions().mayAskAdvicesByInternalReviewer()</guard-expression>
+  </guard>
+ </transition>
  <transition transition_id="askAdvicesByItemCreator"
              title="askAdvicesByItemCreator"
              new_state="itemcreated_waiting_advices"
@@ -1935,7 +2069,7 @@
              i18n:attributes="title">
   <action url="" category="workflow" i18n:translate="">askAdvicesByItemCreator</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayWaitAdvices()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayAskAdvicesByItemCreator()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToItemCreated"

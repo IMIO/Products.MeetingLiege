@@ -45,9 +45,9 @@ msgstr "<p>Avant de tester, nous vous recommandons de lire la <span class=\"link
 msgid "icon_help_accepted_but_modified"
 msgstr "Accepté avec modifications"
 
-#. Default: "Waiting advices"
+#. Default: "Advices asked by creator"
 msgid "icon_help_itemcreated_waiting_advices"
-msgstr "En attente des avis"
+msgstr "Avis demandés par le créateur"
 
 #. Default: "Pre accepted"
 msgid "icon_help_pre_accepted"
@@ -68,6 +68,10 @@ msgstr "Proposé aux finances"
 #. Default: "Proposed to internal reviewer"
 msgid "icon_help_proposed_to_internal_reviewer"
 msgstr "Proposé au validateur interne"
+
+#. Default: "Advices asked by internal reviewer"
+msgid "icon_help_proposed_to_internal_reviewer_waiting_advices"
+msgstr "Avis demandés par le validateur interne"
 
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
@@ -96,3 +100,4 @@ msgstr "Le point a été envoyé au Collège communal."
 #. Default: "The item has been successfully transfered to the council."
 msgid "sendto_meeting-config-council_success"
 msgstr "Le point a été envoyé au Conseil communal."
+

@@ -32,8 +32,16 @@ msgstr ""
 msgid "askAdvicesByItemCreator"
 msgstr ""
 
-#. Default: "Waiting advices"
+#. Default: "Ask advices"
+msgid "askAdvicesByInternalReviewer"
+msgstr ""
+
+#. Default: "Advices asked by creator"
 msgid "itemcreated_waiting_advices"
+msgstr ""
+
+#. Default: "Advices asked by internal reviewer"
+msgid "proposed_to_internal_reviewer_waiting_advices"
 msgstr ""
 
 #. Default: "Propose to administrative reviewer"

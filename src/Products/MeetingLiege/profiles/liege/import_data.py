@@ -173,12 +173,13 @@ collegeMeeting.itemsListVisibleColumns = ['state', 'proposingGroupAcronym', 'adv
                                           'annexes', 'annexesDecision', 'actions']
 collegeMeeting.itemColumns = ['creationDate', 'creator', 'state', 'annexes', 'annexesDecision',
                               'proposingGroupAcronym', 'advices', 'actions', 'meeting']
-collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices',)
-collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices',)
-collegeMeeting.itemAdviceViewStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
-                                       'itemcreated_waiting_advices', 'itemfrozen', 'proposed_to_director',
-                                       'proposed_to_administrative_reviewer', 'proposed_to_internal_reviewer',
-                                       'presented', 'refused', 'delayed', 'removed', 'validated')
+collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
+                                       'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
+                                       'proposed_to_director', 'validated', 'presented',
+                                       'itemfrozen', 'refused', 'delayed', 'removed',
+                                       'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.customAdvisers = [
     {'row_id': 'unique_id_002',
      'group': 'dirfin',

@@ -18,6 +18,7 @@
 
 .state-proposed_to_administrative_reviewer, .label-state-proposed_to_administrative_reviewer,
 .state-proposed_to_internal_reviewer, .label-state-proposed_to_internal_reviewer,
+.state-proposed_to_internal_reviewer_waiting_advices, .label-state-proposed_to_internal_reviewer_waiting_advices,
 .state-proposed_to_director, .label-state-proposed_to_director,
 .state-proposed_to_finance, .label-state-proposed_to_finance,
 .state-proposed_to_financial_controller, .label-state-proposed_to_financial_controller,
@@ -27,7 +28,8 @@
 }
 #plone-contentmenu-workflow .state-proposed_to_administrative_reviewer,
 #plone-contentmenu-workflow .state-proposed_to_internal_reviewer,
-#plone-contentmenu-workflow .state-proposed_to_director{
+#plone-contentmenu-workflow .state-proposed_to_internal_reviewer_waiting_advices,
+#plone-contentmenu-workflow .state-proposed_to_director {
     border-radius: 0.5em 0.5em 0.5em 0.5em;
     background-color: DarkOrange;
     padding: 0 0.5em;

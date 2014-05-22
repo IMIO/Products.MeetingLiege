@@ -199,6 +199,8 @@ class CustomMeetingItem(MeetingItem):
             res.append(('proposeToAdministrativeReviewer.png', 'icon_help_proposed_to_administrative_reviewer'))
         elif itemState == 'proposed_to_internal_reviewer':
             res.append(('proposeToInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer'))
+        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
+            res.append(('askAdvicesByInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer_waiting_advices'))
         elif itemState == 'proposed_to_director':
             res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
         elif itemState == 'proposed_to_finance':
@@ -449,7 +451,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security = ClassSecurityInfo()
 
 
-    security.declarePrivate('doWaitAdvices')
+    security.declarePrivate('doAskAdvicesByItemCreator')
     def doAskAdvicesByItemCreator(self, stateChange):
         pass
 
@@ -461,6 +463,10 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doProposeToInternalReviewer')
     def doProposeToInternalReviewer(self, stateChange):
         ''' '''
+        pass
+
+    security.declarePrivate('doAskAdvicesByInternalReviewer')
+    def doAskAdvicesByInternalReviewer(self, stateChange):
         pass
 
     security.declarePrivate('doProposeToDirector')
@@ -532,8 +538,17 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 return True
         return res
 
-    security.declarePublic('mayWaitAdvices')
-    def mayWaitAdvices(self):
+    security.declarePublic('mayAskAdvicesByItemCreator')
+    def mayAskAdvicesByItemCreator(self):
+        '''May advices be asked by item creator.'''
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayAskAdvicesByInternalReviewer')
+    def mayAskAdvicesByInternalReviewer(self):
+        '''May advices be asked by internal reviewer.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             res = True

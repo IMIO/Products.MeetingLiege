@@ -160,6 +160,7 @@
   <exit-transition transition_id="backToProposedToFinancialReviewer"/>
   <exit-transition transition_id="signFinancialAdvice"/>
   <exit-transition transition_id="backToProposedToFinancialController"/>
+  <exit-transition transition_id="giveAdvice"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -202,6 +203,7 @@
   <exit-transition transition_id="backToProposedToFinancialController"/>
   <exit-transition transition_id="proposeToFinancialManager"/>
   <exit-transition transition_id="signFinancialAdvice"/>
+  <exit-transition transition_id="giveAdvice"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>

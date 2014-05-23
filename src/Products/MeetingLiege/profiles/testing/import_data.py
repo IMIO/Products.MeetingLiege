@@ -150,10 +150,16 @@ collegeMeeting.maxDaysDecisions = 60
 collegeMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
-collegeMeeting.useAdvices = False
-collegeMeeting.itemAdviceStates = ['proposed', ]
-collegeMeeting.itemAdviceEditStates = ['proposed', 'validated']
-collegeMeeting.itemAdviceViewStates = ['presented', ]
+collegeMeeting.useAdvices = True
+collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_required_finance',
+                                  'positive', 'positive_with_remarks', 'negative', 'nil')
+collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
+                                       'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
+                                       'proposed_to_director', 'validated', 'presented',
+                                       'itemfrozen', 'refused', 'delayed', 'removed',
+                                       'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
@@ -261,10 +267,10 @@ councilMeeting.meetingDocFormats = ('odt', 'pdf')
 councilMeeting.usedItemAttributes = ('toDiscuss', 'associatedGroups', 'itemIsSigned',)
 councilMeeting.sortingMethodOnAddItem = 'on_categories'
 councilMeeting.useGroupsAsCategories = False
-councilMeeting.useAdvices = True
-councilMeeting.itemAdviceStates = ['proposed', ]
-councilMeeting.itemAdviceEditStates = ['proposed', 'validated']
-councilMeeting.itemAdviceViewStates = ['presented', ]
+councilMeeting.useAdvices = False
+councilMeeting.itemAdviceStates = []
+councilMeeting.itemAdviceEditStates = []
+councilMeeting.itemAdviceViewStates = []
 councilMeeting.transitionReinitializingDelays = 'backToItemCreated'
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']

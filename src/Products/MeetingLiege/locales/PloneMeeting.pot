@@ -20,11 +20,6 @@ msgstr ""
 msgid "Meeting config Council"
 msgstr ""
 
-#object_buttons
-#. Default: "Send to council"
-msgid "Send to council"
-msgstr ""
-
 #. Default: "The item has been successfully transfered to the council."
 msgid "sendto_meeting-config-council_success"
 msgstr ""
@@ -39,10 +34,6 @@ msgstr ""
 
 #. Default: "MeetingItemCouncil"
 msgid "predecessor_MeetingItemCouncil"
-msgstr ""
-
-#. Default: "Sent to council"
-msgid "Sent to council"
 msgstr ""
 
 #. Default: "Item created from a college item"
@@ -100,3 +91,4 @@ msgstr ""
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
 msgstr ""
+

@@ -93,6 +93,10 @@ msgstr ""
 msgid "negative_finance"
 msgstr ""
 
+#. Default: "Not required opinion"
+msgid "not_required_finance"
+msgstr ""
+
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
 msgstr ""

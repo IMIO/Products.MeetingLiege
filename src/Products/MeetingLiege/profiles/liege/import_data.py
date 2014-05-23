@@ -173,13 +173,6 @@ collegeMeeting.itemsListVisibleColumns = ['state', 'proposingGroupAcronym', 'adv
                                           'annexes', 'annexesDecision', 'actions']
 collegeMeeting.itemColumns = ['creationDate', 'creator', 'state', 'annexes', 'annexesDecision',
                               'proposingGroupAcronym', 'advices', 'actions', 'meeting']
-collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
-collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
-collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
-                                       'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
-                                       'proposed_to_director', 'validated', 'presented',
-                                       'itemfrozen', 'refused', 'delayed', 'removed',
-                                       'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.customAdvisers = [
     {'row_id': 'unique_id_002',
      'group': 'dirfin',
@@ -204,6 +197,15 @@ collegeMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
+collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_required_finance',
+                                  'positive', 'positive_with_remarks', 'negative', 'nil')
+collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
+                                       'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
+                                       'proposed_to_director', 'validated', 'presented',
+                                       'itemfrozen', 'refused', 'delayed', 'removed',
+                                       'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.enableAdviceInvalidation = False
 collegeMeeting.useCopies = True

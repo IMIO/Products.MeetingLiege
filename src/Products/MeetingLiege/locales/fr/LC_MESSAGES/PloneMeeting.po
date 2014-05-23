@@ -81,6 +81,10 @@ msgstr "Le point a été automatiquement validé car l'avis du service finance r
 msgid "negative_finance"
 msgstr "Avis finances défavorable"
 
+#. Default: "Not required opinion"
+msgid "not_required_finance"
+msgstr "Avis finances non requis"
+
 #. Default: "Favorable opinion"
 msgid "positive_finance"
 msgstr "Avis finances favorable"

@@ -67,8 +67,9 @@ class AdviceWFConditionsView(BrowserView):
     security.declarePublic('maySignFinancialAdvice')
 
     def maySignFinancialAdvice(self):
-        '''A financial reviewer may sign the advice if it is 'positive_finance', if not
-           this will be the financial manager that will be able to sign it.'''
+        '''A financial reviewer may sign the advice if it is 'positive_finance'
+           or 'not_required_finance', if not this will be the financial manager
+           that will be able to sign it.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             res = True  # At least at present

@@ -343,6 +343,7 @@ class CustomMeetingConfig(MeetingConfig):
         res = DisplayList((
             ("positive_finance", translate('positive_finance', domain=d, context=self.REQUEST)),
             ("negative_finance", translate('negative_finance', domain=d, context=self.REQUEST)),
+            ("not_required_finance", translate('not_required_finance', domain=d, context=self.REQUEST)),
             ("positive", translate('positive', domain=d, context=self.REQUEST)),
             ("positive_with_remarks", translate('positive_with_remarks', domain=d, context=self.REQUEST)),
             ("negative", translate('negative', domain=d, context=self.REQUEST)),
@@ -562,7 +563,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             can validate, the MeetingManager can bypass the validation process
             and validate an item that is in the state 'itemcreated';
           - it does have a finance advice : it will be automatically validated when
-            the advice will be 'signed' by the finance group if the advice type is 'positive_finance'
+            the advice will be 'signed' by the finance group if the advice type is 'positive_finance' or 'not_required_finance'
             or it can be manually validated by the director if item emergency has been asked
             and motivated on the item.
         """

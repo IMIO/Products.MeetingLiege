@@ -90,14 +90,14 @@ class AdviceTypeVocabulary(object):
             # we are on a finance group, only keep _finance advice types
             res = list(usedAdviceTypes)
             for adviceType in usedAdviceTypes:
-                if not adviceType in ('positive_finance', 'negative_finance'):
+                if not adviceType in ('positive_finance', 'negative_finance', 'not_required_finance', ):
                     res.remove(adviceType)
             usedAdviceTypes = tuple(res)
         else:
             # not a finance group, remove specific _finance types
             res = list(usedAdviceTypes)
             for adviceType in usedAdviceTypes:
-                if adviceType in ('positive_finance', 'negative_finance'):
+                if adviceType in ('positive_finance', 'negative_finance', 'not_required_finance', ):
                     res.remove(adviceType)
             usedAdviceTypes = tuple(res)
 

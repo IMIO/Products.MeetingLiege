@@ -194,9 +194,9 @@ msgstr "Signer l'avis financier"
 
 #. Default: "Validate"
 msgid "validate"
-msgstr "Valider"
+msgstr "Proposer à la séance"
 
 #. Default: "Validated"
 msgid "validated"
-msgstr "Validé"
+msgstr "Proposé à la séance"
 

@@ -92,3 +92,27 @@ msgstr ""
 msgid "item_wf_changed_finance_advice_positive"
 msgstr ""
 
+#. Default: "Nil"
+msgid "nil"
+msgstr ""
+
+#. Default: "Items come validated"
+msgid "wa_items_come_validated"
+msgstr ""
+
+#. Default: "Title"
+msgid "MeetingLiege_label_titleForCouncil"
+msgstr ""
+
+#. Default: "Privacy"
+msgid "MeetingLiege_label_privacyForCouncil"
+msgstr ""
+
+#. Default: "Data that will be used once item will be in the council"
+msgid "Data that will be used once item will be in the council"
+msgstr ""
+
+#. Default: "See/hide data used for council item"
+msgid "See/hide data used for council item"
+msgstr ""
+

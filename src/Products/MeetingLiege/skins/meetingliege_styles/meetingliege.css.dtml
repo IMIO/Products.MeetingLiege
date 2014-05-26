@@ -186,6 +186,15 @@
     border: 2px solid grey;
 }
 
+/* do the field 'titleForCouncil' take 100% width */
+.field input[type="text"][name$="titleForCouncil"] {
+    width: 100%;
+    font-size: 2em;
+}
+
+#content a#showDataForCouncil {
+    border-bottom: 1px dotted &dtml-linkColor;;
+}
 /* </dtml-with> */
 /* DOCUMENTATION ON PRE-DEFINED PROPERTIES FROM PLONE */
 

@@ -327,6 +327,16 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
+    security.declareProtected('Modify portal content', 'onDuplicated')
+    def onDuplicated(self, original):
+        '''When an item is sent to the Council, we need to initialize
+           title and privacy from what was defined on the college item.'''
+        item = self.getSelf()
+        if original.portal_type == 'MeetingItemCollege' and item.portal_type == 'MeetingItemCouncil':
+            # we just sent an item from college to council
+            item.setTitle(original.getTitleForCouncil())
+            item.setPrivacy(original.getPrivacyForCouncil())
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the

@@ -15,6 +15,10 @@ msgstr ""
 "Domain: PloneMeeting\n"
 "X-is-fallback-for: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr\n"
 
+#. Default: "Data that will be used once item will be in the council"
+msgid "Data that will be used once item will be in the council"
+msgstr "Données utilisées lorsque le point sera dans le Conseil"
+
 # portal_tabs
 #. Default: "College"
 msgid "Meeting config College"
@@ -23,6 +27,18 @@ msgstr "Collège communal"
 #. Default: "Council"
 msgid "Meeting config Council"
 msgstr "Conseil communal"
+
+#. Default: "Privacy"
+msgid "MeetingLiege_label_privacyForCouncil"
+msgstr "Niveau de confidentialité"
+
+#. Default: "Title"
+msgid "MeetingLiege_label_titleForCouncil"
+msgstr "Titre"
+
+#. Default: "See/hide data used for council item"
+msgid "See/hide data used for council item"
+msgstr "Montrer/cacher données utilisées pour le point dans le conseil"
 
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
@@ -72,6 +88,10 @@ msgstr "Le point a été automatiquement validé car l'avis du service finance r
 msgid "negative_finance"
 msgstr "Avis finances défavorable"
 
+#. Default: "Nil"
+msgid "nil"
+msgstr "Pas concerné"
+
 #. Default: "Not required opinion"
 msgid "not_required_finance"
 msgstr "Avis finances non requis"
@@ -96,3 +116,6 @@ msgstr "Le point a été envoyé au Collège communal."
 msgid "sendto_meeting-config-council_success"
 msgstr "Le point a été envoyé au Conseil communal."
 
+#. Default: "Items come validated"
+msgid "wa_items_come_validated"
+msgstr "Les points arrivent proposés à la séance"

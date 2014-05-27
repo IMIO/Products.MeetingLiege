@@ -34,7 +34,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
-from Products.PloneMeeting.utils import checkPermission
+from Products.PloneMeeting.utils import checkPermission, prepareSearchValue
 from Products.PloneMeeting.utils import workday
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -361,6 +361,37 @@ class CustomMeetingConfig(MeetingConfig):
         ))
         return res
     MeetingConfig.listAdviceTypes = listAdviceTypes
+
+    security.declarePublic('searchItemsToValidate')
+    def searchItemsToValidate(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
+        '''See docstring in Products.PloneMeeting.MeetingConfig.
+           We override it here because relevant groupIds and wf state are no the same...'''
+        member = self.portal_membership.getAuthenticatedMember()
+        groupIds = self.portal_groups.getGroupsForPrincipal(member)
+        res = []
+        for groupId in groupIds:
+            if groupId.endswith('_reviewers'):
+                # append group name without suffix
+                res.append(groupId[:-10])
+        # if we use pre_validation, the state in which are items to validate is 'prevalidated'
+        # if not using the WFAdaptation 'pre_validation', the items are in state 'proposed'
+        usePreValidationWFAdaptation = 'pre_validation' in self.getWorkflowAdaptations()
+        params = {'portal_type': self.getItemTypeName(),
+                  'getProposingGroup': res,
+                  # XXX change by MeetingLiege
+                  # 'review_state': usePreValidationWFAdaptation and ('prevalidated', ) or ('proposed', ),
+                  'review_state': usePreValidationWFAdaptation and ('prevalidated', ) or ('proposed_to_director', ),
+                  'sort_on': sortKey,
+                  'sort_order': sortOrder
+                  }
+        # Manage filter
+        if filterKey:
+            params[filterKey] = prepareSearchValue(filterValue)
+        # update params with kwargs
+        params.update(kwargs)
+        # Perform the query in portal_catalog
+        return self.portal_catalog(**params)
+    MeetingConfig.searchItemsToValidate = searchItemsToValidate
 
 
 class CustomMeetingGroup(MeetingGroup):

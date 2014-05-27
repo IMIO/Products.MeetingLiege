@@ -64,12 +64,12 @@ class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
                         'backToProposedToInternalReviewer',
                         'backToProposedToAdministrativeReviewer',
                         'backToItemCreated', ),
-        'proposed': ('backToItemFrozen',
-                     'backToPresented',
-                     'backToValidated',
-                     'backToProposedToDirector',
-                     'backToProposedToInternalReviewer',
-                     'backToProposedToAdministrativeReviewer', ),
+        'proposed_to_director': ('backToItemFrozen',
+                                 'backToPresented',
+                                 'backToValidated',
+                                 'backToProposedToDirector',
+                                 'backToProposedToInternalReviewer',
+                                 'backToProposedToAdministrativeReviewer', ),
         'validated': ('backToItemFrozen',
                       'backToPresented',
                       'backToValidated', )}
@@ -79,16 +79,14 @@ class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
                         'backToValidated',
                         'backToProposedToDirector',
                         'backToItemCreated', ),
-        'proposed': ('backToItemFrozen',
-                     'backToPresented',
-                     'backToValidated',
-                     'backToProposedToDirector', ),
         'validated': ('backToItemFrozen',
                       'backToPresented',
                       'backToValidated', )}
 
-    WF_STATE_NAME_MAPPINGS = {'proposed': 'proposed_to_director',
-                              'validated': 'validated'}
+    WF_STATE_NAME_MAPPINGS = {'itemcreated': 'itemcreated',
+                              'proposed': 'proposed_to_director',
+                              'validated': 'validated',
+                              'presented': 'presented', }
 
     def _createMeetingWithItems(self, withItems=True, meetingDate=DateTime()):
         '''Create a meeting with a bunch of items.

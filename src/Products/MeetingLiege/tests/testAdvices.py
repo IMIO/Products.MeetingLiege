@@ -29,14 +29,6 @@ class testAdvices(MeetingLiegeTestCase, mcta):
     '''Tests various aspects of advices management.
        Advices are enabled for PloneGov Assembly, not for PloneMeeting Assembly.'''
 
-    def setUp(self):
-        """Redefine advices related states."""
-        super(mcta, self).setUp()
-        self.setMeetingConfig(self.meetingConfig2.getId())
-        self.meetingConfig.setItemAdviceStates(('proposed_to_director', 'validated', ))
-        self.meetingConfig.setItemAdviceEditStates(('proposed_to_director', ))
-        self.meetingConfig.setItemAdviceViewStates(('presented', ))
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

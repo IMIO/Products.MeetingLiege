@@ -14,7 +14,10 @@ def patched_default_advice_hide_during_redaction():
     # if finance group in group vocabulary, we use special _finance advice types
     factory = queryUtility(IVocabularyFactory, u'Products.PloneMeeting.content.advice.advice_group_vocabulary')
     site = getSite()
-    context = site.REQUEST['PUBLISHED'].context
+    published = site.REQUEST.get('PUBLISHED', '')
+    if not published:
+        return False
+    context = published.context
     groupVocab = factory(context)
     groupIds = set([group.value for group in groupVocab._terms])
     if set(FINANCE_GROUP_IDS).intersection(groupIds):

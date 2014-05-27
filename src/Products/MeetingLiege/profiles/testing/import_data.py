@@ -141,6 +141,11 @@ collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeet
 collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
 collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
+collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewer',
+                                                 'proposeToInternalReviewer',
+                                                 'proposeToDirector',
+                                                 'validate',
+                                                 'present', )
 collegeMeeting.transitionsToConfirm = []
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
@@ -153,13 +158,11 @@ collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
 collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_required_finance',
                                   'positive', 'positive_with_remarks', 'negative', 'nil')
-collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
-collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
-collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
-                                       'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
-                                       'proposed_to_director', 'validated', 'presented',
-                                       'itemfrozen', 'refused', 'delayed', 'removed',
+collegeMeeting.itemAdviceStates = ('proposed_to_director')
+collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
+collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'delayed', 'removed',
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
+collegeMeeting.transitionReinitializingDelays = 'backToItemCreated'
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
@@ -169,8 +172,8 @@ collegeMeeting.meetingPowerObserversStates = ('frozen', 'published', 'decided', 
 collegeMeeting.useCopies = True
 collegeMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
 collegeMeeting.podTemplates = [agendaTemplate, decisionsTemplate, itemTemplate]
-collegeMeeting.meetingConfigsToCloneTo = ['meeting-config-council', ]
-
+collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
+                                           'trigger_workflow_transitions_until': '__nothing__'},)
 collegeMeeting.recurringItems = [
     RecurringItemDescriptor(
         id='recItem1',
@@ -254,6 +257,7 @@ councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeet
 councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions'
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
+councilMeeting.transitionsForPresentingAnItem = ('present', )
 councilMeeting.transitionsToConfirm = []
 councilMeeting.meetingTopicStates = ('created', 'frozen', 'published')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
@@ -271,7 +275,6 @@ councilMeeting.useAdvices = False
 councilMeeting.itemAdviceStates = []
 councilMeeting.itemAdviceEditStates = []
 councilMeeting.itemAdviceViewStates = []
-councilMeeting.transitionReinitializingDelays = 'backToItemCreated'
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
 councilMeeting.itemPowerObserversStates = collegeMeeting.itemPowerObserversStates

@@ -22,73 +22,14 @@
 # 02110-1301, USA.
 #
 
-from DateTime import DateTime
-
-from Products.PloneMeeting.config import POWEROBSERVERS_GROUP_SUFFIX
-from Products.MeetingLalouviere.tests.MeetingLalouviereTestCase import MeetingLalouviereTestCase
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testMeetingItem import testMeetingItem as mctmi
 
 
-class testMeetingItem(MeetingLalouviereTestCase, mctmi):
+class testMeetingItem(MeetingLiegeTestCase, mctmi):
     """
         Tests the MeetingItem class methods.
     """
-
-    def test_subproduct_call_IsPrivacyViewable(self):
-        '''
-          Original test, see doc string in PloneMeeting.
-          Here, as soon as a user can access an item, the item isPrivacyViewable.
-          See adapters.isPrivacyViewable overrided method.
-        '''
-        self.setMeetingConfig(self.meetingConfig2.getId())
-        # we will use the copyGroups to check who can fully access item and who can not
-        self.meetingConfig.setItemCopyGroupsStates(('presented', ))
-        # make powerobserver1 a PowerObserver
-        self.portal.portal_groups.addPrincipalToGroup('powerobserver1', '%s_%s' %
-                                                      (self.meetingConfig.getId(), POWEROBSERVERS_GROUP_SUFFIX))
-        # create a 'public' and a 'secret' item
-        self.changeUser('pmManager')
-        # add copyGroups that check that 'external' viewers can access the item but not isPrivacyViewable
-        publicItem = self.create('MeetingItem')
-        publicItem.setCategory('development')
-        publicItem.setCopyGroups('vendors_reviewers')
-        publicItem.reindexObject()
-        secretItem = self.create('MeetingItem')
-        secretItem.setPrivacy('secret')
-        secretItem.setCategory('development')
-        secretItem.setCopyGroups('vendors_reviewers')
-        secretItem.reindexObject()
-        self.create('Meeting', date=DateTime('2013/06/01 08:00:00'))
-        self.presentItem(publicItem)
-        self.presentItem(secretItem)
-        # log in as a user that is in copyGroups
-        self.changeUser('pmReviewer2')
-        member = self.portal.portal_membership.getAuthenticatedMember()
-        # the user can see the item because he is in the copyGroups
-        # not because he is in the same proposing group
-        secretItemPloneGroupsOfProposingGroup = getattr(self.tool,
-                                                        secretItem.getProposingGroup()).getPloneGroups(idsOnly=True)
-        self.failIf(set(secretItemPloneGroupsOfProposingGroup).intersection
-                    (set(self.portal.portal_groups.getGroupsForPrincipal(member))))
-        # pmReviewer2 can access the item and isPrivacyViewable
-        self.failUnless(self.hasPermission('View', secretItem))
-        self.failUnless(self.hasPermission('View', publicItem))
-        # XXX Begin change for MeetingLalouviere
-        self.failUnless(secretItem.isPrivacyViewable())
-        # XXX End change for MeetingLalouviere
-        self.failUnless(publicItem.isPrivacyViewable())
-        # a user in the same proposingGroup can fully access the secret item
-        self.changeUser('pmCreator1')
-        self.failUnless(secretItem.isPrivacyViewable())
-        self.failUnless(publicItem.isPrivacyViewable())
-        # MeetingManager
-        self.changeUser('pmManager')
-        self.failUnless(secretItem.isPrivacyViewable())
-        self.failUnless(publicItem.isPrivacyViewable())
-        # PowerObserver
-        self.changeUser('powerobserver1')
-        self.failUnless(secretItem.isPrivacyViewable())
-        self.failUnless(publicItem.isPrivacyViewable())
 
 
 def test_suite():

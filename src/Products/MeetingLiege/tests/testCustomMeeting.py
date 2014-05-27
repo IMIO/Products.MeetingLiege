@@ -22,67 +22,10 @@
 # 02110-1301, USA.
 #
 
-from Products.MeetingLalouviere.tests.MeetingLalouviereTestCase import \
-    MeetingLalouviereTestCase
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
-class testCustomMeeting(MeetingLalouviereTestCase):
+class testCustomMeeting(MeetingLiegeTestCase):
     """
         Tests the Meeting adapted methods
     """
-
-    def test_getCategories(self):
-        """
-          Check what are returned while getting different types of categories
-          This method is used in "meeting-config-council"
-        """
-        self.meetingConfig = self.meetingConfig2
-        # add some "Suppl" categories
-        self.changeUser('admin')
-        supplCategories = ['deployment-1er-supplement',
-                           'maintenance-1er-supplement',
-                           'development-1er-supplement',
-                           'events-1er-supplement',
-                           'research-1er-supplement',
-                           'projects-1er-supplement',
-                           'marketing-1er-supplement',
-                           'subproducts-1er-supplement',
-                           'points-conseillers-2eme-supplement',
-                           'points-conseillers-3eme-supplement']
-        for supplCat in supplCategories:
-            newCatId = self.meetingConfig.categories.invokeFactory('MeetingCategory',
-                                                                   id=supplCat,
-                                                                   title='supplCat')
-            newCat = getattr(self.meetingConfig.categories, newCatId)
-            newCat.processForm()
-        self.changeUser('pmManager')
-        m = self.create('Meeting', date='2009/11/26 09:00:00')
-        expectedNormal = ['deployment',
-                          'maintenance',
-                          'development',
-                          'events',
-                          'research',
-                          'projects',
-                          'marketing',
-                          'subproducts']
-        self.assertEquals(m.getNormalCategories(), expectedNormal)
-
-        expectedFirstSuppl = ['deployment-1er-supplement',
-                              'maintenance-1er-supplement',
-                              'development-1er-supplement',
-                              'events-1er-supplement',
-                              'research-1er-supplement',
-                              'projects-1er-supplement',
-                              'marketing-1er-supplement',
-                              'subproducts-1er-supplement']
-        self.assertEquals(m.getFirstSupplCategories(), expectedFirstSuppl)
-        expectedSecondSuppl = ['points-conseillers-2eme-supplement']
-        self.assertEquals(m.getSecondSupplCategories(), expectedSecondSuppl)
-        expectedThirdSuppl = ['points-conseillers-3eme-supplement']
-        self.assertEquals(m.getThirdSupplCategories(), expectedThirdSuppl)
-
-    def test_getAvailableItems(self):
-        '''
-          Already tested in MeetingLaouviere.tests.testMeeting.py
-        '''
-        pass

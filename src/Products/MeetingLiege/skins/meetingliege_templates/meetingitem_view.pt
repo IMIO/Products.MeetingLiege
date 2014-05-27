@@ -207,8 +207,11 @@
               <i style="text-align: left;"><span i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span></i>:&nbsp;&nbsp;
                  <tal:displayOtherMeetingConfigsClonableTo tal:condition="otherMCs">
                     <span metal:use-macro="python: here.widget('otherMeetingConfigsClonableTo', mode='view')" />
-        <br />
-        [<a href="#" id="showDataForCouncil" i18n:translate="">See/hide data used for council item</a>]
+        <img src="show_council_data.png"
+             id="showDataForCouncil"
+             style="cursor: pointer;"
+             tal:attributes="src string:${portal_url}/show_council_data.png"
+             i18n:attributes="title" title="See/hide data used for council item" />
         <script type="text/javascript">
             $( "#showDataForCouncil" ).bind( "click", function(event) {
                 event.preventDefault();
@@ -216,7 +219,7 @@
                 dataWhenSentToCouncil.fadeToggle();
                 });
         </script>
-        <fieldset id="dataWhenSentToCouncil" style="display: none;">
+        <fieldset id="dataWhenSentToCouncil" style="display: none; margin-top: 0;">
             <legend i18n:translate="">Data that will be used once item will be in the council</legend>
             <i><span i18n:translate="MeetingLiege_label_titleForCouncil"></span></i>:&nbsp;&nbsp;
             <span metal:use-macro="python: here.widget('titleForCouncil', mode='view')" />

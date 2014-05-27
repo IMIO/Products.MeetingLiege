@@ -17,7 +17,7 @@ msgstr ""
 
 #. Default: "Data that will be used once item will be in the council"
 msgid "Data that will be used once item will be in the council"
-msgstr "Données utilisées lorsque le point sera dans le Conseil"
+msgstr "Données utilisées pour le point Conseil"
 
 # portal_tabs
 #. Default: "College"
@@ -38,7 +38,7 @@ msgstr "Titre"
 
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
-msgstr "Montrer/cacher données utilisées pour le point dans le conseil"
+msgstr "Montrer/cacher données utilisées pour le point Conseil"
 
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"

@@ -61,14 +61,36 @@ pmReviewer2 = UserDescriptor('pmReviewer2', [])
 pmAdviser1 = UserDescriptor('pmAdviser1', [])
 voter1 = UserDescriptor('voter1', [], fullname='M. Voter One')
 voter2 = UserDescriptor('voter2', [], fullname='M. Voter Two')
-powerobserver1 = UserDescriptor('powerobserver1', [], fullname='M. Power Observer1')
-# powerobserver1 is MeetingPowerObserverLocal because in the meetingPma '_powerobservers' group
-plonemeeting_assembly_powerobservers = PloneGroupDescriptor('meeting-config-council_powerobservers',
-                                                            'meeting-config-council_powerobservers',
-                                                            [])
-powerobserver1.ploneGroups = [plonemeeting_assembly_powerobservers, ]
-powerobserver2 = UserDescriptor('powerobserver2', [], fullname='M. Power Observer2')
+powerobserver1 = UserDescriptor('powerobserver1',
+                                [],
+                                email="powerobserver1@plonemeeting.org",
+                                fullname='M. Power Observer1')
+# powerobserver1 is 'power observer' because in the meeting-config-college '_powerobservers' group
+college_powerobservers = PloneGroupDescriptor('meeting-config-college_powerobservers',
+                                              'meeting-config-college_powerobservers',
+                                              [])
+powerobserver1.ploneGroups = [college_powerobservers, ]
+powerobserver2 = UserDescriptor('powerobserver2',
+                                [],
+                                email="powerobserver2@plonemeeting.org",
+                                fullname='M. Power Observer2')
+restrictedpowerobserver1 = UserDescriptor('restrictedpowerobserver1',
+                                          [],
+                                          email="restrictedpowerobserver1@plonemeeting.org",
+                                          fullname='M. Restricted Power Observer 1')
+college_restrictedpowerobservers = PloneGroupDescriptor('meeting-config-college_restrictedpowerobservers',
+                                                        'meeting-config-college_restrictedpowerobservers',
+                                                        [])
+restrictedpowerobserver1.ploneGroups = [college_restrictedpowerobservers, ]
+restrictedpowerobserver2 = UserDescriptor('restrictedpowerobserver2',
+                                          [],
+                                          email="restrictedpowerobserver2@plonemeeting.org",
+                                          fullname='M. Restricted Power Observer 2')
+council_restrictedpowerobservers = PloneGroupDescriptor('meeting-config-council_restrictedpowerobservers',
+                                                        'meeting-config-council_restrictedpowerobservers',
+                                                        [])
 
+restrictedpowerobserver2.ploneGroups = [council_restrictedpowerobservers, ]
 developers = GroupDescriptor('developers', 'Developers', 'Devel')
 developers.creators.append(pmCreator1)
 developers.creators.append(pmCreator1b)
@@ -293,5 +315,6 @@ data = PloneMeetingConfiguration(
     meetingConfigs=(collegeMeeting, councilMeeting),
     groups=(developers, vendors, endUsers))
 data.unoEnabledPython = '/usr/bin/python'
-data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2]
+data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
+                           restrictedpowerobserver1, restrictedpowerobserver2]
 # ------------------------------------------------------------------------------

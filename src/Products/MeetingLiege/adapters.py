@@ -634,6 +634,16 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = True
         return res
 
+    security.declarePublic('mayDecide')
+    def mayDecide(self):
+        '''We may decide an item if the linked meeting is in relevant state.'''
+        res = False
+        meeting = self.context.getMeeting()
+        if checkPermission(ReviewPortalContent, self.context) and \
+           meeting and (meeting.queryState() in ['decided', 'closed', ]):
+            res = True
+        return res
+
     security.declarePublic('mayCorrect')
     def mayCorrect(self):
         # Check with the default PloneMeeting method and our test if res is
@@ -678,6 +688,21 @@ class MeetingCouncilLiegeWorkflowActions(MeetingWorkflowActions):
     implements(IMeetingCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
+    def _adaptEveryItemsOnMeetingClosure(self):
+        """Helper method for accepting every items."""
+        # Every item that is not decided will be automatically set to "accepted"
+        for item in self.context.getAllItems():
+            if item.queryState() == 'presented':
+                self.context.portal_workflow.doActionFor(item, 'itemfreeze')
+            if item.queryState() in ['itemfrozen', 'pre_accepted', ]:
+                self.context.portal_workflow.doActionFor(item, 'accept')
+
+    security.declarePrivate('doBackToCreated')
+    def doBackToCreated(self, stateChange):
+        '''When a meeting go back to the "created" state, for example the
+           meeting manager wants to add an item, we do not do anything.'''
+        pass
+
 
 class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -686,10 +711,40 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     implements(IMeetingCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    def __init__(self, meeting):
-        self.context = meeting
-        customAcceptItemsStates = ('created', 'in_committee', 'in_council', )
-        self.acceptItemsStates = customAcceptItemsStates
+    security.declarePublic('mayFreeze')
+    def mayFreeze(self):
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True  # At least at present
+            if not self.context.getRawItems():
+                res = No(self.context.utranslate('item_required_to_publish'))
+        return res
+
+    security.declarePublic('mayClose')
+    def mayClose(self):
+        res = False
+        # The user just needs the "Review portal content" permission on the
+        # object to close it.
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayDecide')
+    def mayDecide(self):
+        res = False
+        if checkPermission(ReviewPortalContent, self.context) and \
+           (not self._allItemsAreDelayed()):
+            res = True
+        return res
+
+    security.declarePublic('mayChangeItemsOrder')
+    def mayChangeItemsOrder(self):
+        '''We can change the order if the meeting is not closed'''
+        res = False
+        if checkPermission(ModifyPortalContent, self.context) and \
+           self.context.queryState() not in ('closed'):
+            res = True
+        return res
 
     security.declarePublic('mayCorrect')
     def mayCorrect(self):
@@ -743,21 +798,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         self.context = item  # Implements IMeetingItem
         self.sm = getSecurityManager()
 
-    security.declarePublic('mayProposeToDirector')
-    def mayProposeToDirector(self):
-        """
-          Check that the user has the 'Review portal content'
-          If the item comes from the college, check that it has a defined
-          'category'
-        """
-        # In the case the item comes from the college
-        if not self.context.getCategory():
-            return False
-        if checkPermission(ReviewPortalContent, self.context) and \
-           (not self.context.isDefinedInTool()):
-            return True
-        return False
-
     security.declarePublic('mayCorrect')
     def mayCorrect(self):
         # Check with the default PloneMeeting method and our test if res is
@@ -782,6 +822,16 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                         res = True
                 else:
                     res = True
+        return res
+
+    security.declarePublic('mayDecide')
+    def mayDecide(self):
+        '''We may decide an item if the linked meeting is in relevant state.'''
+        res = False
+        meeting = self.context.getMeeting()
+        if checkPermission(ReviewPortalContent, self.context) and \
+           meeting and (meeting.queryState() in ['decided', 'closed', ]):
+            res = True
         return res
 
     security.declarePublic('isLateFor')

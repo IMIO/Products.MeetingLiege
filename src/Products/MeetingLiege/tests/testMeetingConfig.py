@@ -21,6 +21,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #
+
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testMeetingConfig import testMeetingConfig as mctmc
 
@@ -28,11 +29,11 @@ from Products.MeetingCommunes.tests.testMeetingConfig import testMeetingConfig a
 class testMeetingConfig(MeetingLiegeTestCase, mctmc):
     '''Call testMeetingConfig tests.'''
 
-    def test_subproduct_call_searchItemsToPrevalidate(self):
+    def test_subproduct_call_SearchItemsToPrevalidate(self):
         '''No sense...'''
         pass
 
-    def test_subproduct_call_searchItemsToValidate(self):
+    def test_subproduct_call_SearchItemsToValidate(self):
         '''Used in the meeting-config-council.'''
         # create an item
         self.changeUser('pmCreator1')

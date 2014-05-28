@@ -48,9 +48,8 @@ from Products.MeetingLiege.interfaces import \
     IMeetingCouncilLiegeWorkflowConditions, IMeetingCouncilLiegeWorkflowActions
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
-# disable most of wfAdaptations
-customWfAdaptations = ('return_to_proposing_group',
-                       'hide_decisions_when_under_writing', )
+# disable every wfAdaptations
+customWfAdaptations = ()
 MeetingConfig.wfAdaptations = customWfAdaptations
 
 

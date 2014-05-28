@@ -22,11 +22,11 @@
 # 02110-1301, USA.
 #
 
-from Products.MeetingLalouviere.tests.MeetingLalouviereTestCase import MeetingLalouviereTestCase
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testPodTemplates import testPodTemplates as mctpt
 
 
-class testPodTemplates(MeetingLalouviereTestCase, mctpt):
+class testPodTemplates(MeetingLiegeTestCase, mctpt):
     '''Tests various aspects of document generation through POD templates.'''
 
 

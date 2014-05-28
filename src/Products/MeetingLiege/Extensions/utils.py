@@ -147,7 +147,7 @@ def import_meetingsUsersAndRoles_from_csv(self, fname=None):
 
     return '\n'.join(out)
 
-def import_meetingsCategories_from_csv(self, meeting_config = '', isClassifier=False, fname=None):
+def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=False, fname=None):
     """
       Import the MeetingCategories from the 'csv file' (meeting_config, isClassifier and fname received as parameter)
     """
@@ -174,7 +174,7 @@ def import_meetingsCategories_from_csv(self, meeting_config = '', isClassifier=F
     from Products.CMFPlone.utils import normalizeString
     from Products.PloneMeeting.profiles import CategoryDescriptor
 
-    meetingConfig = getattr(pm, meeting_config)
+    meetingConfig = getattr(pm, meeting_config, None)
     if isClassifier:
         catFolder = meetingConfig.classifiers
     else:
@@ -189,9 +189,14 @@ def import_meetingsCategories_from_csv(self, meeting_config = '', isClassifier=F
                 catDescr  = CategoryDescriptor(row_id, title=row['title'], description=row['description'], active=row['actif'])
                 meetingConfig.addCategory(catDescr, classifier = isClassifier)
 
-                cat = getattr(catFolder,row_id)
+                cat = getattr(catFolder,row_id, None)
                 if cat :
                     cat.setCategoryId(row['categoryId'])
+                    groupId = normalizeString(row['service'], self)
+                    if getattr(pm, groupId, None):
+                        cat.setUsingGroups((groupId,))
+                    elif groupId:
+                        out.append("Restricted group %s not found" % groupId)
                 out.append("Category (or Classifier) %s added" % row_id)
             except Exception, message:
                 out.append('error with %s - %s : %s'%(row_id,row['title'],message))

@@ -24,4 +24,4 @@ def patched_default_advice_hide_during_redaction():
         return True
     return False
 
-IMeetingAdvice['advice_hide_during_redaction'].defaultFactory = patched_default_advice_hide_during_redaction
+#IMeetingAdvice['advice_hide_during_redaction'].defaultFactory = patched_default_advice_hide_during_redaction

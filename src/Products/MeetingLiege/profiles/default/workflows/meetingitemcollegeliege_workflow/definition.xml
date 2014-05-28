@@ -617,8 +617,8 @@
   <exit-transition transition_id="refuse"/>
   <exit-transition transition_id="delay"/>
   <exit-transition transition_id="backToPresented"/>
-  <exit-transition transition_id="acceptButModify"/>
-  <exit-transition transition_id="preAccept"/>
+  <exit-transition transition_id="accept_but_modify"/>
+  <exit-transition transition_id="pre_accept"/>
   <exit-transition transition_id="remove"/>
   <permission-map name="Access contents information"
                   acquired="False">
@@ -752,7 +752,7 @@
  <state state_id="pre_accepted"
         title="pre_accepted"
         i18n:attributes="title">
-  <exit-transition transition_id="acceptButModify"/>
+  <exit-transition transition_id="accept_but_modify"/>
   <exit-transition transition_id="accept"/>
   <exit-transition transition_id="backToItemFrozen"/>
   <permission-map name="Access contents information"
@@ -2036,14 +2036,14 @@
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="acceptButModify"
-             title="acceptButModify"
+ <transition transition_id="accept_but_modify"
+             title="accept_but_modify"
              new_state="accepted_but_modified"
              trigger="USER"
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">acceptButModify</action>
+  <action url="" category="workflow" i18n:translate="">accept_but_modify</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2180,14 +2180,14 @@
     <guard-expression>python:here.wfConditions().mayFreeze()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="preAccept"
-             title="preAccept"
+ <transition transition_id="pre_accept"
+             title="pre_accept"
              new_state="pre_accepted"
              trigger="USER"
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">preAccept</action>
+  <action url="" category="workflow" i18n:translate="">pre_accept</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>

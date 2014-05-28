@@ -33,7 +33,7 @@ msgid "MeetingItemCouncil"
 msgstr "Point Conseil communal"
 
 #. Default: "Accept with modifications"
-msgid "acceptButModify"
+msgid "accept_but_modify"
 msgstr "Accepter avec modifications"
 
 #. Default: "Accepted with modifications"
@@ -113,7 +113,7 @@ msgid "itemcreated_waiting_advices"
 msgstr "Avis demandé par le créateur"
 
 #. Default: "Pre accept"
-msgid "preAccept"
+msgid "pre_accept"
 msgstr "Accepter provisoirement"
 
 #. Default: "Pre accepted"

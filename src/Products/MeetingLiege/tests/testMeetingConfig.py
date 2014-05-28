@@ -21,11 +21,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #
-from Products.MeetingLalouviere.tests.MeetingLalouviereTestCase import MeetingLalouviereTestCase
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testMeetingConfig import testMeetingConfig as mctmc
 
 
-class testMeetingConfig(MeetingLalouviereTestCase, mctmc):
+class testMeetingConfig(MeetingLiegeTestCase, mctmc):
     '''Call testMeetingConfig tests.'''
 
     def test_subproduct_call_searchItemsToPrevalidate(self):
@@ -34,7 +34,6 @@ class testMeetingConfig(MeetingLalouviereTestCase, mctmc):
 
     def test_subproduct_call_searchItemsToValidate(self):
         '''Used in the meeting-config-council.'''
-        self.setMeetingConfig(self.meetingConfig2.getId())
         # create an item
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
@@ -47,7 +46,7 @@ class testMeetingConfig(MeetingLalouviereTestCase, mctmc):
         # but not able to really validate the new item
         self.meetingConfig.setUseCopies(True)
         self.meetingConfig.setItemCopyGroupsStates(('proposed_to_director', ))
-        item.setCopyGroups(('vendors_directors',))
+        item.setCopyGroups(('vendors_reviewers',))
         item.at_post_edit_script()
         self.changeUser('pmReviewer2')
         # the user can see the item
@@ -59,10 +58,6 @@ class testMeetingConfig(MeetingLalouviereTestCase, mctmc):
         self.failUnless(self.meetingConfig.searchItemsToValidate('', '', '', ''))
         self.validateItem(item)
         self.failIf(self.meetingConfig.searchItemsToValidate('', '', '', ''))
-
-    def test_subproduct_call_searchReviewableItems(self):
-        '''Test the searchReviewableItems search.'''
-        pass
 
 
 def test_suite():

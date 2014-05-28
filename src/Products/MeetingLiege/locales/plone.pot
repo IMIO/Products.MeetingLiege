@@ -77,7 +77,7 @@ msgid "proposed_to_finance"
 msgstr ""
 
 #. Default: "Accept with modifications"
-msgid "acceptButModify"
+msgid "accept_but_modify"
 msgstr ""
 
 #. Default: "Accepted with modifications"
@@ -85,7 +85,7 @@ msgid "accepted_but_modified"
 msgstr ""
 
 #. Default: "Pre accept"
-msgid "preAccept"
+msgid "pre_accept"
 msgstr ""
 
 #. Default: "Pre accepted"

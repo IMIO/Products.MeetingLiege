@@ -519,12 +519,12 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         ''' '''
         pass
 
-    security.declarePrivate('doPreAccept')
-    def doPreAccept(self, stateChange):
+    security.declarePrivate('doPre_accept')
+    def doPre_accept(self, stateChange):
         pass
 
-    security.declarePrivate('doAcceptButModify')
-    def doAcceptButModify(self, stateChange):
+    security.declarePrivate('doAccept_but_modify')
+    def doAccept_but_modify(self, stateChange):
         pass
 
     security.declarePrivate('doAccept')
@@ -769,6 +769,10 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
 
     security.declarePrivate('doProposeToDirector')
     def doProposeToDirector(self, stateChange):
+        pass
+
+    security.declarePrivate('doAccept_pre_accept')
+    def doAccept_pre_accept(self, stateChange):
         pass
 
     security.declarePrivate('doAccept_but_modify')

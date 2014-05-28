@@ -8,7 +8,7 @@
     id="MeetingLiege-Update-RoleMappings" 
     handler="Products.MeetingLiege.setuphandlers.updateRoleMappings"
     title="Update Workflow role mappings for MeetingLiege"
-    version="2014-05-23T11:21:58.683385">
+    version="2014-05-28T13:05:24.134974">
    <dependency step="MeetingLiege-QI-dependencies"/>
    updates the workflow role mappings for MeetingLiege
  </import-step>
@@ -17,7 +17,7 @@
     id="MeetingLiege-postInstall" 
     handler="Products.MeetingLiege.setuphandlers.postInstall"
     title="manual coded post-install for MeetingLiege"
-    version="2014-05-23T11:21:58.683385">
+    version="2014-05-28T13:05:24.134974">
    <dependency step="MeetingLiege-QI-dependencies"/>
    manual coded post-install for MeetingLiege
  </import-step>

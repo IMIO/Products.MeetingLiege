@@ -49,15 +49,18 @@ LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
 LIEGEROLES['internatlreviewers'] = 'MeetingInternalReviewer'
 LIEGEROLES['reviewers'] = 'MeetingReviewer'
+LIEGEROLES['financialcontrollers'] = ''
+LIEGEROLES['financialreviewers'] = ''
+LIEGEROLES['financialmanagers'] = ''
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 
 # finance groups ids
-FINANCE_GROUP_IDS = ['comptabilite', 'df-controle', ]
+FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 
-FINANCE_GROUPS_SUFFIXES = ('financialcontrollers',
-                           'financialreviewers',
-                           'financialmanagers')
+FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
+                          'financialreviewers',
+                          'financialmanagers')
 ##/code-section config-bottom
 
 

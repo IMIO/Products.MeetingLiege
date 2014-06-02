@@ -116,3 +116,26 @@ msgstr ""
 msgid "See/hide data used for council item"
 msgstr ""
 
+#. Default: "Administrative reviewers"
+msgid "administrativereviewers"
+msgstr ""
+
+#. Default: "Internal reviewers"
+msgid "internalreviewers"
+msgstr ""
+
+#. Default: "Reviewers"
+msgid "reviewers"
+msgstr ""
+
+#. Default: "Financial controllers"
+msgid "financialcontrollers"
+msgstr ""
+
+#. Default: "Financial reviewers"
+msgid "financialreviewers"
+msgstr ""
+
+#. Default: "Financial managers"
+msgid "financialmanagers"
+msgstr ""

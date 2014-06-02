@@ -40,9 +40,25 @@ msgstr "Titre"
 msgid "See/hide data used for council item"
 msgstr "Montrer/cacher données utilisées pour le point Conseil"
 
+#. Default: "Administrative reviewers"
+msgid "administrativereviewers"
+msgstr "Validateurs administratifs"
+
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Point créé depuis un point Collège"
+
+#. Default: "Financial controllers"
+msgid "financialcontrollers"
+msgstr "Contrôleurs financiers"
+
+#. Default: "Financial managers"
+msgid "financialmanagers"
+msgstr "Directeurs financiers"
+
+#. Default: "Financial reviewers"
+msgid "financialreviewers"
+msgstr "Validateurs financiers"
 
 #. Default: "Front page body"
 msgid "front_page_body"
@@ -80,6 +96,10 @@ msgstr "Proposé au validateur interne"
 msgid "icon_help_proposed_to_internal_reviewer_waiting_advices"
 msgstr "Avis demandés par le validateur interne"
 
+#. Default: "Internal reviewers"
+msgid "internalreviewers"
+msgstr "Validateurs internes"
+
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
 msgstr "Le point a été automatiquement validé car l'avis du service finance rendu était favorable."
@@ -108,6 +128,10 @@ msgstr "Collège"
 msgid "predecessor_MeetingItemCouncil"
 msgstr "Conseil"
 
+#. Default: "Reviewers"
+msgid "reviewers"
+msgstr "Direction"
+
 #. Default: "The item has been successfully transfered to the college."
 msgid "sendto_meeting-config-college_success"
 msgstr "Le point a été envoyé au Collège communal."
@@ -119,4 +143,3 @@ msgstr "Le point a été envoyé au Conseil communal."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
-

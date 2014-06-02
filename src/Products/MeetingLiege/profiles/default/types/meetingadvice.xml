@@ -7,7 +7,7 @@
           &lt;schema based-on="Products.PloneMeeting.content.advice.IMeetingAdvice"&gt;
             &lt;field name="advice_substep_number" type="zope.schema.TextLine" security:read-permission="MeetingLiege.access_advice_substep_number" security:write-permission="MeetingLiege.access_advice_substep_number"&gt;
               &lt;description/&gt;
-              &lt;title&gt;Numero de sous-etape&lt;/title&gt;
+              &lt;title&gt;Numéro de sous-étape&lt;/title&gt;
               &lt;required&gt;False&lt;/required&gt;
             &lt;/field&gt;
           &lt;/schema&gt;

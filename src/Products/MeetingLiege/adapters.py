@@ -47,6 +47,7 @@ from Products.MeetingLiege.interfaces import \
     IMeetingItemCouncilLiegeWorkflowConditions, IMeetingItemCouncilLiegeWorkflowActions,\
     IMeetingCouncilLiegeWorkflowConditions, IMeetingCouncilLiegeWorkflowActions
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 
 # disable every wfAdaptations
 customWfAdaptations = ()
@@ -403,6 +404,23 @@ class CustomMeetingGroup(MeetingGroup):
     def __init__(self, item):
         self.context = item
 
+    security.declareProtected('Modify portal content', 'onEdit')
+    def onEdit(self, isCreated):
+        '''
+          When a MeetingGroup is created/edited, if it is a finance group
+          (it's id is in FINANCE_GROUP_IDS), we create relevant finance Plone groups.
+          We do this on creation and on edit so it is checked every times the MeetingGroup
+          is edited, so removed elements from config and so on are back to normal...
+        '''
+        group = self.getSelf()
+        for groupSuffix in FINANCE_GROUP_SUFFIXES:
+            groupId = group.getPloneGroupId(groupSuffix)
+            portal_groups = getToolByName(group, 'portal_groups')
+            ploneGroup = portal_groups.getGroupById(groupId)
+            if ploneGroup:
+                continue
+            group._createPloneGroup(groupSuffix)
+
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -572,7 +590,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToFinance(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True
             # check if one of the finance group needs to give advice on
             # the item, if it is the case, the item must go to finance before being validated
             if self.context.adapted().getFinanceGroupIdsForItem():

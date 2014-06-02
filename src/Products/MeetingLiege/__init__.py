@@ -59,7 +59,6 @@ DirectoryView.registerDirectory('skins', product_globals)
 ##code-section custom-init-head #fill in your manual code here
 import model.pm_updates
 import adapters
-import overrides
 ##/code-section custom-init-head
 
 
@@ -71,4 +70,3 @@ def initialize(context):
 
     ##code-section custom-init-bottom #fill in your manual code here
     ##/code-section custom-init-bottom
-

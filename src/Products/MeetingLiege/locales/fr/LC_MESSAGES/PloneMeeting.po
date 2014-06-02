@@ -36,6 +36,10 @@ msgstr "Niveau de confidentialité"
 msgid "MeetingLiege_label_titleForCouncil"
 msgstr "Titre"
 
+#. Default: "Archiving references"
+msgid "PloneMeeting_label_archivingReferences"
+msgstr "Codes archivages"
+
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
 msgstr "Montrer/cacher données utilisées pour le point Conseil"
@@ -43,6 +47,10 @@ msgstr "Montrer/cacher données utilisées pour le point Conseil"
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
 msgstr "Validateurs administratifs"
+
+#. Default: "Enter archiving references that will be useable on items of this meeting config."
+msgid "archiving_references_descr"
+msgstr "Encodez les codes archivages qui pourront être utilisés pour les points de cette configuration de séance."
 
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
@@ -111,6 +119,10 @@ msgstr "Avis finances défavorable"
 #. Default: "Nil"
 msgid "nil"
 msgstr "Pas concerné"
+
+#. Default: "No finance advice"
+msgid "no_finance_advice"
+msgstr "Aucun avis financier"
 
 #. Default: "Not required opinion"
 msgid "not_required_finance"

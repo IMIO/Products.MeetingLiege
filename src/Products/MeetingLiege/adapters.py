@@ -364,6 +364,36 @@ class CustomMeetingConfig(MeetingConfig):
         return res
     MeetingConfig.listAdviceTypes = listAdviceTypes
 
+    def listArchivingReferenceFinanceAdvices(self):
+        tool = getToolByName(self, 'portal_plonemeeting')
+        res = []
+        res.append(("no_finance_advice",
+                    translate('no_finance_advice',
+                              domain='PloneMeeting',
+                              context=self.REQUEST,
+                              default='No finance advice')))
+        for groupId in FINANCE_GROUP_IDS:
+            res.append((groupId, getattr(tool, groupId).getName()))
+        return DisplayList(res)
+    MeetingConfig.listArchivingReferenceFinanceAdvices = listArchivingReferenceFinanceAdvices
+
+    security.declareProtected('Modify portal content', 'setCustomAdvisers')
+    def setArchivingReferences(self, value, **kwargs):
+        '''Overrides the field 'archivingReferences' mutator to manage
+           the 'row_id' column manually.  If empty, we need to add a
+           unique id into it.'''
+        # value contains a list of 'ZPublisher.HTTPRequest', to be compatible
+        # if we receive a 'dict' instead, we use v.get()
+        for v in value:
+            # don't process hidden template row as input data
+            if v.get('orderindex_', None) == "template_row_marker":
+                continue
+            if not v.get('row_id', None):
+                v.row_id = self.generateUniqueId()
+        self.getField('archivingReferences').set(self, value, **kwargs)
+    MeetingConfig.setArchivingReferences = setArchivingReferences
+
+
     security.declarePublic('getDefaultAdviceHiddenDuringRedaction')
     def getDefaultAdviceHiddenDuringRedaction(self):
         '''
@@ -374,6 +404,9 @@ class CustomMeetingConfig(MeetingConfig):
         published = self.REQUEST.get('PUBLISHED', '')
         if not published:
             return False
+        if not hasattr(published, 'context'):
+            # we are on the MeetingConfig, return the stored value
+            return self.defaultAdviceHiddenDuringRedaction
         context = published.context
         groupVocab = factory(context)
         groupIds = set([group.value for group in groupVocab._terms])

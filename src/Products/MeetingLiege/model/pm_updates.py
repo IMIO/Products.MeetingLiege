@@ -1,7 +1,13 @@
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import SelectionWidget
+
+from Products.DataGridField import DataGridField
+from Products.DataGridField import Column
+from Products.DataGridField import SelectColumn
+
 from Products.PloneMeeting.MeetingItem import MeetingItem
+from Products.PloneMeeting.MeetingConfig import MeetingConfig
 
 
 def update_item_schema(baseSchema):
@@ -40,6 +46,39 @@ def update_item_schema(baseSchema):
     completeItemSchema = baseSchema + specificSchema.copy()
     return completeItemSchema
 MeetingItem.schema = update_item_schema(MeetingItem.schema)
+
+
+def update_config_schema(baseSchema):
+
+    specificSchema = Schema((
+        # field for defining title that will be used for item created in the Council
+        DataGridField(
+            name='archivingReferences',
+            widget=DataGridField._properties['widget'](
+                description="ArchivingReferences",
+                description_msgid="archiving_references_descr",
+                columns={'row_id': Column("Archiving reference row id", visible=False),
+                         'code': Column("Archiving reference code"),
+                         'label': Column("Archiving reference label"),
+                         'finance_advice': SelectColumn("Archiving reference finance advice",
+                                                        vocabulary="listArchivingReferenceFinanceAdvices"),
+                         'active': SelectColumn("Archiving reference active?",
+                                                vocabulary="listBooleanVocabulary",
+                                                default='1'),
+                         },
+                label='ArchivingReferences',
+                label_msgid='PloneMeeting_label_archivingReferences',
+                i18n_domain='PloneMeeting',
+            ),
+            allow_oddeven=True,
+            columns=('row_id', 'code', 'label', 'finance_advice', 'active'),
+            allow_empty_rows=False,
+        ),
+    ),)
+
+    completeConfigSchema = baseSchema + specificSchema.copy()
+    return completeConfigSchema
+MeetingConfig.schema = update_config_schema(MeetingConfig.schema)
 
 
 # Classes have already been registered, but we register them again here

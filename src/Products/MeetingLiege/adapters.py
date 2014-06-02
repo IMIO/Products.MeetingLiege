@@ -27,8 +27,10 @@ from datetime import datetime
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
+from zope.component import queryUtility
 from zope.interface import implements
 from zope.i18n import translate
+from zope.schema.interfaces import IVocabularyFactory
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
@@ -361,6 +363,24 @@ class CustomMeetingConfig(MeetingConfig):
         ))
         return res
     MeetingConfig.listAdviceTypes = listAdviceTypes
+
+    security.declarePublic('getDefaultAdviceHiddenDuringRedaction')
+    def getDefaultAdviceHiddenDuringRedaction(self):
+        '''
+          Override the accessor of field MeetingConfig.defaultAdviceHiddenDuringRedaction
+          to force to 'True' when used for a finance group.
+        '''
+        factory = queryUtility(IVocabularyFactory, u'Products.PloneMeeting.content.advice.advice_group_vocabulary')
+        published = self.REQUEST.get('PUBLISHED', '')
+        if not published:
+            return False
+        context = published.context
+        groupVocab = factory(context)
+        groupIds = set([group.value for group in groupVocab._terms])
+        if set(FINANCE_GROUP_IDS).intersection(groupIds):
+            return True
+        return self.defaultAdviceHiddenDuringRedaction
+    MeetingConfig.getDefaultAdviceHiddenDuringRedaction = getDefaultAdviceHiddenDuringRedaction
 
     security.declarePublic('searchItemsToValidate')
     def searchItemsToValidate(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):

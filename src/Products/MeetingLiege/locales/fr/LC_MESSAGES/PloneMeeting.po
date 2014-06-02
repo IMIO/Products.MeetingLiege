@@ -36,6 +36,10 @@ msgstr "Niveau de confidentialité"
 msgid "MeetingLiege_label_titleForCouncil"
 msgstr "Titre"
 
+#. Default: "Sub-step number"
+msgid "PloneMeeting_label_advice_substep_number"
+msgstr "Numéro de sous-étape"
+
 #. Default: "Archiving references"
 msgid "PloneMeeting_label_archivingReferences"
 msgstr "Codes archivages"

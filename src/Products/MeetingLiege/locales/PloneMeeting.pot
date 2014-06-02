@@ -151,3 +151,7 @@ msgstr ""
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_references_descr"
 msgstr ""
+
+#. Default: "Sub-step number"
+msgid "PloneMeeting_label_advice_substep_number"
+msgstr ""

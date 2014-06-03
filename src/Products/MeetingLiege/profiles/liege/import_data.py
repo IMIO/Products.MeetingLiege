@@ -145,10 +145,27 @@ collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
-collegeMeeting.categories = []
+categoriesCollege = [CategoryDescriptor('cat-coll-1', u'Catégorie collège 1'),
+                     CategoryDescriptor('cat-coll-2', u'Catégorie collège 2'),
+                     CategoryDescriptor('cat-coll-3', u'Catégorie collège 3'),
+                     CategoryDescriptor('cat-coll-4', u'Catégorie collège 4'),
+                     CategoryDescriptor('cat-coll-5', u'Catégorie collège 5'),
+                     CategoryDescriptor('cat-coll-6', u'Catégorie collège 6'), ]
+collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
-collegeMeeting.usedItemAttributes = ['budgetInfos', 'observations', 'toDiscuss', 'motivation', ]
+collegeMeeting.usedItemAttributes = ['budgetInfos',
+                                     'observations',
+                                     'toDiscuss',
+                                     'itemAssembly',
+                                     'completeness',
+                                     'titleForCouncil',
+                                     'privacyForCouncil',
+                                     'archivingRef',
+                                     'motivation', ]
+collegeMeeting.usedMeetingAttributes = ['signatures',
+                                        'assembly',
+                                        'observations', ]
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
@@ -232,7 +249,9 @@ collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_r
 collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices',
                                    'proposed_to_internal_reviewer_waiting_advices',
                                    'proposed_to_director', )
-collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices', 'proposed_to_internal_reviewer_waiting_advices',)
+collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices',
+                                       'proposed_to_internal_reviewer_waiting_advices',
+                                       'proposed_to_director')
 collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
                                        'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
                                        'proposed_to_director', 'validated', 'presented',
@@ -252,7 +271,7 @@ collegeMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
 collegeMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
 collegeMeeting.podTemplates = collegeTemplates
 collegeMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
-collegeMeeting.useGroupsAsCategories = True
+collegeMeeting.useGroupsAsCategories = False
 collegeMeeting.recurringItems = []
 collegeMeeting.meetingUsers = []
 collegeMeeting.recurringItems = [
@@ -362,12 +381,18 @@ councilMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 councilMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
-councilMeeting.categories = []
+categoriesCouncil = [CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'),
+                     CategoryDescriptor('cat-council-2', u'Catégorie conseil 2'),
+                     CategoryDescriptor('cat-council-3', u'Catégorie conseil 3'),
+                     CategoryDescriptor('cat-council-4', u'Catégorie conseil 4'),
+                     CategoryDescriptor('cat-council-5', u'Catégorie conseil 5'),
+                     CategoryDescriptor('cat-council-6', u'Catégorie conseil 6'), ]
+councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
-                                     'toDiscuss',
+                                     'itemAssembly',
                                      'motivation', ]
 councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
@@ -398,7 +423,7 @@ councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
 councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
 councilMeeting.podTemplates = collegeTemplates
 councilMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
-councilMeeting.useGroupsAsCategories = True
+councilMeeting.useGroupsAsCategories = False
 councilMeeting.recurringItems = []
 councilMeeting.meetingUsers = []
 

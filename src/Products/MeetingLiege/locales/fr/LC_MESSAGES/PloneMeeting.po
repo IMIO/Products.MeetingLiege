@@ -163,4 +163,3 @@ msgstr "Le point a été envoyé au Conseil communal."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
-

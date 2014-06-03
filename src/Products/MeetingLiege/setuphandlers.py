@@ -199,11 +199,128 @@ def createFinanceGroups(context, site):
             newGroup.processForm(values={'dummy': None})
 
 
+def createArchivingReferences(context, site):
+    """
+       Create some MeetingConfig.archivingRefs if empty.
+    """
+    logStep("createArchivingReferences", context)
+    cfg = getattr(site.portal_plonemeeting, 'meeting-config-college')
+    if not cfg.getArchivingRefs():
+        cfg.setArchivingRefs(
+            (
+                {'code': '1.1',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '001',
+                 'finance_advice': 'no_finance_advice',
+                 'label': "Permis d'urbanisme"},
+                {'code': '1.2',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '002',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Permis unique'},
+                {'code': '1.3',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '003',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Permis environnement'},
+                {'code': '1.4',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '004',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Enseignes et stores'},
+                {'code': '1.5',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '005',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Panneaux publicitaires'},
+                {'code': '1.6',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '006',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Certificat patrimoine'},
+                {'code': '10.1',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '007',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Taxes et redevances'},
+                {'code': '10.10',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '008',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Comptes'},
+                {'code': '10.11',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '009',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Emprunts'},
+                {'code': '10.12',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '010',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Contentieux'},
+                {'code': '10.13',
+                 'active': '0',
+                 'restrict_to_groups': [],
+                 'row_id': '011',
+                 'finance_advice': 'no_finance_advice',
+                 'label': 'Factures'},
+                {'code': '10.2.1',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '012',
+                 'finance_advice': 'df-contrale',
+                 'label': 'Mise-en-non valeurs - prestations'},
+                {'code': '10.2.2',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '013',
+                 'finance_advice': 'df-contrale',
+                 'label': 'Mise-en-non valeurs - locations'},
+                {'code': '10.2.3',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '014',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Mise-en-non valeurs - subventions'},
+                {'code': '10.3.1',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '015',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Donations et legs - biens immobiliers'},
+                {'code': '10.3.2',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '016',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Donations et legs - ouvrages et \xc5\x93uvres'},
+                {'code': '10.3.3',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '017',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Donations et legs - capital'}))
+
+
 def finalizeInstance(context):
     """
       Called at the very end of the installation process (after PloneMeeting).
     """
+    if not isMeetingLiegeConfigureProfile(context):
+        return
+
     site = context.getSite()
+    createArchivingReferences(context, site)
     reorderSkinsLayers(context, site)
     reorderCss(context)
 
@@ -213,11 +330,7 @@ def reorderCss(context):
        Make sure CSS are correctly reordered in portal_css so things
        work as expected...
     """
-    if not isMeetingLiegeConfigureProfile(context):
-        return
-
     site = context.getSite()
-
     logStep("reorderCss", context)
     portal_css = site.portal_css
     css = ['plonemeeting.css',

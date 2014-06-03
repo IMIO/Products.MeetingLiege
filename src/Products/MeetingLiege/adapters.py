@@ -360,6 +360,24 @@ class CustomMeetingItem(MeetingItem):
         return DisplayList(tuple(res))
     MeetingItem.listArchivingRefs = listArchivingRefs
 
+    security.declarePublic('needFinancedAdviceOf')
+    def needFinancedAdviceOf(self, financeGroupId):
+        '''
+          Method that returns True if current item need advice of
+          given p_financeGroupId.  We will check if archiving reference
+          selected on the item needs a finance advice regarding it's definition
+          on the revant MeetingConfig.archivingRefs.
+        '''
+        item = self.getSelf()
+        if item.getArchivingRef() == '_none_':
+            return False
+        tool = getToolByName(item, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(item)
+        archRefData = cfg.adapted()._dataForArchivingRefRowId(item.getArchivingRef())
+        if financeGroupId in archRefData['finance_advice']:
+            return True
+        return False
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the
@@ -493,6 +511,13 @@ class CustomMeetingConfig(MeetingConfig):
         # Perform the query in portal_catalog
         return self.portal_catalog(**params)
     MeetingConfig.searchItemsToValidate = searchItemsToValidate
+
+    def _dataForArchivingRefRowId(self, row_id):
+        '''Returns the data for the given p_row_id from the field 'archivingRefs'.'''
+        cfg = self.getSelf()
+        for archivingRef in cfg.getArchivingRefs():
+            if archivingRef['row_id'] == row_id:
+                return dict(archivingRef)
 
 
 class CustomMeetingGroup(MeetingGroup):

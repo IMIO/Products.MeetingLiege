@@ -30,7 +30,9 @@
 #plone-contentmenu-workflow .state-proposed_to_internal_reviewer,
 #plone-contentmenu-workflow .state-proposed_to_internal_reviewer_waiting_advices,
 #plone-contentmenu-workflow .state-proposed_to_director,
-#plone-contentmenu-workflow .state-proposed_to_finance {
+#plone-contentmenu-workflow .state-proposed_to_financial_controller,
+#plone-contentmenu-workflow .state-proposed_to_financial_reviewer,
+#plone-contentmenu-workflow .state-proposed_to_financial_manager {
     border-radius: 0.5em 0.5em 0.5em 0.5em;
     background-color: DarkOrange;
     padding: 0 0.5em;

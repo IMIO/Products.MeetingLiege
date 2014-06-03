@@ -54,7 +54,6 @@ def postInstall(context):
     createFinanceGroups(context, site)
 
 
-
 ##code-section FOOT
 def logStep(method, context):
     logger.info("Applying '%s' in profile '%s'" % (method, '/'.join(context._profile_path.split(os.sep)[-3:])))
@@ -197,7 +196,7 @@ def createFinanceGroups(context, site):
                                                                   'meeting-config-college__state__removed',
                                                                   'meeting-config-college__state__validated'))
             newGroup = getattr(tool, newGroupId)
-            newGroup.at_post_create_script()
+            newGroup.processForm(values={'dummy': None})
 
 
 def finalizeInstance(context):

@@ -23,6 +23,10 @@ msgstr ""
 msgid "Archiving reference finance advice"
 msgstr ""
 
+#. Default: "Restrict to selected groups"
+msgid "Archiving reference restrict to selected groups"
+msgstr ""
+
 #. Default: "Active?"
 msgid "Archiving reference active?"
 msgstr ""

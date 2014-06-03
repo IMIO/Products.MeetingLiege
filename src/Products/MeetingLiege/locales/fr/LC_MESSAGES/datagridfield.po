@@ -30,3 +30,6 @@ msgstr "Avis financier"
 msgid "Archiving reference label"
 msgstr "Libellé"
 
+#. Default: "Restrict to selected groups"
+msgid "Archiving reference restrict to selected groups"
+msgstr "Restreindre aux groupes suivants"

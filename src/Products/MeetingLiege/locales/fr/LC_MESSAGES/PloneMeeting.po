@@ -126,7 +126,7 @@ msgstr "Pas concerné"
 
 #. Default: "No finance advice"
 msgid "no_finance_advice"
-msgstr "Aucun avis financier"
+msgstr "-"
 
 #. Default: "Not required opinion"
 msgid "not_required_finance"

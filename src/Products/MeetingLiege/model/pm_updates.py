@@ -6,6 +6,8 @@ from Products.DataGridField import DataGridField
 from Products.DataGridField import Column
 from Products.DataGridField import SelectColumn
 
+from collective.datagridcolumns.MultiSelectColumn import MultiSelectColumn
+
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 
@@ -63,6 +65,8 @@ def update_config_schema(baseSchema):
                          'label': Column("Archiving reference label"),
                          'finance_advice': SelectColumn("Archiving reference finance advice",
                                                         vocabulary="listArchivingReferenceFinanceAdvices"),
+                         'restrict_to_groups': MultiSelectColumn("Archiving reference restrict to selected groups",
+                                                                 vocabulary="listActiveMeetingGroupsForArchivingRefs"),
                          'active': SelectColumn("Archiving reference active?",
                                                 vocabulary="listBooleanVocabulary",
                                                 default='1'),
@@ -72,7 +76,7 @@ def update_config_schema(baseSchema):
                 i18n_domain='PloneMeeting',
             ),
             allow_oddeven=True,
-            columns=('row_id', 'code', 'label', 'finance_advice', 'active'),
+            columns=('row_id', 'code', 'label', 'finance_advice', 'restrict_to_groups', 'active'),
             allow_empty_rows=False,
         ),
     ),)

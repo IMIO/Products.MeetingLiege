@@ -377,6 +377,29 @@ class CustomMeetingConfig(MeetingConfig):
         return DisplayList(res)
     MeetingConfig.listArchivingReferenceFinanceAdvices = listArchivingReferenceFinanceAdvices
 
+    security.declarePrivate('listActiveMeetingGroupsForArchivingRefs')
+    def listActiveMeetingGroupsForArchivingRefs(self):
+        """
+          Vocabulary for the archivingRefs.restrict_to_groups DatagridField attribute.
+          It returns every active MeetingGroups.
+        """
+        res = []
+        tool = getToolByName(self, 'portal_plonemeeting')
+        for mGroup in tool.getMeetingGroups():
+            res.append((mGroup.getId(), mGroup.getName()))
+        # make sure that if a configuration was defined for a group
+        # that is now inactive, it is still displayed
+        storedArchivingRefsGroups = [archivingRef['restrict_to_groups'] for archivingRef in self.getArchivingRefs()]
+        if storedArchivingRefsGroups:
+            groupsInVocab = [group[0] for group in res]
+            for storedArchivingRefsGroup in storedArchivingRefsGroups:
+                for group in storedArchivingRefsGroup:
+                    if not group in groupsInVocab:
+                        mGroup = getattr(tool, group)
+                        res.append((mGroup.getId(), mGroup.getName()))
+        return DisplayList(res).sortedByValue()
+    MeetingConfig.listActiveMeetingGroupsForArchivingRefs = listActiveMeetingGroupsForArchivingRefs
+
     security.declareProtected('Modify portal content', 'setCustomAdvisers')
     def setArchivingReferences(self, value, **kwargs):
         '''Overrides the field 'archivingReferences' mutator to manage

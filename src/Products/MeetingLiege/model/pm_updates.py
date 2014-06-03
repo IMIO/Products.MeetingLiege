@@ -30,17 +30,31 @@ def update_item_schema(baseSchema):
             optional=True,
         ),
 
+        # field for defining privacy that will be used for item created in the Council
         StringField(
             name='privacyForCouncil',
             default='public',
             widget=SelectionWidget(
                 condition="python: here.attributeIsUsed('privacyForCouncil')",
                 label='PrivacyForCouncil',
-                label_msgid='PloneMeeting_label_privacyForCouncil',
+                label_msgid='MeetingLiege_label_archivingRef',
                 i18n_domain='PloneMeeting',
             ),
             optional=True,
             vocabulary='listPrivacyValues',
+        ),
+
+        StringField(
+            name='archivingRef',
+            widget=SelectionWidget(
+                condition="python: here.attributeIsUsed('archivingRef')",
+                label='ArchivingRef',
+                label_msgid='MeetingLiege_label_archivingRef',
+                i18n_domain='PloneMeeting',
+            ),
+            optional=True,
+            vocabulary='listArchivingRefs',
+            default='_none_',
         ),
 
     ),)
@@ -72,7 +86,7 @@ def update_config_schema(baseSchema):
                                                 default='1'),
                          },
                 label='ArchivingRefs',
-                label_msgid='PloneMeeting_label_archivingRefs',
+                label_msgid='MeetingLiege_label_archivingRef',
                 i18n_domain='PloneMeeting',
             ),
             allow_oddeven=True,

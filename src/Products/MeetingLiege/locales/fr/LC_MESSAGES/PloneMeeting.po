@@ -28,6 +28,18 @@ msgstr "Collège communal"
 msgid "Meeting config Council"
 msgstr "Conseil communal"
 
+#. Default: "Sub-step number"
+msgid "MeetingLiege_label_advice_substep_number"
+msgstr "Numéro de sous-étape"
+
+#. Default: "Archiving reference"
+msgid "MeetingLiege_label_archivingRef"
+msgstr "Code archivage"
+
+#. Default: "Archiving references"
+msgid "MeetingLiege_label_archivingRefs"
+msgstr "Codes archivage"
+
 #. Default: "Privacy"
 msgid "MeetingLiege_label_privacyForCouncil"
 msgstr "Niveau de confidentialité"
@@ -35,14 +47,6 @@ msgstr "Niveau de confidentialité"
 #. Default: "Title"
 msgid "MeetingLiege_label_titleForCouncil"
 msgstr "Titre"
-
-#. Default: "Sub-step number"
-msgid "PloneMeeting_label_advice_substep_number"
-msgstr "Numéro de sous-étape"
-
-#. Default: "Archiving references"
-msgid "PloneMeeting_label_archivingRefs"
-msgstr "Codes archivage"
 
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
@@ -159,3 +163,4 @@ msgstr "Le point a été envoyé au Conseil communal."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
+

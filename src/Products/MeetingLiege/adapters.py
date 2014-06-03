@@ -339,6 +339,27 @@ class CustomMeetingItem(MeetingItem):
             item.setTitle(original.getTitleForCouncil())
             item.setPrivacy(original.getPrivacyForCouncil())
 
+    security.declarePrivate('listArchivingRefs')
+    def listArchivingRefs(self):
+        '''Vocabulary for the 'archivingRef' field.'''
+        res = []
+        tool = getToolByName(self, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(self)
+        userGroups = set(tool.getGroupsForUser())
+        for ref in cfg.getArchivingRefs():
+            # if ref is not active, continue
+            if ref['active'] == '0':
+                continue
+            # if ref is restricted to some groups and current member is not member of, continue
+            if ref['restrict_to_groups'] and not set(ref['restrict_to_groups']).intersection(userGroups):
+                continue
+            res.append((ref['row_id'], ref['label']))
+        res.insert(0, ('_none_', translate('make_a_choice',
+                                           domain='PloneMeeting',
+                                           context=self.REQUEST)))
+        return DisplayList(tuple(res))
+    MeetingItem.listArchivingRefs = listArchivingRefs
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the
@@ -364,6 +385,7 @@ class CustomMeetingConfig(MeetingConfig):
         return res
     MeetingConfig.listAdviceTypes = listAdviceTypes
 
+    security.declarePrivate('listArchivingReferenceFinanceAdvices')
     def listArchivingReferenceFinanceAdvices(self):
         tool = getToolByName(self, 'portal_plonemeeting')
         res = []
@@ -400,9 +422,9 @@ class CustomMeetingConfig(MeetingConfig):
         return DisplayList(res).sortedByValue()
     MeetingConfig.listActiveMeetingGroupsForArchivingRefs = listActiveMeetingGroupsForArchivingRefs
 
-    security.declareProtected('Modify portal content', 'setCustomAdvisers')
-    def setArchivingReferences(self, value, **kwargs):
-        '''Overrides the field 'archivingReferences' mutator to manage
+    security.declareProtected('Modify portal content', 'setArchivingRefs')
+    def setArchivingRefs(self, value, **kwargs):
+        '''Overrides the field 'archivingRefs' mutator to manage
            the 'row_id' column manually.  If empty, we need to add a
            unique id into it.'''
         # value contains a list of 'ZPublisher.HTTPRequest', to be compatible
@@ -412,9 +434,12 @@ class CustomMeetingConfig(MeetingConfig):
             if v.get('orderindex_', None) == "template_row_marker":
                 continue
             if not v.get('row_id', None):
-                v.row_id = self.generateUniqueId()
-        self.getField('archivingReferences').set(self, value, **kwargs)
-    MeetingConfig.setArchivingReferences = setArchivingReferences
+                if isinstance(v, dict):
+                    v['row_id'] = self.generateUniqueId()
+                else:
+                    v.row_id = self.generateUniqueId()
+        self.getField('archivingRefs').set(self, value, **kwargs)
+    MeetingConfig.setArchivingRefs = setArchivingRefs
 
 
     security.declarePublic('getDefaultAdviceHiddenDuringRedaction')

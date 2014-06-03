@@ -145,7 +145,7 @@ msgid "no_finance_advice"
 msgstr ""
 
 #. Default: "Archiving references"
-msgid "PloneMeeting_label_archivingRefs"
+msgid "MeetingLiege_label_archivingRefs"
 msgstr ""
 
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
@@ -153,5 +153,9 @@ msgid "archiving_refs_descr"
 msgstr ""
 
 #. Default: "Sub-step number"
-msgid "PloneMeeting_label_advice_substep_number"
+msgid "MeetingLiege_label_advice_substep_number"
+msgstr ""
+
+#. Default: "Archiving reference"
+msgid "MeetingLiege_label_archivingRef"
 msgstr ""

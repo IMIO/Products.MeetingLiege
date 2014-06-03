@@ -42,6 +42,8 @@
         <td><metal:field use-macro="python:here.widget('proposingGroup', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('classifier', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('category', mode='edit')"/></td>
+        <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
+        <td><metal:field use-macro="python:here.widget('archivingRef', mode='edit')"/></td>
         <tal:comment replace="nothing">Custom display of field "toDiscuss"</tal:comment>
         <td tal:condition="context/showToDiscuss">
           <div id="archetypes-fieldname-toDiscuss" class="field"

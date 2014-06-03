@@ -137,8 +137,8 @@ muser_voter2 = MeetingUserDescriptor('voter2', duty='Voter2',
 # Meeting configurations -------------------------------------------------------
 # college
 collegeMeeting = MeetingConfigDescriptor(
-    'meeting-config-college', 'College Communal',
-    'College communal', isDefault=True)
+    'meeting-config-college', u'College Communal',
+    u'College communal', isDefault=True)
 collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \

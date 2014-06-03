@@ -41,8 +41,8 @@ msgid "PloneMeeting_label_advice_substep_number"
 msgstr "Numéro de sous-étape"
 
 #. Default: "Archiving references"
-msgid "PloneMeeting_label_archivingReferences"
-msgstr "Codes archivages"
+msgid "PloneMeeting_label_archivingRefs"
+msgstr "Codes archivage"
 
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
@@ -53,8 +53,8 @@ msgid "administrativereviewers"
 msgstr "Validateurs administratifs"
 
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
-msgid "archiving_references_descr"
-msgstr "Encodez les codes archivages qui pourront être utilisés pour les points de cette configuration de séance."
+msgid "archiving_refs_descr"
+msgstr "Encodez les codes archivages qui pourront être utilisés par les points de cette configuration de séance."
 
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"

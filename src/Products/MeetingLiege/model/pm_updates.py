@@ -53,10 +53,11 @@ def update_config_schema(baseSchema):
     specificSchema = Schema((
         # field for defining title that will be used for item created in the Council
         DataGridField(
-            name='archivingReferences',
+            # very strange bug when using a field name ending with 'References'...
+            name='archivingRefs',
             widget=DataGridField._properties['widget'](
-                description="ArchivingReferences",
-                description_msgid="archiving_references_descr",
+                description="ArchivingRefs",
+                description_msgid="archiving_refs_descr",
                 columns={'row_id': Column("Archiving reference row id", visible=False),
                          'code': Column("Archiving reference code"),
                          'label': Column("Archiving reference label"),
@@ -66,8 +67,8 @@ def update_config_schema(baseSchema):
                                                 vocabulary="listBooleanVocabulary",
                                                 default='1'),
                          },
-                label='ArchivingReferences',
-                label_msgid='PloneMeeting_label_archivingReferences',
+                label='ArchivingRefs',
+                label_msgid='PloneMeeting_label_archivingRefs',
                 i18n_domain='PloneMeeting',
             ),
             allow_oddeven=True,

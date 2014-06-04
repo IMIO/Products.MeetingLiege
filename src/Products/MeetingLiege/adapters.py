@@ -611,7 +611,7 @@ class CustomMeetingConfig(MeetingConfig):
 
 
     security.declarePublic('getDefaultAdviceHiddenDuringRedaction')
-    def getDefaultAdviceHiddenDuringRedaction(self):
+    def getDefaultAdviceHiddenDuringRedaction(self, **kwargs):
         '''
           Override the accessor of field MeetingConfig.defaultAdviceHiddenDuringRedaction
           to force to 'True' when used for a finance group.
@@ -622,13 +622,13 @@ class CustomMeetingConfig(MeetingConfig):
             return False
         if not hasattr(published, 'context'):
             # we are on the MeetingConfig, return the stored value
-            return self.defaultAdviceHiddenDuringRedaction
+            return self.getField('defaultAdviceHiddenDuringRedaction').get(self, **kwargs)
         context = published.context
         groupVocab = factory(context)
         groupIds = set([group.value for group in groupVocab._terms])
         if set(FINANCE_GROUP_IDS).intersection(groupIds):
             return True
-        return self.defaultAdviceHiddenDuringRedaction
+        return self.getField('defaultAdviceHiddenDuringRedaction').get(self, **kwargs)
     MeetingConfig.getDefaultAdviceHiddenDuringRedaction = getDefaultAdviceHiddenDuringRedaction
 
     security.declarePublic('searchItemsToValidate')
@@ -661,6 +661,69 @@ class CustomMeetingConfig(MeetingConfig):
         # Perform the query in portal_catalog
         return self.portal_catalog(**params)
     MeetingConfig.searchItemsToValidate = searchItemsToValidate
+
+    security.declarePublic('searchItemsWithAdviceProposedToFinancialController')
+    def searchItemsWithAdviceProposedToFinancialController(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.'''
+        groupIds = []
+        for financeGroup in FINANCE_GROUP_IDS:
+            groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
+        # Create query parameters
+        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
+                  # KeywordIndex 'indexAdvisers' use 'OR' by default
+                  'indexAdvisers': groupIds,
+                  'sort_on': sortKey,
+                  'sort_order': sortOrder, }
+        # Manage filter
+        if filterKey:
+            params[filterKey] = prepareSearchValue(filterValue)
+        # update params with kwargs
+        params.update(kwargs)
+        # Perform the query in portal_catalog
+        return self.portal_catalog(**params)
+    MeetingConfig.searchItemsWithAdviceProposedToFinancialController = searchItemsWithAdviceProposedToFinancialController
+
+    security.declarePublic('searchItemsWithAdviceProposedToFinancialReviewer')
+    def searchItemsWithAdviceProposedToFinancialReviewer(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
+        groupIds = []
+        for financeGroup in FINANCE_GROUP_IDS:
+            groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
+        # Create query parameters
+        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
+                  # KeywordIndex 'indexAdvisers' use 'OR' by default
+                  'indexAdvisers': groupIds,
+                  'sort_on': sortKey,
+                  'sort_order': sortOrder, }
+        # Manage filter
+        if filterKey:
+            params[filterKey] = prepareSearchValue(filterValue)
+        # update params with kwargs
+        params.update(kwargs)
+        # Perform the query in portal_catalog
+        return self.portal_catalog(**params)
+    MeetingConfig.searchItemsWithAdviceProposedToFinancialReviewer = searchItemsWithAdviceProposedToFinancialReviewer
+
+    security.declarePublic('searchItemsWithAdviceProposedToFinancialManager')
+    def searchItemsWithAdviceProposedToFinancialManager(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
+        groupIds = []
+        for financeGroup in FINANCE_GROUP_IDS:
+            groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
+        # Create query parameters
+        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
+                  # KeywordIndex 'indexAdvisers' use 'OR' by default
+                  'indexAdvisers': groupIds,
+                  'sort_on': sortKey,
+                  'sort_order': sortOrder, }
+        # Manage filter
+        if filterKey:
+            params[filterKey] = prepareSearchValue(filterValue)
+        # update params with kwargs
+        params.update(kwargs)
+        # Perform the query in portal_catalog
+        return self.portal_catalog(**params)
+    MeetingConfig.searchItemsWithAdviceProposedToFinancialManager = searchItemsWithAdviceProposedToFinancialManager
 
     def _dataForArchivingRefRowId(self, row_id):
         '''Returns the data for the given p_row_id from the field 'archivingRefs'.'''

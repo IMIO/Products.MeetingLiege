@@ -323,6 +323,45 @@ def finalizeInstance(context):
     createArchivingReferences(context, site)
     reorderSkinsLayers(context, site)
     reorderCss(context)
+    addSearchTopics(context, site)
+
+
+def addSearchTopics(context,  site):
+    '''
+      Add some topics for specific searches.
+    '''
+    tool = getToolByName(site, 'portal_plonemeeting')
+    cfg = getattr(tool, 'meeting-config-college')
+    if hasattr(cfg, 'searchadviceproposedtocontroller'):
+        return
+
+    topicsInfo = (
+        # Items having advice in state 'proposed_to_financial_controller'
+        ('searchadviceproposedtocontroller',
+         (('Type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+          ),
+         'created',
+         'searchItemsWithAdviceProposedToFinancialController',
+         "python: here.portal_plonemeeting.userIsAmong('financialcontrollers')",
+         ),
+        # Items having advice in state 'proposed_to_financial_reviewer'
+        ('searchadviceproposedtoreviewer',
+         (('Type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+          ),
+         'created',
+         'searchItemsWithAdviceProposedToFinancialReviewer',
+         "python: here.portal_plonemeeting.userIsAmong('financialreviewers')",
+         ),
+        # Items having advice in state 'proposed_to_financial_manager'
+        ('searchadviceproposedtomanager',
+         (('Type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+          ),
+         'created',
+         'searchItemsWithAdviceProposedToFinancialManager',
+         "python: here.portal_plonemeeting.userIsAmong('financialmanagers')",
+         ),
+    )
+    cfg.createTopics(topicsInfo)
 
 
 def reorderCss(context):

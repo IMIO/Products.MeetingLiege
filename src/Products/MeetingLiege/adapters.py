@@ -132,6 +132,156 @@ class CustomMeeting(Meeting):
                 items = res
             return items
 
+    def _insertItemInCategory(self, categoryList, item, byProposingGroup, groupPrefixes, groups):
+        '''This method is used by the next one for inserting an item into the
+           list of all items of a given category. if p_byProposingGroup is True,
+           we must add it in a sub-list containing items of a given proposing
+           group. Else, we simply append it to p_category.'''
+        if not byProposingGroup:
+            categoryList.append(item)
+        else:
+            group = item.getProposingGroup(True)
+            self._insertGroupInCategory(categoryList, group, groupPrefixes, groups, item)
+
+    security.declarePublic('getPrintableItemsByCategory')
+    def getPrintableItemsByCategory(self, itemUids=[], late=False,
+                                    ignore_review_states=[], by_proposing_group=False, group_prefixes={},
+                                    privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
+                                    excludedCategories=[], firstNumber=1, renumber=False,
+                                    includeEmptyCategories=False, includeEmptyGroups=False):
+        '''Returns a list of (late-)items (depending on p_late) ordered by
+           category. Items being in a state whose name is in
+           p_ignore_review_state will not be included in the result.
+           If p_by_proposing_group is True, items are grouped by proposing group
+           within every category. In this case, specifying p_group_prefixes will
+           allow to consider all groups whose acronym starts with a prefix from
+           this param prefix as a unique group. p_group_prefixes is a dict whose
+           keys are prefixes and whose values are names of the logical big
+           groups. A privacy,A toDiscuss and oralQuestion can also be given, the item is a
+           toDiscuss (oralQuestion) or not (or both) item.
+           If p_includeEmptyCategories is True, categories for which no
+           item is defined are included nevertheless. If p_includeEmptyGroups
+           is True, proposing groups for which no item is defined are included
+           nevertheless.Some specific categories can be given or some categories to exclude.
+           These 2 parameters are exclusive.  If renumber is True, a list of tuple
+           will be return with first element the number and second element, the item.
+           In this case, the firstNumber value can be used.'''
+        # The result is a list of lists, where every inner list contains:
+        # - at position 0: the category object (MeetingCategory or MeetingGroup)
+        # - at position 1 to n: the items in this category
+        # If by_proposing_group is True, the structure is more complex.
+        # oralQuestion can be 'both' or False or True
+        # toDiscuss can be 'both' or 'False' or 'True'
+        # privacy can be '*' or 'public' or 'secret'
+        # Every inner list contains:
+        # - at position 0: the category object
+        # - at positions 1 to n: inner lists that contain:
+        #   * at position 0: the proposing group object
+        #   * at positions 1 to n: the items belonging to this group.
+        res = []
+        items = []
+        previousCatId = None
+        tool = getToolByName(self.context, 'portal_plonemeeting')
+        # Retrieve the list of items
+        for elt in itemUids:
+            if elt == '':
+                itemUids.remove(elt)
+        items = self.context.getItemsInOrder(late=late, uids=itemUids)
+        if by_proposing_group:
+            groups = tool.getMeetingGroups()
+        else:
+            groups = None
+        if items:
+            for item in items:
+                # Check if the review_state has to be taken into account
+                if item.queryState() in ignore_review_states:
+                    continue
+                elif not (privacy == '*' or item.getPrivacy() == privacy):
+                    continue
+                elif not (oralQuestion == 'both' or item.getOralQuestion() == oralQuestion):
+                    continue
+                elif not (toDiscuss == 'both' or item.getToDiscuss() == toDiscuss):
+                    continue
+                elif categories and not item.getCategory() in categories:
+                    continue
+                elif excludedCategories and item.getCategory() in excludedCategories:
+                    continue
+                currentCat = item.getCategory(theObject=True)
+                currentCatId = currentCat.getId()
+                if currentCatId != previousCatId:
+                    # Add the item to a new category, excepted if the
+                    # category already exists.
+                    catExists = False
+                    for catList in res:
+                        if catList[0] == currentCat:
+                            catExists = True
+                            break
+                    if catExists:
+                        self._insertItemInCategory(catList, item,
+                                                   by_proposing_group, group_prefixes, groups)
+                    else:
+                        res.append([currentCat])
+                        self._insertItemInCategory(res[-1], item,
+                                                   by_proposing_group, group_prefixes, groups)
+                    previousCatId = currentCatId
+                else:
+                    # Append the item to the same category
+                    self._insertItemInCategory(res[-1], item,
+                                               by_proposing_group, group_prefixes, groups)
+        if includeEmptyCategories:
+            meetingConfig = tool.getMeetingConfig(
+                self.context)
+            allCategories = meetingConfig.getCategories()
+            usedCategories = [elem[0] for elem in res]
+            for cat in allCategories:
+                if cat not in usedCategories:
+                    # Insert the category among used categories at the right
+                    # place.
+                    categoryInserted = False
+                    for i in range(len(usedCategories)):
+                        if allCategories.index(cat) < \
+                           allCategories.index(usedCategories[i]):
+                            usedCategories.insert(i, cat)
+                            res.insert(i, [cat])
+                            categoryInserted = True
+                            break
+                    if not categoryInserted:
+                        usedCategories.append(cat)
+                        res.append([cat])
+        if by_proposing_group and includeEmptyGroups:
+            # Include, in every category list, not already used groups.
+            # But first, compute "macro-groups": we will put one group for
+            # every existing macro-group.
+            macroGroups = []  # Contains only 1 group of every "macro-group"
+            consumedPrefixes = []
+            for group in groups:
+                prefix = self._getAcronymPrefix(group, group_prefixes)
+                if not prefix:
+                    group._v_printableName = group.Title()
+                    macroGroups.append(group)
+                else:
+                    if prefix not in consumedPrefixes:
+                        consumedPrefixes.append(prefix)
+                        group._v_printableName = group_prefixes[prefix]
+                        macroGroups.append(group)
+            # Every category must have one group from every macro-group
+            for catInfo in res:
+                for group in macroGroups:
+                    self._insertGroupInCategory(catInfo, group, group_prefixes,
+                                                groups)
+                    # The method does nothing if the group (or another from the
+                    # same macro-group) is already there.
+        if renumber:
+            #return a list of tuple with first element the number and second
+            #element the item itself
+            i = firstNumber
+            res = []
+            for item in items:
+                res.append((i, item))
+                i = i + 1
+            items = res
+        return res
+
     security.declarePublic('showAllItemsAtOnce')
     def showAllItemsAtOnce(self):
         '''Monkeypatch for hiding the allItemsAtOnce field.'''

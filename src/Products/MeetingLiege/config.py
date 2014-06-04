@@ -47,7 +47,7 @@ PRODUCT_DEPENDENCIES = []
 from Products.PloneMeeting import config as PMconfig
 LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
-LIEGEROLES['internatlreviewers'] = 'MeetingInternalReviewer'
+LIEGEROLES['internalreviewers'] = 'MeetingInternalReviewer'
 LIEGEROLES['reviewers'] = 'MeetingReviewer'
 LIEGEROLES['financialcontrollers'] = ''
 LIEGEROLES['financialreviewers'] = ''

@@ -37,7 +37,7 @@ def update_item_schema(baseSchema):
             widget=SelectionWidget(
                 condition="python: here.attributeIsUsed('privacyForCouncil')",
                 label='PrivacyForCouncil',
-                label_msgid='MeetingLiege_label_archivingRef',
+                label_msgid='MeetingLiege_label_privacyForCouncil',
                 i18n_domain='PloneMeeting',
             ),
             optional=True,

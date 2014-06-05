@@ -163,3 +163,15 @@ msgstr ""
 #. Default: "Archiving reference"
 msgid "MeetingLiege_label_archivingRef"
 msgstr ""
+
+#. Default: "Advices proposed to financial controller"
+msgid "searchadviceproposedtocontroller"
+msgstr ""
+
+#. Default: "Advices proposed to financial reviewer"
+msgid "searchadviceproposedtoreviewer"
+msgstr ""
+
+#. Default: "Advices proposed to financial manager"
+msgid "searchadviceproposedtomanager"
+msgstr ""

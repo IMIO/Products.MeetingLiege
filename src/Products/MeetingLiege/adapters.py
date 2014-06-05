@@ -510,8 +510,8 @@ class CustomMeetingItem(MeetingItem):
         return DisplayList(tuple(res))
     MeetingItem.listArchivingRefs = listArchivingRefs
 
-    security.declarePublic('needFinancedAdviceOf')
-    def needFinancedAdviceOf(self, financeGroupId):
+    security.declarePublic('needFinanceAdviceOf')
+    def needFinanceAdviceOf(self, financeGroupId):
         '''
           Method that returns True if current item need advice of
           given p_financeGroupId.  We will check if archiving reference

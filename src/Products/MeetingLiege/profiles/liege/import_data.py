@@ -192,7 +192,7 @@ collegeMeeting.itemColumns = ['creationDate', 'creator', 'state', 'annexes', 'an
 collegeMeeting.customAdvisers = [
     {'row_id': 'unique_id_002',
      'group': 'df-contrale',
-     'gives_auto_advice_on': "python: item.adapted().needFinancedAdviceOf('df-contrale')",
+     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
      'for_item_created_from': today,
      'delay': '10',
      'delay_left_alert': '4',
@@ -216,7 +216,7 @@ collegeMeeting.customAdvisers = [
      },
     {'row_id': 'unique_id_005',
      'group': 'df-comptabilita-c-et-audit-financier',
-     'gives_auto_advice_on': "python: item.adapted().needFinancedAdviceOf('df-comptabilita-c-et-audit-financier')",
+     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
      'for_item_created_from': today,
      'delay': '10',
      'delay_left_alert': '4',

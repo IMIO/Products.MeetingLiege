@@ -297,7 +297,7 @@ class CustomMeetingItem(MeetingItem):
 
     customItemPositiveDecidedStates = ('accepted', 'accepted_but_modified', )
     MeetingItem.itemPositiveDecidedStates = customItemPositiveDecidedStates
-    customItemDecidedStates = ('accepted', 'refused', 'delayed', 'accepted_but_modified', 'removed', )
+    customItemDecidedStates = ('accepted', 'refused', 'delayed', 'accepted_but_modified', 'marked_not_applicable', )
     MeetingItem.itemDecidedStates = customItemDecidedStates
     customBeforePublicationStates = ('itemcreated',
                                      'proposed_to_servicehead',
@@ -357,6 +357,8 @@ class CustomMeetingItem(MeetingItem):
             res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
         elif itemState == 'proposed_to_finance':
             res.append(('proposeToFinance.png', 'icon_help_proposed_to_finance'))
+        elif itemState == 'marked_not_applicable':
+            res.append(('marked_not_applicable.png', 'icon_help_marked_not_applicable'))
         return res
 
     security.declarePublic('getAdvicesGroupsInfosForUser')
@@ -888,8 +890,8 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     def doAccept(self, stateChange):
         pass
 
-    security.declarePrivate('doRemove')
-    def doRemove(self, stateChange):
+    security.declarePrivate('doMark_not_applicable')
+    def doMark_not_applicable(self, stateChange):
         pass
 
 
@@ -1140,8 +1142,8 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
         '''When an item is delayed, by default it is duplicated but we do not duplicate it here'''
         pass
 
-    security.declarePrivate('doRemove')
-    def doRemove(self, stateChange):
+    security.declarePrivate('doMark_not_applicable')
+    def doMark_not_applicable(self, stateChange):
         ''' '''
         pass
 

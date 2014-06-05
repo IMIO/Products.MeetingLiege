@@ -92,12 +92,12 @@ msgstr ""
 msgid "pre_accepted"
 msgstr ""
 
-#. Default: "Remove"
-msgid "remove"
+#. Default: "Mark not applicable"
+msgid "mark_not_applicable"
 msgstr ""
 
-#. Default: "Removed"
-msgid "removed"
+#. Default: "Marked not applicable"
+msgid "marked_not_applicable"
 msgstr ""
 
 #. Default: "Delay"

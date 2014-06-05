@@ -88,6 +88,10 @@ msgstr "Accepté avec modifications"
 msgid "icon_help_itemcreated_waiting_advices"
 msgstr "Avis demandés par le créateur"
 
+#. Default: "Marked not applicable"
+msgid "icon_help_marked_not_applicable"
+msgstr "Marqué sans objet"
+
 #. Default: "Pre accepted"
 msgid "icon_help_pre_accepted"
 msgstr "Accepté provisoirement"

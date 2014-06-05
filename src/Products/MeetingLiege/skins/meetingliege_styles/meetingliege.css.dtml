@@ -112,12 +112,12 @@
 
 .state-delayed, .label-state-delayed,
 .state-delayed, .label-state-returned_to_proposing_group,
-.state-removed, .label-state-removed {
+.state-marked_not_applicable, .label-state-marked_not_applicable {
     color: grey !important;
 }
 #plone-contentmenu-workflow .state-delayed,
 #plone-contentmenu-workflow .state-returned_to_proposing_group,
-#plone-contentmenu-workflow .state-removed {
+#plone-contentmenu-workflow .state-marked_not_applicable {
     border-radius: 0.5em 0.5em 0.5em 0.5em;
     background-color: grey;
     padding: 0 0.5em;

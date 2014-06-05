@@ -52,6 +52,10 @@ msgstr ""
 msgid "icon_help_pre_accepted"
 msgstr ""
 
+#. Default: "Marked not applicable"
+msgid "icon_help_marked_not_applicable"
+msgstr ""
+
 #. Default: "Advices asked by creator"
 msgid "icon_help_itemcreated_waiting_advices"
 msgstr ""

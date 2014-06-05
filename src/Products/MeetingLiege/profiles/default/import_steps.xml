@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <import-steps>
 
+ 
 
 
-
- <import-step
-    id="MeetingLiege-Update-RoleMappings"
+ <import-step 
+    id="MeetingLiege-Update-RoleMappings" 
     handler="Products.MeetingLiege.setuphandlers.updateRoleMappings"
     title="Update Workflow role mappings for MeetingLiege"
-    version="2014-05-28T13:05:24.134974">
+    version="2014-06-05T14:49:42.849202">
    <dependency step="MeetingLiege-QI-dependencies"/>
    updates the workflow role mappings for MeetingLiege
  </import-step>
 
- <import-step
-    id="MeetingLiege-postInstall"
+ <import-step 
+    id="MeetingLiege-postInstall" 
     handler="Products.MeetingLiege.setuphandlers.postInstall"
     title="manual coded post-install for MeetingLiege"
-    version="2014-05-28T13:05:24.134974">
+    version="2014-06-05T14:49:42.849202">
    <dependency step="MeetingLiege-QI-dependencies"/>
    manual coded post-install for MeetingLiege
  </import-step>
@@ -34,3 +34,4 @@
 <!-- ##/code-section ADDITIONALSTEPS -->
 
 </import-steps>
+ 

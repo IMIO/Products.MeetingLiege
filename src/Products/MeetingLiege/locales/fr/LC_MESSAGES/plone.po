@@ -112,6 +112,14 @@ msgstr "Avis finance signé"
 msgid "itemcreated_waiting_advices"
 msgstr "Avis demandé par le créateur"
 
+#. Default: "Mark not applicable"
+msgid "mark_not_applicable"
+msgstr "Marquer sans objet"
+
+#. Default: "Marked not applicable"
+msgid "marked_not_applicable"
+msgstr "Marqué sans objet"
+
 #. Default: "Pre accept"
 msgid "pre_accept"
 msgstr "Accepter provisoirement"
@@ -179,14 +187,6 @@ msgstr "Proposé au validateur interne"
 #. Default: "Advices asked by internal reviewer"
 msgid "proposed_to_internal_reviewer_waiting_advices"
 msgstr "Avis demandés par le validateur interne"
-
-#. Default: "Remove"
-msgid "remove"
-msgstr "Marquer 'sans objet'"
-
-#. Default: "Removed"
-msgid "removed"
-msgstr "Sans objet"
 
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"

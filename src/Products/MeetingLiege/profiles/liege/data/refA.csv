@@ -1,0 +1,233 @@
+code,label,active,finance_advice,restrict_to_groups
+ 1.1 ,Permis d'Urbanisme,X,,Urbanisme
+ 1.2 ,Permis unique,X,,Urbanisme
+ 1.3 ,Permis Environnement,X,,Bureau de Police administrative
+ 1.4 ,Enseignes et stores,X,,Urbanisme
+ 1.5 ,Panneaux publicitaires,X,,Urbanisme
+ 1.6 ,Certificat Patrimoine,X,,Urbanisme
+ 10.1 ,Taxes et Redevances,X,,Gestion financière
+ 10.10 ,Comptes,X,DF-Comptabilité et Audit financier,Direction financière
+ 10.11 ,Emprunts,X,DF-Comptabilité et Audit financier,Direction financière
+ 10.12 ,Contentieux,X,,Direction financière
+ 10.13 ,Factures,,,Direction financière
+ 10.2.1 ,Mise-en-non valeurs - prestations,X,DF-Contrôle,Maintenance des Espaces publics
+ 10.2.2 ,Mise-en-non valeurs - locations,X,DF-Contrôle,Culture - Services sociaux - Sports - Instruction publique
+ 10.2.3 ,Mise-en-non valeurs - subventions,X,DF-Comptabilité et Audit financier,TOUS
+ 10.3.1 ,Donations et legs - biens immobiliers,X,DF-Comptabilité et Audit financier,Urbanisme
+ 10.3.2 ,Donations et legs - ouvrages et œuvres,X,DF-Comptabilité et Audit financier,Culture
+ 10.3.3 ,Donations et legs - capital,X,DF-Comptabilité et Audit financier,Direction financière
+ 10.4.1 ,Bordereaux,X,,Direction financière
+ 10.4.2 ,Ordonnancements,X,,Direction financière
+ 10.5.1 ,Fabriques d'Églises - administration,X,,Direction financière
+ 10.5.2 ,Fabriques d'Églises - comptes et budgets,X,,Direction financière
+ 10.6.1 ,Subsides versés - sports,X,DF-Comptabilité et Audit financier,Sports - Protocole
+ 10.6.2 ,Subsides versés - culture,X,DF-Comptabilité et Audit financier,Culture
+ 10.6.3 ,Subsides versés - relations avec les quartiers,X,DF-Comptabilité et Audit financier,Plan de Prévention
+ 10.6.4 ,Subsides versés - commerce,X,DF-Comptabilité et Audit financier,Développement économique
+ 10.6.5 ,Subsides versés - plan de prévention,X,DF-Comptabilité et Audit financier,Plan de Prévention
+ 10.6.6 ,Subsides versés - travaux,X,DF-Comptabilité et Audit financier,Bâtiments communaux
+ 10.7 ,Subsides perçus,,,Direction financière
+ 10.8 ,CPAS - Tutelle - délibérations,X,,Direction financière
+ 10.8.1 ,CPAS - Tutelle - comptes et budgets,X,,Direction financière
+ 10.9 ,Budgets,X,,Direction financière
+ 11.1.1 ,ABATTOIRS - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.1.2 ,ABATTOIRS - Désignation des représentants,X,,Direction financière
+ 11.1.3 ,ABATTOIRS - Ordres du jour,X,,Direction financière
+ 11.10.1 ,IMIO - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.10.2 ,IMIO - Désignation des représentants,X,,Direction financière
+ 11.10.3 ,IMIO - Ordres du jour,X,,Direction financière
+ 11.11.1 ,I.SO.SL - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.11.2 ,I.SO.SL - Désignation des représentants,X,,Direction financière
+ 11.11.3 ,I.SO.SL - Ordres du jour,X,,Direction financière
+ 11.12.1 ,SPI - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.12.2 ,SPI - Désignation des représentants,X,,Direction financière
+ 11.12.3 ,SPI - Ordres du jour,X,,Direction financière
+ 11.13.1 ,ECETIA - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.13.2 ,ECETIA - Désignation des représentants,X,,Direction financière
+ 11.13.3 ,ECETIA - Ordres du jour,X,,Direction financière
+ 11.14.1 ,ECETIA Finances - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.14.2 ,ECETIA Finances - Désignation des représentants,X,,Direction financière
+ 11.14.3 ,ECETIA Finances - Ordres du jour,X,,Direction financière
+ 11.15.1 ,INTERMOSANE - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.15.2 ,INTERMOSANE - Désignation des représentants,X,,Direction financière
+ 11.15.3 ,INTERMOSANE - Ordres du jour,X,,Direction financière
+ 11.2.1 ,A.I.D.E. - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.2.2 ,A.I.D.E. - Désignation des représentants,X,,Direction financière
+ 11.2.3 ,A.I.D.E. - Ordres du jour,X,,Direction financière
+ 11.3.1 ,TECTEO GROUP - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.3.2 ,TECTEO GROUP - Désignation des représentants,X,,Direction financière
+ 11.3.3 ,TECTEO GROUP - Ordres du jour,X,,Direction financière
+ 11.4.1 ,NEOMANSIO - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.4.2 ,NEOMANSIO - Désignation des représentants,X,,Direction financière
+ 11.4.3 ,NEOMANSIO - Ordres du jour,X,,Direction financière
+ 11.5.1 ,C.H.R. - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.5.2 ,C.H.R. - Désignation des représentants,X,,Direction financière
+ 11.5.3 ,C.H.R. - Ordres du jour,X,,Direction financière
+ 11.6.1 ,C.I.L.E. - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.6.2 ,C.I.L.E. - Désignation des représentants,X,,Direction financière
+ 11.6.3 ,C.I.L.E. - Ordres du jour,X,,Direction financière
+ 11.7.1 ,I.G.I.L. - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.7.2 ,I.G.I.L. - Désignation des représentants,X,,Direction financière
+ 11.7.3 ,I.G.I.L. - Ordres du jour,X,,Direction financière
+ 11.8.1 ,I.I.L.E. - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.8.2 ,I.I.L.E. - Désignation des représentants,X,,Direction financière
+ 11.8.3 ,I.I.L.E. - Ordres du jour,X,,Direction financière
+ 11.8.4 ,I.I.L.E. - Cotisations,X,DF-Comptabilité et Audit financier,Bureau de Police administrative
+ 11.9.1 ,INTRADEL - Adhésion/prise de parts,X,DF-Comptabilité et Audit financier,Direction financière
+ 11.9.2 ,INTRADEL - Désignation des représentants,X,,Direction financière
+ 11.9.3 ,INTRADEL - Ordres du jour,X,,Direction financière
+ 11.9.4 ,INTRADEL - Cotisations,X,DF-Comptabilité et Audit financier,Maintenance des Espaces publics
+ 12.1 ,"Environnement, Plantations, Parcs",X,DF-Contrôle,Maintenance des Espaces publics
+ 12.2 ,Propreté publique,X,DF-Contrôle,Maintenance des Espaces publics
+ 12.3 ,Plaines de jeux,X,DF-Contrôle,Maintenance des Espaces publics - Aménagement des Espaces publics
+ 12.4 ,Art urbain - Monument,X,DF-Contrôle,Maintenance des Espaces publics - Aménagement des Espaces publics
+ 12.5 ,Voirie,X,DF-Contrôle,Maintenance des Espaces publics - Aménagement des Espaces publics
+ 12.6 ,Signalisation,X,DF-Contrôle,Maintenance des Espaces publics
+ 12.7 ,Assainissement (Égouts - Permanence civile - Avaloirs),X,DF-Contrôle,Maintenance des Espaces publics - Aménagement des Espaces publics
+ 12.8.1 ,Permissions concessionnaires,X,,Aménagement des Espaces publics
+ 12.8.2 ,Raccordements à l'égout public,X,,Maintenance des Espaces publics
+ 12.8.3 ,Constructions/inflexions trottoirs,X,,Maintenance des Espaces publics
+ 12.8.4 ,Placement de bornes (et assimilés),X,,Aménagement des Espaces publics
+ 13.1 ,Parc automobile - location,X,DF-Contrôle,Maintenance des Espaces publics
+ 13.2 ,Parc automobile - acquisition,X,DF-Contrôle,Maintenance des Espaces publics
+ 14.3.3.1 ,Sports - occupations à long terme,X,DF-Comptabilité et Audit financier,Services sociaux - proximité
+ 14.3.3.2 ,Sports - occupations à court terme,X,,Services sociaux - proximité
+ 14.1.1 ,Écoles - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.1.2 ,Écoles - équipement,X,DF-Contrôle,Instruction  publique
+ 14.1.3.1 ,Écoles - occupations à long terme,X,DF-Comptabilité et Audit financier,Instruction  publique + Bâtiments communaux
+ 14.1.3.2 ,Écoles - occupations à court terme,X,,Instruction  publique
+ 14.10.1 ,Régie foncière - aménagement,X,DF-Contrôle,Régie foncière
+ 14.10.2 ,Régie foncière - équipement,X,DF-Contrôle,Régie foncière
+ 14.10.3.1 ,Régie foncière - occupations à long terme,X,DF-Comptabilité et Audit financier,Régie foncière
+ 14.10.3.2 ,Régie foncière - occupations à court terme,X,,Régie foncière
+ 14.11 ,Gestion immobilière - achat,X,DF-Contrôle,Urbanisme - Logement
+ 14.12 ,Gestion immobilière - vente,X,DF-Contrôle,Urbanisme - Logement
+ 14.13 ,Gestion immobilière - baux,X,DF-Contrôle,Urbanisme - Logement
+ 14.2.1 ,Culture - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.2.2 ,Culture - équipement,X,DF-Contrôle,Culture
+ 14.2.3.1 ,Culture - occupations à court terme,X,,Culture + Bâtiments communaux
+ 14.2.3.3 ,Culture - occupations à long terme,X,DF-Comptabilité et Audit financier,Culture
+ 14.3.1 ,Sports - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.3.2 ,Sports - équipement,X,DF-Contrôle,Services sociaux - proximité
+ 14.4.1 ,Petite enfance - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.4.2 ,Petite enfance - équipement,X,DF-Contrôle,Services sociaux - proximité
+ 14.5.1 ,Seniors - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.5.2 ,Seniors - équipement,X,DF-Contrôle,Services sociaux - proximité
+ 14.5.3.1 ,Services sociaux - occupations à long terme,X,DF-Comptabilité et Audit financier,Services sociaux - proximité
+ 14.5.3.2 ,Seniors - occupations à court terme,X,,Services sociaux - proximité
+ 14.6.1 ,Jeunesses - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.6.2 ,Jeunesses - équipement,X,DF-Contrôle,Services sociaux - proximité
+ 14.6.3.1 ,Jeunesses - occupations à long terme,X,DF-Comptabilité et Audit financier,Services sociaux - proximité
+ 14.6.3.2 ,Jeunesses - occupations à court terme,X,,Services sociaux - proximité
+ 14.7.1 ,Administratifs - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.7.2 ,Administratifs - équipement,X,DF-Contrôle,Bâtiments communaux
+ 14.7.3.1 ,Administratifs - occupations à long terme,X,DF-Comptabilité et Audit financier,Bâtiments communaux
+ 14.7.3.2 ,Administratifs - occupations à court terme,X,,Bâtiments communaux
+ 14.8.1 ,Cultes - aménagement,X,DF-Contrôle,Bâtiments communaux
+ 14.8.2 ,Cultes - équipement,X,DF-Contrôle,Bâtiments communaux
+ 14.9.1 ,Police - aménagement,X,DF-Contrôle,Zone de Police
+ 14.9.2 ,Police - équipement,X,DF-Contrôle,Zone de Police
+ 14.9.3 ,Police - occupations,X,,Zone de Police
+ 15.1 ,Terrains communaux,X,,Bâtiments communaux
+ 15.2 ,Terrains - régie foncière,X,,Régie foncière
+ 15.3 ,Terrains privés,X,,Bâtiments communaux - Régie foncière - Urbanisme
+ 16.1 ,Logement - Primes aux particuliers,X,DF-Comptabilité et Audit financier,Logement
+ 16.2 ,Logement - Permis de Location,X,,Logement
+ 17.1 ,Transports - Voyages scolaires,X,DF-Contrôle,Instruction publique
+ 17.2 ,Règlements scolaires,X,,Instruction publique
+ 17.3.1 ,Fourniture ouvrages scolaires,X,DF-Contrôle,Instruction publique
+ 17.3.2 ,Fournitures scolaires,X,DF-Contrôle,Instruction publique
+ 17.3.3 ,Fournitures scolaires techniques et professionnels,X,DF-Contrôle,Instruction publique
+ 17.4 ,Accueil extrascolaire,X,,Instruction publique
+ 18.1 ,Radiations,X,,Affaires citoyennes
+ 18.2 ,Numérotation voirie,X,,Affaires citoyennes
+ 18.3 ,Gestion des Mairies,X,,Affaires citoyennes
+ 18.4 ,Règlements,X,,Affaires citoyennes
+ 18.5.1 ,Naissance - registres,,,Affaires citoyennes
+ 18.5.2 ,Mariage - registres,,,Affaires citoyennes
+ 18.5.3 ,Décès - registres,,,Affaires citoyennes
+ 18.6 ,Etat civil - Minutes et annexes,,,Affaires citoyennes
+ 19.0 ,Toponymie,,,Affaires citoyennes
+ 2.1.1 ,Terrasses,X,,Bureau de Police administrative
+ 2.1.2 ,Occupation voie publiques (manifestations),X,,Bureau de Police administrative
+ 2.1.3 ,Tombolas - jeux de hasard,X,,Bureau de Police administrative
+ 2.1.4 ,Taxis,X,,Bureau de Police administrative
+ 2.1.5 ,Débits de boissons - Patentes,X,,Bureau de Police administrative
+ 2.1.6 ,Mesures de circulation,X,,Bureau de Police administrative
+ 2.2.1 ,E.D.I.I.,X,,Bureau de Police administrative
+ 2.2.2 ,Fermetures d'établissement,X,,Bureau de Police administrative
+ 2.2.3 ,S.R.I. (Incendie),X,,Bureau de Police administrative
+ 2.2.4 ,Règlements de Police,X,,Bureau de Police administrative
+ 2.2.5 ,Amendes administratives,,,Bureau de Police administrative
+ 20.1 ,Sépultures - Cimetières,X,,Affaires citoyennes
+ 20.2 ,Morgue,X,DF-Contrôle,Affaires citoyennes
+ 20.3 ,Concessions – Cavurnes,X,,Affaires citoyennes
+ 21.0 ,Étrangers,X,,Affaires citoyennes
+ 22.0 ,Élections,X,,Affaires citoyennes
+ 23.0 ,Lecture publique,X,DF-Contrôle,Culture
+ 24.0 ,Sports,X,,
+ 25.1 ,Prêt de matériel,X,,Bâtiments communaux - Sports
+ 25.2 ,Prêt d'œuvres,X,,Culture
+ 25.3 ,Prêt documentaire,X,,Archives
+ 26.1.1 ,Presse - Tourisme,X,DF-Contrôle,Culture - Tourisme
+ 26.1.2 ,Presse - Instruction publique,X,DF-Contrôle,Instruction publique
+ 26.1.3 ,Presse - Personnel,X,DF-Contrôle,Ressources humaines
+ 26.2 ,Site internet - Réseaux sociaux,X,DF-Contrôle,Communication - Informatique
+ 26.3 ,Matériel de promotion,X,DF-Contrôle,TOUS
+ 26.4 ,Relations extérieures,X,DF-Contrôle,Protocole - Communication
+ 26.5 ,Manifestations nationales et internationales,X,DF-Contrôle,Protocole - Communication
+ 27.1 ,Boissons – Traiteurs – réceptions,X,DF-Contrôle,TOUS
+ 27.2 ,Entretien - Nettoyage (produits),X,DF-Contrôle,TOUS
+ 27.3 ,Équipement - Habillement,X,DF-Contrôle,TOUS
+ 27.4 ,Économat,X,DF-Contrôle,TOUS
+ 28.1 ,Contentieux juridiques,X,,Service juridique
+ 28.2 ,Assurances,X,,Service juridique
+ 28.3 ,Consultance juridique,X,,Service juridique
+ 29.1 ,Matériel informatique,X,DF-Contrôle,Service informatique
+ 29.2 ,Logiciels informatiques,X,DF-Contrôle,Service informatique
+ 29.3 ,Maintenance informatique,X,DF-Contrôle,Service informatique
+ 29.4 ,Projets informatiques,X,,Service informatique
+ 3.0 ,Foires et marchés,X,,Services sociaux - proximité
+ 30.1 ,Installation  Collège - Conseil,X,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.10 ,Rapports annuels,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.11 ,Plans stratégiques,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.12 ,Tutelle d'appobation ,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.13 ,Registres des publications,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.2 ,Démission/Congé/Remplacement Collège - Conseil,X,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.3 ,Commissions ,X,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.4 ,Seing (Bourgmestre f.f.),X,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.5 ,Contreseing (Directeur général),X,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.6 ,PV Collège,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.7 ,PV Conseil,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.8 ,Arrêtés Collège,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 30.9 ,Délibérations Conseil,,,Secrétariat Collège-Conseil / Secrétariat communal
+ 31.1 ,ASBL - Associations - désignation représentants,X,,TOUS
+ 31.2 ,ASBL - Associations - adoption de statuts,X,DF-Comptabilité et Audit financier,TOUS
+ 31.3 ,ASBL - Associations - Contrats de gestion,X,DF-Comptabilité et Audit financier,TOUS
+ 4.1 ,Commerces - autorisations délivrées,X,,Développement économique
+ 4.2 ,Commerces - indemnités compensatoires,X,DF-Contrôle,Développement économique
+ 5.0 ,Accueillantes ONE ,X,,Services sociaux - proximité
+ 6.0 ,Mobilité,X,,
+ 7.0 ,Prévention,X,,SIPPT
+ 8.1.1 ,Gestion administrative / agent contractuel,X,,Ressources humaines
+ 8.1.1.2 ,Gestion administrative / agent statutaire,X,,Ressources humaines
+ 8.1.1.3 ,Gestion administrative / stagiaire,X,,Ressources humaines
+ 8.1.2.1 ,Traitement / attribution - paiement,X,,Ressources humaines
+ 8.1.2.2 ,Traitement / saisies - retenues,X,,Ressources humaines
+ 8.1.3 ,Formation,X,,Ressources humaines
+ 8.1.4 ,Contrôle médical,X,,Ressources humaines
+ 8.1.5 ,Pension,X,,Ressources humaines
+ 8.1.6 ,Déplacements,X,,Ressources humaines
+ 8.1.7 ,Dossier disciplinaire (confidentiel),X,,Secrétariat communal
+ 8.2.1 ,Appels,X,,Ressources humaines
+ 8.2.2 ,Nominations,X,,Ressources humaines
+ 8.2.3.1 ,Marchés publics / Contrôle médical,X,DF-Contrôle,Ressources humaines
+ 8.2.3.2 ,Marchés publics / Formation,X,DF-Contrôle,Ressources humaines
+ 8.2.4 ,Indemnités funéraires,X,,Ressources humaines
+ 8.2.5.1 ,Prêts sociaux - octroi,,,Services sociaux - proximité
+ 8.2.5.2 ,Prêts sociaux - crédits affectés,X,,Services sociaux - proximité
+ 8.3.2 ,Règlements et Statuts,X,,Ressources humaines
+ 9.1 ,Sécurité des installations,X,DF-Contrôle,Ressources humaines
+ 9.2 ,Bien-être au travail,X,DF-Contrôle,Ressources humaines
+ 9.3 ,Procédures sécuritaires,X,,Ressources humaines
+,,,,Ressources humaines

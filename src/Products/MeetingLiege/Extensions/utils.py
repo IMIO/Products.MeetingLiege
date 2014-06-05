@@ -211,4 +211,59 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
 
     file.close()
 
-    return '\n'.join(out)    
+    return '\n'.join(out)
+
+def importRefArchive(self, meeting_config='', fname=None):
+    """
+      Create a dico with csv file and import the refArchive file (fname received as parameter)
+    """
+    member = self.portal_membership.getAuthenticatedMember()
+    if not member.has_role('Manager'):
+        raise Unauthorized, 'You must be a Manager to access this script !'
+
+    if not fname or not meeting_config:
+        return "This script needs a 'meeting_config' and 'fname' parameters" 
+    if not hasattr(self, 'portal_plonemeeting'):
+        return "PloneMeeting must be installed to run this script !"
+
+    import csv
+    try:
+        file = open(fname,"rb")
+        reader = csv.DictReader(file)
+    except Exception, msg:
+        file.close()
+        return "Error with file : %s"%msg.value
+
+    out = []
+    refA_lst = []
+
+    pm = self.portal_plonemeeting
+    meetingConfig = getattr(pm, meeting_config, None)
+    from Products.CMFPlone.utils import normalizeString
+
+    for row in reader:
+        row_id = normalizeString(row['label'],self)
+        if row_id == '':
+            continue
+        refA_dico = {}
+        refA_dico['row_id'] = row_id
+        refA_dico['code'] = row['code']
+        refA_dico['label'] = row['label']
+        if row['active']:
+            actif = '1'
+        else:
+            actif = '0'
+        refA_dico['active'] = actif
+        refA_dico['finance_advice'] = normalizeString(row['finance_advice'])
+        groupId = normalizeString(row['restrict_to_groups'], self) 
+        if getattr(pm, groupId, None):
+            refA_dico['restrict_to_groups'] = [groupId,]
+        elif groupId:
+            refA_dico['restrict_to_groups'] = []
+            out.append("Restricted group %s not found" % groupId)
+        refA_lst.append(refA_dico)
+    meetingConfig.setArchivingRefs(refA_lst)
+    file.close()
+
+    return '\n'.join(out)
+

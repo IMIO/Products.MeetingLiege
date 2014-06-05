@@ -127,18 +127,24 @@ def import_meetingsUsersAndRoles_from_csv(self, fname=None):
         #attribute roles
         grouptitle =  normalizeString(row['grouptitle'],self)
         groups = []
-        if row['observers']:
+        if row.has_key('observers') and row['observers']:
             groups.append(grouptitle + '_observers')
-        if row['creators']:
+        if row.has_key('creators') and row['creators']:
             groups.append(grouptitle + '_creators')
-        if row['reviewers']:
+        if row.has_key('reviewers') and row['reviewers']:
             groups.append(grouptitle + '_reviewers')
-        if row['advisers']:
+        if row.has_key('advisers') and row['advisers']:
             groups.append(grouptitle + '_advisers')
-        if row['administrativereviewers']:
+        if row.has_key('administrativereviewers') and row['administrativereviewers']:
             groups.append(grouptitle + '_administrativereviewers')
-        if row['internatlreviewers']:
-            groups.append(grouptitle + '_internatlreviewers')                        
+        if row.has_key('internatlreviewers') and row['internatlreviewers']:
+            groups.append(grouptitle + '_internatlreviewers')
+        if row.has_key('controleur') and row['controleur']:
+            groups.append(grouptitle + '_financialcontrollers')
+        if row.has_key('dfvalidator') and row['dfvalidator']:
+            groups.append(grouptitle + '_financialreviewers')
+        if row.has_key('dfdirector') and row['dfdirector']:
+            groups.append(grouptitle + '_financialmanagers')
         for groupid in groups:
             pgr.addPrincipalToGroup(row_id, groupid)
             out.append("    -> Added in group '%s'"%groupid)

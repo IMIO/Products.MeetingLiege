@@ -90,3 +90,20 @@ def onAdviceTransition(advice, event):
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, ))
+
+
+def onAdvicesUpdated(item, event):
+    '''
+      When advices have been updated, we need to check that finance advice marked as 'advice_editable' = True
+      are really editable, this could not be the case if the advice is signed.
+    '''
+    for groupId, advice in item.adviceIndex.items():
+        if groupId in FINANCE_GROUP_IDS and advice['advice_editable']:
+            # double check if it is really editable...
+            # to be editable, the advice has to be in an editable wf state
+            advice = getattr(item, advice['advice_id'])
+            if not advice.queryState() in ('proposed_to_financial_controller',
+                                           'proposed_to_financial_reviewer',
+                                           'proposed_to_financial_manager'):
+                # advice is no more editable, adapt adviceIndex
+                item.adviceIndex[groupId]['advice_editable'] = False

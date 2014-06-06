@@ -23,7 +23,6 @@
 # 02110-1301, USA.
 #
 # ------------------------------------------------------------------------------
-from datetime import datetime
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
@@ -37,7 +36,6 @@ from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.utils import checkPermission, prepareSearchValue
-from Products.PloneMeeting.utils import workday
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
@@ -363,32 +361,12 @@ class CustomMeetingItem(MeetingItem):
 
     security.declarePublic('getAdvicesGroupsInfosForUser')
     def getAdvicesGroupsInfosForUser(self):
-        '''Monkeypatch the MeetingItem.getAdvicesGroupsInfosForUser, look for XXX'''
-        def _isStillInDelayToBeAddedEdited(adviceInfo):
-            '''Check if advice for wich we received p_adviceInfo may still be added or edited.'''
-            if not adviceInfo['delay']:
-                return True
-            delay_started_on = self._doClearDayFrom(adviceInfo['delay_started_on'])
-            delay = int(adviceInfo['delay'])
-            tool = getToolByName(self, 'portal_plonemeeting')
-            holidays = tool.getHolidaysAs_datetime()
-            weekends = tool.getNonWorkingDayNumbers()
-            unavailable_weekdays = tool.getUnavailableWeekDaysNumbers()
-            if workday(delay_started_on,
-                       delay,
-                       unavailable_weekdays=unavailable_weekdays,
-                       holidays=holidays,
-                       weekends=weekends) > datetime.now():
-                return True
-            return False
-
+        '''Monkeypatch the MeetingItem.getAdvicesGroupsInfosForUser, look for XXX.'''
         tool = self.portal_plonemeeting
         cfg = tool.getMeetingConfig(self)
         # Advices must be enabled
         if not cfg.getUseAdvices():
             return ([], [])
-        # Item state must be within the states allowing to add/edit an advice
-        itemState = self.queryState()
         # Logged user must be an adviser
         meetingGroups = tool.getGroupsForUser(suffix='advisers')
         if not meetingGroups:
@@ -399,31 +377,28 @@ class CustomMeetingItem(MeetingItem):
         toAdd = []
         toEdit = []
         powerAdvisers = cfg.getPowerAdvisersGroups()
+        itemState = self.queryState()
         for group in meetingGroups:
             groupId = group.getId()
             if groupId in self.adviceIndex:
-                adviceType = self.adviceIndex[groupId]['type']
-                if adviceType == NOT_GIVEN_ADVICE_VALUE and \
-                   itemState in group.getItemAdviceStates(cfg) and \
-                   _isStillInDelayToBeAddedEdited(self.adviceIndex[groupId]):
+                advice = self.adviceIndex[groupId]
+                if advice['type'] == NOT_GIVEN_ADVICE_VALUE and advice['advice_addable']:
                     toAdd.append((groupId, group.getName()))
-                if adviceType != NOT_GIVEN_ADVICE_VALUE and \
-                   itemState in group.getItemAdviceEditStates(cfg) and \
-                   _isStillInDelayToBeAddedEdited(self.adviceIndex[groupId]):
+                if advice['type'] != NOT_GIVEN_ADVICE_VALUE and advice['advice_editable']:
                     # XXX if we are a finance group, check if current member can edit the advice
                     # begin change by Products.MeetingLiege
                     if groupId in FINANCE_GROUP_IDS:
-                        member = self.restrictedTraverse('@@plone_portal_state').member()
+                        member = getToolByName(self, 'portal_membership').getAuthenticatedMember()
                         adviceObj = getattr(self, self.adviceIndex[groupId]['advice_id'])
                         if not member.has_role('MeetingFinanceEditor', adviceObj):
                             continue
                     # end change by Products.MeetingLiege
                     toEdit.append(groupId)
-            elif groupId in powerAdvisers:
-                # if not in self.adviceIndex, aka not already given
-                # check if group is a power adviser
-                if itemState in group.getItemAdviceStates(cfg):
-                    toAdd.append((groupId, group.getName()))
+            # if not in self.adviceIndex, aka not already given
+            # check if group is a power adviser and if he is allowed
+            # to add an advice in current item state
+            elif groupId in powerAdvisers and itemState in group.getItemAdviceStates(cfg):
+                toAdd.append((groupId, group.getName()))
         return (toAdd, toEdit)
     MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
 

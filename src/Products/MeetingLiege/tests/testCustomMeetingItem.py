@@ -22,6 +22,7 @@
 # 02110-1301, USA.
 #
 
+from DateTime import DateTime
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
@@ -29,3 +30,24 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     """
         Tests the MeetingItem adapted methods
     """
+
+    def test_InitFieldsWhenItemSentToCouncil(self):
+        '''When an item is sent from College to Council, fields 'title' and 'privacy'
+           are initialized from what is defined on the College item.'''
+        # create a college item
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item.setTitleForCouncil('My title for council')
+        # default privacy is 'public', set 'secret' so we see that it is actually applied
+        item.setPrivacyForCouncil('secret')
+        # make item sendable to council
+        item.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        # send the item to the council
+        meeting = self.create('Meeting', date=DateTime('2014/01/01'))
+        self.presentItem(item)
+        self.closeMeeting(meeting)
+        # the item has been sent, get it and test that relevant fields are correctly initialized
+        newItem = item.getBRefs('ItemPredecessor')[0]
+        self.assertTrue(newItem.getPredecessor().UID() == item.UID())
+        self.assertTrue(newItem.Title() == 'My title for council')
+        self.assertTrue(newItem.getPrivacy() == 'secret')

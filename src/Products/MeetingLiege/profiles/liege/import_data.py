@@ -396,6 +396,10 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'itemAssembly',
                                      'motivation', ]
+councilMeeting.usedMeetingAttributes = ['signatures',
+                                        'assembly',
+                                        'assemblyExcused',
+                                        'observations', ]
 councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 councilMeeting.xhtmlTransformTypes = ('removeBlanks',)

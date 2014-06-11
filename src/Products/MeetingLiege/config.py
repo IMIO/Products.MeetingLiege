@@ -55,6 +55,11 @@ LIEGEROLES['financialmanagers'] = ''
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 
+# add field 'textCheckList' to field to keep while using itemtemplate
+from Products.PloneMeeting import config
+ML_EXTRA_COPIED_FIELDS_FOR_TEMPLATE = config.EXTRA_COPIED_FIELDS_FOR_TEMPLATE + ['textCheckList', ]
+config.EXTRA_COPIED_FIELDS_FOR_TEMPLATE = ML_EXTRA_COPIED_FIELDS_FOR_TEMPLATE
+
 # finance groups ids
 FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 

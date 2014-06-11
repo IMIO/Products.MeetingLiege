@@ -327,6 +327,22 @@
                     </dl>
                 </tal:defines>
             </tal:itemSignatures>
+
+            <tal:comment replace="nothing">XXX added by MeetingLiege, text check list</tal:comment>
+            <tal:textCheckList condition="python: 'textCheckList' in usedAttrs and context.getTextCheckList()">
+                <dl id="textCheckList"
+                    class="collapsible inline collapsedOnLoad discreet">
+                    <dt class="collapsibleHeader" style="font-size: 100%;">
+                        <span i18n:translate="MeetingLiege_label_textCheckList">
+                            Check list
+                        </span>
+                    </dt>
+                    <dd class="collapsibleContent">
+                        <span tal:replace="structure context/getTextCheckList">Text check list</span>
+                    </dd>
+                </dl>
+            </tal:textCheckList>
+
         </td>
       </tr>
     </table>

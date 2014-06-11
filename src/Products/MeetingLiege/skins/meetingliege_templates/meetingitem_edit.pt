@@ -181,6 +181,8 @@
         <td width="33%"><metal:field use-macro="python:here.widget('meetingTransitionInsertingMe', mode='edit')"/></td>
       </tr>
     </table>
+    <metal:field use-macro="python:here.widget('textCheckList', mode='edit')"/>
+
     <metal:field use-macro="python:here.widget('itemAssembly', mode='edit')"/>
     <metal:field use-macro="python:here.widget('itemAssemblyExcused', mode='edit')"/>
     <metal:field use-macro="python:here.widget('itemAssemblyAbsents', mode='edit')"/>

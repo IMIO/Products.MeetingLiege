@@ -28,6 +28,10 @@ msgstr "Collège communal"
 msgid "Meeting config Council"
 msgstr "Conseil communal"
 
+#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
+msgid "MeetingLiege_descr_textCheckList"
+msgstr "Encodez la liste des éléments nécessaires pour que ce type de point soit considéré 'complet'"
+
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
 msgstr "Numéro de sous-étape"
@@ -43,6 +47,10 @@ msgstr "Codes archivage"
 #. Default: "Privacy"
 msgid "MeetingLiege_label_privacyForCouncil"
 msgstr "Niveau de confidentialité"
+
+#. Default: "Checklist"
+msgid "MeetingLiege_label_textCheckList"
+msgstr "Checklist"
 
 #. Default: "Title"
 msgid "MeetingLiege_label_titleForCouncil"

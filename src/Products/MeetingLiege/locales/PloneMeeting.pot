@@ -175,3 +175,11 @@ msgstr ""
 #. Default: "Advices proposed to financial manager"
 msgid "searchadviceproposedtomanager"
 msgstr ""
+
+#. Default: "Checklist"
+msgid "MeetingLiege_label_textCheckList"
+msgstr ""
+
+#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
+msgid "MeetingLiege_descr_textCheckList"
+msgstr ""

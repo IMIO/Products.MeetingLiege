@@ -1,6 +1,8 @@
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import TextAreaWidget
 
 from Products.DataGridField import DataGridField
 from Products.DataGridField import Column
@@ -29,7 +31,6 @@ def update_item_schema(baseSchema):
             ),
             optional=True,
         ),
-
         # field for defining privacy that will be used for item created in the Council
         StringField(
             name='privacyForCouncil',
@@ -43,7 +44,6 @@ def update_item_schema(baseSchema):
             optional=True,
             vocabulary='listPrivacyValues',
         ),
-
         StringField(
             name='archivingRef',
             widget=SelectionWidget(
@@ -56,7 +56,22 @@ def update_item_schema(baseSchema):
             vocabulary='listArchivingRefs',
             default='_none_',
         ),
-
+        TextField(
+            name='textCheckList',
+            allowable_content_types=('text/plain',),
+            optional=True,
+            widget=TextAreaWidget(
+                condition="python: here.attributeIsUsed('textCheckList')",
+                description="Enter elements that are necessary for this kind of item",
+                description_msgid="MeetingLiege_descr_textCheckList",
+                label='TextCheckList',
+                label_msgid='MeetingLiege_label_textCheckList',
+                i18n_domain='PloneMeeting',
+            ),
+            write_permission="Manage portal",
+            default_output_type="text/x-html-safe",
+            default_content_type="text/plain",
+        ),
     ),)
 
     completeItemSchema = baseSchema + specificSchema.copy()

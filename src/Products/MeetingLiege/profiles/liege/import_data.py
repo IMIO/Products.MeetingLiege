@@ -162,9 +162,11 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'titleForCouncil',
                                      'privacyForCouncil',
                                      'archivingRef',
-                                     'motivation', ]
+                                     'motivation',
+                                     'textCheckList', ]
 collegeMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
+                                        'assemblyExcused',
                                         'observations', ]
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )

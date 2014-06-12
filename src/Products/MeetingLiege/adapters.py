@@ -774,7 +774,9 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         if checkPermission(ReviewPortalContent, self.context):
             res = True  # At least at present
             if not self.context.getRawItems():
-                res = No(self.context.utranslate('item_required_to_publish'))
+                res = No(translate('item_required_to_publish',
+                                   domain='PloneMeeting',
+                                   context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayClose')
@@ -1049,7 +1051,9 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         if checkPermission(ReviewPortalContent, self.context):
             res = True  # At least at present
             if not self.context.getRawItems():
-                res = No(self.context.utranslate('item_required_to_publish'))
+                res = No(translate('item_required_to_publish',
+                                   domain='PloneMeeting',
+                                   context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayClose')

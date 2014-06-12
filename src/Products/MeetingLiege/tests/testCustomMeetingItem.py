@@ -51,3 +51,45 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(newItem.getPredecessor().UID() == item.UID())
         self.assertTrue(newItem.Title() == 'My title for council')
         self.assertTrue(newItem.getPrivacy() == 'secret')
+
+    def test_FinanceAdviceAskedDependingOnArchivingRef(self):
+        '''Finance advice is asked depending on archivingRef.'''
+        # add archivingRefs in the configuration
+        self.meetingConfig.setArchivingRefs(
+            (
+                {'code': '1.1',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '001',
+                 'finance_advice': 'no_finance_advice',
+                 'label': "Archiving ref 1"},
+                {'code': '1.2',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '002',
+                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
+                 'label': 'Archiving ref 2'},
+                {'code': '1.3',
+                 'active': '1',
+                 'restrict_to_groups': [],
+                 'row_id': '003',
+                 'finance_advice': 'df-contrale',
+                 'label': 'Archiving ref 3'}, )
+        )
+        # create an item with relevant archivingRef
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        # archiving ref not asking any finance advice
+        item.setArchivingRef('001')
+        item.at_post_edit_script()
+        self.assertTrue(item.adviceIndex == {})
+        # use an archiving ref that call 'df-comptabilita-c-et-audit-financier' advice
+        item.setArchivingRef('002')
+        item.at_post_edit_script()
+        self.assertTrue('df-comptabilita-c-et-audit-financier' in item.adviceIndex)
+        self.assertTrue(len(item.adviceIndex) == 1)
+        # use an archiving ref that call 'df-contrale' advice
+        item.setArchivingRef('003')
+        item.at_post_edit_script()
+        self.assertTrue('df-contrale' in item.adviceIndex)
+        self.assertTrue(len(item.adviceIndex) == 1)

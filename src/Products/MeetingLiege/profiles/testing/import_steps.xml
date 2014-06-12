@@ -3,13 +3,13 @@
  <import-step id="installMeetingLiege" version="20140210-01"
               handler="Products.MeetingLiege.setuphandlers.installMeetingLiege"
               title="Install MeetingLiege.">
-  Install Liege.
+  Install MeetingLiege.
  </import-step>
  <import-step id="initializetool-MeetingLiege" version="20140210-01"
               handler="Products.MeetingLiege.setuphandlers.initializeTool"
               title="Initialize MeetingLiege with examples.">
   <dependency step="installMeetingLiege"/>
-  Initialize portal_plonemeeting folders.
+  Initialize portal_plonemeeting folders for MeetingLiege.
  </import-step>
 
 </import-steps>

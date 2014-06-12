@@ -320,15 +320,12 @@ class CustomMeetingItem(MeetingItem):
 
     def getFinanceGroupIdsForItem(self):
         '''Return the finance group ids the advice is asked
-           on current item.'''
+           on current item.  It only returns automatically asked advices.'''
         item = self.getSelf()
-        finance_groups = set(FINANCE_GROUP_IDS)
-        asked_advices = set(item.adviceIndex.keys())
-        groupIds = finance_groups.intersection(asked_advices)
-        if groupIds:
-            return groupIds.pop()
-        else:
-            return None
+        for advice_id, advice_info in item.adviceIndex.items():
+            if advice_id in FINANCE_GROUP_IDS and not advice_info['optional']:
+                return advice_id
+        return None
 
     security.declarePublic('getIcons')
     def getIcons(self, inMeeting, meeting):

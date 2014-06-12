@@ -130,7 +130,7 @@ msgstr "Validateurs internes"
 
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
-msgstr "Le point a été automatiquement validé car l'avis du service finance rendu était favorable."
+msgstr "Le point a été automatiquement proposé à la séance car l'avis du service finance rendu était favorable."
 
 #. Default: "Unfavorable opinion"
 msgid "negative_finance"

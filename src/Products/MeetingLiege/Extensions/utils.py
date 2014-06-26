@@ -190,24 +190,28 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
         row_id = normalizeString(row['title'],self)
         if row_id == '':
             continue      
-        if not hasattr(catFolder, row_id):
-            try:
+        try:
+            cat = getattr(catFolder,row_id, None)
+            if not cat:
                 catDescr  = CategoryDescriptor(row_id, title=row['title'], description=row['description'], active=row['actif'])
-                meetingConfig.addCategory(catDescr, classifier = isClassifier)
-
-                cat = getattr(catFolder,row_id, None)
-                if cat :
-                    cat.setCategoryId(row['categoryId'])
-                    groupId = normalizeString(row['service'], self)
-                    if getattr(pm, groupId, None):
-                        cat.setUsingGroups((groupId,))
-                    elif groupId:
-                        out.append("Restricted group %s not found" % groupId)
-                out.append("Category (or Classifier) %s added" % row_id)
-            except Exception, message:
-                out.append('error with %s - %s : %s'%(row_id,row['title'],message))
-        else:
-            out.append("Category (or Classifier) %s already exists" % row_id)
+                cat = meetingConfig.addCategory(catDescr, classifier = isClassifier)
+            else:  #cat exist, update description and active fields
+                cat.setDescription(row['description'])
+                state = self.portal_workflow.getInfoFor(cat, 'review_state')
+                if not row['actif'] and state == 'active':
+                    self.portal_workflow.doActionFor(cat, 'deactivate')
+                elif row['actif'] and state != 'active':
+                    self.portal_workflow.doActionFor(cat, 'activate')
+            # update other field
+            cat.setCategoryId(row['categoryId'])
+            groupId = normalizeString(row['service'], self)
+            if getattr(pm, groupId, None):
+                cat.setUsingGroups((groupId,))
+            elif groupId:
+                out.append("Restricted group %s not found" % groupId)
+            out.append("Category (or Classifier) %s added" % row_id)
+        except Exception, message:
+            out.append('error with %s - %s : %s'%(row_id,row['title'],message))
 
     file.close()
 

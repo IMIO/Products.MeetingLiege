@@ -959,7 +959,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             elif item_state == 'proposed_to_director':
                 # check if item needs finance advice, if it is the case, the item
                 # must be proposed to finance before being validated
-                if self.context.adapted().getFinanceGroupIdsForItem():
+                # except if finance already gave his advice and it was a negative advice
+                # in this case, the item was sent back to the director that can 'validate' himself
+                # the item with this negative finance advice
+                finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
+                if finance_advice and not self.context.adviceIndex[finance_advice]['type'] == 'negative_finance':
                     res = False
             else:
                 res = True
@@ -1009,6 +1013,20 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 member = self.context.restrictedTraverse('@@plone_portal_state').member()
                 if financeControllerGroupId in member.getGroups():
                     res = True
+        return res
+
+    security.declarePublic('mayBackToProposedToDirector')
+    def mayBackToProposedToDirector(self):
+        '''
+          Item may back to proposedToDirector if a value 'mayBackToProposedToDirector' is
+          found and True in the REQUEST.  It means that the item is 'proposed_to_finance' and that the
+          freshly signed advice was negative.
+          If the item is 'validated', a MeetingManager can send it back to the director.
+        '''
+        res = False
+        if self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
+           checkPermission(ReviewPortalContent, self.context):
+            res = True
         return res
 
 

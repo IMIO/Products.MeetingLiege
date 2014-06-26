@@ -272,7 +272,10 @@ collegeMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[6].getIdSuffixed('reviewers'), ]
 collegeMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
 collegeMeeting.podTemplates = collegeTemplates
-collegeMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
+collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
+                                             'reverse': '0'},
+                                            {'insertingMethod': 'on_other_mc_to_clone_to',
+                                             'reverse': '0'}, )
 collegeMeeting.useGroupsAsCategories = False
 collegeMeeting.recurringItems = []
 collegeMeeting.meetingUsers = []
@@ -428,7 +431,8 @@ councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[6].getIdSuffixed('reviewers'), ]
 councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
 councilMeeting.podTemplates = collegeTemplates
-councilMeeting.sortingMethodOnAddItem = 'on_proposing_groups'
+councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
+                                             'reverse': '0'},)
 councilMeeting.useGroupsAsCategories = False
 councilMeeting.recurringItems = []
 councilMeeting.meetingUsers = []

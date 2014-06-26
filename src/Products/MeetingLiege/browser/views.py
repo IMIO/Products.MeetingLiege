@@ -30,7 +30,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
+            res = True
         return res
 
     security.declarePublic('mayProposeToFinancialReviewer')
@@ -40,7 +40,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
+            res = True
         return res
 
     security.declarePublic('mayBackToProposedToFinancialReviewer')
@@ -50,7 +50,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
+            res = True
         return res
 
     security.declarePublic('mayProposeToFinancialManager')
@@ -59,7 +59,7 @@ class AdviceWFConditionsView(BrowserView):
         '''Only relevant if current advice_type is 'negative_finance'.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
+            res = True
             if not self.context.advice_type == 'negative_finance':
                 res = False
         return res
@@ -72,7 +72,7 @@ class AdviceWFConditionsView(BrowserView):
            that will be able to sign it.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
+            res = True
             # if 'negative_finance', only finance manager can sign,
             # aka advice must be in state 'proposed_to_finance_manager'
             if self.context.advice_type == 'negative_finance' and not \
@@ -87,7 +87,8 @@ class AdviceWFConditionsView(BrowserView):
         '''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
+            res = True
         return res
+
 
 InitializeClass(AdviceWFConditionsView)

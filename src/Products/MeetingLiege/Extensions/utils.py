@@ -255,15 +255,30 @@ def importRefArchive(self, meeting_config='', fname=None):
             actif = '0'
         refA_dico['active'] = actif
         refA_dico['finance_advice'] = normalizeString(row['finance_advice'])
-        groupId = normalizeString(row['restrict_to_groups'], self) 
-        if getattr(pm, groupId, None):
-            refA_dico['restrict_to_groups'] = [groupId,]
-        elif groupId:
+        groupId = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
+        if groupId:
+            refA_dico['restrict_to_groups'] = groupId
+        else:
             refA_dico['restrict_to_groups'] = []
-            out.append("Restricted group %s not found" % groupId)
+            out.append("Restricted group not found for this acronym %s" % row['acronym'])
         refA_lst.append(refA_dico)
     meetingConfig.setArchivingRefs(refA_lst)
     file.close()
 
     return '\n'.join(out)
 
+def _getProposingGroupsBaseOnAcronym(pm, acronym):
+    """
+      return all proposing groups with this acronym
+    """
+    res = []
+
+    if not acronym:
+        return res
+
+    groups = pm.getMeetingGroups(onlyActive = False)
+    for group in groups:
+        if group.getAcronym() == acronym:
+            res.append(group.id)
+
+    return res

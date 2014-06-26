@@ -1,4 +1,5 @@
 from AccessControl import Unauthorized
+from Acquisition import aq_base
 
 def export_meetinggroups(self):
     """
@@ -184,14 +185,14 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
     if isClassifier:
         catFolder = meetingConfig.classifiers
     else:
-        catFolder = meetingConfig.categories  
+        catFolder = meetingConfig.categories
 
     for row in reader:
         row_id = normalizeString(row['title'],self)
         if row_id == '':
             continue      
         try:
-            cat = getattr(catFolder,row_id, None)
+            cat = getattr(aq_base(catFolder),row_id, None)
             if not cat:
                 catDescr  = CategoryDescriptor(row_id, title=row['title'], description=row['description'], active=row['actif'])
                 cat = meetingConfig.addCategory(catDescr, classifier = isClassifier)
@@ -204,11 +205,13 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
                     self.portal_workflow.doActionFor(cat, 'activate')
             # update other field
             cat.setCategoryId(row['categoryId'])
-            groupId = normalizeString(row['service'], self)
-            if getattr(pm, groupId, None):
-                cat.setUsingGroups((groupId,))
-            elif groupId:
-                out.append("Restricted group %s not found" % groupId)
+            groupId = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
+            if groupId:
+                cat.setUsingGroups(groupId)
+            if row['link']:
+                row_link = normalizeString(row['link'],self)
+                otherCat = 'meeting-config-council.%s'%row_link
+                cat.setCategoryMappingsWhenCloningToOtherMC((otherCat,))
             out.append("Category (or Classifier) %s added" % row_id)
         except Exception, message:
             out.append('error with %s - %s : %s'%(row_id,row['title'],message))

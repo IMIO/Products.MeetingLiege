@@ -426,7 +426,7 @@
     <tal:itemInConfig condition="context/isDefinedInTool">
       <tal:templateUsingGroups condition="python: 'itemtemplates' in context.absolute_url()">
         <span class="discreet item_attribute_label"
-              i18n:translate="PloneMeeting_label_templateUsingGroups" />&nbsp:<br />
+              i18n:translate="PloneMeeting_label_templateUsingGroups">Template using groups</span>&nbsp:<br />
         <span metal:use-macro="python: here.widget('templateUsingGroups', mode='view')" /><p>&nbsp;</p>
         <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#itemTemplates'" i18n:translate="back"></a>
       </tal:templateUsingGroups>

@@ -726,6 +726,8 @@ class CustomMeetingGroup(MeetingGroup):
           is edited, so removed elements from config and so on are back to normal...
         '''
         group = self.getSelf()
+        if not self.getId() in FINANCE_GROUP_IDS:
+            return
         for groupSuffix in FINANCE_GROUP_SUFFIXES:
             groupId = group.getPloneGroupId(groupSuffix)
             portal_groups = getToolByName(group, 'portal_groups')

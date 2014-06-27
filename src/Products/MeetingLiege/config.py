@@ -49,9 +49,6 @@ LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
 LIEGEROLES['internalreviewers'] = 'MeetingInternalReviewer'
 LIEGEROLES['reviewers'] = 'MeetingReviewer'
-LIEGEROLES['financialcontrollers'] = ''
-LIEGEROLES['financialreviewers'] = ''
-LIEGEROLES['financialmanagers'] = ''
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 

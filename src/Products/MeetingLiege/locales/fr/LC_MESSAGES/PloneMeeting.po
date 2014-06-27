@@ -32,6 +32,10 @@ msgstr "Conseil communal"
 msgid "MeetingLiege_descr_textCheckList"
 msgstr "Encodez la liste des éléments nécessaires pour que ce type de point soit considéré 'complet'"
 
+#. Default: "Purpose that will be used for the item created in the Council"
+msgid "MeetingLiege_descr_titleForCouncil"
+msgstr "Objet qui sera utilisé pour le point créé dans le Conseil"
+
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
 msgstr "Numéro de sous-étape"
@@ -52,9 +56,9 @@ msgstr "Niveau de confidentialité"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"
 
-#. Default: "Title"
+#. Default: "Purpose"
 msgid "MeetingLiege_label_titleForCouncil"
-msgstr "Titre"
+msgstr "Objet"
 
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"

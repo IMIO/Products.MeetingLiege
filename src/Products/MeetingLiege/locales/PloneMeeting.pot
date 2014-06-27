@@ -104,8 +104,12 @@ msgstr ""
 msgid "wa_items_come_validated"
 msgstr ""
 
-#. Default: "Title"
+#. Default: "Purpose"
 msgid "MeetingLiege_label_titleForCouncil"
+msgstr ""
+
+#. Default: "Purpose that will be used for the item created in the Council"
+msgid "MeetingLiege_descr_titleForCouncil"
 msgstr ""
 
 #. Default: "Privacy"

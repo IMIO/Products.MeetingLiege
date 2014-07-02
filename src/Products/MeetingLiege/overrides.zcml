@@ -11,7 +11,6 @@
             class="Products.MeetingLiege.browser.overrides.MeetingLiegeAdviceActionsPanelView"
             template="browser/actions_panel.pt"
             layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
-            allowed_attributes="render"
             permission="zope2.View" />
     </configure>
 
@@ -29,7 +28,7 @@
 
     <utility
       provides="zope.schema.interfaces.IVocabularyFactory"
-      factory=".browser.overrides.AdviceTypeVocabulary"
+      factory=".overrides.AdviceTypeVocabulary"
       name="Products.PloneMeeting.content.advice.advice_type_vocabulary"
     />
 

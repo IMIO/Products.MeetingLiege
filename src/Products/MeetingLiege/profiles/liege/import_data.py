@@ -249,11 +249,9 @@ collegeMeeting.useAdvices = True
 collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_required_finance',
                                   'positive', 'positive_with_remarks', 'negative', 'nil')
 collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices',
-                                   'proposed_to_internal_reviewer_waiting_advices',
-                                   'proposed_to_director', )
+                                   'proposed_to_internal_reviewer_waiting_advices')
 collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices',
-                                       'proposed_to_internal_reviewer_waiting_advices',
-                                       'proposed_to_director')
+                                       'proposed_to_internal_reviewer_waiting_advices')
 collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
                                        'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
                                        'proposed_to_director', 'validated', 'presented',

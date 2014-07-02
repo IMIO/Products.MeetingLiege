@@ -295,25 +295,19 @@ class CustomMeetingItem(MeetingItem):
 
     customItemPositiveDecidedStates = ('accepted', 'accepted_but_modified', )
     MeetingItem.itemPositiveDecidedStates = customItemPositiveDecidedStates
-    customItemDecidedStates = ('accepted', 'refused', 'delayed', 'accepted_but_modified', 'marked_not_applicable', )
+    customItemDecidedStates = ('accepted',
+                               'accepted_but_modified',
+                               'delayed',
+                               'refused',
+                               'marked_not_applicable', )
     MeetingItem.itemDecidedStates = customItemDecidedStates
     customBeforePublicationStates = ('itemcreated',
-                                     'proposed_to_servicehead',
-                                     'proposed_to_officemanager',
-                                     'proposed_to_divisionhead',
+                                     'proposed_to_administrative_reviewer',
+                                     'proposed_to_internal_reviewer',
                                      'proposed_to_director',
+                                     'proposed_to_finance',
                                      'validated', )
     MeetingItem.beforePublicationStates = customBeforePublicationStates
-    #this list is used by doPresent defined in PloneMeeting
-    #for the Council, there is no "frozen" functionnality
-    customMeetingAlreadyFrozenStates = ('frozen', 'decided', )
-    MeetingItem.meetingAlreadyFrozenStates = customMeetingAlreadyFrozenStates
-
-    customMeetingNotClosedStates = ('frozen', 'in_committee', 'in_council', 'decided', )
-    MeetingItem.meetingNotClosedStates = customMeetingNotClosedStates
-
-    customMeetingTransitionsAcceptingRecurringItems = ('_init_', 'freeze', 'decide', 'setInCommittee', 'setInCouncil', )
-    MeetingItem.meetingTransitionsAcceptingRecurringItems = customMeetingTransitionsAcceptingRecurringItems
 
     def __init__(self, item):
         self.context = item

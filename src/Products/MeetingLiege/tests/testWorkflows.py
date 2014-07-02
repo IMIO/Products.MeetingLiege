@@ -208,6 +208,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmInternalReviewer1')
         self.do(item, 'proposeToDirector')
 
+    def test_subproduct_call_CollegeProcessWithFinancesAdvices(self):
+        '''How does the process behave when some 'finances' advices is asked.'''
+        # by default, an item with no selected archivingRef does
+        # not need a finances advice
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', title='The first item')
+        self.assertTrue(not item.adapted().getFinanceGroupIdsForItem())
+
     def test_subproduct_call_RemoveObjects(self):
         """
             Tests objects removal (items, meetings, annexes...).

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from DateTime import DateTime
+today = DateTime().strftime('%Y/%m/%d')
+
 from Products.PloneMeeting.profiles import *
 
 # File types -------------------------------------------------------------------
@@ -189,6 +192,55 @@ collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'de
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.transitionReinitializingDelays = 'backToItemCreated'
 collegeMeeting.enforceAdviceMandatoriness = False
+collegeMeeting.customAdvisers = [
+    {'row_id': 'unique_id_002',
+     'group': 'df-contrale',
+     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
+     'for_item_created_from': today,
+     'delay': '10',
+     'delay_left_alert': '4',
+     'delay_label': u'Incidence financière',
+     },
+    {'row_id': 'unique_id_003',
+     'group': 'df-contrale',
+     'for_item_created_from': today,
+     'delay': '5',
+     'delay_left_alert': '4',
+     'delay_label': u'Incidence financière (Urgence)',
+     'is_linked_to_previous_row': '1',
+     },
+    {'row_id': 'unique_id_004',
+     'group': 'df-contrale',
+     'for_item_created_from': today,
+     'delay': '20',
+     'delay_left_alert': '4',
+     'delay_label': u'Incidence financière (Prolongation)',
+     'is_linked_to_previous_row': '1',
+     },
+    {'row_id': 'unique_id_005',
+     'group': 'df-comptabilita-c-et-audit-financier',
+     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
+     'for_item_created_from': today,
+     'delay': '10',
+     'delay_left_alert': '4',
+     'delay_label': u'Incidence financière',
+     },
+    {'row_id': 'unique_id_006',
+     'group': 'df-comptabilita-c-et-audit-financier',
+     'for_item_created_from': today,
+     'delay': '5',
+     'delay_left_alert': '4',
+     'delay_label': u'Incidence financière (Urgence)',
+     'is_linked_to_previous_row': '1',
+     },
+    {'row_id': 'unique_id_007',
+     'group': 'df-comptabilita-c-et-audit-financier',
+     'for_item_created_from': today,
+     'delay': '20',
+     'delay_left_alert': '4',
+     'delay_label': u'Incidence financière (Prolongation)',
+     'is_linked_to_previous_row': '1',
+     }, ]
 collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_proposing_groups',

@@ -28,13 +28,13 @@ msgstr "Collège communal"
 msgid "Meeting config Council"
 msgstr "Conseil communal"
 
+#. Default: "Label that will be used when the item will be in the Council"
+msgid "MeetingLiege_descr_decisionForCouncil"
+msgstr "Libellé qui sera utilisé lorsque le point sera dans le Conseil"
+
 #. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
 msgid "MeetingLiege_descr_textCheckList"
 msgstr "Encodez la liste des éléments nécessaires pour que ce type de point soit considéré 'complet'"
-
-#. Default: "Purpose that will be used for the item created in the Council"
-msgid "MeetingLiege_descr_titleForCouncil"
-msgstr "Objet qui sera utilisé pour le point créé dans le Conseil"
 
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
@@ -48,6 +48,14 @@ msgstr "Code archivage"
 msgid "MeetingLiege_label_archivingRefs"
 msgstr "Codes archivage"
 
+#. Default: "Label to use for item in Council"
+msgid "MeetingLiege_label_decisionForCouncil"
+msgstr "Libellé dans le Conseil"
+
+#. Default: "Label of decision in Council"
+msgid "MeetingLiege_label_decisionInCouncil"
+msgstr "Libellé dans le Conseil"
+
 #. Default: "Privacy"
 msgid "MeetingLiege_label_privacyForCouncil"
 msgstr "Niveau de confidentialité"
@@ -55,10 +63,6 @@ msgstr "Niveau de confidentialité"
 #. Default: "Checklist"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"
-
-#. Default: "Purpose"
-msgid "MeetingLiege_label_titleForCouncil"
-msgstr "Objet"
 
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
@@ -195,3 +199,4 @@ msgstr "Le point a été envoyé au Conseil communal."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
+

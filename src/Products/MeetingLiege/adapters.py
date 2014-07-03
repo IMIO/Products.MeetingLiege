@@ -34,6 +34,7 @@ from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalConten
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
+from Products.PloneMeeting import PMMessageFactory as _PM
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.utils import checkPermission, prepareSearchValue
@@ -455,8 +456,19 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if original.portal_type == 'MeetingItemCollege' and item.portal_type == 'MeetingItemCouncil':
             # we just sent an item from college to council
-            item.setTitle(original.getTitleForCouncil())
+            item.setDecision(original.getDecisionForCouncil())
             item.setPrivacy(original.getPrivacyForCouncil())
+            item.setMotivation('<p>&nbsp;</p>')
+
+    def getLabelDecision(self):
+        '''
+          'decision' field label_method.
+        '''
+        if self.portal_type == 'MeetingItemCouncil':
+            return _PM('MeetingLiege_label_decisionInCouncil')
+        else:
+            return _PM('PloneMeeting_label_decision')
+    MeetingItem.getLabelDecision = getLabelDecision
 
     security.declarePrivate('listArchivingRefs')
     def listArchivingRefs(self):
@@ -587,7 +599,6 @@ class CustomMeetingConfig(MeetingConfig):
         '''
         factory = queryUtility(IVocabularyFactory, u'Products.PloneMeeting.content.advice.advice_group_vocabulary')
         published = self.REQUEST.get('PUBLISHED', '')
-        import ipdb; ipdb.set_trace()
         if not published:
             return False
         if not hasattr(published, 'context'):

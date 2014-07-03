@@ -267,8 +267,8 @@
                     </script>
                     <fieldset id="dataWhenSentToCouncil" style="display: none; margin-top: 0;">
                         <legend i18n:translate="">Data that will be used once item will be in the council</legend>
-                        <span class="item_attribute_label" i18n:translate="MeetingLiege_label_titleForCouncil"></span>:&nbsp;&nbsp;
-                        <span metal:use-macro="python: here.widget('titleForCouncil', mode='view')" />
+                        <span class="item_attribute_label" i18n:translate="MeetingLiege_label_decisionForCouncil"></span>:&nbsp;&nbsp;
+                        <span metal:use-macro="python: here.widget('decisionForCouncil', mode='view')" />
                         <br />
                         <span class="item_attribute_label" i18n:translate="MeetingLiege_label_privacyForCouncil"></span>:&nbsp;&nbsp;
                         <span metal:use-macro="python: here.widget('privacyForCouncil', mode='view')" />
@@ -351,7 +351,8 @@
     <metal:people use-macro="here/@@pm-macros/itemPeople"/>
 
     <tal:comment replace="nothing">Description</tal:comment>
-    <tal:field define="fieldName python: 'description'; ajaxEdit python:True">
+    <tal:field define="fieldName python: 'description'; ajaxEdit python:True"
+               condition="python: not here.portal_type == 'MeetingItemCouncil'">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
     <tal:comment replace="nothing">Detailed description</tal:comment>

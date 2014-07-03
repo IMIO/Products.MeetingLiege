@@ -124,7 +124,7 @@
         <fieldset id="fieldsWhenSentToCouncil" style="display: none;"
              tal:attributes="style python: 'meeting-config-council' in context.getOtherMeetingConfigsClonableTo() and 'display: block' or 'display: none';">
             <legend i18n:translate="">Data that will be used once item will be in the council</legend>
-            <metal:field use-macro="python:here.widget('titleForCouncil', mode='edit')"/>
+            <metal:field use-macro="python:here.widget('decisionForCouncil', mode='edit')"/>
             <metal:field use-macro="python:here.widget('privacyForCouncil', mode='edit')"/>
         </fieldset>
         </td>

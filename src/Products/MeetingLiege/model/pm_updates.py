@@ -3,6 +3,7 @@ from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import RichWidget
 
 from Products.DataGridField import DataGridField
 from Products.DataGridField import Column
@@ -17,18 +18,22 @@ from Products.PloneMeeting.MeetingConfig import MeetingConfig
 def update_item_schema(baseSchema):
 
     specificSchema = Schema((
-        # field for defining title that will be used for item created in the Council
-        StringField(
-            name='titleForCouncil',
-            widget=StringField._properties['widget'](
-                condition="python: here.attributeIsUsed('titleForCouncil')",
-                description="Title that will be used for the item created in the Council",
-                description_msgid="MeetingLiege_descr_titleForCouncil",
-                label='TitleForCouncil',
-                label_msgid='MeetingLiege_label_titleForCouncil',
+        # field for defining decision that will be used when the item will be in the Council
+        TextField(
+            name='decisionForCouncil',
+            widget=RichWidget(
+                rows=15,
+                condition="python: here.attributeIsUsed('decisionForCouncil')",
+                label='DecisionForCouncil',
+                label_msgid='MeetingLiege_label_decisionForCouncil',
+                description="Label of decision that will be used when the will be in the Council",
+                description_msgid="MeetingLiege_descr_decisionForCouncil",
                 i18n_domain='PloneMeeting',
-                maxlength='500',
             ),
+            default_content_type="text/html",
+            searchable=True,
+            allowable_content_types=('text/html',),
+            default_output_type="text/x-html-safe",
             optional=True,
         ),
         # field for defining privacy that will be used for item created in the Council
@@ -75,6 +80,8 @@ def update_item_schema(baseSchema):
     ),)
 
     completeItemSchema = baseSchema + specificSchema.copy()
+    completeItemSchema['decision'].widget.label_method = "getLabelDecision"
+    completeItemSchema['description'].widget.condition = "python: not here.portal_type == 'MeetingItemCouncil'"
     return completeItemSchema
 MeetingItem.schema = update_item_schema(MeetingItem.schema)
 

@@ -35,6 +35,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
+from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.utils import checkPermission, prepareSearchValue
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -720,7 +721,7 @@ class CustomMeetingGroup(MeetingGroup):
           is edited, so removed elements from config and so on are back to normal...
         '''
         group = self.getSelf()
-        if not self.getId() in FINANCE_GROUP_IDS:
+        if not group.getId() in FINANCE_GROUP_IDS:
             return
         for groupSuffix in FINANCE_GROUP_SUFFIXES:
             groupId = group.getPloneGroupId(groupSuffix)
@@ -730,6 +731,26 @@ class CustomMeetingGroup(MeetingGroup):
                 continue
             group._createPloneGroup(groupSuffix)
 
+    def getPloneGroups(self, idsOnly=False, acl=False):
+        '''Returns the list of Plone groups tied to this MeetingGroup. If
+           p_acl is True, it returns True PAS groups. Else, it returns Plone
+           wrappers from portal_groups.'''
+        res = []
+        suffixes = tuple(MEETING_GROUP_SUFFIXES)
+        if self.getId() in FINANCE_GROUP_IDS:
+            suffixes = suffixes + FINANCE_GROUP_SUFFIXES
+        for suffix in suffixes:
+            groupId = self.getPloneGroupId(suffix)
+            if idsOnly:
+                res.append(groupId)
+            else:
+                if acl:
+                    group = self.acl_users.getGroupByName(groupId)
+                else:
+                    group = self.portal_groups.getGroupById(groupId)
+                res.append(group)
+        return res
+    MeetingGroup.getPloneGroups = getPloneGroups
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the

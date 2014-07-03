@@ -587,6 +587,7 @@ class CustomMeetingConfig(MeetingConfig):
         '''
         factory = queryUtility(IVocabularyFactory, u'Products.PloneMeeting.content.advice.advice_group_vocabulary')
         published = self.REQUEST.get('PUBLISHED', '')
+        import ipdb; ipdb.set_trace()
         if not published:
             return False
         if not hasattr(published, 'context'):

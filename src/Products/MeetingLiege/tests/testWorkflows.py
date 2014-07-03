@@ -28,7 +28,9 @@ from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
 
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testWorkflows import testWorkflows as mctw
 
@@ -210,11 +212,103 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
 
     def test_subproduct_call_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
+        # define relevant users for finance groups
+        groupsTool = getToolByName(self.portal, 'portal_groups')
+        groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])
+
         # by default, an item with no selected archivingRef does
         # not need a finances advice
-        self.changeUser('pmCreator1')
+        self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         self.assertTrue(not item.adapted().getFinanceGroupIdsForItem())
+        self.assertTrue(not item.adviceIndex)
+        # finances advice is an automatic advice aksed depending on the
+        # selected archivingRef.  In self.meetingConfig.archivingRefs,
+        # we define which finances group has to give advice for a given archiving ref
+        # ask 'df-contrale' advice
+        item.setArchivingRef('012')
+        item.at_post_edit_script()
+        self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
+        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        # now that it is asked, the item will have to be proposed to the finances
+        # pmManager is member of every sub-groups of 'developers'
+        self.proposeItem(item)
+        # now the item is 'proposed_to_director' it can not be validated
+        # the step 'proposed_to_finances' is required
+        self.assertTrue(item.queryState() == 'proposed_to_director')
+        # from here, we can not validate the item, it can only be sent
+        # to the finances or back to the internal reviewer
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+                                                   'proposeToFinance'])
+        # for now, advisers of the FINANCE_GROUP_IDS[0] can not give the advice
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        # proposeToFinance, advice will be giveable
+        self.do(item, 'proposeToFinance')
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        self._cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
+        # pmFinController may add advice for FINANCE_GROUP_IDS[0]
+        self.changeUser('pmFinController')
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(toAdd[0][0] == FINANCE_GROUP_IDS[0])
+        # he may also return the item to the internal reviewer if he considers
+        # that the completeness of the item is 'incomplete'
+        # for now, completeness not evaluated, the item has no available transitions
+        self.assertTrue(not self.transitions(item))
+        # set the item to "incomplete"
+        item.setCompleteness('completeness_incomplete')
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
+        # set item as "complete"
+        item.setCompleteness('completeness_complete')
+        self.assertTrue(not self.transitions(item))
+        # give the advice
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'My comment finance')})
+        # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
+        # when added using a form, the default value of advice_hide_during_redaction
+        # is True, no matter MeetingConfig.defaultAdviceHiddenDuringRedaction
+        # set advice.advice_hide_during_redaction to True so we check that
+        # it is automatically set to False when advice will be "signed" (aka "published")
+        advice.advice_hide_during_redaction = True
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
+        # the advice can be proposed to the financial reviewer
+        self.assertTrue(self.transitions(advice), ['proposeToFinancialReviewer'])
+        self.do(advice, 'proposeToFinancialReviewer')
+        # can no more edit, but still view
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # log as finance reviewer
+        self.changeUser('pmFinReviewer')
+        # may view and edit
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_reviewer')
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
+        # may return to finance controller or sign the advice
+        self.assertTrue(self.transitions(advice), ['backToProposedToFinancialController',
+                                                   'signFinancialAdvice'])
+        # finance reviewer may sign (publish) advice because the advice_type
+        # is not "negative", if negative, it is the finance manager that will
+        # be able to sign the advice
+        advice.advice_type = u'negative_finance'
+        self.assertTrue(self.transitions(advice), ['backToProposedToFinancialController',
+                                                   'proposeToFinancialManager'])
+        # propose to financial manager that will sign the advice
+        self.do(advice, 'proposeToFinancialManager')
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # log as finance manager
+        self.changeUser('pmFinManager')
+        # may view and edit
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_manager')
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
+        # XXX to be continued...
 
     def test_subproduct_call_RemoveObjects(self):
         """

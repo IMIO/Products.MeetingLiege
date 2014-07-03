@@ -54,6 +54,10 @@ categories = [
 ]
 
 # Users and groups -------------------------------------------------------------
+pmFinController = UserDescriptor('pmFinController', [])
+pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
+pmFinReviewer = UserDescriptor('pmFinReviewer', [])
+pmFinManager = UserDescriptor('pmFinManager', [])
 pmManager = UserDescriptor('pmManager', ['MeetingManager'])
 pmCreator1 = UserDescriptor('pmCreator1', [])
 pmCreator1b = UserDescriptor('pmCreator1b', [])
@@ -149,6 +153,10 @@ dfcontrol.itemAdviceViewStates = ('meeting-config-college__state__accepted',
                                   'meeting-config-college__state__refused',
                                   'meeting-config-college__state__removed',
                                   'meeting-config-college__state__validated')
+dfcontrol.advisers.append(pmFinController)
+dfcontrol.advisers.append(pmFinReviewer)
+dfcontrol.advisers.append(pmFinManager)
+
 dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
                            u'DF - Comptabilité et Audit financier',
                            'DF')
@@ -170,6 +178,7 @@ dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
                                  'meeting-config-college__state__refused',
                                  'meeting-config-college__state__removed',
                                  'meeting-config-college__state__validated')
+dfcompta.advisers.append(pmFinControllerCompta)
 
 # Add a vintage group
 endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)

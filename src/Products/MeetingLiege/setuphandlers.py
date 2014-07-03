@@ -48,8 +48,6 @@ def postInstall(context):
     reinstallPloneMeetingSkin(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
-    # make sure we use the correct workflow for meetingadvice
-    setCorrectWorkflowForAdvices(context, site)
 
 
 ##code-section FOOT
@@ -276,6 +274,8 @@ def finalizeInstance(context):
     reorderSkinsLayers(context, site)
     reorderCss(context)
     addSearchTopics(context, site)
+    # make sure we use the correct workflow for meetingadvice
+    setCorrectWorkflowForAdvices(context, site)
 
 
 def addSearchTopics(context,  site):

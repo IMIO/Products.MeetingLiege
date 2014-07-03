@@ -23,6 +23,8 @@
 #
 
 from DateTime import DateTime
+
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
@@ -54,78 +56,16 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
     def test_FinanceAdviceAskedDependingOnArchivingRef(self):
         '''Finance advice is asked depending on archivingRef.'''
-        # add archivingRefs in the configuration
-        self.meetingConfig.setCustomAdvisers([
-            {'row_id': 'unique_id_002',
-             'group': 'df-contrale',
-             'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
-             'for_item_created_from': '2014/01/01',
-             'delay': '10',
-             'delay_left_alert': '4',
-             'delay_label': u'Incidence financière',
-             },
-            {'row_id': 'unique_id_003',
-             'group': 'df-contrale',
-             'for_item_created_from': '2014/01/01',
-             'delay': '5',
-             'delay_left_alert': '4',
-             'delay_label': u'Incidence financière (Urgence)',
-             'is_linked_to_previous_row': '1',
-             },
-            {'row_id': 'unique_id_004',
-             'group': 'df-contrale',
-             'for_item_created_from': '2014/01/01',
-             'delay': '20',
-             'delay_left_alert': '4',
-             'delay_label': u'Incidence financière (Prolongation)',
-             'is_linked_to_previous_row': '1',
-             },
-            {'row_id': 'unique_id_005',
-             'group': 'df-comptabilita-c-et-audit-financier',
-             'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
-             'for_item_created_from': '2014/01/01',
-             'delay': '10',
-             'delay_left_alert': '4',
-             'delay_label': u'Incidence financière',
-             },
-            {'row_id': 'unique_id_006',
-             'group': 'df-comptabilita-c-et-audit-financier',
-             'for_item_created_from': '2014/01/01',
-             'delay': '5',
-             'delay_left_alert': '4',
-             'delay_label': u'Incidence financière (Urgence)',
-             'is_linked_to_previous_row': '1',
-             },
-            {'row_id': 'unique_id_007',
-             'group': 'df-comptabilita-c-et-audit-financier',
-             'for_item_created_from': '2014/01/01',
-             'delay': '20',
-             'delay_left_alert': '4',
-             'delay_label': u'Incidence financière (Prolongation)',
-             'is_linked_to_previous_row': '1',
-             }, ])
-
-        self.meetingConfig.setArchivingRefs(
-            (
-                {'code': '1.1',
-                 'active': '1',
-                 'restrict_to_groups': [],
-                 'row_id': '001',
-                 'finance_advice': 'no_finance_advice',
-                 'label': "Archiving ref 1"},
-                {'code': '1.2',
-                 'active': '1',
-                 'restrict_to_groups': [],
-                 'row_id': '002',
-                 'finance_advice': 'df-comptabilita-c-et-audit-financier',
-                 'label': 'Archiving ref 2'},
-                {'code': '1.3',
-                 'active': '1',
-                 'restrict_to_groups': [],
-                 'row_id': '003',
-                 'finance_advice': 'df-contrale',
-                 'label': 'Archiving ref 3'}, )
-        )
+        dataNoFinanceAdvice = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='001')
+        dataDFCompta = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='008')
+        dataDFControle = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='012')
+        # we have the right data
+        self.assertTrue(dataNoFinanceAdvice['row_id'] == '001')
+        self.assertTrue(dataNoFinanceAdvice['finance_advice'] == 'no_finance_advice')
+        self.assertTrue(dataDFCompta['row_id'] == '008')
+        self.assertTrue(dataDFCompta['finance_advice'] == FINANCE_GROUP_IDS[1])
+        self.assertTrue(dataDFControle['row_id'] == '012')
+        self.assertTrue(dataDFControle['finance_advice'] == FINANCE_GROUP_IDS[0])
         # create an item with relevant archivingRef
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
@@ -134,12 +74,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.at_post_edit_script()
         self.assertTrue(item.adviceIndex == {})
         # use an archiving ref that call 'df-comptabilita-c-et-audit-financier' advice
-        item.setArchivingRef('002')
+        item.setArchivingRef('008')
         item.at_post_edit_script()
-        self.assertTrue('df-comptabilita-c-et-audit-financier' in item.adviceIndex)
+        self.assertTrue(FINANCE_GROUP_IDS[1] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)
         # use an archiving ref that call 'df-contrale' advice
-        item.setArchivingRef('003')
+        item.setArchivingRef('012')
         item.at_post_edit_script()
-        self.assertTrue('df-contrale' in item.adviceIndex)
+        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)

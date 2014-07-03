@@ -75,13 +75,59 @@ echevinTrav = UserDescriptor('echevinTrav', [], email="test@test.be", fullname="
 conseiller = UserDescriptor('conseiller', [], email="test@test.be", fullname="Conseiller")
 emetteuravisPers = UserDescriptor('emetteuravisPers', [], email="test@test.be", fullname="Emetteur avis Personnel")
 
+# add finance groups
+dfcontrol = GroupDescriptor('df-contrale',
+                            u'DF - Contrôle',
+                            'DF')
+dfcontrol.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
+                              'meeting-config-college__state__proposed_to_finance',
+                              'meeting-config-college__state__presented',
+                              'meeting-config-college__state__validated')
+dfcontrol.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
+                                  'meeting-config-college__state__proposed_to_finance',
+                                  'meeting-config-college__state__presented',
+                                  'meeting-config-college__state__validated')
+dfcontrol.itemAdviceViewStates = ('meeting-config-college__state__accepted',
+                                  'meeting-config-college__state__accepted_but_modified',
+                                  'meeting-config-college__state__pre_accepted',
+                                  'meeting-config-college__state__delayed',
+                                  'meeting-config-college__state__itemfrozen',
+                                  'meeting-config-college__state__proposed_to_finance',
+                                  'meeting-config-college__state__presented',
+                                  'meeting-config-college__state__refused',
+                                  'meeting-config-college__state__removed',
+                                  'meeting-config-college__state__validated')
+dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
+                           u'DF - Comptabilité et Audit financier',
+                           'DF')
+dfcompta.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
+                             'meeting-config-college__state__proposed_to_finance',
+                             'meeting-config-college__state__presented',
+                             'meeting-config-college__state__validated'),
+dfcompta.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
+                                 'meeting-config-college__state__proposed_to_finance',
+                                 'meeting-config-college__state__presented',
+                                 'meeting-config-college__state__validated'),
+dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
+                                 'meeting-config-college__state__accepted_but_modified',
+                                 'meeting-config-college__state__pre_accepted',
+                                 'meeting-config-college__state__delayed',
+                                 'meeting-config-college__state__itemfrozen',
+                                 'meeting-config-college__state__proposed_to_finance',
+                                 'meeting-config-college__state__presented',
+                                 'meeting-config-college__state__refused',
+                                 'meeting-config-college__state__removed',
+                                 'meeting-config-college__state__validated')
+
 groups = [GroupDescriptor('dirgen', 'Directeur Général', 'DG'),
           GroupDescriptor('secretariat', 'Secrétariat communal', 'Secr'),
           GroupDescriptor('informatique', 'Service informatique', 'Info'),
           GroupDescriptor('personnel', 'Service du personnel', 'Pers'),
           GroupDescriptor('dirfin', 'Directeur Financier', 'DF'),
           GroupDescriptor('comptabilite', 'Service comptabilité', 'Compt'),
-          GroupDescriptor('travaux', 'Service travaux', 'Trav'), ]
+          GroupDescriptor('travaux', 'Service travaux', 'Trav'),
+          dfcontrol,
+          dfcompta]
 
 # MeetingManager
 groups[0].creators.append(dgen)

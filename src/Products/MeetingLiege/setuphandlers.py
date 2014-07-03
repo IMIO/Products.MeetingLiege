@@ -50,9 +50,6 @@ def postInstall(context):
     reorderSkinsLayers(context, site)
     # make sure we use the correct workflow for meetingadvice
     setCorrectWorkflowForAdvices(context, site)
-    # create finance groups
-    createFinanceGroups(context, site)
-
 
 
 ##code-section FOOT
@@ -152,52 +149,6 @@ def setCorrectWorkflowForAdvices(context, site):
     logStep("setCorrectWorkflowForAdvices", context)
     wfTool = getToolByName(site, 'portal_workflow')
     wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
-
-
-def createFinanceGroups(context, site):
-    """
-       Create the finance groups.
-    """
-    if isNotMeetingLiegeProfile(context) and not isMeetingLiegeConfigureProfile(context):
-        return
-
-    logStep("createFinanceGroups", context)
-
-    financeGroupsData = ({'id': 'df-contrale',
-                          'title': 'DF - Contrôle',
-                          'acronym': 'DF', },
-                         {'id': 'df-comptabilita-c-et-audit-financier',
-                          'title': 'DF - Comptabilité et Audit financier',
-                          'acronym': 'DF', },
-                         )
-
-    tool = getToolByName(site, 'portal_plonemeeting')
-    for financeGroup in financeGroupsData:
-        if not hasattr(tool, financeGroup['id']):
-            newGroupId = tool.invokeFactory('MeetingGroup',
-                                            id=financeGroup['id'],
-                                            title=financeGroup['title'],
-                                            acronym=financeGroup['acronym'],
-                                            itemAdviceStates=('meeting-config-college__state__itemfrozen',
-                                                              'meeting-config-college__state__proposed_to_finance',
-                                                              'meeting-config-college__state__presented',
-                                                              'meeting-config-college__state__validated'),
-                                            itemAdviceEditStates=('meeting-config-college__state__itemfrozen',
-                                                                  'meeting-config-college__state__proposed_to_finance',
-                                                                  'meeting-config-college__state__presented',
-                                                                  'meeting-config-college__state__validated'),
-                                            itemAdviceViewStates=('meeting-config-college__state__accepted',
-                                                                  'meeting-config-college__state__accepted_but_modified',
-                                                                  'meeting-config-college__state__pre_accepted',
-                                                                  'meeting-config-college__state__delayed',
-                                                                  'meeting-config-college__state__itemfrozen',
-                                                                  'meeting-config-college__state__proposed_to_finance',
-                                                                  'meeting-config-college__state__presented',
-                                                                  'meeting-config-college__state__refused',
-                                                                  'meeting-config-college__state__removed',
-                                                                  'meeting-config-college__state__validated'))
-            newGroup = getattr(tool, newGroupId)
-            newGroup.processForm(values={'dummy': None})
 
 
 def createArchivingReferences(context, site):

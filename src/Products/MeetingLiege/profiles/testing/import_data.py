@@ -99,7 +99,9 @@ developers = GroupDescriptor('developers', 'Developers', 'Devel')
 developers.creators.append(pmCreator1)
 developers.creators.append(pmCreator1b)
 developers.administrativereviewers.append(pmAdminReviewer1)
+developers.administrativereviewers.append(pmManager)
 developers.internalreviewers.append(pmInternalReviewer1)
+developers.internalreviewers.append(pmManager)
 developers.creators.append(pmManager)
 developers.reviewers.append(pmReviewer1)
 developers.reviewers.append(pmManager)
@@ -124,6 +126,51 @@ developers.observers.append(voter1)
 developers.observers.append(voter2)
 vendors.observers.append(voter1)
 vendors.observers.append(voter2)
+
+# add finance groups
+dfcontrol = GroupDescriptor('df-contrale',
+                            u'DF - Contrôle',
+                            'DF')
+dfcontrol.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
+                              'meeting-config-college__state__proposed_to_finance',
+                              'meeting-config-college__state__presented',
+                              'meeting-config-college__state__validated')
+dfcontrol.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
+                                  'meeting-config-college__state__proposed_to_finance',
+                                  'meeting-config-college__state__presented',
+                                  'meeting-config-college__state__validated')
+dfcontrol.itemAdviceViewStates = ('meeting-config-college__state__accepted',
+                                  'meeting-config-college__state__accepted_but_modified',
+                                  'meeting-config-college__state__pre_accepted',
+                                  'meeting-config-college__state__delayed',
+                                  'meeting-config-college__state__itemfrozen',
+                                  'meeting-config-college__state__proposed_to_finance',
+                                  'meeting-config-college__state__presented',
+                                  'meeting-config-college__state__refused',
+                                  'meeting-config-college__state__removed',
+                                  'meeting-config-college__state__validated')
+dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
+                           u'DF - Comptabilité et Audit financier',
+                           'DF')
+dfcompta.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
+                             'meeting-config-college__state__proposed_to_finance',
+                             'meeting-config-college__state__presented',
+                             'meeting-config-college__state__validated'),
+dfcompta.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
+                                 'meeting-config-college__state__proposed_to_finance',
+                                 'meeting-config-college__state__presented',
+                                 'meeting-config-college__state__validated'),
+dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
+                                 'meeting-config-college__state__accepted_but_modified',
+                                 'meeting-config-college__state__pre_accepted',
+                                 'meeting-config-college__state__delayed',
+                                 'meeting-config-college__state__itemfrozen',
+                                 'meeting-config-college__state__proposed_to_finance',
+                                 'meeting-config-college__state__presented',
+                                 'meeting-config-college__state__refused',
+                                 'meeting-config-college__state__removed',
+                                 'meeting-config-college__state__validated')
+
 # Add a vintage group
 endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)
 
@@ -369,7 +416,7 @@ councilMeeting.recurringItems = []
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting),
-    groups=(developers, vendors, endUsers))
+    groups=(developers, vendors, endUsers, dfcontrol, dfcompta))
 data.unoEnabledPython = '/usr/bin/python'
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
                            restrictedpowerobserver1, restrictedpowerobserver2]

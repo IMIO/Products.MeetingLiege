@@ -187,3 +187,7 @@ msgstr ""
 #. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
 msgid "MeetingLiege_descr_textCheckList"
 msgstr ""
+
+#. Default: "No advice to ask"
+msgid "advice_required_to_ask_advices"
+msgstr ""

@@ -68,6 +68,10 @@ msgstr "Montrer/cacher données utilisées pour le point Conseil"
 msgid "administrativereviewers"
 msgstr "Validateurs administratifs"
 
+#. Default: "No advice to ask"
+msgid "advice_required_to_ask_advices"
+msgstr "Aucun avis à demander"
+
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
 msgstr "Encodez les codes archivages qui pourront être utilisés par les points de cette configuration de séance."

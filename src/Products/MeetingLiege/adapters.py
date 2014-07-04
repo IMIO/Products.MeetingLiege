@@ -34,7 +34,6 @@ from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalConten
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
-from Products.PloneMeeting import PMMessageFactory as _PM
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.utils import checkPermission, prepareSearchValue

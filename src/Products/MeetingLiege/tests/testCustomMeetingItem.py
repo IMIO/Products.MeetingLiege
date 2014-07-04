@@ -41,7 +41,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # create a college item
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        item.setDecisionForCouncil('<p>My decision for council</p>')
+        item.setLabelForCouncil('<p>My label for council</p>')
         # default privacy is 'public', set 'secret' so we see that it is actually applied
         item.setPrivacyForCouncil('secret')
         # make item sendable to council
@@ -53,7 +53,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # the item has been sent, get it and test that relevant fields are correctly initialized
         newItem = item.getBRefs('ItemPredecessor')[0]
         self.assertTrue(newItem.getPredecessor().UID() == item.UID())
-        self.assertTrue(newItem.getDecision() == '<p>My decision for council</p>')
+        self.assertTrue(newItem.getLabelForCouncil() == '<p>My label for council</p>')
         self.assertTrue(newItem.getPrivacy() == 'secret')
 
     def test_FinanceAdviceAskedDependingOnArchivingRef(self):

@@ -16,7 +16,8 @@ from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 def onAdviceTransition(advice, event):
     '''Called whenever a transition has been fired on an advice.'''
-    if advice != event.object:
+    # pass if we are pasting items as advices are not kept
+    if advice != event.object or advice.REQUEST.get('currentlyPastingItems', False):
         return
 
     # manage finance workflow, just consider relevant transitions

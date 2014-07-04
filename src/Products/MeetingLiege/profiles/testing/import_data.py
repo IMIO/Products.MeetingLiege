@@ -160,7 +160,16 @@ collegeMeeting.shortName = 'College'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, itemAnnex,
                                    annexeDecision, overheadAnalysis, marketingAnalysis,
                                    adviceAnnex, adviceLegalAnalysis]
-collegeMeeting.usedItemAttributes = ('toDiscuss', 'associatedGroups', 'itemIsSigned',)
+collegeMeeting.usedItemAttributes = ['budgetInfos',
+                                     'observations',
+                                     'toDiscuss',
+                                     'itemAssembly',
+                                     'completeness',
+                                     'labelForCouncil',
+                                     'privacyForCouncil',
+                                     'archivingRef',
+                                     'motivation',
+                                     'textCheckList', ]
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description',
                                        'MeetingItem.detailedDescription',
                                        'MeetingItem.decision',
@@ -300,7 +309,12 @@ councilMeeting.maxDaysDecisions = 60
 councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 councilMeeting.itemDocFormats = ('odt', 'pdf')
 councilMeeting.meetingDocFormats = ('odt', 'pdf')
-councilMeeting.usedItemAttributes = ('toDiscuss', 'associatedGroups', 'itemIsSigned',)
+councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'labelForCouncil',
+                                     'observations',
+                                     'privacy',
+                                     'itemAssembly',
+                                     'motivation', ]
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'}, )
 councilMeeting.useGroupsAsCategories = False

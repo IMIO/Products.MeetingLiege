@@ -267,8 +267,8 @@
                     </script>
                     <fieldset id="dataWhenSentToCouncil" style="display: none; margin-top: 0;">
                         <legend i18n:translate="">Data that will be used once item will be in the council</legend>
-                        <span class="item_attribute_label" i18n:translate="MeetingLiege_label_decisionForCouncil"></span>:&nbsp;&nbsp;
-                        <span metal:use-macro="python: here.widget('decisionForCouncil', mode='view')" />
+                        <span class="item_attribute_label" i18n:translate="MeetingLiege_label_labelForCouncil"></span>:&nbsp;&nbsp;
+                        <span metal:use-macro="python: here.widget('labelForCouncil', mode='view')" />
                         <br />
                         <span class="item_attribute_label" i18n:translate="MeetingLiege_label_privacyForCouncil"></span>:&nbsp;&nbsp;
                         <span metal:use-macro="python: here.widget('privacyForCouncil', mode='view')" />
@@ -351,8 +351,7 @@
     <metal:people use-macro="here/@@pm-macros/itemPeople"/>
 
     <tal:comment replace="nothing">Description</tal:comment>
-    <tal:field define="fieldName python: 'description'; ajaxEdit python:True"
-               condition="python: not here.portal_type == 'MeetingItemCouncil'">
+    <tal:field define="fieldName python: 'description'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
     <tal:comment replace="nothing">Detailed description</tal:comment>
@@ -364,6 +363,11 @@
     <tal:block condition="python: 'budgetInfos' in usedAttrs">
         <metal:budgetInfos use-macro="here/@@pm-macros/budgetInfos" />
     </tal:block>
+
+    <tal:comment replace="nothing">Label for Council</tal:comment>
+    <tal:field define="fieldName python: 'labelForCouncil'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
 
     <tal:comment replace="nothing">Motivation</tal:comment>
     <tal:field define="fieldName python: 'motivation'; ajaxEdit python:True">

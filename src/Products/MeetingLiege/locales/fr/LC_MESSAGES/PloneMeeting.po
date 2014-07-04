@@ -29,7 +29,7 @@ msgid "Meeting config Council"
 msgstr "Conseil communal"
 
 #. Default: "Label that will be used when the item will be in the Council"
-msgid "MeetingLiege_descr_decisionForCouncil"
+msgid "MeetingLiege_descr_labelForCouncil"
 msgstr "Libellé qui sera utilisé lorsque le point sera dans le Conseil"
 
 #. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
@@ -49,11 +49,7 @@ msgid "MeetingLiege_label_archivingRefs"
 msgstr "Codes archivage"
 
 #. Default: "Label to use for item in Council"
-msgid "MeetingLiege_label_decisionForCouncil"
-msgstr "Libellé dans le Conseil"
-
-#. Default: "Label of decision in Council"
-msgid "MeetingLiege_label_decisionInCouncil"
+msgid "MeetingLiege_label_labelForCouncil"
 msgstr "Libellé dans le Conseil"
 
 #. Default: "Privacy"
@@ -199,4 +195,3 @@ msgstr "Le point a été envoyé au Conseil communal."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
-

@@ -18,16 +18,17 @@ from Products.PloneMeeting.MeetingConfig import MeetingConfig
 def update_item_schema(baseSchema):
 
     specificSchema = Schema((
-        # field for defining decision that will be used when the item will be in the Council
+        # field for defining label that will be used when the item is in the Council
+        # in College, this is a proposal that will be copied to the item sent to Council
         TextField(
-            name='decisionForCouncil',
+            name='labelForCouncil',
             widget=RichWidget(
                 rows=15,
-                condition="python: here.attributeIsUsed('decisionForCouncil')",
-                label='DecisionForCouncil',
-                label_msgid='MeetingLiege_label_decisionForCouncil',
+                condition="python: here.attributeIsUsed('labelForCouncil')",
+                label='LabelForCouncil',
+                label_msgid='MeetingLiege_label_labelForCouncil',
                 description="Label of decision that will be used when the will be in the Council",
-                description_msgid="MeetingLiege_descr_decisionForCouncil",
+                description_msgid="MeetingLiege_descr_labelForCouncil",
                 i18n_domain='PloneMeeting',
             ),
             default_content_type="text/html",
@@ -80,8 +81,6 @@ def update_item_schema(baseSchema):
     ),)
 
     completeItemSchema = baseSchema + specificSchema.copy()
-    completeItemSchema['decision'].widget.label_method = "getLabelDecision"
-    completeItemSchema['description'].widget.condition = "python: not here.portal_type == 'MeetingItemCouncil'"
     return completeItemSchema
 MeetingItem.schema = update_item_schema(MeetingItem.schema)
 

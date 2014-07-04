@@ -314,6 +314,12 @@ class CustomMeetingItem(MeetingItem):
     def __init__(self, item):
         self.context = item
 
+    def getExtraFieldsToCopyWhenCloning(self):
+        '''
+          Keep field 'labelForCouncil' when item is sent from college to council.
+        '''
+        return ['labelForCouncil', ]
+
     def getFinanceGroupIdsForItem(self):
         '''Return the finance group ids the advice is asked
            on current item.  It only returns automatically asked advices.'''
@@ -456,20 +462,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if original.portal_type == 'MeetingItemCollege' and item.portal_type == 'MeetingItemCouncil':
             # we just sent an item from college to council
-            item.setDecision(original.getDecisionForCouncil())
             item.setPrivacy(original.getPrivacyForCouncil())
-            item.setMotivation('<p>&nbsp;</p>')
-
-    security.declarePublic('getLabelDecision')
-    def getLabelDecision(self):
-        '''
-          'decision' field label_method.
-        '''
-        if self.portal_type == 'MeetingItemCouncil':
-            return _PM('MeetingLiege_label_decisionInCouncil')
-        else:
-            return _PM('PloneMeeting_label_decision')
-    MeetingItem.getLabelDecision = getLabelDecision
 
     security.declarePrivate('listArchivingRefs')
     def listArchivingRefs(self):

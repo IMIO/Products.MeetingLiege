@@ -205,7 +205,7 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'toDiscuss',
                                      'itemAssembly',
                                      'completeness',
-                                     'titleForCouncil',
+                                     'labelForCouncil',
                                      'privacyForCouncil',
                                      'archivingRef',
                                      'motivation',
@@ -440,7 +440,9 @@ councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
 councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'labelForCouncil',
                                      'observations',
+                                     'privacy',
                                      'itemAssembly',
                                      'motivation', ]
 councilMeeting.usedMeetingAttributes = ['signatures',

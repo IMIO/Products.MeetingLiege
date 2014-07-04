@@ -185,13 +185,9 @@ msgid "advice_required_to_ask_advices"
 msgstr ""
 
 #. Default: "Label to use for item in Council"
-msgid "MeetingLiege_label_decisionForCouncil"
+msgid "MeetingLiege_label_labelForCouncil"
 msgstr ""
 
 #. Default: "Label that will be used when the item will be in the Council"
-msgid "MeetingLiege_descr_decisionForCouncil"
-msgstr ""
-
-#. Default: "Label of decision in Council"
-msgid "MeetingLiege_label_decisionInCouncil"
+msgid "MeetingLiege_descr_labelForCouncil"
 msgstr ""

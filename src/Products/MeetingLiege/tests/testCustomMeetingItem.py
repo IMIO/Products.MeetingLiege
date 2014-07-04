@@ -25,6 +25,8 @@
 from DateTime import DateTime
 
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
+from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
@@ -39,7 +41,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # create a college item
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        item.setTitleForCouncil('My title for council')
+        item.setDecisionForCouncil('<p>My decision for council</p>')
         # default privacy is 'public', set 'secret' so we see that it is actually applied
         item.setPrivacyForCouncil('secret')
         # make item sendable to council
@@ -51,11 +53,16 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # the item has been sent, get it and test that relevant fields are correctly initialized
         newItem = item.getBRefs('ItemPredecessor')[0]
         self.assertTrue(newItem.getPredecessor().UID() == item.UID())
-        self.assertTrue(newItem.Title() == 'My title for council')
+        self.assertTrue(newItem.getDecision() == '<p>My decision for council</p>')
         self.assertTrue(newItem.getPrivacy() == 'secret')
 
     def test_FinanceAdviceAskedDependingOnArchivingRef(self):
         '''Finance advice is asked depending on archivingRef.'''
+        # create finance groups
+        self.changeUser('admin')
+        _createFinanceGroups(self.portal)
+        _configureCollegeCustomAdvisers(self.portal)
+        self.changeUser('pmManager')
         dataNoFinanceAdvice = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='001')
         dataDFCompta = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='008')
         dataDFControle = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='012')
@@ -67,7 +74,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(dataDFControle['row_id'] == '012')
         self.assertTrue(dataDFControle['finance_advice'] == FINANCE_GROUP_IDS[0])
         # create an item with relevant archivingRef
-        self.changeUser('pmManager')
         item = self.create('MeetingItem')
         # archiving ref not asking any finance advice
         item.setArchivingRef('001')

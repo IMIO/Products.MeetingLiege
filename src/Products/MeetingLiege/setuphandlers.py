@@ -21,6 +21,7 @@ import os
 from Products.CMFCore.utils import getToolByName
 import transaction
 ##code-section HEAD
+from DateTime import DateTime
 from Products.PloneMeeting.exportimport.content import ToolInitializer
 ##/code-section HEAD
 
@@ -276,6 +277,112 @@ def finalizeInstance(context):
     addSearchTopics(context, site)
     # make sure we use the correct workflow for meetingadvice
     setCorrectWorkflowForAdvices(context, site)
+    # create finance groups but not for the testing profile
+    # or it mess tests computing available groups and so on
+    # this method is called manually by relevant tests
+    if not context.readDataFile("MeetingLiege_testing_marker.txt"):
+        logStep("_createFinanceGroups", context)
+        _createFinanceGroups(site)
+        # populate the customAdvisers of 'meeting-config-college'
+        logStep("_configureCollegeCustomAdvisers", context)
+        _configureCollegeCustomAdvisers(site)
+
+
+def _configureCollegeCustomAdvisers(site):
+    '''
+    '''
+    today = DateTime().strftime('%Y/%m/%d')
+    college = getattr(site.portal_plonemeeting, 'meeting-config-college')
+    college.setCustomAdvisers([
+        {'row_id': 'unique_id_002',
+         'group': 'df-contrale',
+         'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
+         'for_item_created_from': today,
+         'delay': '10',
+         'delay_left_alert': '4',
+         'delay_label': u'Incidence financière',
+         },
+        {'row_id': 'unique_id_003',
+         'group': 'df-contrale',
+         'for_item_created_from': today,
+         'delay': '5',
+         'delay_left_alert': '4',
+         'delay_label': u'Incidence financière (Urgence)',
+         'is_linked_to_previous_row': '1',
+         },
+        {'row_id': 'unique_id_004',
+         'group': 'df-contrale',
+         'for_item_created_from': today,
+         'delay': '20',
+         'delay_left_alert': '4',
+         'delay_label': u'Incidence financière (Prolongation)',
+         'is_linked_to_previous_row': '1',
+         },
+        {'row_id': 'unique_id_005',
+         'group': 'df-comptabilita-c-et-audit-financier',
+         'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
+         'for_item_created_from': today,
+         'delay': '10',
+         'delay_left_alert': '4',
+         'delay_label': u'Incidence financière',
+         },
+        {'row_id': 'unique_id_006',
+         'group': 'df-comptabilita-c-et-audit-financier',
+         'for_item_created_from': today,
+         'delay': '5',
+         'delay_left_alert': '4',
+         'delay_label': u'Incidence financière (Urgence)',
+         'is_linked_to_previous_row': '1',
+         },
+        {'row_id': 'unique_id_007',
+         'group': 'df-comptabilita-c-et-audit-financier',
+         'for_item_created_from': today,
+         'delay': '20',
+         'delay_left_alert': '4',
+         'delay_label': u'Incidence financière (Prolongation)',
+         'is_linked_to_previous_row': '1',
+         }, ])
+
+
+def _createFinanceGroups(site):
+    """
+       Create the finance groups.
+    """
+    financeGroupsData = ({'id': 'df-contrale',
+                          'title': 'DF - Contrôle',
+                          'acronym': 'DF', },
+                         {'id': 'df-comptabilita-c-et-audit-financier',
+                          'title': 'DF - Comptabilité et Audit financier',
+                          'acronym': 'DF', },
+                         )
+
+    tool = getToolByName(site, 'portal_plonemeeting')
+    for financeGroup in financeGroupsData:
+        if not hasattr(tool, financeGroup['id']):
+            newGroupId = tool.invokeFactory('MeetingGroup',
+                                            id=financeGroup['id'],
+                                            title=financeGroup['title'],
+                                            acronym=financeGroup['acronym'],
+                                            itemAdviceStates=('meeting-config-college__state__itemfrozen',
+                                                              'meeting-config-college__state__proposed_to_finance',
+                                                              'meeting-config-college__state__presented',
+                                                              'meeting-config-college__state__validated'),
+                                            itemAdviceEditStates=('meeting-config-college__state__itemfrozen',
+                                                                  'meeting-config-college__state__proposed_to_finance',
+                                                                  'meeting-config-college__state__presented',
+                                                                  'meeting-config-college__state__validated'),
+                                            itemAdviceViewStates=('meeting-config-college__state__accepted',
+                                                                  'meeting-config-college__state__accepted_but_modified',
+                                                                  'meeting-config-college__state__pre_accepted',
+                                                                  'meeting-config-college__state__delayed',
+                                                                  'meeting-config-college__state__itemfrozen',
+                                                                  'meeting-config-college__state__proposed_to_finance',
+                                                                  'meeting-config-college__state__presented',
+                                                                  'meeting-config-college__state__refused',
+                                                                  'meeting-config-college__state__removed',
+                                                                  'meeting-config-college__state__validated'))
+            newGroup = getattr(tool, newGroupId)
+            newGroup.processForm(values={'dummy': None})
 
 
 def addSearchTopics(context,  site):

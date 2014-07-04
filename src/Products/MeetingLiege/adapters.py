@@ -460,6 +460,7 @@ class CustomMeetingItem(MeetingItem):
             item.setPrivacy(original.getPrivacyForCouncil())
             item.setMotivation('<p>&nbsp;</p>')
 
+    security.declarePublic('getLabelDecision')
     def getLabelDecision(self):
         '''
           'decision' field label_method.

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-from DateTime import DateTime
-today = DateTime().strftime('%Y/%m/%d')
-
 from Products.PloneMeeting.profiles import *
 
 # File types -------------------------------------------------------------------
@@ -131,55 +128,6 @@ developers.observers.append(voter2)
 vendors.observers.append(voter1)
 vendors.observers.append(voter2)
 
-# add finance groups
-dfcontrol = GroupDescriptor('df-contrale',
-                            u'DF - Contrôle',
-                            'DF')
-dfcontrol.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
-                              'meeting-config-college__state__proposed_to_finance',
-                              'meeting-config-college__state__presented',
-                              'meeting-config-college__state__validated')
-dfcontrol.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
-                                  'meeting-config-college__state__proposed_to_finance',
-                                  'meeting-config-college__state__presented',
-                                  'meeting-config-college__state__validated')
-dfcontrol.itemAdviceViewStates = ('meeting-config-college__state__accepted',
-                                  'meeting-config-college__state__accepted_but_modified',
-                                  'meeting-config-college__state__pre_accepted',
-                                  'meeting-config-college__state__delayed',
-                                  'meeting-config-college__state__itemfrozen',
-                                  'meeting-config-college__state__proposed_to_finance',
-                                  'meeting-config-college__state__presented',
-                                  'meeting-config-college__state__refused',
-                                  'meeting-config-college__state__removed',
-                                  'meeting-config-college__state__validated')
-dfcontrol.advisers.append(pmFinController)
-dfcontrol.advisers.append(pmFinReviewer)
-dfcontrol.advisers.append(pmFinManager)
-
-dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
-                           u'DF - Comptabilité et Audit financier',
-                           'DF')
-dfcompta.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
-                             'meeting-config-college__state__proposed_to_finance',
-                             'meeting-config-college__state__presented',
-                             'meeting-config-college__state__validated'),
-dfcompta.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
-                                 'meeting-config-college__state__proposed_to_finance',
-                                 'meeting-config-college__state__presented',
-                                 'meeting-config-college__state__validated'),
-dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
-                                 'meeting-config-college__state__accepted_but_modified',
-                                 'meeting-config-college__state__pre_accepted',
-                                 'meeting-config-college__state__delayed',
-                                 'meeting-config-college__state__itemfrozen',
-                                 'meeting-config-college__state__proposed_to_finance',
-                                 'meeting-config-college__state__presented',
-                                 'meeting-config-college__state__refused',
-                                 'meeting-config-college__state__removed',
-                                 'meeting-config-college__state__validated')
-dfcompta.advisers.append(pmFinControllerCompta)
-
 # Add a vintage group
 endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)
 
@@ -248,55 +196,6 @@ collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'de
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.transitionReinitializingDelays = 'backToItemCreated'
 collegeMeeting.enforceAdviceMandatoriness = False
-collegeMeeting.customAdvisers = [
-    {'row_id': 'unique_id_002',
-     'group': 'df-contrale',
-     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
-     'for_item_created_from': today,
-     'delay': '10',
-     'delay_left_alert': '4',
-     'delay_label': u'Incidence financière',
-     },
-    {'row_id': 'unique_id_003',
-     'group': 'df-contrale',
-     'for_item_created_from': today,
-     'delay': '5',
-     'delay_left_alert': '4',
-     'delay_label': u'Incidence financière (Urgence)',
-     'is_linked_to_previous_row': '1',
-     },
-    {'row_id': 'unique_id_004',
-     'group': 'df-contrale',
-     'for_item_created_from': today,
-     'delay': '20',
-     'delay_left_alert': '4',
-     'delay_label': u'Incidence financière (Prolongation)',
-     'is_linked_to_previous_row': '1',
-     },
-    {'row_id': 'unique_id_005',
-     'group': 'df-comptabilita-c-et-audit-financier',
-     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
-     'for_item_created_from': today,
-     'delay': '10',
-     'delay_left_alert': '4',
-     'delay_label': u'Incidence financière',
-     },
-    {'row_id': 'unique_id_006',
-     'group': 'df-comptabilita-c-et-audit-financier',
-     'for_item_created_from': today,
-     'delay': '5',
-     'delay_left_alert': '4',
-     'delay_label': u'Incidence financière (Urgence)',
-     'is_linked_to_previous_row': '1',
-     },
-    {'row_id': 'unique_id_007',
-     'group': 'df-comptabilita-c-et-audit-financier',
-     'for_item_created_from': today,
-     'delay': '20',
-     'delay_left_alert': '4',
-     'delay_label': u'Incidence financière (Prolongation)',
-     'is_linked_to_previous_row': '1',
-     }, ]
 collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_proposing_groups',
@@ -425,7 +324,7 @@ councilMeeting.recurringItems = []
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting),
-    groups=(developers, vendors, endUsers, dfcontrol, dfcompta))
+    groups=(developers, vendors, endUsers))
 data.unoEnabledPython = '/usr/bin/python'
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
                            restrictedpowerobserver1, restrictedpowerobserver2]

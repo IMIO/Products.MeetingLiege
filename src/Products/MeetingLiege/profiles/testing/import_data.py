@@ -310,6 +310,7 @@ councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 councilMeeting.itemDocFormats = ('odt', 'pdf')
 councilMeeting.meetingDocFormats = ('odt', 'pdf')
 councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'itemIsSigned',
                                      'labelForCouncil',
                                      'observations',
                                      'privacy',

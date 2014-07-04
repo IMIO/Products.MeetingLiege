@@ -31,6 +31,8 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
+from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testWorkflows import testWorkflows as mctw
 
@@ -212,8 +214,17 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
 
     def test_subproduct_call_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         groupsTool = getToolByName(self.portal, 'portal_groups')
+        # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
+        groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[0])
         groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
         groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
         groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])

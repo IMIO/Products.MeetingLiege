@@ -23,17 +23,20 @@
 #
 
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
 class testCustomMeetingGroup(MeetingLiegeTestCase):
     '''Tests the MeetingGroup adapted methods.'''
 
-    def test_customGetPloneGroups(self):
+    def test_CustomGetPloneGroups(self):
         '''
           getPloneGroups have been customized to return extra Plone
           groups when the MeetingGroup is a financial group.
         '''
+        self.changeUser('admin')
+        _createFinanceGroups(self.portal)
         vendorsGroup = self.tool.vendors
         vendorsPloneGroups = [group.getId() for group in vendorsGroup.getPloneGroups()]
         vendorsPloneGroups.sort()

@@ -327,5 +327,6 @@ data = PloneMeetingConfiguration(
     groups=(developers, vendors, endUsers))
 data.unoEnabledPython = '/usr/bin/python'
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
-                           restrictedpowerobserver1, restrictedpowerobserver2]
+                           restrictedpowerobserver1, restrictedpowerobserver2,
+                           pmFinController, pmFinReviewer, pmFinManager]
 # ------------------------------------------------------------------------------

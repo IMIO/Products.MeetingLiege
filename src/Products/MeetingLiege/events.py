@@ -35,6 +35,8 @@ def onAdviceTransition(advice, event):
         # activate transition, check guard_expr
         advice.REQUEST.set('mayProposeToFinancialController', True)
         wfTool.doActionFor(advice, 'proposeToFinancialController')
+        # hide the advice
+        advice.advice_hide_during_redaction = True
         advice.REQUEST.set('mayProposeToFinancialController', False)
         return
 

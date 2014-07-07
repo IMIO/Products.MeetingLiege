@@ -281,11 +281,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                              'advice_comment': RichTextValue(u'My comment finance')})
         # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
-        # when added using a form, the default value of advice_hide_during_redaction
+        # when a financial advice is added, advice_hide_during_redaction
         # is True, no matter MeetingConfig.defaultAdviceHiddenDuringRedaction
-        # set advice.advice_hide_during_redaction to True so we check that
         # it is automatically set to False when advice will be "signed" (aka "published")
-        advice.advice_hide_during_redaction = True
+        self.assertTrue(advice.advice_hide_during_redaction is True)
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
         # the advice can be proposed to the financial reviewer
@@ -319,7 +318,68 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(advice.queryState() == 'proposed_to_financial_manager')
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
-        # XXX to be continued...
+        # the financial manager may either sign the advice
+        # or send it back to the financial reviewer or controller
+        self.assertTrue(self.transitions(advice), ['backToProposedToFinancialController',
+                                                   'backToProposedToFinancialReviewer',
+                                                   'signFinancialAdvice'])
+        # if a financial manager sign a negative advice, the linked item will
+        # be automatically sent back to the director, the advice is no more editable
+        # moreover, when signed, the advice is automatically set to advice_hide_during_redaction=False
+        self.assertTrue(advice.advice_hide_during_redaction is True)
+        self.do(advice, 'signFinancialAdvice')
+        self.assertTrue(item.queryState() == 'proposed_to_director')
+        self.assertTrue(advice.queryState() == 'advice_given')
+        self.assertTrue(advice.advice_hide_during_redaction is False)
+        # now an item with a negative financial advice back to the director
+        # can be validated by the director, he takes the responsibility to validate
+        # an item with a negative is able to propose the item again to the financial group
+        # or it can validate the item
+        self.changeUser('pmReviewer1')
+        self.assertTrue(self.transitions(item), ['backToProposedToInternalReviewer',
+                                                 'proposeToFinance',
+                                                 'validate'])
+        # it can send it again to the finance and finance can adapt the advice
+        self.do(item, 'proposeToFinance')
+        self.assertTrue(item.queryState() == 'proposed_to_finance')
+        # advice is available to the financial controller
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
+        # and is hidden again
+        self.assertTrue(advice.advice_hide_during_redaction is True)
+        # now he will change the advice_type to 'positive_finance'
+        # and the financial reviewer will sign it
+        self.changeUser('pmFinController')
+        advice.advice_type = u'positive_finance'
+        self.do(advice, 'proposeToFinancialReviewer')
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'signFinancialAdvice')
+        # this time, the item has been validated automatically
+        self.assertTrue(item.queryState() == 'validated')
+        # and the advice is visible to everybody
+        self.assertTrue(advice.advice_hide_during_redaction is False)
+        # the trick is that as item state is still in itemAdviceStates,
+        # the advice is not 'advice_given' but in a state 'financial_advice_signed'
+        # where nobody can change anything neither...
+        financeGrp = getattr(self.tool, FINANCE_GROUP_IDS[0])
+        self.assertTrue('%s__state__validated' % self.meetingConfig.getId() in financeGrp.getItemAdviceStates())
+        self.assertTrue('%s__state__validated' % self.meetingConfig.getId() in financeGrp.getItemAdviceEditStates())
+        self.assertTrue(advice.queryState() == 'financial_advice_signed')
+        # item.adviceIndex is coherent also, the 'addable'/'editable' data is correct
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'] is False)
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'] is False)
+        # advice is viewable
+        # but is no more editable by any financial role
+        # not for financial reviewer
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # not for financial controller
+        self.changeUser('pmFinController')
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # no more for financial manager
+        self.changeUser('pmFinManager')
+        self.assertTrue(self.hasPermission(View, advice))
+        self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
 
     def test_subproduct_call_RemoveObjects(self):
         """

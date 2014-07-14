@@ -454,6 +454,17 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
+    security.declarePublic('mayAcceptOrRefuseEmergency')
+    def mayAcceptOrRefuseEmergency(self):
+        '''Returns True if current user may accept or refuse emergency if asked for an item.
+           Emergency can be accepted only by financial managers.'''
+        # by default, only MeetingManagers can accept or refuse emergency
+        item = self.getSelf()
+        tool = getToolByName(item, 'portal_plonemeeting')
+        if tool.isManager(realManagers=True) or tool.userIsAmong('financialmanagers'):
+            return True
+        return False
+
     security.declareProtected('Modify portal content', 'onDuplicated')
     def onDuplicated(self, original):
         '''When an item is sent to the Council, we need to initialize

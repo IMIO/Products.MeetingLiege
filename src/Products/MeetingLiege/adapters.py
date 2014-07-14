@@ -461,7 +461,10 @@ class CustomMeetingItem(MeetingItem):
         # by default, only MeetingManagers can accept or refuse emergency
         item = self.getSelf()
         tool = getToolByName(item, 'portal_plonemeeting')
-        if tool.isManager(realManagers=True) or tool.userIsAmong('financialmanagers'):
+        membershipTool = getToolByName(item, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
+        if tool.isManager(realManagers=True) or \
+           '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in member.getGroups():
             return True
         return False
 

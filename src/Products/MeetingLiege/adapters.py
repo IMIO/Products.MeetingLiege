@@ -449,8 +449,8 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         membershipTool = getToolByName(item, 'portal_membership')
         member = membershipTool.getAuthenticatedMember()
-        if item.queryState() == 'proposed_to_director' and \
-           member.has_role('MeetingReviewer', item):
+        if (item.queryState() == 'proposed_to_director' and member.has_role('MeetingReviewer', item)) or \
+           member.has_role('Manager', item):
             return True
         return False
 

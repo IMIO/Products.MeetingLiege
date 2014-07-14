@@ -49,7 +49,8 @@ def postInstall(context):
     reinstallPloneMeetingSkin(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
-
+    # set correct wf for meetingadvice
+    setCorrectWorkflowForAdvices(context, site)
 
 ##code-section FOOT
 def logStep(method, context):

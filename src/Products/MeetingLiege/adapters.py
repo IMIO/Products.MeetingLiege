@@ -824,8 +824,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     security.declarePublic('mayDecide')
     def mayDecide(self):
         res = False
-        if checkPermission(ReviewPortalContent, self.context) and \
-           (not self._allItemsAreDelayed()):
+        if checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -1127,8 +1126,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     security.declarePublic('mayDecide')
     def mayDecide(self):
         res = False
-        if checkPermission(ReviewPortalContent, self.context) and \
-           (not self._allItemsAreDelayed()):
+        if checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 

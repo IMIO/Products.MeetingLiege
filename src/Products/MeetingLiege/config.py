@@ -52,6 +52,15 @@ LIEGEROLES['reviewers'] = 'MeetingReviewer'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 
+LIEGE_ADVICE_STATES_STILL_EDITABLE = ('advice_under_edit',
+                                      'proposed_to_financial_controller',
+                                      'proposed_to_financial_reviewer',
+                                      'proposed_to_financial_manager', )
+LIEGE_ADVICE_STATES_NO_MORE_EDITABLE = ('financial_advice_signed',
+                                        'advice_given', )
+PMconfig.ADVICE_STATES_STILL_EDITABLE = LIEGE_ADVICE_STATES_STILL_EDITABLE
+PMconfig.ADVICE_STATES_NO_MORE_EDITABLE = LIEGE_ADVICE_STATES_NO_MORE_EDITABLE
+
 # add field 'textCheckList' to field to keep while using itemtemplate
 from Products.PloneMeeting import config
 ML_EXTRA_COPIED_FIELDS_FOR_TEMPLATE = config.EXTRA_COPIED_FIELDS_FOR_TEMPLATE + ['textCheckList', ]

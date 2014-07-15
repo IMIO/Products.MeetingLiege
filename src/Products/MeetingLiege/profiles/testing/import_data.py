@@ -37,6 +37,45 @@ itemTemplate.podTemplate = 'Item.odt'
 itemTemplate.podCondition = 'python:here.meta_type=="MeetingItem"'
 
 # Categories -------------------------------------------------------------------
+
+template1 = ItemTemplateDescriptor(id='template1',
+                                   title='Tutelle CPAS',
+                                   description='Tutelle CPAS',
+                                   category='',
+                                   proposingGroup='developers',
+                                   templateUsingGroups=['developers', 'vendors'],
+                                   decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
+<p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>
+<p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du XXX ont été reçues le XXX dans le cadre de la tutelle générale sur les centres publics d'action sociale :</p>
+<p>- ...;</p>
+<p>- ...;</p>
+<p>- ...</p>
+<p>Attendu que ces décisions sont conformes à la loi et à l'intérêt général;</p>
+<p>Déclare à l'unanimité que :</p>
+<p><strong>Article 1er :</strong></p>
+<p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes à la loi et à l'intérêt général et qu'il n'y a, dès lors, pas lieu de les annuler.</p>
+<p><strong>Article 2 :</strong></p>
+<p>Copie de la présente délibération sera transmise au Bureau permanent/Conseil de l'Action sociale.</p>""")
+template2 = ItemTemplateDescriptor(id='template2',
+                                   title='Contrôle médical systématique agent contractuel',
+                                   description='Contrôle médical systématique agent contractuel',
+                                   category='',
+                                   proposingGroup='vendors',
+                                   templateUsingGroups=['vendors', ],
+                                   decision="""<p>Vu la loi du 26 mai 2002 instituant le droit à l’intégration sociale;</p>
+<p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges relatif au marché de services portant sur le contrôle des agents communaux absents pour raisons médicales;</p>
+<p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour la mission de contrôle médical des agents de l’Administration communale;</p>
+<p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière systématique et pour une période d’essai d’un trimestre;</p>
+<p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, avec la mention « XXX »;</p>
+<p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le rapport de contrôle mentionnant l’absence de XXX ce XXX à XXX;</p>
+<p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système de contrôle systématique que le médecin-contrôleur;</p>
+<p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite du médecin-contrôleur;</p>
+<p>DECIDE :</p>
+<p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de lui rappeler ses obligations en la matière.</p>
+<p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par le Secrétaire communal au Collège de transformer les jours de congés de maladie en absence injustifiée (retenue sur traitement avec application de la loi du 26 mai 2002 citée ci-dessus).</p>
+<p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>""")
+
+# Categories -------------------------------------------------------------------
 categories = [
     CategoryDescriptor('deployment', 'Deployment topics'),
     CategoryDescriptor('maintenance', 'Maintenance topics'),
@@ -233,47 +272,7 @@ collegeMeeting.recurringItems = [
         category='developers',
         decision='Second recurring item approved'),
 ]
-collegeMeeting.itemTemplates = [
-    ItemTemplateDescriptor(
-        id='template1',
-        title='Tutelle CPAS',
-        description='Tutelle CPAS',
-        category='',
-        proposingGroup='developers',
-        templateUsingGroups=['developers', 'vendors'],
-        decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
-<p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>
-<p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du XXX ont été reçues le XXX dans le cadre de la tutelle générale sur les centres publics d'action sociale :</p>
-<p>- ...;</p>
-<p>- ...;</p>
-<p>- ...</p>
-<p>Attendu que ces décisions sont conformes à la loi et à l'intérêt général;</p>
-<p>Déclare à l'unanimité que :</p>
-<p><strong>Article 1er :</strong></p>
-<p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes à la loi et à l'intérêt général et qu'il n'y a, dès lors, pas lieu de les annuler.</p>
-<p><strong>Article 2 :</strong></p>
-<p>Copie de la présente délibération sera transmise au Bureau permanent/Conseil de l'Action sociale.</p>"""),
-    ItemTemplateDescriptor(
-        id='template2',
-        title='Contrôle médical systématique agent contractuel',
-        description='Contrôle médical systématique agent contractuel',
-        category='',
-        proposingGroup='vendors',
-        templateUsingGroups=['vendors', ],
-        decision="""
-            <p>Vu la loi du 26 mai 2002 instituant le droit à l’intégration sociale;</p>
-<p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges relatif au marché de services portant sur le contrôle des agents communaux absents pour raisons médicales;</p>
-<p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour la mission de contrôle médical des agents de l’Administration communale;</p>
-<p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière systématique et pour une période d’essai d’un trimestre;</p>
-<p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, avec la mention « XXX »;</p>
-<p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le rapport de contrôle mentionnant l’absence de XXX ce XXX à XXX;</p>
-<p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système de contrôle systématique que le médecin-contrôleur;</p>
-<p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite du médecin-contrôleur;</p>
-<p>DECIDE :</p>
-<p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de lui rappeler ses obligations en la matière.</p>
-<p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par le Secrétaire communal au Collège de transformer les jours de congés de maladie en absence injustifiée (retenue sur traitement avec application de la loi du 26 mai 2002 citée ci-dessus).</p>
-<p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>"""),
-]
+collegeMeeting.itemTemplates = (template1, template2)
 
 # Conseil communal
 councilMeeting = MeetingConfigDescriptor(
@@ -332,6 +331,7 @@ councilMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), ve
 councilMeeting.useVotes = True
 councilMeeting.meetingUsers = [muser_voter1, muser_voter2, ]
 councilMeeting.recurringItems = []
+councilMeeting.itemTemplates = (template1, template2)
 
 #no recurring items for this meetingConfig, only for tests !!!
 #so we can test a meetingConfig with recurring items (college) and without (council)

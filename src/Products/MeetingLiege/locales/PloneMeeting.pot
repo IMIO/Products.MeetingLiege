@@ -195,3 +195,23 @@ msgstr ""
 #. Default: "Label that will be used when the item will be in the Council"
 msgid "MeetingLiege_descr_labelForCouncil"
 msgstr ""
+
+#. Default: "Summary of the purpose"
+msgid "PloneMeeting_label_itemTitle"
+msgstr ""
+
+#. Default: "Purpose"
+msgid "PloneMeeting_label_itemDescription"
+msgstr ""
+
+#. Default: "Summary of the purpose"
+msgid "listingheader_item_title"
+msgstr ""
+
+#. Default: ", complete purpose"
+msgid "and_description"
+msgstr ""
+
+#. Default: ", complete purpose and decision"
+msgid "and_decision"
+msgstr ""

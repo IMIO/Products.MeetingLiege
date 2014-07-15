@@ -60,6 +60,14 @@ msgstr "Niveau de confidentialité"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"
 
+#. Default: "Purpose"
+msgid "PloneMeeting_label_itemDescription"
+msgstr "Objet"
+
+#. Default: "Summary of the purpose"
+msgid "PloneMeeting_label_itemTitle"
+msgstr "Résumé de l'objet"
+
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
 msgstr "Montrer/cacher données utilisées pour le point Conseil"
@@ -71,6 +79,14 @@ msgstr "Validateurs administratifs"
 #. Default: "No advice to ask"
 msgid "advice_required_to_ask_advices"
 msgstr "Aucun avis à demander"
+
+#. Default: ", complete purpose and decision"
+msgid "and_decision"
+msgstr ", objet complet et décision"
+
+#. Default: ", complete purpose"
+msgid "and_description"
+msgstr ", objet complet"
 
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
@@ -143,6 +159,10 @@ msgstr "Le point a été automatiquement renvoyé au directeur car l'avis du ser
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
 msgstr "Le point a été automatiquement proposé à la séance car l'avis du service finance rendu était favorable."
+
+#. Default: "Summary of the purpose"
+msgid "listingheader_item_title"
+msgstr "Résumé de l'objet"
 
 #. Default: "Unfavorable opinion"
 msgid "negative_finance"

@@ -136,6 +136,10 @@ msgstr "Avis demandés par le validateur interne"
 msgid "internalreviewers"
 msgstr "Validateurs internes"
 
+#. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
+msgid "item_wf_changed_finance_advice_negative"
+msgstr "Le point a été automatiquement renvoyé au directeur car l'avis du service finance rendu était défavorable."
+
 #. Default: "The item has been automatically validated because the relevant finance advice was positive."
 msgid "item_wf_changed_finance_advice_positive"
 msgstr "Le point a été automatiquement proposé à la séance car l'avis du service finance rendu était favorable."

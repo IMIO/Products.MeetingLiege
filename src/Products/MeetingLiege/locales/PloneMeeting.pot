@@ -96,6 +96,10 @@ msgstr ""
 msgid "item_wf_changed_finance_advice_positive"
 msgstr ""
 
+#. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
+msgid "item_wf_changed_finance_advice_negative"
+msgstr ""
+
 #. Default: "Nil"
 msgid "nil"
 msgstr ""

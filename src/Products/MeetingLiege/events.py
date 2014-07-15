@@ -44,13 +44,13 @@ def onAdviceTransition(advice, event):
     stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',
                                   'proposed_to_financial_reviewer': 'financialreviewers',
                                   'proposed_to_financial_manager': 'financialmanagers', }
+    item = advice.getParentNode()
 
     if newStateId == 'financial_advice_signed':
         # final state of the wf, make sure advice is not more hidden during redaction
         advice.advice_hide_during_redaction = False
         # if item was still in state 'proposed_to_finance', it is automatically validated
         # and a specific message is added to the wf history regarding this
-        item = advice.getParentNode()
         # validate or send the item back to director depending on advice_type
         if item.queryState() == 'proposed_to_finance':
             if advice.advice_type in ('positive_finance', 'not_required_finance'):
@@ -83,6 +83,7 @@ def onAdviceTransition(advice, event):
         return
 
     if not newStateId in stateToGroupSuffixMappings:
+        item.updateAdvices()
         return
 
     # give 'Reader' role to every members of the _advisers and
@@ -98,6 +99,7 @@ def onAdviceTransition(advice, event):
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, ))
+    item.updateAdvices()
 
 
 def onAdvicesUpdated(item, event):

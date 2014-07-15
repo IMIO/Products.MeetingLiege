@@ -44,7 +44,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         """This test is bypassed, we use several tests here under."""
         pass
 
-    def test_subproduct_call_CollegeProcessWithoutAdvices(self):
+    def test_CollegeProcessWithoutAdvices(self):
         '''This test covers the whole decision workflow. It begins with the
            creation of some items, and ends by closing a meeting.
            The usecase here is to test the workflow without normal and finances advice.'''
@@ -140,7 +140,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(meeting, 'close')
         self.assertTrue(not self.transitions(item))
 
-    def test_subproduct_call_CollegeProcessWithNormalAdvices(self):
+    def test_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
@@ -212,7 +212,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmInternalReviewer1')
         self.do(item, 'proposeToDirector')
 
-    def test_subproduct_call_CollegeProcessWithFinancesAdvices(self):
+    def test_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
         self.changeUser('admin')
         # configure customAdvisers for 'meeting-config-college'

@@ -411,6 +411,9 @@ class CustomMeetingItem(MeetingItem):
             return
         membershipTool = getToolByName(item, 'portal_membership')
         member = membershipTool.getAuthenticatedMember()
+        # bypass for Managers
+        if member.has_role('Manager'):
+            return True
         financeGroupId = item.adapted().getFinanceGroupIdsForItem()
         if not financeGroupId or not '%s_financialcontrollers' % financeGroupId in member.getGroups():
             return False

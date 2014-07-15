@@ -204,6 +204,10 @@ msgstr ""
 msgid "PloneMeeting_label_itemDescription"
 msgstr ""
 
+#. Default: "Precise"
+msgid "PloneMeeting_label_detailedDescription"
+msgstr ""
+
 #. Default: "Summary of the purpose"
 msgid "listingheader_item_title"
 msgstr ""

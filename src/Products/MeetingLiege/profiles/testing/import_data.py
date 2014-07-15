@@ -200,6 +200,7 @@ collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, itemAnnex
                                    annexeDecision, overheadAnalysis, marketingAnalysis,
                                    adviceAnnex, adviceLegalAnalysis]
 collegeMeeting.usedItemAttributes = ['budgetInfos',
+                                     'detailedDescription',
                                      'observations',
                                      'toDiscuss',
                                      'itemAssembly',

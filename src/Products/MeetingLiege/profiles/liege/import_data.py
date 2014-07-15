@@ -202,6 +202,7 @@ collegeMeeting.shortName = 'College'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
+                                     'detailedDescription',
                                      'toDiscuss',
                                      'itemAssembly',
                                      'completeness',

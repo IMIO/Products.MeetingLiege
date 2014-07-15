@@ -60,6 +60,10 @@ msgstr "Niveau de confidentialité"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"
 
+#. Default: "Precise"
+msgid "PloneMeeting_label_detailedDescription"
+msgstr "Précis"
+
 #. Default: "Purpose"
 msgid "PloneMeeting_label_itemDescription"
 msgstr "Objet"

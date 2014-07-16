@@ -30,6 +30,8 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 
+from Products.PloneMeeting.indexes import indexAdvisers
+
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
@@ -384,11 +386,88 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmFinManager')
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # if the advice is no more editable, it's state switched to 'advice_given'
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        # close the meeting, the advice will be set to 'advice_given'
+        # the advice could still be given if not already in state 'presented' and 'itemfrozen'
+        self.presentItem(item)
+        self.closeMeeting(meeting)
+        self.assertTrue(meeting.queryState() == 'closed')
+        self.assertTrue(advice.queryState() == 'advice_given')
 
     def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
         '''Test that when a transition is triggered on a meetingadvice
            using finance workflow, the indexAdvisers index is always correct.'''
-        pass
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # by default, an item with no selected archivingRef does
+        # not need a finances advice
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='The first item')
+        item.setArchivingRef('012')
+        item.at_post_edit_script()
+        # the finance advice is asked
+        self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
+        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        # send item to finance
+        self.proposeItem(item)
+        self.assertTrue(item.queryState() == 'proposed_to_director')
+        self.do(item, 'proposeToFinance')
+        # give the advice
+        self.changeUser('pmFinController')
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'My comment finance')})
+        # now play advice finance workflow and check catalog indexAdvisers is correct
+        catalog = getToolByName(self.portal, 'portal_catalog')
+        itemPath = item.absolute_url_path()
+        # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
+        # as finance controller
+        self.do(advice, 'proposeToFinancialReviewer')
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_reviewer')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
+        # as finance reviewer
+        self.changeUser('pmFinReviewer')
+        advice.advice_type = u'negative_finance'
+        self.do(advice, 'proposeToFinancialManager')
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_manager')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
+        # log as finance manager
+        self.changeUser('pmFinManager')
+        self.do(advice, 'signFinancialAdvice')
+        # item was sent back to director
+        self.assertTrue(item.queryState() == 'proposed_to_director')
+        self.assertTrue(advice.queryState() == 'advice_given')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
+        # send item again to finance
+        self.changeUser('pmReviewer1')
+        self.do(item, 'proposeToFinance')
+        self.assertTrue(item.queryState() == 'proposed_to_finance')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
+        # advice is available to the financial controller
+        self.changeUser('pmFinController')
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
+        advice.advice_type = u'positive_finance'
+        self.do(advice, 'proposeToFinancialReviewer')
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_reviewer')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'signFinancialAdvice')
+        # this time, the item has been validated automatically
+        self.assertTrue(item.queryState() == 'validated')
+        self.assertTrue(advice.queryState() == 'financial_advice_signed')
+        self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
 
     def test_subproduct_call_RemoveObjects(self):
         """

@@ -350,7 +350,8 @@
     </tal:block>
 
     <tal:comment replace="nothing">Label for Council</tal:comment>
-    <tal:field define="fieldName python: 'labelForCouncil'; ajaxEdit python:True">
+    <tal:field define="fieldName python: 'labelForCouncil'; ajaxEdit python:True"
+               condition="python: context.portal_type == 'MeetingItemCouncil'">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 

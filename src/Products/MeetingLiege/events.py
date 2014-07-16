@@ -25,9 +25,17 @@ def onAdviceTransition(advice, event):
     if not advice.advice_group in FINANCE_GROUP_IDS:
         return
 
+    # onAdviceTransition is called before onAdviceAdded...
+    # so the advice_row_id is still not set wich is very bad because
+    # when we updateAdvices, it does not find the advice_row_id and adviceIndex is wrong
+    # so we call it here...
+    if not advice.advice_row_id:
+        advice._updateAdviceRowId()
+
     wfTool = getToolByName(advice, 'portal_workflow')
     oldStateId = event.old_state.id
     newStateId = event.new_state.id
+
     # initial_state or going back from 'advice_given', we set automatically the state
     # to 'proposed_to_financial_controller', advice can never be in 'advice_under_edit'
     if not event.transition or \

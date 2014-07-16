@@ -44,7 +44,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         """This test is bypassed, we use several tests here under."""
         pass
 
-    def test_CollegeProcessWithoutAdvices(self):
+    def test_subproduct_CollegeProcessWithoutAdvices(self):
         '''This test covers the whole decision workflow. It begins with the
            creation of some items, and ends by closing a meeting.
            The usecase here is to test the workflow without normal and finances advice.'''
@@ -113,12 +113,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the meeting can now be frozen then decided
         self.do(meeting, 'freeze')
         # the item has been automatically frozen
-        self.assertTrue(item.queryState(), 'itemfrozen')
+        self.assertTrue(item.queryState() == 'itemfrozen')
         # but the item can be sent back to 'presented'
         self.assertTrue(self.transitions(item) == ['backToPresented', ])
         self.do(meeting, 'decide')
         # the item is still frozen but can be decided
-        self.assertTrue(item.queryState(), 'itemfrozen')
+        self.assertTrue(item.queryState() == 'itemfrozen')
         self.assertTrue(self.transitions(item) == ['accept',
                                                    'accept_but_modify',
                                                    'backToPresented',
@@ -140,7 +140,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(meeting, 'close')
         self.assertTrue(not self.transitions(item))
 
-    def test_CollegeProcessWithNormalAdvices(self):
+    def test_subproduct_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
@@ -212,14 +212,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmInternalReviewer1')
         self.do(item, 'proposeToDirector')
 
-    def test_CollegeProcessWithFinancesAdvices(self):
-        '''How does the process behave when some 'finances' advices is asked.'''
-        self.changeUser('admin')
-        # configure customAdvisers for 'meeting-config-college'
-        _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
-        # define relevant users for finance groups
+    def _setupFinanceGroups(self):
+        '''Configure finance groups.'''
         groupsTool = getToolByName(self.portal, 'portal_groups')
         # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
         groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[0])
@@ -228,6 +222,16 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
         groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
         groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])
+
+    def test_subproduct_CollegeProcessWithFinancesAdvices(self):
+        '''How does the process behave when some 'finances' advices is asked.'''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
 
         # by default, an item with no selected archivingRef does
         # not need a finances advice
@@ -284,11 +288,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # when a financial advice is added, advice_hide_during_redaction
         # is True, no matter MeetingConfig.defaultAdviceHiddenDuringRedaction
         # it is automatically set to False when advice will be "signed" (aka "published")
-        self.assertTrue(advice.advice_hide_during_redaction is True)
+        self.assertTrue(advice.advice_hide_during_redaction)
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
         # the advice can be proposed to the financial reviewer
-        self.assertTrue(self.transitions(advice), ['proposeToFinancialReviewer'])
+        self.assertTrue(self.transitions(advice) == ['proposeToFinancialReviewer'])
         self.do(advice, 'proposeToFinancialReviewer')
         # can no more edit, but still view
         self.assertTrue(self.hasPermission(View, advice))
@@ -300,14 +304,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
         # may return to finance controller or sign the advice
-        self.assertTrue(self.transitions(advice), ['backToProposedToFinancialController',
-                                                   'signFinancialAdvice'])
+        self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
+                                                     'signFinancialAdvice'])
         # finance reviewer may sign (publish) advice because the advice_type
         # is not "negative", if negative, it is the finance manager that will
         # be able to sign the advice
         advice.advice_type = u'negative_finance'
-        self.assertTrue(self.transitions(advice), ['backToProposedToFinancialController',
-                                                   'proposeToFinancialManager'])
+        self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
+                                                     'proposeToFinancialManager'])
         # propose to financial manager that will sign the advice
         self.do(advice, 'proposeToFinancialManager')
         self.assertTrue(self.hasPermission(View, advice))
@@ -320,32 +324,32 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
         # the financial manager may either sign the advice
         # or send it back to the financial reviewer or controller
-        self.assertTrue(self.transitions(advice), ['backToProposedToFinancialController',
-                                                   'backToProposedToFinancialReviewer',
-                                                   'signFinancialAdvice'])
+        self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
+                                                     'backToProposedToFinancialReviewer',
+                                                     'signFinancialAdvice'])
         # if a financial manager sign a negative advice, the linked item will
         # be automatically sent back to the director, the advice is no more editable
         # moreover, when signed, the advice is automatically set to advice_hide_during_redaction=False
-        self.assertTrue(advice.advice_hide_during_redaction is True)
+        self.assertTrue(advice.advice_hide_during_redaction)
         self.do(advice, 'signFinancialAdvice')
         self.assertTrue(item.queryState() == 'proposed_to_director')
         self.assertTrue(advice.queryState() == 'advice_given')
-        self.assertTrue(advice.advice_hide_during_redaction is False)
+        self.assertTrue(not advice.advice_hide_during_redaction)
         # now an item with a negative financial advice back to the director
         # can be validated by the director, he takes the responsibility to validate
         # an item with a negative is able to propose the item again to the financial group
         # or it can validate the item
         self.changeUser('pmReviewer1')
-        self.assertTrue(self.transitions(item), ['backToProposedToInternalReviewer',
-                                                 'proposeToFinance',
-                                                 'validate'])
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+                                                   'proposeToFinance',
+                                                   'validate'])
         # it can send it again to the finance and finance can adapt the advice
         self.do(item, 'proposeToFinance')
         self.assertTrue(item.queryState() == 'proposed_to_finance')
         # advice is available to the financial controller
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
         # and is hidden again
-        self.assertTrue(advice.advice_hide_during_redaction is True)
+        self.assertTrue(advice.advice_hide_during_redaction)
         # now he will change the advice_type to 'positive_finance'
         # and the financial reviewer will sign it
         self.changeUser('pmFinController')
@@ -356,7 +360,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # this time, the item has been validated automatically
         self.assertTrue(item.queryState() == 'validated')
         # and the advice is visible to everybody
-        self.assertTrue(advice.advice_hide_during_redaction is False)
+        self.assertTrue(not advice.advice_hide_during_redaction)
         # the trick is that as item state is still in itemAdviceStates,
         # the advice is not 'advice_given' but in a state 'financial_advice_signed'
         # where nobody can change anything neither...
@@ -365,8 +369,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue('%s__state__validated' % self.meetingConfig.getId() in financeGrp.getItemAdviceEditStates())
         self.assertTrue(advice.queryState() == 'financial_advice_signed')
         # item.adviceIndex is coherent also, the 'addable'/'editable' data is correct
-        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'] is False)
-        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'] is False)
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         # advice is viewable
         # but is no more editable by any financial role
         # not for financial reviewer
@@ -380,6 +384,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmFinManager')
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+
+    def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
+        '''Test that when a transition is triggered on a meetingadvice
+           using finance workflow, the indexAdvisers index is always correct.'''
+        pass
 
     def test_subproduct_call_RemoveObjects(self):
         """

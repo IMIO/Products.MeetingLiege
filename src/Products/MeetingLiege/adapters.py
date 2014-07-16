@@ -600,7 +600,6 @@ class CustomMeetingConfig(MeetingConfig):
         self.getField('archivingRefs').set(self, value, **kwargs)
     MeetingConfig.setArchivingRefs = setArchivingRefs
 
-
     security.declarePublic('getDefaultAdviceHiddenDuringRedaction')
     def getDefaultAdviceHiddenDuringRedaction(self, **kwargs):
         '''

@@ -152,8 +152,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                 'proposed_to_internal_reviewer_waiting_advices'))
         self.meetingConfig.setItemAdviceEditStates = (('itemcreated_waiting_advices',
                                                        'proposed_to_internal_reviewer_waiting_advices'))
-        self.meetingConfig.setItemAdviceViewStates = (('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
-                                                       'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
+        self.meetingConfig.setItemAdviceViewStates = (('itemcreated_waiting_advices',
+                                                       'proposed_to_administrative_reviewer',
+                                                       'proposed_to_internal_reviewer',
+                                                       'proposed_to_internal_reviewer_waiting_advices',
                                                        'proposed_to_director', 'validated', 'presented',
                                                        'itemfrozen', 'refused', 'delayed', 'removed',
                                                        'pre_accepted', 'accepted', 'accepted_but_modified', ))
@@ -305,8 +307,9 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(advice.queryState() == 'proposed_to_financial_reviewer')
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
-        # may return to finance controller or sign the advice
+        # may return to finance controller, send to finance manager or sign the advice
         self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
+                                                     'proposeToFinancialManager',
                                                      'signFinancialAdvice'])
         # finance reviewer may sign (publish) advice because the advice_type
         # is not "negative", if negative, it is the finance manager that will
@@ -356,8 +359,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # and the financial reviewer will sign it
         self.changeUser('pmFinController')
         advice.advice_type = u'positive_finance'
+        # advice may only be sent to the financial reviewer
+        self.assertTrue(self.transitions(advice) == ['proposeToFinancialReviewer'])
         self.do(advice, 'proposeToFinancialReviewer')
         self.changeUser('pmFinReviewer')
+        # financial reviewer may sign a positive advice or send it to the finance manager
+        self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
+                                                     'proposeToFinancialManager',
+                                                     'signFinancialAdvice'])
         self.do(advice, 'signFinancialAdvice')
         # this time, the item has been validated automatically
         self.assertTrue(item.queryState() == 'validated')

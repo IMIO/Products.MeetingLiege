@@ -56,12 +56,11 @@ class AdviceWFConditionsView(BrowserView):
     security.declarePublic('mayProposeToFinancialManager')
 
     def mayProposeToFinancialManager(self):
-        '''Only relevant if current advice_type is 'negative_finance'.'''
+        '''A financial manager may send the advice to the financial manager
+           in any case (advice positive or negative).'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            if not self.context.advice_type == 'negative_finance':
-                res = False
         return res
 
     security.declarePublic('maySignFinancialAdvice')

@@ -340,6 +340,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'proposed_to_director')
         self.assertTrue(advice.queryState() == 'advice_given')
         self.assertTrue(not advice.advice_hide_during_redaction)
+        # as there is a finance advice on the item, finance keep read access to the item
+        self.assertTrue(self.hasPermission(View, item))
         # now an item with a negative financial advice back to the director
         # can be validated by the director, he takes the responsibility to validate
         # an item with a negative is able to propose the item again to the financial group

@@ -11,6 +11,8 @@ __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 from Products.CMFCore.utils import getToolByName
+from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
+from Products.PloneMeeting.config import READER_USECASES
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
@@ -115,13 +117,21 @@ def onAdvicesUpdated(item, event):
       When advices have been updated, we need to check that finance advice marked as 'advice_editable' = True
       are really editable, this could not be the case if the advice is signed.
     '''
-    for groupId, advice in item.adviceIndex.items():
-        if groupId in FINANCE_GROUP_IDS and advice['advice_editable']:
-            # double check if it is really editable...
-            # to be editable, the advice has to be in an editable wf state
-            advice = getattr(item, advice['advice_id'])
+    for groupId, adviceInfo in item.adviceIndex.items():
+        # double check if it is really editable...
+        # to be editable, the advice has to be in an editable wf state
+        if groupId in FINANCE_GROUP_IDS and adviceInfo['advice_editable']:
+            advice = getattr(item, adviceInfo['advice_id'])
             if not advice.queryState() in ('proposed_to_financial_controller',
                                            'proposed_to_financial_reviewer',
                                            'proposed_to_financial_manager'):
                 # advice is no more editable, adapt adviceIndex
                 item.adviceIndex[groupId]['advice_editable'] = False
+        # when a finance advice is given, finance will keep read access to the item in any case
+        if groupId in FINANCE_GROUP_IDS and \
+           not adviceInfo['type'] == NOT_GIVEN_ADVICE_VALUE and \
+           not adviceInfo['item_viewable_by_advisers']:
+            # give access to the item to the finance group
+                        # give access to the item in any case
+            item.manage_addLocalRoles('%s_advisers' % groupId, (READER_USECASES['advices'],))
+            item.adviceIndex[groupId]['item_viewable_by_advisers'] = True

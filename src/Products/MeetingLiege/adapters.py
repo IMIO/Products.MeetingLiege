@@ -951,25 +951,29 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayAskAdvicesByItemCreator')
     def mayAskAdvicesByItemCreator(self):
         '''May advices be asked by item creator.'''
-        if checkPermission(ReviewPortalContent, self.context) and self.context.hasAdvices(toGive=True):
-            res = True
-        else:
-            # return a 'No' instance explaining that no advice is (still) asked on this item
-            res = No(translate('advice_required_to_ask_advices',
-                               domain='PloneMeeting',
-                               context=self.context.REQUEST))
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+            if self.context.hasAdvices(toGive=True):
+                res = True
+            else:
+                # return a 'No' instance explaining that no advice is (still) asked on this item
+                res = No(translate('advice_required_to_ask_advices',
+                                   domain='PloneMeeting',
+                                   context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayAskAdvicesByInternalReviewer')
     def mayAskAdvicesByInternalReviewer(self):
         '''May advices be asked by internal reviewer.'''
-        if checkPermission(ReviewPortalContent, self.context) and self.context.hasAdvices(toGive=True):
-            res = True
-        else:
-            # return a 'No' instance explaining that no advice is (still) asked on this item
-            res = No(translate('advice_required_to_ask_advices',
-                               domain='PloneMeeting',
-                               context=self.context.REQUEST))
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+            if self.context.hasAdvices(toGive=True):
+                res = True
+            else:
+                # return a 'No' instance explaining that no advice is (still) asked on this item
+                res = No(translate('advice_required_to_ask_advices',
+                                   domain='PloneMeeting',
+                                   context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayValidate')

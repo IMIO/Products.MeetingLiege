@@ -325,7 +325,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if advice['id'] in FINANCE_GROUP_IDS and \
            advice['delay'] and \
-           item.queryState() == 'proposed_to_finance' and \
+           item.queryState() in ('proposed_to_finance', 'validated', 'presented', 'itemfrozen') and \
            not advice['delay_started_on']:
             return {'displayDefaultComplementaryMessage': False,
                     'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',

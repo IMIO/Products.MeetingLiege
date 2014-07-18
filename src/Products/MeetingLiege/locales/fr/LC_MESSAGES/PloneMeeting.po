@@ -98,7 +98,7 @@ msgstr "Point créé depuis un point Collège"
 
 #. Default: "This advice can not be given because the item is still not considered complete by the finance group."
 msgid "finance_advice_not_giveable_because_item_not_complete"
-msgstr "Cet avis ne peut pas encore être rendu tant que le point n'a pas été considéré 'complet' par le service finance."
+msgstr "<span class='discreet' style='color: red;'>Cet avis ne pourra être rendu que lorsque le point sera considéré 'complet'.</span>"
 
 #. Default: "Financial controllers"
 msgid "financialcontrollers"

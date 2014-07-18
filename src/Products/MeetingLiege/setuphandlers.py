@@ -392,13 +392,19 @@ def addSearchTopics(context,  site):
     '''
     tool = getToolByName(site, 'portal_plonemeeting')
     cfg = getattr(tool, 'meeting-config-college')
-    if hasattr(cfg, 'searchadviceproposedtocontroller'):
-        return
 
     topicsInfo = (
+        # Items in state 'proposed_to_finance' for which completeness is not 'completeness_complete'
+        ('searchitemstocontrolcompletenessof',
+         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+          ),
+         'created',
+         'searchItemsToControlCompletenessOf',
+         "python: here.portal_plonemeeting.userIsAmong('financialcontrollers')",
+         ),
         # Items having advice in state 'proposed_to_financial_controller'
         ('searchadviceproposedtocontroller',
-         (('Type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
           ),
          'created',
          'searchItemsWithAdviceProposedToFinancialController',
@@ -406,7 +412,7 @@ def addSearchTopics(context,  site):
          ),
         # Items having advice in state 'proposed_to_financial_reviewer'
         ('searchadviceproposedtoreviewer',
-         (('Type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
           ),
          'created',
          'searchItemsWithAdviceProposedToFinancialReviewer',
@@ -414,7 +420,7 @@ def addSearchTopics(context,  site):
          ),
         # Items having advice in state 'proposed_to_financial_manager'
         ('searchadviceproposedtomanager',
-         (('Type', 'ATPortalTypeCriterion', ('MeetingItem',)),
+         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
           ),
          'created',
          'searchItemsWithAdviceProposedToFinancialManager',

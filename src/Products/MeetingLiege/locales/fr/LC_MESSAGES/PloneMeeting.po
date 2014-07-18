@@ -84,10 +84,6 @@ msgstr "Validateurs administratifs"
 msgid "advice_required_to_ask_advices"
 msgstr "Aucun avis à demander"
 
-#. Default: ", complete purpose and decision"
-msgid "and_decision"
-msgstr ", objet complet et décision"
-
 #. Default: ", complete purpose"
 msgid "and_description"
 msgstr ", objet complet"
@@ -99,6 +95,10 @@ msgstr "Encodez les codes archivages qui pourront être utilisés par les points
 #. Default: "Item created from a college item"
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Point créé depuis un point Collège"
+
+#. Default: "This advice can not be given because the item is still not considered complete by the finance group."
+msgid "finance_advice_not_giveable_because_item_not_complete"
+msgstr "Cet avis ne peut pas encore être rendu tant que le point n'a pas été considéré 'complet' par le service finance."
 
 #. Default: "Financial controllers"
 msgid "financialcontrollers"
@@ -211,6 +211,10 @@ msgstr "Avis proposés aux directeurs financiers"
 #. Default: "Advices proposed to financial reviewer"
 msgid "searchadviceproposedtoreviewer"
 msgstr "Avis proposés aux validateurs financiers"
+
+#. Default: "Items to control completeness of"
+msgid "searchitemstocontrolcompletenessof"
+msgstr "complétude à contrôler"
 
 #. Default: "The item has been successfully transfered to the college."
 msgid "sendto_meeting-config-college_success"

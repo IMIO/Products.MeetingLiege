@@ -319,6 +319,22 @@ class CustomMeetingItem(MeetingItem):
         '''
         return ['labelForCouncil', ]
 
+    def getCustomAdviceMessageFor(self, advice):
+        '''If we are on a finance advice that is still not giveable because
+           the item is not 'complete', we display a clear message.'''
+        item = self.getSelf()
+        if advice['id'] in FINANCE_GROUP_IDS and \
+           advice['delay'] and \
+           item.queryState() == 'proposed_to_finance' and \
+           not advice['delay_started_on']:
+            return {'displayDefaultComplementaryMessage': False,
+                    'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
+                                                     domain="PloneMeeting",
+                                                     context=item.REQUEST)}
+        else:
+            return {'displayDefaultComplementaryMessage': True,
+                    'customAdviceMessage': None}
+
     def getFinanceGroupIdsForItem(self):
         '''Return the finance group ids the advice is asked
            on current item.  It only returns automatically asked advices.'''
@@ -417,9 +433,8 @@ class CustomMeetingItem(MeetingItem):
         financeGroupId = item.adapted().getFinanceGroupIdsForItem()
         if not financeGroupId or not '%s_financialcontrollers' % financeGroupId in member.getGroups():
             return False
-        # advice must not have been added, but must be addable
-        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
-        if not financeGroupId in [group[0] for group in toAdd]:
+        # item must be proposed_to_finance
+        if not item.queryState() == 'proposed_to_finance':
             return False
         return True
 
@@ -652,6 +667,27 @@ class CustomMeetingConfig(MeetingConfig):
         return self.portal_catalog(**params)
     MeetingConfig.searchItemsToValidate = searchItemsToValidate
 
+    security.declarePublic('searchItemsToControlCompletenessOf')
+    def searchItemsToControlCompletenessOf(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
+        '''Queries all items for which there is completeness to evaluate, so where completeness
+           is not 'completeness_complete'.'''
+        # Create query parameters
+        params = {'portal_type': self.getItemTypeName(),
+                  # KeywordIndex 'getCompleteness' use 'OR' by default
+                  'getCompleteness': ('completeness_not_yet_evaluated',
+                                      'completeness_incomplete',
+                                      'completeness_evaluation_asked_again'),
+                  'sort_on': sortKey,
+                  'sort_order': sortOrder, }
+        # Manage filter
+        if filterKey:
+            params[filterKey] = prepareSearchValue(filterValue)
+        # update params with kwargs
+        params.update(kwargs)
+        # Perform the query in portal_catalog
+        return self.portal_catalog(**params)
+    MeetingConfig.searchItemsToControlCompletenessOf = searchItemsToControlCompletenessOf
+
     security.declarePublic('searchItemsWithAdviceProposedToFinancialController')
     def searchItemsWithAdviceProposedToFinancialController(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.'''
@@ -659,7 +695,7 @@ class CustomMeetingConfig(MeetingConfig):
         for financeGroup in FINANCE_GROUP_IDS:
             groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
         # Create query parameters
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
+        params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'indexAdvisers' use 'OR' by default
                   'indexAdvisers': groupIds,
                   'sort_on': sortKey,
@@ -680,7 +716,7 @@ class CustomMeetingConfig(MeetingConfig):
         for financeGroup in FINANCE_GROUP_IDS:
             groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
         # Create query parameters
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
+        params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'indexAdvisers' use 'OR' by default
                   'indexAdvisers': groupIds,
                   'sort_on': sortKey,
@@ -701,7 +737,7 @@ class CustomMeetingConfig(MeetingConfig):
         for financeGroup in FINANCE_GROUP_IDS:
             groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
         # Create query parameters
-        params = {'Type': unicode(self.getItemTypeName(), 'utf-8'),
+        params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'indexAdvisers' use 'OR' by default
                   'indexAdvisers': groupIds,
                   'sort_on': sortKey,

@@ -263,24 +263,40 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                    'proposeToFinance'])
         # for now, advisers of the FINANCE_GROUP_IDS[0] can not give the advice
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
-        # proposeToFinance, advice will be giveable
+        # proposeToFinance, advice will not be giveable as item.completeness is not 'completeness_complete'
         self.do(item, 'proposeToFinance')
-        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
-        self._cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
-        # pmFinController may add advice for FINANCE_GROUP_IDS[0]
-        self.changeUser('pmFinController')
-        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
-        self.assertTrue(toAdd[0][0] == FINANCE_GROUP_IDS[0])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        # delay is not started, it only starts when item is complete
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+        # if we updateAdvices, infos are still ok
+        item.updateAdvices()
+        # the item can not be sent back to the internal reviewer if is it not 'completeness_incomplete'
         # he may also return the item to the internal reviewer if he considers
         # that the completeness of the item is 'incomplete'
         # for now, completeness not evaluated, the item has no available transitions
+        self.changeUser('pmFinController')
         self.assertTrue(not self.transitions(item))
         # set the item to "incomplete"
         item.setCompleteness('completeness_incomplete')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
-        # set item as "complete"
-        item.setCompleteness('completeness_complete')
+        self._cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
+        # pmFinController may add advice for FINANCE_GROUP_IDS[0]
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(not toAdd and not toEdit)
+        # set item as "complete" using itemcompleteness view
+        # this way, it checks that current user may actually evaluate completeness
+        # and item is updated (at_post_edit_script is called)
+        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+        self.assertTrue(item.getCompleteness() == 'completeness_complete')
+        # can not be sent back to internal reviewer anymore
         self.assertTrue(not self.transitions(item))
+        # but now, advice is giveable
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        # and delay to give advice is started
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
         # give the advice
         advice = createContentInContainer(item,
                                           'meetingadvice',

@@ -135,3 +135,11 @@ def onAdvicesUpdated(item, event):
                         # give access to the item in any case
             item.manage_addLocalRoles('%s_advisers' % groupId, (READER_USECASES['advices'],))
             item.adviceIndex[groupId]['item_viewable_by_advisers'] = True
+        # the advice delay is really started when item completeness is 'complete'
+        # until then, we do not let the delay start
+        if groupId in FINANCE_GROUP_IDS and \
+           adviceInfo['type'] == NOT_GIVEN_ADVICE_VALUE and \
+           not item.getCompleteness() == 'completeness_complete':
+            adviceInfo['delay_started_on'] = None
+            adviceInfo['advice_addable'] = False
+            adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(groupId)

@@ -1038,20 +1038,15 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # if the current item state is 'itemcreated', only the MeetingManager can validate
             if item_state == 'itemcreated' and not isManager:
                 res = False
+            elif item_state == 'proposed_to_director':
+                # director may validate an item if no finance advice
+                # or finance advice and emergency is asked
+                finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
+                if finance_advice and self.context.getEmergency() == 'no_emergency':
+                    res = False
             # special case for item being validable when emergency is asked on it
             elif item_state == 'proposed_to_finance' and self.context.getEmergency() == 'no_emergency':
                 res = False
-            elif item_state == 'proposed_to_director':
-                # check if item needs finance advice, if it is the case, the item
-                # must be proposed to finance before being validated
-                # except if finance already gave his advice and it was a negative advice
-                # in this case, the item was sent back to the director that can 'validate' himself
-                # the item with this negative finance advice
-                finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
-                if finance_advice and not self.context.adviceIndex[finance_advice]['type'] == 'negative_finance':
-                    res = False
-            else:
-                res = True
         return res
 
     security.declarePublic('mayDecide')

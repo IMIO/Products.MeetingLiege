@@ -261,6 +261,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # to the finances or back to the internal reviewer
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
                                                    'proposeToFinance'])
+        # if emergency is asked, a director may either propose the item to finance or validate it
+        item.setEmergency('emergency_asked')
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+                                                   'proposeToFinance',
+                                                   'validate', ])
+        item.setEmergency('no_emergency')
         # for now, advisers of the FINANCE_GROUP_IDS[0] can not give the advice
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         # proposeToFinance, advice will not be giveable as item.completeness is not 'completeness_complete'

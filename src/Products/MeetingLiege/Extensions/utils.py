@@ -212,6 +212,7 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
                 catDescr = CategoryDescriptor(row_id, title=row['title'], description=row['description'],
                                               active=row['actif'])
                 cat = meetingConfig.addCategory(catDescr, classifier=isClassifier)
+                out.append("Category (or Classifier) %s added" % row_id)
             else:  # cat exist, update description and active fields
                 cat.setDescription(row['description'])
                 state = self.portal_workflow.getInfoFor(cat, 'review_state')
@@ -219,16 +220,18 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
                     self.portal_workflow.doActionFor(cat, 'deactivate')
                 elif row['actif'] and state != 'active':
                     self.portal_workflow.doActionFor(cat, 'activate')
+                out.append("Category (or Classifier) %s updated" % row_id)
             # update other field
             cat.setCategoryId(row['categoryId'])
-            groupId = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
-            if groupId:
-                cat.setUsingGroups(groupId)
+            groupIds = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
+            if groupIds:
+                cat.setUsingGroups(groupIds)
             if row['link']:
                 row_link = normalizeString(row['link'], self)
                 otherCat = 'meeting-config-council.%s' % row_link
                 cat.setCategoryMappingsWhenCloningToOtherMC((otherCat,))
-            out.append("Category (or Classifier) %s added" % row_id)
+            if row['new-title']:
+                cat.setTitle(row['new-title'])
         except Exception, message:
             out.append('error with %s - %s : %s' % (row_id, row['title'], message))
 
@@ -279,9 +282,9 @@ def importRefArchive(self, meeting_config='', fname=None):
             actif = '0'
         refA_dico['active'] = actif
         refA_dico['finance_advice'] = normalizeString(row['finance_advice'])
-        groupId = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
-        if groupId:
-            refA_dico['restrict_to_groups'] = groupId
+        groupIds = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
+        if groupIds:
+            refA_dico['restrict_to_groups'] = groupIds
         else:
             refA_dico['restrict_to_groups'] = []
             out.append("Restricted group not found for this acronym %s" % row['acronym'])

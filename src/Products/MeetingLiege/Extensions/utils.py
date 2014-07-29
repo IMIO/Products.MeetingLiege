@@ -226,6 +226,10 @@ def import_meetingsCategories_from_csv(self, meeting_config='', isClassifier=Fal
             groupIds = _getProposingGroupsBaseOnAcronym(pm, row['acronym'])
             if groupIds:
                 cat.setUsingGroups(groupIds)
+            else:
+                cat.setUsingGroups([])
+                if row['acronym']:
+                    out.append("Acronym not found : %s " % row['acronym'])
             if row['link']:
                 row_link = normalizeString(row['link'], self)
                 otherCat = 'meeting-config-council.%s' % row_link

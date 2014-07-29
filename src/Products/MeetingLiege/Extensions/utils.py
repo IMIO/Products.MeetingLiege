@@ -271,7 +271,6 @@ def importRefArchive(self, meeting_config='', fname=None):
     pm = self.portal_plonemeeting
     meetingConfig = getattr(pm, meeting_config, None)
     from Products.CMFPlone.utils import normalizeString
-
     for row in reader:
         row_id = normalizeString(row['label'], self)
         if row_id == '':
@@ -291,26 +290,29 @@ def importRefArchive(self, meeting_config='', fname=None):
             refA_dico['restrict_to_groups'] = groupIds
         else:
             refA_dico['restrict_to_groups'] = []
-            out.append("Restricted group not found for this acronym %s" % row['acronym'])
+            if row['acronym']:
+                out.append("Restricted group not found for this acronym %s" % row['acronym'])
         refA_lst.append(refA_dico)
     meetingConfig.setArchivingRefs(refA_lst)
+    out.append('%s'%refA_lst)
     file.close()
 
     return '\n'.join(out)
 
 
-def _getProposingGroupsBaseOnAcronym(pm, acronym):
+def _getProposingGroupsBaseOnAcronym(pm, acronyms):
     """
       return all proposing groups with this acronym
     """
     res = []
 
-    if not acronym:
+    if not acronyms:
         return res
 
-    groups = pm.getMeetingGroups(onlyActive=False)
-    for group in groups:
-        if group.getAcronym() == acronym:
-            res.append(group.id)
+    for acronym in acronyms.split(','):
+        groups = pm.getMeetingGroups(onlyActive=False)
+        for group in groups:
+            if group.getAcronym().startswith(acronym.strip()):
+                res.append(group.id)
 
     return res

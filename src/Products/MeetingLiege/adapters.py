@@ -501,13 +501,20 @@ class CustomMeetingItem(MeetingItem):
         res = []
         tool = getToolByName(self, 'portal_plonemeeting')
         cfg = tool.getMeetingConfig(self)
-        userGroups = set(tool.getGroupsForUser())
+        userGroups = set([group.getId() for group in tool.getGroupsForUser()])
+        isManager = tool.isManager()
+        storedArchivingRef = self.getArchivingRef()
         for ref in cfg.getArchivingRefs():
             # if ref is not active, continue
             if ref['active'] == '0':
                 continue
-            # if ref is restricted to some groups and current member is not member of, continue
-            if ref['restrict_to_groups'] and not set(ref['restrict_to_groups']).intersection(userGroups):
+            # only keep an active archiving ref if :
+            # current user isManager
+            # it is the currently selected archiving ref
+            # if ref is restricted to some groups and current member of this group
+            if not isManager and \
+               not ref['row_id'] == storedArchivingRef and \
+               (ref['restrict_to_groups'] and not set(ref['restrict_to_groups']).intersection(userGroups)):
                 continue
             res.append((ref['row_id'], ref['label']))
         res.insert(0, ('_none_', translate('make_a_choice',

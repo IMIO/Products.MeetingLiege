@@ -365,14 +365,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # as there is a finance advice on the item, finance keep read access to the item
         self.assertTrue(self.hasPermission(View, item))
         # now an item with a negative financial advice back to the director
-        # can be validated by the director, he takes the responsibility to validate
-        # an item with a negative is able to propose the item again to the financial group
-        # or it can validate the item
+        # as no emergency is asked, the item can not be validated
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
-                                                   'proposeToFinance',
-                                                   'validate'])
-        # it can send it again to the finance and finance can adapt the advice
+                                                   'proposeToFinance'])
+        # the director can send it again to the finance and finance can adapt the advice
         self.do(item, 'proposeToFinance')
         self.assertTrue(item.queryState() == 'proposed_to_finance')
         # advice is available to the financial controller

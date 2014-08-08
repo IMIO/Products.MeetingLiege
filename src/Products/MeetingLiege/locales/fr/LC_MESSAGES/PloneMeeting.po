@@ -130,7 +130,7 @@ msgstr "Marqué sans objet"
 
 #. Default: "Pre accepted"
 msgid "icon_help_pre_accepted"
-msgstr "Accepté provisoirement"
+msgstr "Accepté sous réserve"
 
 #. Default: "Proposed to administrative reviewer"
 msgid "icon_help_proposed_to_administrative_reviewer"

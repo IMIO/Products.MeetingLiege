@@ -122,11 +122,11 @@ msgstr "Marqué sans objet"
 
 #. Default: "Pre accept"
 msgid "pre_accept"
-msgstr "Accepter provisoirement"
+msgstr "Accepter sous réserve"
 
 #. Default: "Pre accepted"
 msgid "pre_accepted"
-msgstr "Accepté provisoirement"
+msgstr "Accepté sous réserve"
 
 #. Default: "Propose to administrative reviewer"
 msgid "proposeToAdministrativeReviewer"
@@ -199,4 +199,3 @@ msgstr "Proposer à la séance"
 #. Default: "Validated"
 msgid "validated"
 msgstr "Proposé à la séance"
-

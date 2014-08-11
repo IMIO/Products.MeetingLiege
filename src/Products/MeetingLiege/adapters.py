@@ -281,6 +281,49 @@ class CustomMeeting(Meeting):
             items = res
         return res
 
+    security.declarePublic('getItemsForAM')
+    def getItemsForAM(self, itemUids=[], late=False,
+                      ignore_review_states=[], by_proposing_group=False, group_prefixes={},
+                      privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
+                      excludedCategories=[], firstNumber=1, renumber=False,
+                      includeEmptyCategories=False, includeEmptyGroups=False):
+        '''Return item's based on getPrintableItemsByCategory. The structure of result is :
+           for each element of list
+           element[0] = (cat, department) department only if new
+           element[1:] = (items, 'LE COLLEGE PROPOSE AU CONSEIL') [if first item to send to council] or
+                         (items, 'LE COLLEGE UNIQUEMENT') [if first item to didn't send to college] or
+                         (items, '') [if not first items]
+        '''
+        renumber = False  # don't use remember a this time but ...
+        lst = self.getPrintableItemsByCategory(itemUids, late,
+                                               ignore_review_states, by_proposing_group, group_prefixes,
+                                               privacy, oralQuestion, toDiscuss, categories,
+                                               excludedCategories, firstNumber, renumber,
+                                               includeEmptyCategories, includeEmptyGroups)
+        res = []
+        #we can find department in description 
+        pre_dpt = '---'
+        for sublst in lst:
+            if (pre_dpt == '---') or (pre_dpt != sublst[0].description):
+                pre_dpt = sublst[0].description
+                dpt = pre_dpt
+            else:
+                dpt = ''
+            sub_rest = [(sublst[0], dpt)]
+            prev_to_send = '---'
+            for item in sublst[1:]:
+                if (prev_to_send == '---') or (prev_to_send != item.otherMeetingConfigsClonableTo):
+                    if item.otherMeetingConfigsClonableTo:
+                        txt = 'LE COLLEGE PROPOSE AU CONSEIL'
+                    else:
+                        txt = 'LE COLLEGE UNIQUEMENT'
+                    prev_to_send = item.otherMeetingConfigsClonableTo
+                else:
+                    txt = ''
+                sub_rest.append((item, txt))
+            res.append(sub_rest)
+        return res
+
     security.declarePublic('showAllItemsAtOnce')
     def showAllItemsAtOnce(self):
         '''Monkeypatch for hiding the allItemsAtOnce field.'''

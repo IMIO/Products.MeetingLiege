@@ -223,3 +223,88 @@ msgstr ""
 #. Default: "This advice can not be given because the item is still not considered complete by the finance group."
 msgid "finance_advice_not_giveable_because_item_not_complete"
 msgstr ""
+
+# Override 'to discuss?' translations
+#. Default: "To discuss ?"
+msgid "PloneMeeting_label_toDiscuss"
+msgstr ""
+
+#. Default: "Set 'toDiscuss' field values when items are inserted into a meeting"
+msgid "PloneMeeting_label_toDiscussSetOnItemInsert"
+msgstr ""
+
+#. Default: "If you check this box, the value of field 'toDiscuss', for an item, will be set when inserting the item into a meeting, with a default value as defined by the fields below. Else, the user having the permission to edit the item will be able to give a value to this field, as soon as on item creation."
+msgid "to_discuss_set_on_item_insert_descr"
+msgstr ""
+
+#. Default: "Default value of the 'toDiscuss' attribute for normal items"
+msgid "PloneMeeting_label_toDiscussDefault"
+msgstr ""
+
+#. Default: "The optional item attribute 'to discuss' allows the meeting manager to specify if an item presented to a meeting should be discussed during this meeting or if, simply, it must appear in the agenda and the meeting decisions for traceability purposes but has already led to a decision before the meeting occurrence. Check the box if you want the items to be set to 'discussed' by default."
+msgid "to_discuss_default_descr"
+msgstr ""
+
+#. Default: "Default value of the 'toDiscuss' attribute for late items"
+msgid "PloneMeeting_label_toDiscussLateDefault"
+msgstr ""
+
+#. Default: "Check the box if you want the 'late' items to be set to 'discussed' by default."
+msgid "to_discuss_late_default_descr"
+msgstr ""
+
+#. Default: "Show field 'to discuss' on lists of late items"
+msgid "PloneMeeting_label_toDiscussShownForLateItems"
+msgstr ""
+
+#. Default: "To be discussed during the meeting."
+msgid "to_discuss_yes"
+msgstr ""
+
+#. Default: "Not to be discussed during the meeting."
+msgid "to_discuss_no"
+msgstr ""
+
+#. Default: "To be discussed during the meeting. Click on the image for not discussing the item."
+msgid "to_discuss_yes_edit"
+msgstr ""
+
+#. Default: "Not to be discussed during the meeting. Click on the image for discussing the item."
+msgid "to_discuss_no_edit"
+msgstr ""
+
+#. Default: "Click on the image for asking to discuss this item."
+msgid "to_discuss_no_ask_edit"
+msgstr ""
+
+#. Default: "A mail was sent to the meeting managers for asking them to discuss this item."
+msgid "to_discuss_ask_mail_sent"
+msgstr ""
+
+#. Default: "Sending emails to meeting managers has been disabled. Please contact them through other means for asking them to discuss this item."
+msgid "to_discuss_ask_mail_not_sent"
+msgstr ""
+
+#. Default: "If you check this box, the value of field 'toDiscuss', for an item, will be set when inserting the item into a meeting, with a default value as defined by the fields below. Else, the user having the permission to edit the item will be able to give a value to this field, as soon as on item creation."
+msgid "to_discuss_set_on_item_insert_descr"
+msgstr ""
+
+#. Default: "The optional item attribute 'to discuss' allows the meeting manager to specify if an item presented to a meeting should be discussed during this meeting or if, simply, it must appear in the agenda and the meeting decisions for traceability purposes but has already led to a decision before the meeting occurrence. Check the box if you want the items to be set to 'discussed' by default."
+msgid "to_discuss_default_descr"
+msgstr ""
+
+#. Default: "Check the box if you want the 'late' items to be set to 'discussed' by default."
+msgid "to_discuss_late_default_descr"
+msgstr ""
+
+#. Default: "Check the box if you want to show column 'to discuss' on lists of late items (checked is the default). For late items, users may not be allowed to choose the value for this field (ie, late items are to be discussed anyway)."
+msgid "to_discuss_shown_for_late_items_descr"
+msgstr ""
+
+#. Default: "Follow to discuss (to discuss then not to discuss)"
+msgid "on_to_discuss"
+msgstr ""
+
+#. Default: "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
+msgid "inserting_methods_not_using_to_discuss_error"
+msgstr ""

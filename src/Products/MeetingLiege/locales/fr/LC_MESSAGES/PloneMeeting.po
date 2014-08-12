@@ -72,6 +72,26 @@ msgstr "Objet"
 msgid "PloneMeeting_label_itemTitle"
 msgstr "Résumé de l'objet"
 
+#. Default: "To discuss ?"
+msgid "PloneMeeting_label_toDiscuss"
+msgstr "Point avec acte?"
+
+#. Default: "Default value of the 'toDiscuss' attribute for normal items"
+msgid "PloneMeeting_label_toDiscussDefault"
+msgstr "Valeur par défaut de l'attribut 'Point avec acte' pour les points normaux"
+
+#. Default: "Default value of the 'toDiscuss' attribute for late items"
+msgid "PloneMeeting_label_toDiscussLateDefault"
+msgstr "Valeur par défaut de l'attribut 'Point avec acte' pour les points en retard"
+
+#. Default: "Set 'toDiscuss' field values when items are inserted into a meeting"
+msgid "PloneMeeting_label_toDiscussSetOnItemInsert"
+msgstr "Affecter une valeur au champ 'Point avec acte' quand un point est inséré dans une séance"
+
+#. Default: "Show field 'to discuss' on lists of late items"
+msgid "PloneMeeting_label_toDiscussShownForLateItems"
+msgstr "Montrer le champ 'Point avec acte' sur les listes de points en retard"
+
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
 msgstr "Montrer/cacher données utilisées pour le point Conseil"
@@ -152,6 +172,10 @@ msgstr "Proposé au validateur interne"
 msgid "icon_help_proposed_to_internal_reviewer_waiting_advices"
 msgstr "Avis demandés par le validateur interne"
 
+#. Default: "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
+msgid "inserting_methods_not_using_to_discuss_error"
+msgstr "Vous ne pouvez pas sélectionner 'Par point avec acte (avec acte et ensuite sans acte)' car 'Point avec acte?' n'est pas sélectionné dans le champ 'Attributs utilisés pour caractériser un point' de cette configuration de séance."
+
 #. Default: "Internal reviewers"
 msgid "internalreviewers"
 msgstr "Validateurs internes"
@@ -183,6 +207,10 @@ msgstr "-"
 #. Default: "Not required opinion"
 msgid "not_required_finance"
 msgstr "Avis finances non requis"
+
+#. Default: "Follow to discuss (to discuss then not to discuss)"
+msgid "on_to_discuss"
+msgstr "Par point à discuter (à discuter et ensuite pas à discuter)"
 
 #. Default: "Favorable opinion"
 msgid "positive_finance"
@@ -223,6 +251,50 @@ msgstr "Le point a été envoyé au Collège communal."
 #. Default: "The item has been successfully transfered to the council."
 msgid "sendto_meeting-config-council_success"
 msgstr "Le point a été envoyé au Conseil communal."
+
+#. Default: "Sending emails to meeting managers has been disabled. Please contact them through other means for asking them to discuss this item."
+msgid "to_discuss_ask_mail_not_sent"
+msgstr "L'envoi de courriels aux gestionnaires de séances est désactivé. Veuillez prendre contact avec eux par un autre canal afin d'exprimer votre désir d'avoir un acte pour ce point."
+
+#. Default: "A mail was sent to the meeting managers for asking them to discuss this item."
+msgid "to_discuss_ask_mail_sent"
+msgstr "Un mail a été envoyé aux gestionnaires de séance pour exprimer votre désir d'avoir un acte pour ce point."
+
+#. Default: "The optional item attribute 'to discuss' allows the meeting manager to specify if an item presented to a meeting should be discussed during this meeting or if, simply, it must appear in the agenda and the meeting decisions for traceability purposes but has already led to a decision before the meeting occurrence. Check the box if you want the items to be set to 'discussed' by default."
+msgid "to_discuss_default_descr"
+msgstr "L'attribut optionnel 'point avec acte' permet au gestionnaire de séance de spécifier si un point présenté à une séance aura un acte. Cochez la case si vous voulez que les points soient, par défaut, avec acte."
+
+#. Default: "Check the box if you want the 'late' items to be set to 'discussed' by default."
+msgid "to_discuss_late_default_descr"
+msgstr "Cochez la case si vous voulez que les points qui sont présentés 'en retard' soient, par défaut, avec acte."
+
+#. Default: "Not to be discussed during the meeting."
+msgid "to_discuss_no"
+msgstr "Point sans acte."
+
+#. Default: "Click on the image for asking to discuss this item."
+msgid "to_discuss_no_ask_edit"
+msgstr "Cliquez sur l'image pour demander de passer en point avec acte."
+
+#. Default: "Not to be discussed during the meeting. Click on the image for discussing the item."
+msgid "to_discuss_no_edit"
+msgstr "'Point sans acte', cliquez sur l'image pour passer en 'Point avec acte'."
+
+#. Default: "If you check this box, the value of field 'toDiscuss', for an item, will be set when inserting the item into a meeting, with a default value as defined by the fields below. Else, the user having the permission to edit the item will be able to give a value to this field, as soon as on item creation."
+msgid "to_discuss_set_on_item_insert_descr"
+msgstr "Si vous cochez cette case, la valeur du champ 'point avec acte', pour un point, sera déterminée lors de l'insertion du point dans une séance, selon une valeur par défaut telle que déterminée par les champs ci-dessous. Sinon, l'utilisateur ayant les droits d'édition sur un point pourra éditer cette valeur lui-même, dès la création du point."
+
+#. Default: "Check the box if you want to show column 'to discuss' on lists of late items (checked is the default). For late items, users may not be allowed to choose the value for this field (ie, late items are to be discussed anyway)."
+msgid "to_discuss_shown_for_late_items_descr"
+msgstr "Cochez la case si vous voulez afficher la colonne 'Point avec acte' sur les listes de points en retard (coché par défaut). Pour les points en retard, les utilisateurs pourraient ne pas être en droit de choisir la valeur pour ce champ (par exemple, les points en retard pourraient être 'avec acte' d'office)."
+
+#. Default: "To be discussed during the meeting."
+msgid "to_discuss_yes"
+msgstr "Point avec acte."
+
+#. Default: "To be discussed during the meeting. Click on the image for not discussing the item."
+msgid "to_discuss_yes_edit"
+msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"

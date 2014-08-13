@@ -49,6 +49,7 @@ from Products.MeetingLiege.interfaces import \
     IMeetingCouncilLiegeWorkflowConditions, IMeetingCouncilLiegeWorkflowActions
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
+from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 
 # disable every wfAdaptations
 customWfAdaptations = ()
@@ -362,7 +363,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if advice['id'] in FINANCE_GROUP_IDS and \
            advice['delay'] and \
-           item.queryState() in ('proposed_to_finance', 'validated', 'presented', 'itemfrozen') and \
+           item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES and \
            not advice['delay_started_on']:
             return {'displayDefaultComplementaryMessage': False,
                     'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
@@ -470,8 +471,8 @@ class CustomMeetingItem(MeetingItem):
         financeGroupId = item.adapted().getFinanceGroupIdsForItem()
         if not financeGroupId or not '%s_financialcontrollers' % financeGroupId in member.getGroups():
             return False
-        # item must be proposed_to_finance
-        if not item.queryState() == 'proposed_to_finance':
+        # item must be still in a state where the advice can be given
+        if not item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
             return False
         return True
 

@@ -324,12 +324,6 @@ class CustomMeeting(Meeting):
             res.append(sub_rest)
         return res
 
-    security.declarePublic('showAllItemsAtOnce')
-    def showAllItemsAtOnce(self):
-        '''Monkeypatch for hiding the allItemsAtOnce field.'''
-        return False
-    Meeting.showAllItemsAtOnce = showAllItemsAtOnce
-
 
 class CustomMeetingItem(MeetingItem):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -902,10 +896,6 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             res = True  # At least at present
-            if not self.context.getRawItems():
-                res = No(translate('item_required_to_publish',
-                                   domain='PloneMeeting',
-                                   context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayClose')

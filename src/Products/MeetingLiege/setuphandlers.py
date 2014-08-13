@@ -45,8 +45,6 @@ def postInstall(context):
     site = context.getSite()
     # Reinstall PloneMeeting
     reinstallPloneMeeting(context, site)
-    # Reinstall the skin
-    reinstallPloneMeetingSkin(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
     # set correct wf for meetingadvice
@@ -102,24 +100,6 @@ def initializeTool(context):
     return ToolInitializer(context, PROJECTNAME).run()
 
 
-def reinstallPloneMeetingSkin(context, site):
-    """
-       Reinstall Products.plonemeetingskin as the reinstallation of MeetingLiege
-       change the portal_skins layers order
-    """
-    if not isMeetingLiegeConfigureProfile(context):
-        return
-
-    logStep("reinstallPloneMeetingSkin", context)
-    try:
-        site.portal_setup.runAllImportStepsFromProfile(u'profile-plonetheme.imioapps:default')
-        site.portal_setup.runAllImportStepsFromProfile(u'profile-plonetheme.imioapps:plonemeetingskin')
-    except KeyError:
-        # if the Products.plonemeetingskin profile is not available
-        # (not using plonemeetingskin or in testing?) we pass...
-        pass
-
-
 def reorderSkinsLayers(context, site):
     """
        Reinstall Products.plonemeetingskin and re-apply MeetingLiege skins.xml step
@@ -130,8 +110,6 @@ def reorderSkinsLayers(context, site):
 
     logStep("reorderSkinsLayers", context)
     try:
-        site.portal_setup.runAllImportStepsFromProfile(u'profile-plonetheme.imioapps:default')
-        site.portal_setup.runAllImportStepsFromProfile(u'profile-plonetheme.imioapps:plonemeetingskin')
         site.portal_setup.runImportStepFromProfile(u'profile-Products.MeetingLiege:default', 'skins')
     except KeyError:
         # if the Products.plonemeetingskin profile is not available

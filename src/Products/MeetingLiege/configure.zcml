@@ -11,9 +11,6 @@
        so Products.MeetingLiege can overrides Products.PloneMeeting translations -->
   <i18n:registerTranslations directory="locales" />
   <include package="Products.CMFPlacefulWorkflow"/>
-  <include package="communesplone.iconified_document_actions"/>
-  <include package="plonetheme.imioapps"/>
-  <include package="collective.ckeditor"/>
   <include package="Products.PloneMeeting"/>
 
   <!-- WF actions and conditions for Meeting and MeetingItem for College -->

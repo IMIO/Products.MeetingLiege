@@ -68,6 +68,8 @@ def update_item_schema(baseSchema):
                 condition="python: here.attributeIsUsed('archivingRef')",
                 label='ArchivingRef',
                 label_msgid='MeetingLiege_label_archivingRef',
+                description=" ",
+                description_msgid="MeetingLiege_descr_archivingRef",
                 i18n_domain='PloneMeeting',
             ),
             optional=True,
@@ -93,6 +95,15 @@ def update_item_schema(baseSchema):
     ),)
 
     completeItemSchema = baseSchema + specificSchema.copy()
+    # define some description_msgid not existing by default in PloneMeeting
+    completeItemSchema['title'].widget.description_msgid = 'item_title_descr'
+    completeItemSchema['description'].widget.description_msgid = 'item_description_descr'
+    completeItemSchema['detailedDescription'].widget.description_msgid = 'item_detailed_description_descr'
+    completeItemSchema['proposingGroup'].widget.description_msgid = 'item_proposing_group_descr'
+    completeItemSchema['motivation'].widget.description_msgid = 'item_motivation_descr'
+    completeItemSchema['decision'].widget.description_msgid = 'item_decision_descr'
+    completeItemSchema['observations'].widget.description_msgid = 'item_observations_descr'
+
     return completeItemSchema
 MeetingItem.schema = update_item_schema(MeetingItem.schema)
 

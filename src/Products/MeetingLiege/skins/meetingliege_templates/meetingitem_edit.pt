@@ -92,7 +92,8 @@
         <td tal:condition="python: 'associatedGroups' in usedAttrs">
           <metal:field use-macro="python:here.widget('associatedGroups', mode='edit')"/>
         </td>
-        <td><metal:field use-macro="python:here.widget('financeAdvice', mode='edit')"/></td>
+        <tal:comment replace="nothing">XXX added by MeetingLiege, finance advice</tal:comment>
+        <td width="200px"><metal:field use-macro="python:here.widget('financeAdvice', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('optionalAdvisers', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('copyGroups', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('itemSignatories', mode='edit')"/></td>

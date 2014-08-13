@@ -208,6 +208,54 @@ msgstr ""
 msgid "PloneMeeting_label_itemTitle"
 msgstr ""
 
+#. Default: " "
+msgid "item_title_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_description_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_detailed_description_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_proposing_group_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_category_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_motivation_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_decision_descr"
+msgstr ""
+
+#. Default: " "
+msgid "item_observations_descr"
+msgstr ""
+
+#. Default: " "
+msgid "MeetingLiege_descr_archivingRef"
+msgstr ""
+
+#. Default: " "
+msgid "optional_advisers_item_descr"
+msgstr ""
+
+#. Default: " "
+msgid "copy_groups_item_descr"
+msgstr ""
+
+#. Default: " "
+msgid "MeetingLiege_descr_labelForCouncil"
+msgstr ""
+
 #. Default: "Purpose"
 msgid "PloneMeeting_label_itemDescription"
 msgstr ""

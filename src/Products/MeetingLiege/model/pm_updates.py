@@ -51,6 +51,18 @@ def update_item_schema(baseSchema):
             vocabulary='listPrivacyValues',
         ),
         StringField(
+            name='financeAdvice',
+            widget=SelectionWidget(
+                condition="python: here.attributeIsUsed('financeAdvice')",
+                label='FinanceAdvice',
+                label_msgid='MeetingLiege_label_financeAdvice',
+                i18n_domain='PloneMeeting',
+            ),
+            optional=True,
+            vocabulary='listFinanceAdvices',
+            default='_none_',
+        ),
+        StringField(
             name='archivingRef',
             widget=SelectionWidget(
                 condition="python: here.attributeIsUsed('archivingRef')",
@@ -112,7 +124,8 @@ def update_config_schema(baseSchema):
             ),
             allow_oddeven=True,
             default=(),
-            columns=('row_id', 'code', 'label', 'finance_advice', 'restrict_to_groups', 'active'),
+            # do not use 'finance_advice' column for now, replaced (definitively?) by field 'financeAdvice'
+            columns=('row_id', 'code', 'label', 'restrict_to_groups', 'active'),
             allow_empty_rows=False,
         ),
     ),)

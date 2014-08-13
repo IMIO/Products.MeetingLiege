@@ -152,6 +152,10 @@ msgstr ""
 msgid "MeetingLiege_label_archivingRefs"
 msgstr ""
 
+#. Default: "Financial advice"
+msgid "MeetingLiege_label_financeAdvice"
+msgstr ""
+
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
 msgstr ""
@@ -307,4 +311,8 @@ msgstr ""
 
 #. Default: "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
 msgid "inserting_methods_not_using_to_discuss_error"
+msgstr ""
+
+#. Default: "No financial impact"
+msgid "no_financial_impact"
 msgstr ""

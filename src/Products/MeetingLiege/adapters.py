@@ -301,7 +301,7 @@ class CustomMeeting(Meeting):
                                                excludedCategories, firstNumber, renumber,
                                                includeEmptyCategories, includeEmptyGroups)
         res = []
-        #we can find department in description 
+        #we can find department in description
         pre_dpt = '---'
         for sublst in lst:
             if (pre_dpt == '---') or (pre_dpt != sublst[0].description):
@@ -538,6 +538,19 @@ class CustomMeetingItem(MeetingItem):
             # we just sent an item from college to council
             item.setPrivacy(original.getPrivacyForCouncil())
 
+    security.declarePrivate('listFinanceAdvices')
+    def listFinanceAdvices(self):
+        '''Vocabulary for the 'financeAdvice' field.'''
+        tool = getToolByName(self, 'portal_plonemeeting')
+        res = []
+        res.append(('_none_', translate('no_financial_impact',
+                                        domain='PloneMeeting',
+                                        context=self.REQUEST)))
+        for finance_group_id in FINANCE_GROUP_IDS:
+            res.append((finance_group_id, getattr(tool, finance_group_id).getName()))
+        return DisplayList(tuple(res))
+    MeetingItem.listFinanceAdvices = listFinanceAdvices
+
     security.declarePrivate('listArchivingRefs')
     def listArchivingRefs(self):
         '''Vocabulary for the 'archivingRef' field.'''
@@ -570,17 +583,12 @@ class CustomMeetingItem(MeetingItem):
     def needFinanceAdviceOf(self, financeGroupId):
         '''
           Method that returns True if current item need advice of
-          given p_financeGroupId.  We will check if archiving reference
-          selected on the item needs a finance advice regarding it's definition
-          on the revant MeetingConfig.archivingRefs.
+          given p_financeGroupId.
+          We will check if given p_financeGroupId correspond to the selected
+          value of MeetingItem.financeAdvice.
         '''
         item = self.getSelf()
-        if item.getArchivingRef() == '_none_':
-            return False
-        tool = getToolByName(item, 'portal_plonemeeting')
-        cfg = tool.getMeetingConfig(item)
-        archRefData = cfg.adapted()._dataForArchivingRefRowId(item.getArchivingRef())
-        if financeGroupId in archRefData['finance_advice']:
+        if item.getFinanceAdvice() == financeGroupId:
             return True
         return False
 

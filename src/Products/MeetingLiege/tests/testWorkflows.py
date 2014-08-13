@@ -237,17 +237,15 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
-        # by default, an item with no selected archivingRef does
+        # by default, an item with no selected financeAdvice does
         # not need a finances advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         self.assertTrue(not item.adapted().getFinanceGroupIdsForItem())
         self.assertTrue(not item.adviceIndex)
         # finances advice is an automatic advice aksed depending on the
-        # selected archivingRef.  In self.meetingConfig.archivingRefs,
-        # we define which finances group has to give advice for a given archiving ref
-        # ask 'df-contrale' advice
-        item.setArchivingRef('012')
+        # selected MeetingItem.financeAdvice
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item.at_post_edit_script()
         self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
@@ -437,11 +435,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
-        # by default, an item with no selected archivingRef does
-        # not need a finances advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
-        item.setArchivingRef('012')
+        # ask finance advice
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item.at_post_edit_script()
         # the finance advice is asked
         self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])

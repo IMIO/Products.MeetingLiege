@@ -212,6 +212,12 @@
                       i18n:translate="PloneMeeting_label_completeness"></span>:&nbsp;&nbsp;
                 <tal:itemCompleteness replace="structure here/@@item-completeness/index" />
             </div>
+            <tal:comment replace="nothing">XXX added by MeetingLiege, finance advice</tal:comment>
+            <div class="discreet" tal:condition="python: 'financeAdvice' in usedAttrs">
+                <span class="item_attribute_label"
+                      i18n:translate="MeetingLiege_label_financeAdvice"></span>:&nbsp;&nbsp;
+                <span metal:use-macro="python: here.widget('financeAdvice', mode='view')" />
+            </div>
         </td>
         <td width="50%" align="right">
             <tal:comment replace="nothing">Preferred meeting</tal:comment>

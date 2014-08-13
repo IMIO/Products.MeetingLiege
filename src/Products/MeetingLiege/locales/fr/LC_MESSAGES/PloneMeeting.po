@@ -48,6 +48,10 @@ msgstr "Code archivage"
 msgid "MeetingLiege_label_archivingRefs"
 msgstr "Codes archivage"
 
+#. Default: "Financial advice"
+msgid "MeetingLiege_label_financeAdvice"
+msgstr "Avis du Directeur Financier"
+
 #. Default: "Label to use for item in Council"
 msgid "MeetingLiege_label_labelForCouncil"
 msgstr "Libellé dans le Conseil"
@@ -204,6 +208,10 @@ msgstr "Pas concerné"
 msgid "no_finance_advice"
 msgstr "-"
 
+#. Default: "No financial impact"
+msgid "no_financial_impact"
+msgstr "Sans incidence financière"
+
 #. Default: "Not required opinion"
 msgid "not_required_finance"
 msgstr "Avis finances non requis"
@@ -299,3 +307,4 @@ msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
+

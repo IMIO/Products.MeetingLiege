@@ -56,36 +56,26 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(newItem.getLabelForCouncil() == '<p>My label for council</p>')
         self.assertTrue(newItem.getPrivacy() == 'secret')
 
-    def test_FinanceAdviceAskedDependingOnArchivingRef(self):
-        '''Finance advice is asked depending on archivingRef.'''
+    def test_FinanceAdviceAskedDependingOnFinanceAdviceField(self):
+        '''Finance advice is asked depending on MeetingItem.financeAdvice selected value.'''
         # create finance groups
         self.changeUser('admin')
         _createFinanceGroups(self.portal)
         _configureCollegeCustomAdvisers(self.portal)
         self.changeUser('pmManager')
-        dataNoFinanceAdvice = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='001')
-        dataDFCompta = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='008')
-        dataDFControle = self.meetingConfig.adapted()._dataForArchivingRefRowId(row_id='012')
-        # we have the right data
-        self.assertTrue(dataNoFinanceAdvice['row_id'] == '001')
-        self.assertTrue(dataNoFinanceAdvice['finance_advice'] == 'no_finance_advice')
-        self.assertTrue(dataDFCompta['row_id'] == '008')
-        self.assertTrue(dataDFCompta['finance_advice'] == FINANCE_GROUP_IDS[1])
-        self.assertTrue(dataDFControle['row_id'] == '012')
-        self.assertTrue(dataDFControle['finance_advice'] == FINANCE_GROUP_IDS[0])
-        # create an item with relevant archivingRef
+        # create an item with relevant adviceFinance
         item = self.create('MeetingItem')
-        # archiving ref not asking any finance advice
-        item.setArchivingRef('001')
+        # by default, no adviceFinance asked
+        self.assertTrue(item.getFinanceAdvice() == '_none_')
         item.at_post_edit_script()
         self.assertTrue(item.adviceIndex == {})
-        # use an archiving ref that call 'df-comptabilita-c-et-audit-financier' advice
-        item.setArchivingRef('008')
-        item.at_post_edit_script()
-        self.assertTrue(FINANCE_GROUP_IDS[1] in item.adviceIndex)
-        self.assertTrue(len(item.adviceIndex) == 1)
-        # use an archiving ref that call 'df-contrale' advice
-        item.setArchivingRef('012')
+        # ask finance advice
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item.at_post_edit_script()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        self.assertTrue(len(item.adviceIndex) == 1)
+        # now ask another advice finance
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        item.at_post_edit_script()
+        self.assertTrue(FINANCE_GROUP_IDS[1] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)

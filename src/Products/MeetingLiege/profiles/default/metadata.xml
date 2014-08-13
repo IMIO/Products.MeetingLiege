@@ -3,8 +3,6 @@
   <version>3.0a.36</version>
   <!-- ##code-section METADATA -->
   <dependencies>
-    <dependency>profile-plonetheme.imioapps:plonemeetingskin</dependency>
-    <dependency>profile-communesplone.iconified_document_actions:default</dependency>
   </dependencies>
   <!-- ##/code-section METADATA -->
 </metadata>

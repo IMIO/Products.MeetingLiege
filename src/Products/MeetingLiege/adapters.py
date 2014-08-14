@@ -355,7 +355,7 @@ class CustomMeetingItem(MeetingItem):
         '''
           Keep field 'labelForCouncil' when item is sent from college to council.
         '''
-        return ['labelForCouncil', ]
+        return ['labelForCouncil', 'financeAdvice', ]
 
     def getCustomAdviceMessageFor(self, advice):
         '''If we are on a finance advice that is still not giveable because

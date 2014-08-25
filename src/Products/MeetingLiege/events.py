@@ -143,3 +143,13 @@ def onAdvicesUpdated(item, event):
             adviceInfo['delay_started_on'] = None
             adviceInfo['advice_addable'] = False
             adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(groupId)
+
+
+def onItemDuplicated(original, event):
+        '''When an item is sent to the Council, we need to initialize
+           title and privacy from what was defined on the college item.'''
+        newItem = event.newItem
+        if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
+            # we just sent an item from college to council
+            newItem.setPrivacy(original.getPrivacyForCouncil())
+

@@ -50,6 +50,8 @@ def postInstall(context):
     # set correct wf for meetingadvice
     setCorrectWorkflowForAdvices(context, site)
 
+
+
 ##code-section FOOT
 def logStep(method, context):
     logger.info("Applying '%s' in profile '%s'" % (method, '/'.join(context._profile_path.split(os.sep)[-3:])))

@@ -152,4 +152,3 @@ def onItemDuplicated(original, event):
         if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
             # we just sent an item from college to council
             newItem.setPrivacy(original.getPrivacyForCouncil())
-

@@ -67,6 +67,7 @@ class CustomMeeting(Meeting):
         self.context = item
 
     security.declarePublic('isDecided')
+
     def isDecided(self):
         """
           The meeting is supposed 'decided', if at least in state :
@@ -78,6 +79,7 @@ class CustomMeeting(Meeting):
 
     # Implements here methods that will be used by templates
     security.declarePublic('getPrintableItems')
+
     def getPrintableItems(self, itemUids, late=False, ignore_review_states=[],
                           privacy='*', oralQuestion='both', categories=[],
                           excludedCategories=[], firstNumber=1, renumber=False):
@@ -144,6 +146,7 @@ class CustomMeeting(Meeting):
             self._insertGroupInCategory(categoryList, group, groupPrefixes, groups, item)
 
     security.declarePublic('getPrintableItemsByCategory')
+
     def getPrintableItemsByCategory(self, itemUids=[], late=False,
                                     ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                                     privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
@@ -283,6 +286,7 @@ class CustomMeeting(Meeting):
         return res
 
     security.declarePublic('getItemsForAM')
+
     def getItemsForAM(self, itemUids=[], late=False,
                       ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                       privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
@@ -383,6 +387,7 @@ class CustomMeetingItem(MeetingItem):
         return None
 
     security.declarePublic('getIcons')
+
     def getIcons(self, inMeeting, meeting):
         '''Check docstring in PloneMeeting interfaces.py.'''
         item = self.getSelf()
@@ -412,6 +417,7 @@ class CustomMeetingItem(MeetingItem):
         return res
 
     security.declarePublic('getAdvicesGroupsInfosForUser')
+
     def getAdvicesGroupsInfosForUser(self):
         '''Monkeypatch the MeetingItem.getAdvicesGroupsInfosForUser, look for XXX.'''
         tool = self.portal_plonemeeting
@@ -455,6 +461,7 @@ class CustomMeetingItem(MeetingItem):
     MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
 
     security.declarePublic('mayEvaluateCompleteness')
+
     def mayEvaluateCompleteness(self):
         '''Condition for editing 'completeness' field,
            being able to define if item is 'complete' or 'incomplete'.
@@ -477,6 +484,7 @@ class CustomMeetingItem(MeetingItem):
         return True
 
     security.declarePublic('mayAskCompletenessEvalAgain')
+
     def mayAskCompletenessEvalAgain(self):
         '''Condition for editing 'completeness' field,
            being able to ask completeness evaluation again when completeness
@@ -500,6 +508,7 @@ class CustomMeetingItem(MeetingItem):
         return True
 
     security.declarePublic('mayAskEmergency')
+
     def mayAskEmergency(self):
         '''Only directors may ask emergency.'''
         item = self.getSelf()
@@ -511,6 +520,7 @@ class CustomMeetingItem(MeetingItem):
         return False
 
     security.declarePublic('mayAcceptOrRefuseEmergency')
+
     def mayAcceptOrRefuseEmergency(self):
         '''Returns True if current user may accept or refuse emergency if asked for an item.
            Emergency can be accepted only by financial managers.'''
@@ -525,6 +535,7 @@ class CustomMeetingItem(MeetingItem):
         return False
 
     security.declarePrivate('listFinanceAdvices')
+
     def listFinanceAdvices(self):
         '''Vocabulary for the 'financeAdvice' field.'''
         tool = getToolByName(self, 'portal_plonemeeting')
@@ -538,6 +549,7 @@ class CustomMeetingItem(MeetingItem):
     MeetingItem.listFinanceAdvices = listFinanceAdvices
 
     security.declarePrivate('listArchivingRefs')
+
     def listArchivingRefs(self):
         '''Vocabulary for the 'archivingRef' field.'''
         res = []
@@ -566,6 +578,7 @@ class CustomMeetingItem(MeetingItem):
     MeetingItem.listArchivingRefs = listArchivingRefs
 
     security.declarePublic('needFinanceAdviceOf')
+
     def needFinanceAdviceOf(self, financeGroupId):
         '''
           Method that returns True if current item need advice of
@@ -604,6 +617,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.listAdviceTypes = listAdviceTypes
 
     security.declarePrivate('listArchivingReferenceFinanceAdvices')
+
     def listArchivingReferenceFinanceAdvices(self):
         tool = getToolByName(self, 'portal_plonemeeting')
         res = []
@@ -618,6 +632,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.listArchivingReferenceFinanceAdvices = listArchivingReferenceFinanceAdvices
 
     security.declarePrivate('listActiveMeetingGroupsForArchivingRefs')
+
     def listActiveMeetingGroupsForArchivingRefs(self):
         """
           Vocabulary for the archivingRefs.restrict_to_groups DatagridField attribute.
@@ -641,6 +656,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.listActiveMeetingGroupsForArchivingRefs = listActiveMeetingGroupsForArchivingRefs
 
     security.declareProtected('Modify portal content', 'setArchivingRefs')
+
     def setArchivingRefs(self, value, **kwargs):
         '''Overrides the field 'archivingRefs' mutator to manage
            the 'row_id' column manually.  If empty, we need to add a
@@ -660,6 +676,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.setArchivingRefs = setArchivingRefs
 
     security.declarePublic('getDefaultAdviceHiddenDuringRedaction')
+
     def getDefaultAdviceHiddenDuringRedaction(self, **kwargs):
         '''
           Override the accessor of field MeetingConfig.defaultAdviceHiddenDuringRedaction
@@ -681,6 +698,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.getDefaultAdviceHiddenDuringRedaction = getDefaultAdviceHiddenDuringRedaction
 
     security.declarePublic('searchItemsToValidate')
+
     def searchItemsToValidate(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''See docstring in Products.PloneMeeting.MeetingConfig.
            We override it here because relevant groupIds and wf state are no the same...'''
@@ -712,6 +730,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.searchItemsToValidate = searchItemsToValidate
 
     security.declarePublic('searchItemsToControlCompletenessOf')
+
     def searchItemsToControlCompletenessOf(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is completeness to evaluate, so where completeness
            is not 'completeness_complete'.'''
@@ -733,6 +752,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.searchItemsToControlCompletenessOf = searchItemsToControlCompletenessOf
 
     security.declarePublic('searchItemsWithAdviceProposedToFinancialController')
+
     def searchItemsWithAdviceProposedToFinancialController(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.'''
         groupIds = []
@@ -751,9 +771,11 @@ class CustomMeetingConfig(MeetingConfig):
         params.update(kwargs)
         # Perform the query in portal_catalog
         return self.portal_catalog(**params)
-    MeetingConfig.searchItemsWithAdviceProposedToFinancialController = searchItemsWithAdviceProposedToFinancialController
+    MeetingConfig.searchItemsWithAdviceProposedToFinancialController = \
+        searchItemsWithAdviceProposedToFinancialController
 
     security.declarePublic('searchItemsWithAdviceProposedToFinancialReviewer')
+
     def searchItemsWithAdviceProposedToFinancialReviewer(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
         groupIds = []
@@ -775,6 +797,7 @@ class CustomMeetingConfig(MeetingConfig):
     MeetingConfig.searchItemsWithAdviceProposedToFinancialReviewer = searchItemsWithAdviceProposedToFinancialReviewer
 
     security.declarePublic('searchItemsWithAdviceProposedToFinancialManager')
+
     def searchItemsWithAdviceProposedToFinancialManager(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
         groupIds = []
@@ -814,6 +837,7 @@ class CustomMeetingGroup(MeetingGroup):
         self.context = item
 
     security.declareProtected('Modify portal content', 'onEdit')
+
     def onEdit(self, isCreated):
         '''
           When a MeetingGroup is created/edited, if it is a finance group
@@ -853,6 +877,7 @@ class CustomMeetingGroup(MeetingGroup):
         return res
     MeetingGroup.getPloneGroups = getPloneGroups
 
+
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingCollegeWorkflowActions'''
@@ -870,6 +895,7 @@ class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
                 self.context.portal_workflow.doActionFor(item, 'accept')
 
     security.declarePrivate('doBackToCreated')
+
     def doBackToCreated(self, stateChange):
         '''When a meeting go back to the "created" state, for example the
            meeting manager wants to add an item, we do not do anything.'''
@@ -884,6 +910,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     security = ClassSecurityInfo()
 
     security.declarePublic('mayFreeze')
+
     def mayFreeze(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -891,6 +918,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayClose')
+
     def mayClose(self):
         res = False
         # The user just needs the "Review portal content" permission on the
@@ -900,6 +928,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayDecide')
+
     def mayDecide(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -907,6 +936,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayChangeItemsOrder')
+
     def mayChangeItemsOrder(self):
         '''We can change the order if the meeting is not closed'''
         res = False
@@ -916,6 +946,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayCorrect')
+
     def mayCorrect(self):
         '''Take the default behaviour except if the meeting is frozen
            we still have the permission to correct it.'''
@@ -937,47 +968,56 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     implements(IMeetingItemCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-
     security.declarePrivate('doAskAdvicesByItemCreator')
+
     def doAskAdvicesByItemCreator(self, stateChange):
         pass
 
     security.declarePrivate('doProposeToAdministrativeReviewer')
+
     def doProposeToAdministrativeReviewer(self, stateChange):
         ''' '''
         pass
 
     security.declarePrivate('doProposeToInternalReviewer')
+
     def doProposeToInternalReviewer(self, stateChange):
         ''' '''
         pass
 
     security.declarePrivate('doAskAdvicesByInternalReviewer')
+
     def doAskAdvicesByInternalReviewer(self, stateChange):
         pass
 
     security.declarePrivate('doProposeToDirector')
+
     def doProposeToDirector(self, stateChange):
         pass
 
     security.declarePrivate('doProposeToFinance')
+
     def doProposeToFinance(self, stateChange):
         ''' '''
         pass
 
     security.declarePrivate('doPre_accept')
+
     def doPre_accept(self, stateChange):
         pass
 
     security.declarePrivate('doAccept_but_modify')
+
     def doAccept_but_modify(self, stateChange):
         pass
 
     security.declarePrivate('doAccept')
+
     def doAccept(self, stateChange):
         pass
 
     security.declarePrivate('doMark_not_applicable')
+
     def doMark_not_applicable(self, stateChange):
         pass
 
@@ -994,6 +1034,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         self.sm = getSecurityManager()
 
     security.declarePublic('mayProposeToAdminstrativeReviewer')
+
     def mayProposeToAdminstrativeReviewer(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -1001,6 +1042,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
+
     def mayProposeToInternalReviewer(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -1008,6 +1050,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayProposeToDirector')
+
     def mayProposeToDirector(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -1015,6 +1058,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayProposeToFinance')
+
     def mayProposeToFinance(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -1025,6 +1069,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayAskAdvicesByItemCreator')
+
     def mayAskAdvicesByItemCreator(self):
         '''May advices be asked by item creator.'''
         res = False
@@ -1039,6 +1084,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayAskAdvicesByInternalReviewer')
+
     def mayAskAdvicesByInternalReviewer(self):
         '''May advices be asked by internal reviewer.'''
         res = False
@@ -1053,6 +1099,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayValidate')
+
     def mayValidate(self):
         """
           This differs if the item needs finance advice or not.
@@ -1060,9 +1107,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             can validate, the MeetingManager can bypass the validation process
             and validate an item that is in the state 'itemcreated';
           - it does have a finance advice : it will be automatically validated when
-            the advice will be 'signed' by the finance group if the advice type is 'positive_finance' or 'not_required_finance'
-            or it can be manually validated by the director if item emergency has been asked
-            and motivated on the item.
+            the advice will be 'signed' by the finance group if the advice type
+            is 'positive_finance' or 'not_required_finance' or it can be manually
+            validated by the director if item emergency has been asked and motivated on the item.
         """
         res = False
         # very special case, we can bypass the guard if a 'mayValidate'
@@ -1090,6 +1137,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayDecide')
+
     def mayDecide(self):
         '''We may decide an item if the linked meeting is in relevant state.'''
         res = False
@@ -1100,6 +1148,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayCorrect')
+
     def mayCorrect(self):
         # Check with the default PloneMeeting method and our test if res is
         # False. The diffence here is when we correct an item from itemfrozen to
@@ -1129,13 +1178,15 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             elif self.context.queryState() == 'proposed_to_finance' and \
                     self.context.getCompleteness() == 'completeness_incomplete':
                 # user must be a controller of finance group the advice is asked to
-                financeControllerGroupId = '%s_financialcontrollers' % self.context.adapted().getFinanceGroupIdsForItem()
+                financeControllerGroupId = '%s_financialcontrollers' % \
+                                           self.context.adapted().getFinanceGroupIdsForItem()
                 member = self.context.restrictedTraverse('@@plone_portal_state').member()
                 if financeControllerGroupId in member.getGroups():
                     res = True
         return res
 
     security.declarePublic('mayBackToProposedToDirector')
+
     def mayBackToProposedToDirector(self):
         '''
           Item may back to proposedToDirector if a value 'mayBackToProposedToDirector' is
@@ -1167,6 +1218,7 @@ class MeetingCouncilLiegeWorkflowActions(MeetingWorkflowActions):
                 self.context.portal_workflow.doActionFor(item, 'accept')
 
     security.declarePrivate('doBackToCreated')
+
     def doBackToCreated(self, stateChange):
         '''When a meeting go back to the "created" state, for example the
            meeting manager wants to add an item, we do not do anything.'''
@@ -1181,6 +1233,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     security = ClassSecurityInfo()
 
     security.declarePublic('mayFreeze')
+
     def mayFreeze(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -1192,6 +1245,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayClose')
+
     def mayClose(self):
         res = False
         # The user just needs the "Review portal content" permission on the
@@ -1201,6 +1255,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayDecide')
+
     def mayDecide(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
@@ -1208,6 +1263,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayChangeItemsOrder')
+
     def mayChangeItemsOrder(self):
         '''We can change the order if the meeting is not closed'''
         res = False
@@ -1217,6 +1273,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         return res
 
     security.declarePublic('mayCorrect')
+
     def mayCorrect(self):
         '''Take the default behaviour except if the meeting is frozen
            we still have the permission to correct it.'''
@@ -1239,23 +1296,28 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
     security = ClassSecurityInfo()
 
     security.declarePrivate('doProposeToDirector')
+
     def doProposeToDirector(self, stateChange):
         pass
 
     security.declarePrivate('doAccept_pre_accept')
+
     def doAccept_pre_accept(self, stateChange):
         pass
 
     security.declarePrivate('doAccept_but_modify')
+
     def doAccept_but_modify(self, stateChange):
         pass
 
     security.declarePrivate('doDelay')
+
     def doDelay(self, stateChange):
         '''When an item is delayed, by default it is duplicated but we do not duplicate it here'''
         pass
 
     security.declarePrivate('doMark_not_applicable')
+
     def doMark_not_applicable(self, stateChange):
         ''' '''
         pass
@@ -1273,6 +1335,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         self.sm = getSecurityManager()
 
     security.declarePublic('mayCorrect')
+
     def mayCorrect(self):
         # Check with the default PloneMeeting method and our test if res is
         # False. The diffence here is when we correct an item from itemfrozen to
@@ -1299,6 +1362,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('mayDecide')
+
     def mayDecide(self):
         '''We may decide an item if the linked meeting is in relevant state.'''
         res = False
@@ -1309,6 +1373,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
     security.declarePublic('isLateFor')
+
     def isLateFor(self, meeting):
         """
           No late functionnality for Council

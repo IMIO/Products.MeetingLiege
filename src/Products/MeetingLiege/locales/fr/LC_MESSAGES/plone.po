@@ -32,9 +32,17 @@ msgstr "Point Collège communal"
 msgid "MeetingItemCouncil"
 msgstr "Point Conseil communal"
 
+#. Default: "Accept and return"
+msgid "accept_and_return"
+msgstr "Accepter avec retour Collège"
+
 #. Default: "Accept with modifications"
 msgid "accept_but_modify"
 msgstr "Accepter avec modifications"
+
+#. Default: "Accepted and returned"
+msgid "accepted_and_returned"
+msgstr "Accepté avec retour Collège"
 
 #. Default: "Accepted with modifications"
 msgid "accepted_but_modified"
@@ -187,6 +195,14 @@ msgstr "Proposé au validateur interne"
 #. Default: "Advices asked by internal reviewer"
 msgid "proposed_to_internal_reviewer_waiting_advices"
 msgstr "Avis demandés par le validateur interne"
+
+#. Default: "Return"
+msgid "return"
+msgstr "Retour Collège"
+
+#. Default: "Returned"
+msgid "returned"
+msgstr "Retour Collège"
 
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"

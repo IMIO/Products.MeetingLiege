@@ -40,6 +40,10 @@ msgstr ""
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr ""
 
+#. Default: "The item has been duplicated and the new item is available for a next meeting."
+msgid "return_comments"
+msgstr ""
+
 #. Default: "Front page body"
 msgid "front_page_body"
 msgstr ""
@@ -54,6 +58,14 @@ msgstr ""
 
 #. Default: "Marked not applicable"
 msgid "icon_help_marked_not_applicable"
+msgstr ""
+
+#. Default: "Returned"
+msgid "icon_help_returned"
+msgstr ""
+
+#. Default: "Accepted and returned"
+msgid "icon_help_accepted_and_returned"
 msgstr ""
 
 #. Default: "Advices asked by creator"

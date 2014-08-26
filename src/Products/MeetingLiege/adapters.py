@@ -336,8 +336,6 @@ class CustomMeetingItem(MeetingItem):
     implements(IMeetingItemCustom)
     security = ClassSecurityInfo()
 
-    customItemPositiveDecidedStates = ('accepted', 'accepted_but_modified', )
-    MeetingItem.itemPositiveDecidedStates = customItemPositiveDecidedStates
     customItemDecidedStates = ('accepted',
                                'accepted_but_modified',
                                'delayed',
@@ -354,6 +352,12 @@ class CustomMeetingItem(MeetingItem):
 
     def __init__(self, item):
         self.context = item
+
+    security.declarePublic('itemPositiveDecidedStates')
+
+    def itemPositiveDecidedStates(self):
+        '''See doc in interfaces.py.'''
+        return ('accepted', 'accepted_but_modified', 'accepted_and_returned')
 
     def getExtraFieldsToCopyWhenCloning(self):
         '''
@@ -398,6 +402,10 @@ class CustomMeetingItem(MeetingItem):
         # Add our icons for some review states
         if itemState == 'accepted_but_modified':
             res.append(('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
+        elif itemState == 'accepted_and_returned':
+            res.append(('accepted_and_returned.png', 'icon_help_accepted_and_returned'))
+        elif itemState == 'returned':
+            res.append(('returned.png', 'icon_help_returned'))
         elif itemState == 'pre_accepted':
             res.append(('pre_accepted.png', 'icon_help_pre_accepted'))
         elif itemState == 'itemcreated_waiting_advices':
@@ -1021,6 +1029,32 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     def doMark_not_applicable(self, stateChange):
         pass
 
+    security.declarePrivate('doAccept_and_return')
+
+    def doAccept_and_return(self, stateChange):
+        self._returnCollege()
+
+    security.declarePrivate('doReturn')
+
+    def doReturn(self, stateChange):
+        '''
+          When the item is 'returned', it will be automatically
+          duplicated then validated for a next meeting.
+        '''
+        self._returnCollege()
+
+    def _returnCollege(self):
+        '''
+          Manage 'return college', item is duplicated then
+          nex item is validated for a next meeting.
+        '''
+        newItem = self.context.clone(cloneEventAction='return')
+        newItem.setPredecessor(self.context)
+        # now that the item is cloned, we need to validate it
+        # so it is immediately available for a next meeting
+        wfTool = getToolByName(self.context, 'portal_workflow')
+        wfTool.doActionFor(newItem, 'validate')
+
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -1144,6 +1178,16 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         meeting = self.context.getMeeting()
         if checkPermission(ReviewPortalContent, self.context) and \
            meeting and (meeting.queryState() in ['decided', 'closed', ]):
+            res = True
+        return res
+
+    security.declarePublic('mayAcceptAndReturn')
+
+    def mayAcceptAndReturn(self):
+        '''This is a decision only avaialble if item will be sent to council.'''
+        res = False
+        if checkPermission(ReviewPortalContent, self.context) and \
+           'meeting-config-council' in self.context.getOtherMeetingConfigsClonableTo():
             res = True
         return res
 

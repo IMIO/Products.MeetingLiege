@@ -84,6 +84,22 @@ msgstr ""
 msgid "accepted_but_modified"
 msgstr ""
 
+#. Default: "Accept and return"
+msgid "accept_and_return"
+msgstr ""
+
+#. Default: "Accepted and returned"
+msgid "accepted_and_returned"
+msgstr ""
+
+#. Default: "Return"
+msgid "return"
+msgstr ""
+
+#. Default: "Returned"
+msgid "returned"
+msgstr ""
+
 #. Default: "Pre accept"
 msgid "pre_accept"
 msgstr ""

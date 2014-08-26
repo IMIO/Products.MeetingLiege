@@ -426,6 +426,59 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(meeting.queryState() == 'closed')
         self.assertTrue(advice.queryState() == 'advice_given')
 
+    def test_subproduct_ReturnCollege(self):
+        '''Test behaviour of the 'return' decision transition.
+           This will duplicate the item and the new item will be automatically
+           validated so it is available for the next meetings.'''
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='An item to return')
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        # present the item into the meeting
+        self.presentItem(item)
+        self.decideMeeting(meeting)
+        # now the item can be 'returned'
+        self.assertTrue('return' in self.transitions(item))
+        # no duplicated for now
+        self.assertTrue(not item.getBRefs('ItemPredecessor'))
+        self.do(item, 'return')
+        self.assertTrue(item.queryState() == 'returned')
+        # now that the item is 'returned', it has been duplicated
+        # and the new item has been validated
+        predecessor = item.getBRefs('ItemPredecessor')
+        self.assertTrue(len(predecessor) == 1)
+        predecessor = predecessor[0]
+        self.assertTrue(predecessor.queryState() == 'validated')
+        self.assertTrue(predecessor.portal_type == item.portal_type)
+
+    def test_subproduct_AcceptAndReturnCollege(self):
+        '''Test behaviour of the 'accept_and_return' decision transition.
+           This will send the item to the council then duplicate the original item (college)
+           and automatically validate it so it is available for the next meetings.'''
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='An item to return')
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        # present the item into the meeting
+        self.presentItem(item)
+        self.decideMeeting(meeting)
+        # as item is not to send to council, the 'accept_and_return' transition is not available
+        self.assertTrue(not 'accept_and_return' in self.transitions(item))
+        # make it to send to council
+        item.setOtherMeetingConfigsClonableTo((self.meetingConfig2.getId(), ))
+        # now the transition 'accept_and_return' is available
+        self.assertTrue('accept_and_return' in self.transitions(item))
+        # accept_and_return, the item is send to the meetingConfig2
+        # and is duplicated in current config and set to 'validated'
+        self.do(item, 'accept_and_return')
+        predecessors = item.getBRefs('ItemPredecessor')
+        self.assertTrue(len(predecessors) == 2)
+        duplicatedToCfg2, duplicatedLocally = predecessors
+        # sent to the council
+        self.assertTrue(duplicatedToCfg2.portal_type == self.meetingConfig2.getItemTypeName())
+        # duplicated locally...
+        self.assertTrue(duplicatedLocally.portal_type == item.portal_type)
+        #... and validated
+        self.assertTrue(duplicatedLocally.queryState() == 'validated')
+
     def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
         '''Test that when a transition is triggered on a meetingadvice
            using finance workflow, the indexAdvisers index is always correct.'''

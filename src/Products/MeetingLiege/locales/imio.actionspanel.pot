@@ -10,3 +10,7 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: imio.actionspanel\n"
+
+#. Default: "The item has been returned, it has been duplicated and the new item is available for a next meeting."
+msgid "return_done_descr"
+msgstr ""

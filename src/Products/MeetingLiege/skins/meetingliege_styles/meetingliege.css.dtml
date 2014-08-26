@@ -111,7 +111,9 @@
 }
 
 .state-delayed, .label-state-delayed,
-.state-delayed, .label-state-returned_to_proposing_group,
+.state-returned_to_proposing_group, .label-state-returned_to_proposing_group,
+.state-returned, .label-state-returned,
+.state-accepted_and_returned, .label-state-accepted_and_returned,
 .state-marked_not_applicable, .label-state-marked_not_applicable {
     color: grey !important;
 }

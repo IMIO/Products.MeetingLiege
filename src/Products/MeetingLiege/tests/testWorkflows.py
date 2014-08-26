@@ -122,12 +122,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the item is still frozen but can be decided
         self.assertTrue(item.queryState() == 'itemfrozen')
         self.assertTrue(self.transitions(item) == ['accept',
+                                                   'accept_and_return',
                                                    'accept_but_modify',
                                                    'backToPresented',
                                                    'delay',
                                                    'mark_not_applicable',
                                                    'pre_accept',
-                                                   'refuse'])
+                                                   'refuse',
+                                                   'return'])
         # if we pre_accept an item, we can accept it after
         self.do(item, 'pre_accept')
         self.assertTrue(self.transitions(item) == ['accept',

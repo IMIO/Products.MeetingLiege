@@ -122,7 +122,6 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the item is still frozen but can be decided
         self.assertTrue(item.queryState() == 'itemfrozen')
         self.assertTrue(self.transitions(item) == ['accept',
-                                                   'accept_and_return',
                                                    'accept_but_modify',
                                                    'backToPresented',
                                                    'delay',

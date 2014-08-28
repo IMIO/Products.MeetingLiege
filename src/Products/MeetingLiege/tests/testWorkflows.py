@@ -106,7 +106,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                    'backToProposedToDirector', ])
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         # the item is available for the meeting
-        availableItemUids = [brain.UID for brain in meeting.getAvailableItems()]
+        availableItemUids = [brain.UID for brain in meeting.adapted().getAvailableItems()]
         self.assertTrue(item.UID() in availableItemUids)
         self.do(item, 'present')
         self.assertTrue(item.queryState() == 'presented')

@@ -470,8 +470,16 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(item, 'accept_and_return')
         predecessors = item.getBRefs('ItemPredecessor')
         self.assertTrue(len(predecessors) == 2)
-        duplicatedToCfg2, duplicatedLocally = predecessors
+        duplicated1, duplicated2 = predecessors
+        # predecessors are not sorted, so one of both is duplicated to another
+        # meetingConfig and the other is duplicated locally...
         # sent to the council
+        if duplicated1.portal_type == self.meetingConfig2.getItemTypeName():
+            duplicatedToCfg2 = duplicated1
+            duplicatedLocally = duplicated2
+        else:
+            duplicatedToCfg2 = duplicated1
+            duplicatedLocally = duplicated2
         self.assertTrue(duplicatedToCfg2.portal_type == self.meetingConfig2.getItemTypeName())
         # duplicated locally...
         self.assertTrue(duplicatedLocally.portal_type == item.portal_type)

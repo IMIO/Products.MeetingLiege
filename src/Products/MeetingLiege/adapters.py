@@ -630,14 +630,13 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         financialAdvice = item.getFinanceAdvice()
         res['comment'] = 'comment' in item.getAdviceDataFor(financialAdvice)\
-                                    and item.getAdviceDataFor(financialAdvice)['comment'] or ''
+            and item.getAdviceDataFor(financialAdvice)['comment'] or ''
         advice_id = 'advice_id' in item.getAdviceDataFor(financialAdvice)\
-                                    and item.getAdviceDataFor(financialAdvice)['advice_id'] or ''
-        signature_event = advice_id and getLastEvent(getattr(item, advice_id),\
-                                                                     'signFinancialAdvice') or ''
+            and item.getAdviceDataFor(financialAdvice)['advice_id'] or ''
+        signature_event = advice_id and getLastEvent(getattr(item, advice_id), 'signFinancialAdvice') or ''
         res['out_of_financial_dpt'] = 'time' in signature_event and signature_event['time'] or ''
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\
-                                    and res['out_of_financial_dpt'].strftime('%d/%m/%Y') or ''
+            and res['out_of_financial_dpt'].strftime('%d/%m/%Y') or ''
         res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % \
                              (item.getAdviceDataFor(financialAdvice)['type'].encode('utf-8'))
         return res
@@ -668,9 +667,9 @@ class CustomMeetingItem(MeetingItem):
             if item.UID() in ann['Products.MeetingLiege.ItemNum']:
                 continue
             item_num = 0
-            cat = item.getCategory()
+            cat = item.getCategory(True).getCategoryId()
             for item2 in items:
-                if item2.getCategory() != cat:
+                if item2.getCategory(True).getCategoryId() != cat:
                     continue
                 item_num = item_num + 1
                 if item == item2:

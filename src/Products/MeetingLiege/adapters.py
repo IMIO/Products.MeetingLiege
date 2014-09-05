@@ -36,7 +36,7 @@ from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
-from Products.PloneMeeting.utils import checkPermission, prepareSearchValue
+from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
@@ -601,16 +601,17 @@ class CustomMeetingItem(MeetingItem):
 
     def getFinancialAdviceStuff(self):
         '''Get the financial advice signature date, advice type and comment'''
-        import Products.PloneMeeting.utils as utils
         res = {}
         item = self.getSelf()
         financialAdvice = item.getFinanceAdvice()
         res['comment'] = item.getAdviceDataFor(financialAdvice)['comment']
         advice_id = item.getAdviceDataFor(financialAdvice)['advice_id']
-        res['out_of_financial_dpt'] = utils.getLastEvent(getattr(item,advice_id), 'signFinancialAdvice')['time']
+        res['out_of_financial_dpt'] = getLastEvent(getattr(item, advice_id), 'signFinancialAdvice')['time']
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt'].strftime('%d/%m/%Y')
-        res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % (item.getAdviceDataFor(financialAdvice)['type'].encode('utf-8'))
+        res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % \
+                             (item.getAdviceDataFor(financialAdvice)['type'].encode('utf-8'))
         return res
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the

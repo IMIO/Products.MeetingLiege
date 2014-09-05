@@ -647,7 +647,7 @@ class CustomMeetingItem(MeetingItem):
         '''the reference is cat id/itemnumber in this cat/PA if it's not to discuss'''
         ann = IAnnotations(self.context.REQUEST)
         self.adapted().createItemNumerotationInIA()
-        res = '%s.' % self.context.getCategory(True).getCategoryId()
+        res = '%s' % self.context.getCategory(True).getCategoryId()
         item_num = ann['Products.MeetingLiege.ItemNum'][self.context.UID()]
         res = '%s%s' % (res, item_num)
         if not self.context.getToDiscuss:

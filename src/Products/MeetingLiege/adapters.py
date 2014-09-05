@@ -277,12 +277,17 @@ class CustomMeeting(Meeting):
         if renumber:
             #return a list of tuple with first element the number and second
             #element the item itself
-            i = firstNumber
-            res = []
-            for item in items:
-                res.append((i, item))
-                i = i + 1
-            items = res
+            final_items = []
+            final_res = []
+            for elts in res:
+                # we received a list of tuple (cat, items_list)
+                i = firstNumber
+                for item in elts[1:]:
+                    # we received a list of items
+                    final_items.append((i, item))
+                    i = i + 1
+                final_res.append([elts[0], final_items])
+            res = final_res
         return res
 
     security.declarePublic('getItemsForAM')
@@ -295,38 +300,54 @@ class CustomMeeting(Meeting):
         '''Return item's based on getPrintableItemsByCategory. The structure of result is :
            for each element of list
            element[0] = (cat, department) department only if new
-           element[1:] = (items, 'LE COLLEGE PROPOSE AU CONSEIL') [if first item to send to council] or
-                         (items, 'LE COLLEGE UNIQUEMENT') [if first item to didn't send to college] or
-                         (items, '') [if not first items]
+           element[1:] = (N°, items, 'LE COLLEGE PROPOSE AU CONSEIL') [if first item to send to council] or
+                         (N°, items, 'LE COLLEGE UNIQUEMENT') [if first item to didn't send to college] or
+                         (N°, items, '') [if not first items]
         '''
-        renumber = False  # don't use remember a this time but ...
-        lst = self.getPrintableItemsByCategory(itemUids, late,
-                                               ignore_review_states, by_proposing_group, group_prefixes,
-                                               privacy, oralQuestion, toDiscuss, categories,
-                                               excludedCategories, firstNumber, renumber,
-                                               includeEmptyCategories, includeEmptyGroups)
         res = []
-        #we can find department in description
-        pre_dpt = '---'
-        for sublst in lst:
-            if (pre_dpt == '---') or (pre_dpt != sublst[0].description):
-                pre_dpt = sublst[0].description
-                dpt = pre_dpt
-            else:
-                dpt = ''
-            sub_rest = [(sublst[0], dpt)]
-            prev_to_send = '---'
-            for item in sublst[1:]:
-                if (prev_to_send == '---') or (prev_to_send != item.otherMeetingConfigsClonableTo):
-                    if item.otherMeetingConfigsClonableTo:
-                        txt = 'LE COLLEGE PROPOSE AU CONSEIL'
-                    else:
-                        txt = 'LE COLLEGE UNIQUEMENT'
-                    prev_to_send = item.otherMeetingConfigsClonableTo
+        tool = getToolByName(self.context, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(self.context)
+        for category in cfg.getCategories():
+            lst = self.getPrintableItemsByCategory(itemUids, late,
+                                                   ignore_review_states, by_proposing_group, group_prefixes,
+                                                   privacy, oralQuestion, toDiscuss, [category.getId(), ],
+                                                   excludedCategories, firstNumber, renumber,
+                                                   includeEmptyCategories, includeEmptyGroups)
+            #we can find department in description
+            pre_dpt = '---'
+            for sublst in lst:
+                if (pre_dpt == '---') or (pre_dpt != sublst[0].description):
+                    pre_dpt = sublst[0].description
+                    dpt = pre_dpt
                 else:
-                    txt = ''
-                sub_rest.append((item, txt))
-            res.append(sub_rest)
+                    dpt = ''
+                sub_rest = [(sublst[0], dpt)]
+                prev_to_send = '---'
+                for elt in sublst[1:]:
+                    if renumber:
+                        for sub_elt in elt:
+                            item = sub_elt[1]
+                            if (prev_to_send == '---') or (prev_to_send != item.otherMeetingConfigsClonableTo):
+                                if item.otherMeetingConfigsClonableTo:
+                                    txt = 'LE COLLEGE PROPOSE AU CONSEIL'
+                                else:
+                                    txt = 'LE COLLEGE UNIQUEMENT'
+                                prev_to_send = item.otherMeetingConfigsClonableTo
+                            else:
+                                txt = ''
+                            sub_rest.append((sub_elt[0], item, txt))
+                    else:
+                        item = elt
+                        if (prev_to_send == '---') or (prev_to_send != item.otherMeetingConfigsClonableTo):
+                            if item.otherMeetingConfigsClonableTo:
+                                txt = 'LE COLLEGE PROPOSE AU CONSEIL'
+                            else:
+                                txt = 'LE COLLEGE UNIQUEMENT'
+                            prev_to_send = item.otherMeetingConfigsClonableTo
+                        else:
+                            txt = ''
+                        sub_rest.append((item.getItemNumber(relativeTo='meeting'), item, txt))
+                res.append(sub_rest)
         return res
 
 
@@ -599,6 +620,8 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
+    security.declarePublic('getFinancialAdviceStuff')
+
     def getFinancialAdviceStuff(self):
         '''Get the financial advice signature date, advice type and comment'''
         res = {}
@@ -611,6 +634,11 @@ class CustomMeetingItem(MeetingItem):
         res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % \
                              (item.getAdviceDataFor(financialAdvice)['type'].encode('utf-8'))
         return res
+
+    security.declarePublic('getItemRefForActe')
+
+    def getItemRefForActe(self):
+        pass
 
 
 class CustomMeetingConfig(MeetingConfig):

@@ -50,6 +50,7 @@ from Products.MeetingLiege.interfaces import \
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
+from zope.annotation.interfaces import IAnnotations
 
 # disable every wfAdaptations
 customWfAdaptations = ()
@@ -275,17 +276,18 @@ class CustomMeeting(Meeting):
                     # The method does nothing if the group (or another from the
                     # same macro-group) is already there.
         if renumber:
+            ann = IAnnotations(self.context.REQUEST)
             #return a list of tuple with first element the number and second
             #element the item itself
             final_items = []
             final_res = []
             for elts in res:
                 # we received a list of tuple (cat, items_list)
-                i = firstNumber
                 for item in elts[1:]:
+                    item.adapted().createItemNumerotationInIA()
                     # we received a list of items
-                    final_items.append((i, item))
-                    i = i + 1
+                    item_num = ann['Products.MeetingLiege.ItemNum'][item.UID()]
+                    final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
         return res
@@ -643,7 +645,39 @@ class CustomMeetingItem(MeetingItem):
     security.declarePublic('getItemRefForActe')
 
     def getItemRefForActe(self):
-        pass
+        '''the reference is cat id/itemnumber in this cat/PA if it's not to discuss'''
+        ann = IAnnotations(self.context.REQUEST)
+        self.adapted().createItemNumerotationInIA()
+        res = '%s.' % self.context.getCategory(True).getCategoryId()
+        item_num = ann['Products.MeetingLiege.ItemNum'][self.context.UID()]
+        res = '%s%s' % (res, item_num)
+        if not self.context.getToDiscuss:
+            res = '% (PA)' % res
+        return res
+
+    security.declarePublic('createItemNumerotationInIA')
+
+    def createItemNumerotationInIA(self):
+        '''Create dico in iannotation with (item_uid, item_number in his category)'''
+        ann = IAnnotations(self.context.REQUEST)
+        if 'Products.MeetingLiege.ItemNum' not in ann:
+            ann['Products.MeetingLiege.ItemNum'] = {}
+
+        items = self.context.getMeeting().getAllItems(ordered=True)
+        for item in items:
+            if item.UID() in ann['Products.MeetingLiege.ItemNum']:
+                continue
+            item_num = 0
+            cat = item.getCategory()
+            for item2 in items:
+                if item2.getCategory() != cat:
+                    continue
+                item_num = item_num + 1
+                if item == item2:
+                    if item.UID() not in ann['Products.MeetingLiege.ItemNum']:
+                        ann['Products.MeetingLiege.ItemNum'][item.UID()] = item_num
+                    break
+        return
 
 
 class CustomMeetingConfig(MeetingConfig):

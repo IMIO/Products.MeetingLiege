@@ -599,6 +599,18 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
+    def getFinancialAdviceStuff(self):
+        '''Get the financial advice signature date, advice type and comment'''
+        import Products.PloneMeeting.utils as utils
+        res = {}
+        item = self.getSelf()
+        financialAdvice = item.getFinanceAdvice()
+        res['comment'] = item.getAdviceDataFor(financialAdvice)['comment']
+        advice_id = item.getAdviceDataFor(financialAdvice)['advice_id']
+        res['out_of_financial_dpt'] = utils.getLastEvent(getattr(item,advice_id), 'signFinancialAdvice')['time']
+        res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt'].strftime('%d/%m/%Y')
+        res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % (item.getAdviceDataFor(financialAdvice)['type'].encode('utf-8'))
+        return res
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the

@@ -1,9 +1,10 @@
 from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import RichWidget
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import RichWidget
 
 from Products.DataGridField import DataGridField
 from Products.DataGridField import Column
@@ -11,6 +12,7 @@ from Products.DataGridField import SelectColumn
 
 from collective.datagridcolumns.MultiSelectColumn import MultiSelectColumn
 
+from Products.PloneMeeting.Meeting import Meeting
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 
@@ -106,6 +108,30 @@ def update_item_schema(baseSchema):
 
     return completeItemSchema
 MeetingItem.schema = update_item_schema(MeetingItem.schema)
+
+
+def update_meeting_schema(baseSchema):
+
+    specificSchema = Schema((
+        # field for defining if a college meeting adopts next council meeting agenda
+        BooleanField(
+            name='adoptsNextCouncilAgenda',
+            default=False,
+            widget=BooleanField._properties['widget'](
+                condition="python: here.attributeIsUsed('adoptsNextCouncilAgenda')",
+                description="AdoptsNextCouncilAgenda",
+                description_msgid="adopts_next_council_agenda_descr",
+                label='Adoptsnextcouncilagenda',
+                label_msgid='MeetingLiege_label_adoptsNextCouncilAgenda',
+                i18n_domain='PloneMeeting',
+            ),
+            optional=True,
+        ),
+    ),)
+
+    completeConfigSchema = baseSchema + specificSchema.copy()
+    return completeConfigSchema
+Meeting.schema = update_meeting_schema(Meeting.schema)
 
 
 def update_config_schema(baseSchema):

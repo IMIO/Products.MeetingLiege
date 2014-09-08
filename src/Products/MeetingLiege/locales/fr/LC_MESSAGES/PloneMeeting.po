@@ -40,6 +40,10 @@ msgstr "Intitulé du point tel qui apparaîtra à l’ordre du jour du Conseil c
 msgid "MeetingLiege_descr_textCheckList"
 msgstr "Encodez la liste des éléments nécessaires pour que ce type de point soit considéré 'complet'"
 
+#. Default: "This meeting adopts next council agenda"
+msgid "MeetingLiege_label_adoptsNextCouncilAgenda"
+msgstr "Cette séance arrête l'ordre du jour du prochain Conseil communal?"
+
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
 msgstr "Numéro de sous-étape"
@@ -107,6 +111,10 @@ msgstr "Montrer/cacher données utilisées pour le point Conseil"
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
 msgstr "Validateurs administratifs"
+
+#. Default: " "
+msgid "adopts_next_council_agenda_descr"
+msgstr " "
 
 #. Default: "No advice to ask"
 msgid "advice_required_to_ask_advices"

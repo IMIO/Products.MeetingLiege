@@ -376,3 +376,11 @@ msgstr ""
 #. Default: "No financial impact"
 msgid "no_financial_impact"
 msgstr ""
+
+#. Default: "This meeting adopts next council agenda"
+msgid "MeetingLiege_label_adoptsNextCouncilAgenda"
+msgstr ""
+
+#. Default: " "
+msgid "adopts_next_council_agenda_descr"
+msgstr ""

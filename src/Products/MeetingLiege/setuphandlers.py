@@ -22,6 +22,7 @@ from Products.CMFCore.utils import getToolByName
 import transaction
 ##code-section HEAD
 from DateTime import DateTime
+from imio.helpers.catalog import addOrUpdateColumns
 from Products.PloneMeeting.exportimport.content import ToolInitializer
 ##/code-section HEAD
 
@@ -49,6 +50,8 @@ def postInstall(context):
     reorderSkinsLayers(context, site)
     # set correct wf for meetingadvice
     setCorrectWorkflowForAdvices(context, site)
+    # add getAdoptsNextCouncilAgenda metadata
+    addOrUpdateColumns(site, columnInfos=('getAdoptsNextCouncilAgenda', ))
 
 
 

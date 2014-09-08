@@ -40,8 +40,9 @@ from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, get
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
+from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
 from Products.PloneMeeting.interfaces import IMeetingCustom, IMeetingItemCustom, \
-    IMeetingConfigCustom, IMeetingGroupCustom
+    IMeetingConfigCustom, IMeetingGroupCustom, IToolPloneMeetingCustom
 from Products.MeetingLiege.interfaces import \
     IMeetingItemCollegeLiegeWorkflowConditions, IMeetingItemCollegeLiegeWorkflowActions,\
     IMeetingCollegeLiegeWorkflowConditions, IMeetingCollegeLiegeWorkflowActions, \
@@ -965,6 +966,42 @@ class CustomMeetingGroup(MeetingGroup):
     MeetingGroup.getPloneGroups = getPloneGroups
 
 
+old_formatMeetingDate = ToolPloneMeeting.formatMeetingDate
+
+
+class CustomToolPloneMeeting(ToolPloneMeeting):
+    '''Adapter that adapts portal_plonemeeting.'''
+
+    implements(IToolPloneMeetingCustom)
+    security = ClassSecurityInfo()
+
+    def __init__(self, item):
+        self.context = item
+
+    security.declareProtected('Modify portal content', 'onEdit')
+
+    security.declarePublic('formatDate')
+
+    def formatMeetingDate(self, meeting, lang=None,
+                          short=False, withHour=False, prefixed=None):
+        '''
+          Suffix date with '*' if given p_aDate is a Meeting brain.
+        '''
+        formatted_date = old_formatMeetingDate(self, meeting, lang, short, withHour, prefixed)
+        adoptsNextCouncilAgenda = False
+        if meeting.__class__.__name__ == 'mybrains':
+            if meeting.getAdoptsNextCouncilAgenda:
+                adoptsNextCouncilAgenda = True
+        else:
+            if meeting.getAdoptsNextCouncilAgenda():
+                adoptsNextCouncilAgenda = True
+        if adoptsNextCouncilAgenda:
+            formatted_date += '*'
+        return formatted_date
+
+    ToolPloneMeeting.formatMeetingDate = formatMeetingDate
+
+
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingCollegeWorkflowActions'''
@@ -1509,6 +1546,7 @@ InitializeClass(CustomMeetingItem)
 InitializeClass(CustomMeeting)
 InitializeClass(CustomMeetingConfig)
 InitializeClass(CustomMeetingGroup)
+InitializeClass(CustomToolPloneMeeting)
 InitializeClass(MeetingCollegeLiegeWorkflowActions)
 InitializeClass(MeetingCollegeLiegeWorkflowConditions)
 InitializeClass(MeetingItemCollegeLiegeWorkflowActions)

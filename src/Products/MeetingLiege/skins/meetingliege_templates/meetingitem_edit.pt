@@ -104,6 +104,7 @@
       <tr valign="top">
         <td><metal:field use-macro="python:here.widget('preferredMeeting', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('itemKeywords', mode='edit')"/></td>
+        <td><metal:field use-macro="python:here.widget('sendToAuthority', mode='edit')"/></td>
         <td><metal:field use-macro="python:here.widget('privacy', mode='edit')"/></td>
       </tr>
       <tal:comment replace="nothing">XXX begin change by MeetingLiege, management of title/privacy fields for council.</tal:comment>

@@ -31,6 +31,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 
 from Products.PloneMeeting.indexes import indexAdvisers
+from Products.PloneMeeting.utils import cleanRamCacheFor
 
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
@@ -284,7 +285,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # set the item to "incomplete"
         item.setCompleteness('completeness_incomplete')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
-        self._cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
+        cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
         # pmFinController may add advice for FINANCE_GROUP_IDS[0]
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and not toEdit)

@@ -828,6 +828,7 @@ class CustomMeetingConfig(MeetingConfig):
                   'getCompleteness': ('completeness_not_yet_evaluated',
                                       'completeness_incomplete',
                                       'completeness_evaluation_asked_again'),
+                  'review_state': 'proposed_to_finance',
                   'sort_on': sortKey,
                   'sort_order': sortOrder, }
         # Manage filter

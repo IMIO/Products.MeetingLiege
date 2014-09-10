@@ -310,7 +310,7 @@ class CustomMeeting(Meeting):
         res = []
         tool = getToolByName(self.context, 'portal_plonemeeting')
         cfg = tool.getMeetingConfig(self.context)
-        for category in cfg.getCategories():
+        for category in cfg.getCategories(onlySelectable=False):
             lst = self.getPrintableItemsByCategory(itemUids, late,
                                                    ignore_review_states, by_proposing_group, group_prefixes,
                                                    privacy, oralQuestion, toDiscuss, [category.getId(), ],

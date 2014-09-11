@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.testing import z2, zca
+from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneWithPackageLayer
 from plone.app.testing import FunctionalTesting
 import Products.MeetingLiege
@@ -12,7 +13,19 @@ ML_ZCML = zca.ZCMLSandbox(filename="testing.zcml",
 ML_Z2 = z2.IntegrationTesting(bases=(z2.STARTUP, ML_ZCML),
                               name='ML_Z2')
 
-ML_TESTING_PROFILE = PloneWithPackageLayer(
+
+class MeetingLiegeLayer(PloneWithPackageLayer):
+    """Setup our own layer so we can load overrides.zcml."""
+
+    defaultBases = (PLONE_FIXTURE,)
+
+    def setUpZCMLFiles(self):
+        """ """
+        super(MeetingLiegeLayer, self).setUpZCMLFiles()
+        self.loadZCML('overrides.zcml', package=Products.MeetingLiege)
+
+
+ML_TESTING_PROFILE = MeetingLiegeLayer(
     zcml_filename="testing.zcml",
     zcml_package=Products.MeetingLiege,
     additional_z2_products=('Products.MeetingLiege',

@@ -218,17 +218,6 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmInternalReviewer1')
         self.do(item, 'proposeToDirector')
 
-    def _setupFinanceGroups(self):
-        '''Configure finance groups.'''
-        groupsTool = getToolByName(self.portal, 'portal_groups')
-        # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
-        groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])
-
     def test_subproduct_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
         self.changeUser('admin')

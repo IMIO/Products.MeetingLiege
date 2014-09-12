@@ -395,15 +395,21 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if advice['id'] in FINANCE_GROUP_IDS and \
            advice['delay'] and \
-           item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES and \
            not advice['delay_started_on']:
-            return {'displayDefaultComplementaryMessage': False,
-                    'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
-                                                     domain="PloneMeeting",
-                                                     context=item.REQUEST)}
-        else:
-            return {'displayDefaultComplementaryMessage': True,
-                    'customAdviceMessage': None}
+            # item in state giveable but item not complete
+            if item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
+                return {'displayDefaultComplementaryMessage': False,
+                        'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
+                                                         domain="PloneMeeting",
+                                                         context=item.REQUEST)}
+            elif getLastEvent(item, 'proposeToFinance') and item.queryState() in ('proposed_to_director', 'proposed_to_internal_reviewer'):
+                # advice was already given but item was returned back to the service
+                return {'displayDefaultComplementaryMessage': False,
+                        'customAdviceMessage': translate('finance_advice_suspended_because_item_sent_back_to_proposing_group',
+                                                         domain="PloneMeeting",
+                                                         context=item.REQUEST)}
+        return {'displayDefaultComplementaryMessage': True,
+                'customAdviceMessage': None}
 
     def getFinanceGroupIdsForItem(self):
         '''Return the finance group ids the advice is asked
@@ -1336,14 +1342,15 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # special case for financial controller that can send an item back to
             # the internal reviewer if it is in state 'proposed_to_finance' and
             # item is incomplete
-            elif self.context.queryState() == 'proposed_to_finance' and \
-                    self.context.getCompleteness() == 'completeness_incomplete':
-                # user must be a controller of finance group the advice is asked to
-                financeControllerGroupId = '%s_financialcontrollers' % \
-                                           self.context.adapted().getFinanceGroupIdsForItem()
-                member = self.context.restrictedTraverse('@@plone_portal_state').member()
-                if financeControllerGroupId in member.getGroups():
-                    res = True
+            elif self.context.queryState() == 'proposed_to_finance':
+                # user must be a member of the finance group the advice is asked to
+                financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
+                memberGroups = getToolByName(self.context, 'portal_membership').getAuthenticatedMember().getGroups()
+                for suffix in FINANCE_GROUP_SUFFIXES:
+                    financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
+                    if financeSubGroupId in memberGroups:
+                        res = True
+                        break
         return res
 
     security.declarePublic('mayBackToProposedToDirector')

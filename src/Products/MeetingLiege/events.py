@@ -13,6 +13,7 @@ __docformat__ = 'plaintext'
 from Products.CMFCore.utils import getToolByName
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
+from Products.PloneMeeting.utils import getLastEvent
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
@@ -116,6 +117,7 @@ def onAdvicesUpdated(item, event):
     '''
       When advices have been updated, we need to check that finance advice marked as 'advice_editable' = True
       are really editable, this could not be the case if the advice is signed.
+      In a second step, if item is 'backToProposedToInternalReviewer', we need to reinitialize finance advice delay.
     '''
     for groupId, adviceInfo in item.adviceIndex.items():
         # double check if it is really editable...
@@ -127,12 +129,11 @@ def onAdvicesUpdated(item, event):
                                            'proposed_to_financial_manager'):
                 # advice is no more editable, adapt adviceIndex
                 item.adviceIndex[groupId]['advice_editable'] = False
-        # when a finance advice is given, finance will keep read access to the item in any case
+        # when a finance has accessed an item, he will always be able to access it after
         if groupId in FINANCE_GROUP_IDS and \
-           not adviceInfo['type'] == NOT_GIVEN_ADVICE_VALUE and \
-           not adviceInfo['item_viewable_by_advisers']:
+           not adviceInfo['item_viewable_by_advisers'] and \
+           getLastEvent(item, 'proposeToFinance'):
             # give access to the item to the finance group
-                        # give access to the item in any case
             item.manage_addLocalRoles('%s_advisers' % groupId, (READER_USECASES['advices'],))
             item.adviceIndex[groupId]['item_viewable_by_advisers'] = True
         # the advice delay is really started when item completeness is 'complete'
@@ -143,6 +144,15 @@ def onAdvicesUpdated(item, event):
             adviceInfo['delay_started_on'] = None
             adviceInfo['advice_addable'] = False
             adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(groupId)
+
+    # when item is 'backToProposedToInternalReviewer', reinitialize advice delay
+    if event.triggered_by_transition == 'backToProposedToInternalReviewer':
+        financeGroupId = item.adapted().getFinanceGroupIdsForItem()
+        if financeGroupId in item.adviceIndex:
+            adviceInfo = item.adviceIndex[financeGroupId]
+            adviceInfo['delay_started_on'] = None
+            adviceInfo['advice_addable'] = False
+            adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(financeGroupId)
 
 
 def onItemDuplicated(original, event):

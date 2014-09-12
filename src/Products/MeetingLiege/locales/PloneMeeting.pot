@@ -288,6 +288,10 @@ msgstr ""
 msgid "finance_advice_not_giveable_because_item_not_complete"
 msgstr ""
 
+#. Default: "This advice is suspended because the item has been sent back to the proposing group."
+msgid "finance_advice_suspended_because_item_sent_back_to_proposing_group"
+msgstr ""
+
 # Override 'to discuss?' translations
 #. Default: "To discuss ?"
 msgid "PloneMeeting_label_toDiscuss"

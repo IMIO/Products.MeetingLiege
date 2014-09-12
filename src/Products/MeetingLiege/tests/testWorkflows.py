@@ -265,12 +265,9 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
         # if we updateAdvices, infos are still ok
         item.updateAdvices()
-        # the item can not be sent back to the internal reviewer if is it not 'completeness_incomplete'
-        # he may also return the item to the internal reviewer if he considers
-        # that the completeness of the item is 'incomplete'
-        # for now, completeness not evaluated, the item has no available transitions
+        # the item can be sent back to the internal reviewer by any finance role
         self.changeUser('pmFinController')
-        self.assertTrue(not self.transitions(item))
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
         # set the item to "incomplete"
         item.setCompleteness('completeness_incomplete')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
@@ -286,8 +283,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.request.form['form.submitted'] = True
         changeCompleteness()
         self.assertTrue(item.getCompleteness() == 'completeness_complete')
-        # can not be sent back to internal reviewer anymore
-        self.assertTrue(not self.transitions(item))
+        # can be sent back even if considered complete
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
         # but now, advice is giveable
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         # and delay to give advice is started

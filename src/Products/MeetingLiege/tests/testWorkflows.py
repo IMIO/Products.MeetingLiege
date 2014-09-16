@@ -289,6 +289,18 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         # and delay to give advice is started
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+        # back to 'completeness_incomplete', advice can not be given anymore and delay is not started
+        self.request.set('new_completeness_value', 'completeness_incomplete')
+        changeCompleteness()
+        self.assertTrue(item.getCompleteness() == 'completeness_incomplete')
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+        # advice can also be given if completeness is 'completeness_evaluation_not_required'
+        self.request.set('new_completeness_value', 'completeness_evaluation_not_required')
+        changeCompleteness()
+        self.assertTrue(item.getCompleteness() == 'completeness_evaluation_not_required')
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
         # give the advice
         advice = createContentInContainer(item,
                                           'meetingadvice',
@@ -465,8 +477,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
             duplicatedToCfg2 = duplicated1
             duplicatedLocally = duplicated2
         else:
-            duplicatedToCfg2 = duplicated1
-            duplicatedLocally = duplicated2
+            duplicatedToCfg2 = duplicated2
+            duplicatedLocally = duplicated1
         self.assertTrue(duplicatedToCfg2.portal_type == self.meetingConfig2.getItemTypeName())
         # duplicated locally...
         self.assertTrue(duplicatedLocally.portal_type == item.portal_type)

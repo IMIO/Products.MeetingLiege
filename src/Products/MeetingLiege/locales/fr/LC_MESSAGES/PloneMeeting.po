@@ -116,9 +116,9 @@ msgstr "Validateurs administratifs"
 msgid "adopts_next_council_agenda_descr"
 msgstr " "
 
-#. Default: "No advice to ask"
+#. Default: "No advice to ask (apart from financial advice)"
 msgid "advice_required_to_ask_advices"
-msgstr "Aucun avis à demander"
+msgstr "Aucun avis à demander (hors avis financier)"
 
 #. Default: ", complete purpose"
 msgid "and_description"

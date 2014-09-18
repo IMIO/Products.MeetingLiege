@@ -654,9 +654,12 @@ class CustomMeetingItem(MeetingItem):
         '''the reference is cat id/itemnumber in this cat/PA if it's not to discuss'''
         ann = IAnnotations(self.context.REQUEST)
         self.adapted().createItemNumerotationInIA()
-        res = '%s' % self.context.getCategory(True).getCategoryId()
         item_num = ann['Products.MeetingLiege.ItemNum'][self.context.UID()]
-        res = '%s%s' % (res, item_num)
+        if not self.context.isLate():
+            res = '%s' % self.context.getCategory(True).getCategoryId()            
+            res = '%s%s' % (res, item_num)
+        else:
+            res = 'HOJ.%s' % item_num
         if not self.context.getToDiscuss:
             res = '% (PA)' % res
         return res
@@ -669,7 +672,8 @@ class CustomMeetingItem(MeetingItem):
         if 'Products.MeetingLiege.ItemNum' not in ann:
             ann['Products.MeetingLiege.ItemNum'] = {}
 
-        items = self.context.getMeeting().getAllItems(ordered=True)
+        # for "normal" items, use num byc cat
+        items = self.context.getMeeting().getItemsInOrder()
         for item in items:
             if item.UID() in ann['Products.MeetingLiege.ItemNum']:
                 continue
@@ -680,9 +684,16 @@ class CustomMeetingItem(MeetingItem):
                     continue
                 item_num = item_num + 1
                 if item == item2:
-                    if item.UID() not in ann['Products.MeetingLiege.ItemNum']:
-                        ann['Products.MeetingLiege.ItemNum'][item.UID()] = item_num
+                    ann['Products.MeetingLiege.ItemNum'][item.UID()] = item_num
                     break
+        # for "late" items, use HOJ.1, HOJ2, HOJ3,...HOJn
+        items = self.context.getMeeting().getItemsInOrder(late=True)
+        item_num = 1
+        for item in items:
+            if item.UID() in ann['Products.MeetingLiege.ItemNum']:
+                continue
+            ann['Products.MeetingLiege.ItemNum'][item.UID()] = item_num
+            item_num = item_num + 1
         return
 
 

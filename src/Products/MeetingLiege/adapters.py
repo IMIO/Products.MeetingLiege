@@ -513,10 +513,17 @@ class CustomMeetingItem(MeetingItem):
         # bypass for Managers
         if member.has_role('Manager'):
             return True
+
         financeGroupId = item.adapted().getFinanceGroupIdsForItem()
-        if not financeGroupId or not '%s_financialcontrollers' % financeGroupId in member.getGroups():
+        # a finance controller may evaluate if advice is actually asked
+        # and not already given
+        if not financeGroupId or \
+           not item.adviceIndex[financeGroupId]['type'] == NOT_GIVEN_ADVICE_VALUE or \
+           not '%s_financialcontrollers' % financeGroupId in member.getGroups():
             return False
+
         # item must be still in a state where the advice can be given
+        # and advice must still not have been given
         if not item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
             return False
         return True
@@ -656,7 +663,7 @@ class CustomMeetingItem(MeetingItem):
         self.adapted().createItemNumerotationInIA()
         item_num = ann['Products.MeetingLiege.ItemNum'][self.context.UID()]
         if not self.context.isLate():
-            res = '%s' % self.context.getCategory(True).getCategoryId()            
+            res = '%s' % self.context.getCategory(True).getCategoryId()
             res = '%s%s' % (res, item_num)
         else:
             res = 'HOJ.%s' % item_num

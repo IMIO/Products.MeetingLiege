@@ -330,23 +330,23 @@ class CustomMeeting(Meeting):
                     if renumber:
                         for sub_elt in elt:
                             item = sub_elt[1]
-                            if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo):
-                                if item.getOtherMeetingConfigsClonableTo:
+                            if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo()):
+                                if item.getOtherMeetingConfigsClonableTo():
                                     txt = 'LE COLLEGE PROPOSE AU CONSEIL'
                                 else:
                                     txt = 'LE COLLEGE UNIQUEMENT'
-                                prev_to_send = item.getOtherMeetingConfigsClonableTo
+                                prev_to_send = item.getOtherMeetingConfigsClonableTo()
                             else:
                                 txt = ''
                             sub_rest.append((sub_elt[0], item, txt))
                     else:
                         item = elt
-                        if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo):
-                            if item.getOtherMeetingConfigsClonableTo:
+                        if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo()):
+                            if item.getOtherMeetingConfigsClonableTo():
                                 txt = 'LE COLLEGE PROPOSE AU CONSEIL'
                             else:
                                 txt = 'LE COLLEGE UNIQUEMENT'
-                            prev_to_send = item.getOtherMeetingConfigsClonableTo
+                            prev_to_send = item.getOtherMeetingConfigsClonableTo()
                         else:
                             txt = ''
                         sub_rest.append((item.getItemNumber(relativeTo='meeting'), item, txt))

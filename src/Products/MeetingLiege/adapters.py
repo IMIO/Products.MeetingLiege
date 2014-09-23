@@ -319,8 +319,8 @@ class CustomMeeting(Meeting):
             #we can find department in description
             pre_dpt = '---'
             for sublst in lst:
-                if (pre_dpt == '---') or (pre_dpt != sublst[0].description):
-                    pre_dpt = sublst[0].description
+                if (pre_dpt == '---') or (pre_dpt != sublst[0].Description()):
+                    pre_dpt = sublst[0].Description()
                     dpt = pre_dpt
                 else:
                     dpt = ''
@@ -330,23 +330,23 @@ class CustomMeeting(Meeting):
                     if renumber:
                         for sub_elt in elt:
                             item = sub_elt[1]
-                            if (prev_to_send == '---') or (prev_to_send != item.otherMeetingConfigsClonableTo):
-                                if item.otherMeetingConfigsClonableTo:
+                            if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo):
+                                if item.getOtherMeetingConfigsClonableTo:
                                     txt = 'LE COLLEGE PROPOSE AU CONSEIL'
                                 else:
                                     txt = 'LE COLLEGE UNIQUEMENT'
-                                prev_to_send = item.otherMeetingConfigsClonableTo
+                                prev_to_send = item.getOtherMeetingConfigsClonableTo
                             else:
                                 txt = ''
                             sub_rest.append((sub_elt[0], item, txt))
                     else:
                         item = elt
-                        if (prev_to_send == '---') or (prev_to_send != item.otherMeetingConfigsClonableTo):
-                            if item.otherMeetingConfigsClonableTo:
+                        if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo):
+                            if item.getOtherMeetingConfigsClonableTo:
                                 txt = 'LE COLLEGE PROPOSE AU CONSEIL'
                             else:
                                 txt = 'LE COLLEGE UNIQUEMENT'
-                            prev_to_send = item.otherMeetingConfigsClonableTo
+                            prev_to_send = item.getOtherMeetingConfigsClonableTo
                         else:
                             txt = ''
                         sub_rest.append((item.getItemNumber(relativeTo='meeting'), item, txt))

@@ -367,7 +367,16 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
                                                    'proposeToFinance'])
-        # the director can send it again to the finance and finance can adapt the advice
+        # a director can send the item back to director or internal reviewer even
+        # when advice is on the way by finance.  So send it again to finance and take it back
+        self.do(item, 'proposeToFinance')
+        self.assertTrue(item.queryState() == 'proposed_to_finance')
+        self.assertTrue(self.transitions(item) == ['backToProposedToDirector',
+                                                   'backToProposedToInternalReviewer'])
+        # a reviewer can send the item back to the director
+        self.do(item, 'backToProposedToDirector')
+        # ok now the director can send it again to the finance
+        # and finance can adapt the advice
         self.do(item, 'proposeToFinance')
         self.assertTrue(item.queryState() == 'proposed_to_finance')
         # advice is available to the financial controller

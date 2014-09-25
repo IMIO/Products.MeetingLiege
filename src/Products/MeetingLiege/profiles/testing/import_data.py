@@ -210,12 +210,6 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'archivingRef',
                                      'motivation',
                                      'textCheckList', ]
-collegeMeeting.xhtmlTransformFields = ('MeetingItem.description',
-                                       'MeetingItem.detailedDescription',
-                                       'MeetingItem.decision',
-                                       'MeetingItem.observations',
-                                       'Meeting.observations', )
-collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
@@ -286,12 +280,6 @@ councilMeeting.categories = categories
 councilMeeting.shortName = 'Council'
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier,
                                    itemAnnex, annexeDecision, adviceAnnex, adviceLegalAnalysis]
-councilMeeting.xhtmlTransformFields = ('MeetingItem.description',
-                                       'MeetingItem.detailedDescription',
-                                       'MeetingItem.decision',
-                                       'MeetingItem.observations',
-                                       'Meeting.observations', )
-councilMeeting.xhtmlTransformTypes = ('removeBlanks',)
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
 councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'

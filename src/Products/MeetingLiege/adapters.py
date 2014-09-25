@@ -397,9 +397,6 @@ class CustomMeetingItem(MeetingItem):
         # - the user is creator in some group;
         # - the user must be able to see the item if it is private.
         # The user will duplicate the item in his own folder.
-        import logging
-        logger = logging.getLogger('gna')
-        logger.info(self.UID())
         if self.portal_type == 'MeetingItemCouncil':
             return False
         return old_showDuplicateItemAction(self)

@@ -308,17 +308,19 @@ class CustomMeeting(Meeting):
                          (N°, items, '') [if not first items]
         '''
         res = []
+        lst = []
         tool = getToolByName(self.context, 'portal_plonemeeting')
         cfg = tool.getMeetingConfig(self.context)
         for category in cfg.getCategories(onlySelectable=False):
-            lst = self.getPrintableItemsByCategory(itemUids, late,
+            lst.append(self.getPrintableItemsByCategory(itemUids, late,
                                                    ignore_review_states, by_proposing_group, group_prefixes,
                                                    privacy, oralQuestion, toDiscuss, [category.getId(), ],
                                                    excludedCategories, firstNumber, renumber,
-                                                   includeEmptyCategories, includeEmptyGroups)
+                                                   includeEmptyCategories, includeEmptyGroups))
             #we can find department in description
-            pre_dpt = '---'
-            for sublst in lst:
+        pre_dpt = '---'
+        for intermlst in lst:
+            for sublst in intermlst:
                 if (pre_dpt == '---') or (pre_dpt != sublst[0].Description()):
                     pre_dpt = sublst[0].Description()
                     dpt = pre_dpt

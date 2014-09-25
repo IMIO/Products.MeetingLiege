@@ -26,10 +26,12 @@
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
+from zope.annotation.interfaces import IAnnotations
 from zope.component import queryUtility
 from zope.interface import implements
 from zope.i18n import translate
 from zope.schema.interfaces import IVocabularyFactory
+from plone.memoize import ram
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
@@ -51,7 +53,6 @@ from Products.MeetingLiege.interfaces import \
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
-from zope.annotation.interfaces import IAnnotations
 
 # disable every wfAdaptations
 customWfAdaptations = ()
@@ -356,6 +357,9 @@ class CustomMeeting(Meeting):
         return res
 
 
+old_showDuplicateItemAction = MeetingItem.showDuplicateItemAction
+
+
 class CustomMeetingItem(MeetingItem):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingItemCustom.'''
@@ -378,6 +382,28 @@ class CustomMeetingItem(MeetingItem):
 
     def __init__(self, item):
         self.context = item
+
+    def showDuplicateItemAction_cachekey(method, self, brain=False):
+        '''cachekey method for self.showDuplicateItemAction.'''
+        return (self, str(self.REQUEST.debug))
+
+    security.declarePublic('showDuplicateItemAction')
+    @ram.cache(showDuplicateItemAction_cachekey)
+
+    def showDuplicateItemAction(self):
+        '''Do not display the action in Council.'''
+        # Conditions for being able to see the "duplicate an item" action:
+        # - the user is not Plone-disk-aware;
+        # - the user is creator in some group;
+        # - the user must be able to see the item if it is private.
+        # The user will duplicate the item in his own folder.
+        import logging
+        logger = logging.getLogger('gna')
+        logger.info(self.UID())
+        if self.portal_type == 'MeetingItemCouncil':
+            return False
+        return old_showDuplicateItemAction(self)
+    MeetingItem.showDuplicateItemAction = showDuplicateItemAction
 
     security.declarePublic('itemPositiveDecidedStates')
 

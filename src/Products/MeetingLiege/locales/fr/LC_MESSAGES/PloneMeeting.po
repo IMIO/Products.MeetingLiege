@@ -56,6 +56,14 @@ msgstr "Code archivage"
 msgid "MeetingLiege_label_archivingRefs"
 msgstr "Codes archivage"
 
+#. Default: "Decision (end)"
+msgid "MeetingLiege_label_decisionEnd"
+msgstr "Fin du dispositif"
+
+#. Default: "Decision (suite)"
+msgid "MeetingLiege_label_decisionSuite"
+msgstr "Suite du dispositif"
+
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
 msgstr "Avis du Directeur Financier"
@@ -71,6 +79,10 @@ msgstr "Niveau de confidentialité"
 #. Default: "Checklist"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"
+
+#. Default: "Decision"
+msgid "PloneMeeting_label_decision"
+msgstr "Dispositif (essence de la décision)"
 
 #. Default: "Precise"
 msgid "PloneMeeting_label_detailedDescription"
@@ -218,7 +230,15 @@ msgstr "Titre sous lequel le point sera présenté à l’ordre du jour du Coll�
 
 #. Default: " "
 msgid "item_decision_descr"
-msgstr "Disposition de l’acte à portée juridique et qui sera reprise sur l’ordre du jour de la séance"
+msgstr "Dispositions de l’acte à portée juridique et qui seront reprises sur l’ordre du jour de la séance"
+
+#. Default: " "
+msgid "item_decision_end_descr"
+msgstr "Indications précisant le champ d'application de l'acte et ses modalités (mentions de la date de prise d'effet de la décision, des annexes à l'acte faisant partie intégrante de la décision, des voies de recours, des notifications, ...)"
+
+#. Default: " "
+msgid "item_decision_suite_descr"
+msgstr "Dispositions éventuelles nécessaires pour rendre opérationnelle la décision (texte complet de la convention adoptée, conditions assortissant la décision, précisions du contexte légal, ...)"
 
 #. Default: " "
 msgid "item_description_descr"

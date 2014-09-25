@@ -248,6 +248,26 @@ msgstr ""
 msgid "item_decision_descr"
 msgstr ""
 
+#. Default: "Decision (suite)"
+msgid "MeetingLiege_label_decisionSuite"
+msgstr ""
+
+#. Default: " "
+msgid "item_decision_suite_descr"
+msgstr ""
+
+#. Default: "Decision (end)"
+msgid "MeetingLiege_label_decisionEnd"
+msgstr ""
+
+#. Default: " "
+msgid "item_decision_end_descr"
+msgstr ""
+
+#. Default: "Decision"
+msgid "PloneMeeting_label_decision"
+msgstr ""
+
 #. Default: " "
 msgid "item_observations_descr"
 msgstr ""

@@ -32,7 +32,11 @@ class testWFAdaptations(MeetingLiegeTestCase, mctwfa):
     def test_subproduct_call_WFA_availableWFAdaptations(self):
         '''Most of wfAdaptations makes no sense, just make sure most are disabled.'''
         self.assertEquals(set(self.meetingConfig.listWorkflowAdaptations()),
-                          set(()))
+                          set(('return_to_proposing_group', )))
+
+    def test_subproduct_call_WFA_return_to_proposing_group(self):
+        '''See doc in PloneMeeting/tests/testWFAdaptations.py'''
+        mctwfa.test_pm_WFA_return_to_proposing_group(self)
 
 
 def test_suite():

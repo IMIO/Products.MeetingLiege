@@ -54,8 +54,8 @@ from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 
-# disable every wfAdaptations
-customWfAdaptations = ()
+# disable every wfAdaptations but 'return_to_proposing_group'
+customWfAdaptations = ('return_to_proposing_group', )
 MeetingConfig.wfAdaptations = customWfAdaptations
 
 

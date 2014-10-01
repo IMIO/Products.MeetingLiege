@@ -335,7 +335,7 @@ class CustomMeeting(Meeting):
                             item = sub_elt[1]
                             if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo()):
                                 if item.getOtherMeetingConfigsClonableTo():
-                                    txt = 'LE COLLEGE PROPOSE AU CONSEIL'
+                                    txt = 'LE COLLEGE PROPOSE AU CONSEIL D\'ADOPTER LES DECISIONS SUIVANTES'
                                 else:
                                     txt = 'LE COLLEGE UNIQUEMENT'
                                 prev_to_send = item.getOtherMeetingConfigsClonableTo()
@@ -346,7 +346,7 @@ class CustomMeeting(Meeting):
                         item = elt
                         if (prev_to_send == '---') or (prev_to_send != item.getOtherMeetingConfigsClonableTo()):
                             if item.getOtherMeetingConfigsClonableTo():
-                                txt = 'LE COLLEGE PROPOSE AU CONSEIL'
+                                txt = 'LE COLLEGE PROPOSE AU CONSEIL D\'ADOPTER LES DECISIONS SUIVANTES'
                             else:
                                 txt = 'LE COLLEGE UNIQUEMENT'
                             prev_to_send = item.getOtherMeetingConfigsClonableTo()

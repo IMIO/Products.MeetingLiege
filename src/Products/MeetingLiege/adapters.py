@@ -1033,7 +1033,8 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
     security.declarePublic('formatDate')
 
     def formatMeetingDate(self, meeting, lang=None,
-                          short=False, withHour=False, prefixed=None):
+                          short=False, withHour=False, prefixed=None,
+                          markAdoptsNextCouncilAgenda=True):
         '''
           Suffix date with '*' if given p_aDate is a Meeting brain.
         '''
@@ -1045,7 +1046,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         else:
             if meeting.getAdoptsNextCouncilAgenda():
                 adoptsNextCouncilAgenda = True
-        if adoptsNextCouncilAgenda:
+        if adoptsNextCouncilAgenda and markAdoptsNextCouncilAgenda:
             formatted_date += '*'
         return formatted_date
 

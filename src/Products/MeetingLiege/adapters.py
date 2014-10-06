@@ -410,9 +410,9 @@ class CustomMeetingItem(MeetingItem):
 
     def getExtraFieldsToCopyWhenCloning(self):
         '''
-          Keep field 'labelForCouncil' when item is sent from college to council.
+          Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
-        return ['labelForCouncil', 'financeAdvice', ]
+        return ['labelForCouncil', 'privacyForCouncil', 'financeAdvice', 'decisionSuite', 'decisionEnd']
 
     def getCustomAdviceMessageFor(self, advice):
         '''If we are on a finance advice that is still not giveable because

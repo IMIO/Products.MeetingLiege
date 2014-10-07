@@ -1028,9 +1028,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
     def __init__(self, item):
         self.context = item
 
-    security.declareProtected('Modify portal content', 'onEdit')
-
-    security.declarePublic('formatDate')
+    security.declarePublic('formatMeetingDate')
 
     def formatMeetingDate(self, meeting, lang=None,
                           short=False, withHour=False, prefixed=None,

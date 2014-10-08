@@ -1058,15 +1058,6 @@ class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     implements(IMeetingCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-    def _adaptEveryItemsOnMeetingClosure(self):
-        """Helper method for accepting every items."""
-        # Every item that is not decided will be automatically set to "accepted"
-        for item in self.context.getAllItems():
-            if item.queryState() == 'presented':
-                self.context.portal_workflow.doActionFor(item, 'itemfreeze')
-            if item.queryState() in ['itemfrozen', 'pre_accepted', ]:
-                self.context.portal_workflow.doActionFor(item, 'accept')
-
     security.declarePrivate('doBackToCreated')
 
     def doBackToCreated(self, stateChange):
@@ -1419,15 +1410,6 @@ class MeetingCouncilLiegeWorkflowActions(MeetingWorkflowActions):
 
     implements(IMeetingCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
-
-    def _adaptEveryItemsOnMeetingClosure(self):
-        """Helper method for accepting every items."""
-        # Every item that is not decided will be automatically set to "accepted"
-        for item in self.context.getAllItems():
-            if item.queryState() == 'presented':
-                self.context.portal_workflow.doActionFor(item, 'itemfreeze')
-            if item.queryState() in ['itemfrozen', 'pre_accepted', ]:
-                self.context.portal_workflow.doActionFor(item, 'accept')
 
     security.declarePrivate('doBackToCreated')
 

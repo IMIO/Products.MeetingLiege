@@ -221,6 +221,19 @@ collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewe
                                                  'proposeToDirector',
                                                  'validate',
                                                  'present', )
+collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
+                                                              'item_transition': 'itemfreeze'},
+
+                                                             {'meeting_transition': 'decide',
+                                                              'item_transition': 'itemfreeze'},
+
+                                                             {'meeting_transition': 'close',
+                                                              'item_transition': 'itemfreeze'},
+                                                             {'meeting_transition': 'close',
+                                                              'item_transition': 'accept'},
+
+                                                             {'meeting_transition': 'backToCreated',
+                                                              'item_transition': 'backToPresented'},)
 collegeMeeting.transitionsToConfirm = []
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
@@ -287,6 +300,19 @@ councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeeting
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
 councilMeeting.transitionsForPresentingAnItem = ('present', )
+councilMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
+                                                              'item_transition': 'itemfreeze'},
+
+                                                             {'meeting_transition': 'decide',
+                                                              'item_transition': 'itemfreeze'},
+
+                                                             {'meeting_transition': 'close',
+                                                              'item_transition': 'itemfreeze'},
+                                                             {'meeting_transition': 'close',
+                                                              'item_transition': 'accept'},
+
+                                                             {'meeting_transition': 'backToCreated',
+                                                              'item_transition': 'backToPresented'},)
 councilMeeting.transitionsToConfirm = []
 councilMeeting.meetingTopicStates = ('created', 'frozen', 'published')
 councilMeeting.decisionTopicStates = ('decided', 'closed')

@@ -300,6 +300,11 @@ collegeMeeting.customAdvisers = [
      }, ]
 
 collegeMeeting.powerAdvisersGroups = ('dirgen', 'dirfin')
+collegeMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned',
+                                           'pre_accepted', 'delayed', 'itemfrozen', 'marked_not_applicable',
+                                           'validated', 'presented', 'refused',
+                                           'returned_to_proposing_group', 'returned')
+collegeMeeting.meetingPowerObserversStates = ('closed', 'created', 'decided', 'frozen')
 collegeMeeting.meetingAppDefaultView = 'topic_searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')

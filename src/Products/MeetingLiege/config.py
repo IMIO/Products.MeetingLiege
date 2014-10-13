@@ -24,6 +24,7 @@ __docformat__ = 'plaintext'
 
 from Products.CMFCore.permissions import setDefaultRoles
 ##code-section config-head #fill in your manual code here
+from collections import OrderedDict
 ##/code-section config-head
 
 
@@ -51,6 +52,11 @@ LIEGEROLES['internalreviewers'] = 'MeetingInternalReviewer'
 LIEGEROLES['reviewers'] = 'MeetingReviewer'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
+
+LIEGEMEETINGREVIEWERS = OrderedDict([('administrativereviewers', 'proposed_to_administrative_reviewer'),
+                                     ('internalreviewers', 'proposed_to_internal_reviewer'),
+                                     ('reviewers', 'proposed_to_director'), ])
+PMconfig.MEETINGREVIEWERS = LIEGEMEETINGREVIEWERS
 
 LIEGE_ADVICE_STATES_STILL_EDITABLE = ('advice_under_edit',
                                       'proposed_to_financial_controller',

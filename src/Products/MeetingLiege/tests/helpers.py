@@ -31,6 +31,9 @@ class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
                                         'proposeToInternalReviewer',
                                         'proposeToDirector',)
     TRANSITIONS_FOR_PROPOSING_ITEM_2 = ('proposeToDirector', )
+    TRANSITIONS_FOR_PREVALIDATING_ITEM_1 = TRANSITIONS_FOR_PREVALIDATING_ITEM_2 = ('proposeToAdministrativeReviewer',
+                                                                                   'proposeToInternalReviewer',
+                                                                                   'proposeToDirector')
     TRANSITIONS_FOR_VALIDATING_ITEM_1 = ('proposeToAdministrativeReviewer',
                                          'proposeToInternalReviewer',
                                          'proposeToDirector',

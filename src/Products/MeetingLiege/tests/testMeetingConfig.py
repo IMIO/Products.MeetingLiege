@@ -29,37 +29,6 @@ from Products.MeetingCommunes.tests.testMeetingConfig import testMeetingConfig a
 class testMeetingConfig(MeetingLiegeTestCase, mctmc):
     '''Call testMeetingConfig tests.'''
 
-    def test_subproduct_call_SearchItemsToPrevalidate(self):
-        '''No sense...'''
-        pass
-
-    def test_subproduct_call_SearchItemsToValidate(self):
-        '''Used in the meeting-config-council.'''
-        # create an item
-        self.changeUser('pmCreator1')
-        item = self.create('MeetingItem')
-        self.proposeItem(item)
-        self.failIf(self.meetingConfig.searchItemsToValidate('', '', '', ''))
-        self.changeUser('pmReviewer1')
-        self.failUnless(self.meetingConfig.searchItemsToValidate('', '', '', ''))
-        # now give a view on the item by 'pmReviewer2' and check if, as a reviewer,
-        # the search does returns him the item, it should not as he is just a reviewer
-        # but not able to really validate the new item
-        self.meetingConfig.setUseCopies(True)
-        self.meetingConfig.setItemCopyGroupsStates(('proposed_to_director', ))
-        item.setCopyGroups(('vendors_reviewers',))
-        item.at_post_edit_script()
-        self.changeUser('pmReviewer2')
-        # the user can see the item
-        self.failUnless(self.hasPermission('View', item))
-        # but the search will not return it
-        self.failIf(self.meetingConfig.searchItemsToValidate('', '', '', ''))
-        # if the item is validated, it will not appear for pmReviewer1 anymore
-        self.changeUser('pmReviewer1')
-        self.failUnless(self.meetingConfig.searchItemsToValidate('', '', '', ''))
-        self.validateItem(item)
-        self.failIf(self.meetingConfig.searchItemsToValidate('', '', '', ''))
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

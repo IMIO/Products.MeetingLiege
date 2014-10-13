@@ -53,9 +53,9 @@ LIEGEROLES['reviewers'] = 'MeetingReviewer'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 
-LIEGEMEETINGREVIEWERS = OrderedDict([('administrativereviewers', 'proposed_to_administrative_reviewer'),
+LIEGEMEETINGREVIEWERS = OrderedDict([('reviewers', 'proposed_to_director'),
                                      ('internalreviewers', 'proposed_to_internal_reviewer'),
-                                     ('reviewers', 'proposed_to_director'), ])
+                                     ('administrativereviewers', 'proposed_to_administrative_reviewer'), ])
 PMconfig.MEETINGREVIEWERS = LIEGEMEETINGREVIEWERS
 
 LIEGE_ADVICE_STATES_STILL_EDITABLE = ('advice_under_edit',

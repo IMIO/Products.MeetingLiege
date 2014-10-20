@@ -132,6 +132,8 @@ def setCorrectWorkflowForAdvices(context, site):
     logStep("setCorrectWorkflowForAdvices", context)
     wfTool = getToolByName(site, 'portal_workflow')
     wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
+    # update role mappings of existing meetingadvice
+    updateRoleMappings(context)
 
 
 def createArchivingReferences(context, site):

@@ -388,8 +388,8 @@ class CustomMeetingItem(MeetingItem):
         return (self, str(self.REQUEST.debug))
 
     security.declarePublic('showDuplicateItemAction')
-    @ram.cache(showDuplicateItemAction_cachekey)
 
+    @ram.cache(showDuplicateItemAction_cachekey)
     def showDuplicateItemAction(self):
         '''Do not display the action in Council.'''
         # Conditions for being able to see the "duplicate an item" action:
@@ -1015,8 +1015,25 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         if adoptsNextCouncilAgenda and markAdoptsNextCouncilAgenda:
             formatted_date += '*'
         return formatted_date
-
     ToolPloneMeeting.formatMeetingDate = formatMeetingDate
+
+    def isFinancialUser_cachekey(method, self, brain=False):
+        '''cachekey method for self.isFinancialUser.'''
+        return str(self.REQUEST.debug)
+
+    security.declarePublic('isFinancialUser')
+
+    @ram.cache(isFinancialUser_cachekey)
+    def isFinancialUser(self):
+        '''Is current user a financial user, so in groups 'financialcontrollers',
+           'financialreviewers' or 'financialmanagers'.'''
+        member = getToolByName(self, 'portal_membership').getAuthenticatedMember()
+        for groupId in member.getGroups():
+            for suffix in FINANCE_GROUP_SUFFIXES:
+                if groupId.endswith('_%s' % suffix):
+                    return True
+        return False
+    ToolPloneMeeting.isFinancialUser = isFinancialUser
 
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):

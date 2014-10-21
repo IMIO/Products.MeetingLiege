@@ -385,7 +385,8 @@ def addSearchTopics(context,  site):
           ),
          'created',
          'searchItemsToControlCompletenessOf',
-         "python: here.portal_plonemeeting.userIsAmong('financialcontrollers')",
+         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
          ),
         # Items having advice in state 'proposed_to_financial_controller'
         ('searchadviceproposedtocontroller',
@@ -393,7 +394,8 @@ def addSearchTopics(context,  site):
           ),
          'created',
          'searchItemsWithAdviceProposedToFinancialController',
-         "python: here.portal_plonemeeting.userIsAmong('financialcontrollers')",
+         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
          ),
         # Items having advice in state 'proposed_to_financial_reviewer'
         ('searchadviceproposedtoreviewer',
@@ -401,7 +403,8 @@ def addSearchTopics(context,  site):
           ),
          'created',
          'searchItemsWithAdviceProposedToFinancialReviewer',
-         "python: here.portal_plonemeeting.userIsAmong('financialreviewers')",
+         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialreviewers')) "
+         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
          ),
         # Items having advice in state 'proposed_to_financial_manager'
         ('searchadviceproposedtomanager',
@@ -409,7 +412,8 @@ def addSearchTopics(context,  site):
           ),
          'created',
          'searchItemsWithAdviceProposedToFinancialManager',
-         "python: here.portal_plonemeeting.userIsAmong('financialmanagers')",
+         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialmanagers')) "
+         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
          ),
     )
     cfg.createTopics(topicsInfo)

@@ -89,14 +89,12 @@
     <tal:comment replace="nothing">Associated groups, optional advisers and copyGroups</tal:comment>
     <table cellpadding="0" cellspacing="0">
       <tr valign="top">
-        <td tal:condition="python: 'associatedGroups' in usedAttrs">
-          <metal:field use-macro="python:here.widget('associatedGroups', mode='edit')"/>
-        </td>
+        <td tal:condition="python: 'associatedGroups' in usedAttrs"><metal:field use-macro="python:here.widget('associatedGroups', mode='edit')"/></td>
         <tal:comment replace="nothing">XXX added by MeetingLiege, finance advice</tal:comment>
-        <td width="200px"><metal:field use-macro="python:here.widget('financeAdvice', mode='edit')"/></td>
-        <td><metal:field use-macro="python:here.widget('optionalAdvisers', mode='edit')"/></td>
-        <td><metal:field use-macro="python:here.widget('copyGroups', mode='edit')"/></td>
-        <td><metal:field use-macro="python:here.widget('itemSignatories', mode='edit')"/></td>
+        <td tal:condition="python: 'financeAdvice' in usedAttrs"><metal:field use-macro="python:here.widget('financeAdvice', mode='edit')"/></td>
+        <td tal:condition="context/isAdvicesEnabled"><metal:field use-macro="python:here.widget('optionalAdvisers', mode='edit')"/></td>
+        <td tal:condition="context/isCopiesEnabled"><metal:field use-macro="python:here.widget('copyGroups', mode='edit')"/></td>
+        <td tal:condition="python: 'itemSignatories' in usedAttrs"><metal:field use-macro="python:here.widget('itemSignatories', mode='edit')"/></td>
       </tr>
     </table>
     <tal:comment replace="nothing">Preferred meeting, item keywords, privacy</tal:comment>

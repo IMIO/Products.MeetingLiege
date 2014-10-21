@@ -56,6 +56,8 @@ def update_item_schema(baseSchema):
             name='financeAdvice',
             widget=SelectionWidget(
                 condition="python: here.attributeIsUsed('financeAdvice')",
+                description="If necessary, select the financial service that will have to give the legal financial advice on this item",
+                description_msgid="MeetingLiege_descr_financeAdvice",
                 label='FinanceAdvice',
                 label_msgid='MeetingLiege_label_financeAdvice',
                 i18n_domain='PloneMeeting',

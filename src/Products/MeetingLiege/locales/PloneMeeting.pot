@@ -168,6 +168,10 @@ msgstr ""
 msgid "MeetingLiege_label_financeAdvice"
 msgstr ""
 
+#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item"
+msgid "MeetingLiege_descr_financeAdvice"
+msgstr ""
+
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
 msgstr ""

@@ -356,6 +356,15 @@ class CustomMeeting(Meeting):
                 res.append(sub_rest)
         return res
 
+    def getRepresentative(self, sublst, itemUids, privacy='public', late=False, oralQuestion='both', by_proposing_group=False):
+        '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
+        previousCat = ''
+        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, late=late, oralQuestion=oralQuestion, by_proposing_group=by_proposing_group):
+            if sublist == sublst:
+                if sublist[0].Description() != previousCat:
+                    return sublist[0].Description()
+            previousCat = sublist[0].Description()
+        return None
 
 old_showDuplicateItemAction = MeetingItem.showDuplicateItemAction
 

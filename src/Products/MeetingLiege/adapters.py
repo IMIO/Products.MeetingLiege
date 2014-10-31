@@ -613,6 +613,31 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
+    security.declarePublic('mayTakeOver')
+
+    def mayTakeOver(self, member):
+        '''Condition for editing 'takenOverBy' field.
+           We still use default behaviour :
+           A member may take an item over if he his able to change the review_state.
+           But when the item is 'proposed_to_finance', the item can be taken over by who can :
+           - evaluate completeness;
+           - add the advice;
+           - change transition of already added advice.'''
+        item = self.getSelf()
+        wfTool = getToolByName(item, 'portal_workflow')
+        if not item.queryState() == 'proposed_to_finance':
+            return bool(wfTool.getTransitionsFor(item))
+        else:
+            # financial controller that may evaluate completeness?
+            if item.adapted().mayEvaluateCompleteness():
+                return True
+            # advice addable or editable?
+            (toAdd, toEdit) = item.getAdvicesGroupsInfosForUser()
+            if item.getFinanceAdvice() in toAdd or \
+               item.getFinanceAdvice() in toEdit:
+                return True
+        return False
+
     security.declarePrivate('listFinanceAdvices')
 
     def listFinanceAdvices(self):

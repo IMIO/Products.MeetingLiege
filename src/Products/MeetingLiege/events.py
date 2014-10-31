@@ -28,6 +28,12 @@ def onAdviceTransition(advice, event):
     if not advice.advice_group in FINANCE_GROUP_IDS:
         return
 
+    # when the finance advice state change, we have to reinitialize
+    # item.takenOverBy to nothing...
+    item = advice.getParentNode()
+    item.setTakenOverBy('')
+    item.reindexObject(idxs=['getTakenOverBy', ])
+
     # onAdviceTransition is called before onAdviceAdded...
     # so the advice_row_id is still not set wich is very bad because
     # when we updateAdvices, it does not find the advice_row_id and adviceIndex is wrong
@@ -55,7 +61,6 @@ def onAdviceTransition(advice, event):
     stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',
                                   'proposed_to_financial_reviewer': 'financialreviewers',
                                   'proposed_to_financial_manager': 'financialmanagers', }
-    item = advice.getParentNode()
 
     if newStateId == 'financial_advice_signed':
         # final state of the wf, make sure advice is not more hidden during redaction

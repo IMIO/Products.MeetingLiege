@@ -22,6 +22,7 @@
 # 02110-1301, USA.
 #
 
+from datetime import datetime
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
@@ -432,6 +433,54 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.closeMeeting(meeting)
         self.assertTrue(meeting.queryState() == 'closed')
         self.assertTrue(advice.queryState() == 'advice_given')
+
+    def test_subproduct_ItemWithTimedOutAdviceMayBeValidated(self):
+        '''When an item is 'proposed_to_finance', it may be validated
+           only by finance group or if emergency is asked.  In case the asked
+           advice is timed out, directors and meetingManagers may validate the item.'''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # send item to finance
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='The first item')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item.at_post_edit_script()
+        self.proposeItem(item)
+        self.do(item, 'proposeToFinance')
+        # item is now 'proposed_to_finance'
+        self.assertTrue(item.queryState() == 'proposed_to_finance')
+        # item can not be validated
+        self.assertTrue(not 'validate' in self.transitions(item))
+
+        # now add advice
+        self.changeUser('pmFinController')
+        # give the advice
+        createContentInContainer(item,
+                                 'meetingadvice',
+                                 **{'advice_group': FINANCE_GROUP_IDS[0],
+                                    'advice_type': u'positive_finance',
+                                    'advice_comment': RichTextValue(u'My comment finance')})
+        # item is still not validable, neither by MeetingManager nor by reviewers
+        self.changeUser('pmManager')
+        self.assertTrue(not 'validate' in self.transitions(item))
+        self.changeUser('pmReviewer1')
+        self.assertTrue(not 'validate' in self.transitions(item))
+        # now does advice timed out
+        item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2014, 1, 1)
+        item.updateAdvices()
+        # advice is timed out
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
+        # now pmManager may validate the item
+        self.assertTrue('validate' in self.transitions(item))
+        # the director may also validate the item
+        self.changeUser('pmReviewer1')
+        self.assertTrue('validate' in self.transitions(item))
 
     def test_subproduct_ReturnCollege(self):
         '''Test behaviour of the 'return' decision transition.

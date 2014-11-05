@@ -276,6 +276,10 @@ msgstr "Le point a été automatiquement renvoyé au directeur car l'avis du ser
 msgid "item_wf_changed_finance_advice_positive"
 msgstr "Le point a été automatiquement proposé à la séance car l'avis du service finance rendu était favorable."
 
+#. Default: "The item has been automatically validated because the finance advice was timed out."
+msgid "item_wf_changed_finance_advice_timed_out"
+msgstr "Le point a été automatiquement proposé à la séance car le délai pour rendre l'avis du service finance est dépassé."
+
 #. Default: "Summary of the purpose"
 msgid "listingheader_item_title"
 msgstr "Résumé de l'objet"

@@ -112,6 +112,10 @@ msgstr ""
 msgid "item_wf_changed_finance_advice_negative"
 msgstr ""
 
+#. Default: "The item has been automatically validated because the finance advice was timed out."
+msgid "item_wf_changed_finance_advice_timed_out"
+msgstr ""
+
 #. Default: "Nil"
 msgid "nil"
 msgstr ""

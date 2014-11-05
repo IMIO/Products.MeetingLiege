@@ -23,6 +23,7 @@
 #
 
 from datetime import datetime
+
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
@@ -271,9 +272,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
         # set the item to "incomplete"
         item.setCompleteness('completeness_incomplete')
+        item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
         cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
-        # pmFinController may add advice for FINANCE_GROUP_IDS[0]
+        # pmFinController may not add advice for FINANCE_GROUP_IDS[0]
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and not toEdit)
         # set item as "complete" using itemcompleteness view
@@ -434,10 +436,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(meeting.queryState() == 'closed')
         self.assertTrue(advice.queryState() == 'advice_given')
 
-    def test_subproduct_ItemWithTimedOutAdviceMayBeValidated(self):
+    def test_subproduct_ItemWithTimedOutAdviceIsAutomaticallyValidated(self):
         '''When an item is 'proposed_to_finance', it may be validated
            only by finance group or if emergency is asked.  In case the asked
-           advice is timed out, directors and meetingManagers may validate the item.'''
+           advice is timed out, it will be automatically validated.'''
         self.changeUser('admin')
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
@@ -461,25 +463,28 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # now add advice
         self.changeUser('pmFinController')
         # give the advice
+        item.setCompleteness('completeness_complete')
+        item.at_post_edit_script()
         createContentInContainer(item,
                                  'meetingadvice',
                                  **{'advice_group': FINANCE_GROUP_IDS[0],
                                     'advice_type': u'positive_finance',
                                     'advice_comment': RichTextValue(u'My comment finance')})
-        # item is still not validable, neither by MeetingManager nor by reviewers
+        # can not be validated
         self.changeUser('pmManager')
-        self.assertTrue(not 'validate' in self.transitions(item))
-        self.changeUser('pmReviewer1')
         self.assertTrue(not 'validate' in self.transitions(item))
         # now does advice timed out
         item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2014, 1, 1)
         item.updateAdvices()
         # advice is timed out
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
-        # now pmManager may validate the item
-        self.assertTrue('validate' in self.transitions(item))
-        # the director may also validate the item
+        # item has been automatically validated
+        self.assertTrue(item.queryState() == 'validated')
+        # if item is sent back to director, the director is able to validate it as well as MeetingManagers
+        self.do(item, 'backToProposedToDirector')
         self.changeUser('pmReviewer1')
+        self.assertTrue('validate' in self.transitions(item))
+        self.changeUser('pmManager')
         self.assertTrue('validate' in self.transitions(item))
 
     def test_subproduct_ReturnCollege(self):

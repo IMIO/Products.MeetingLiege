@@ -125,9 +125,12 @@ def onAdvicesUpdated(item, event):
       In a second step, if item is 'backToProposedToInternalReviewer', we need to reinitialize finance advice delay.
     '''
     for groupId, adviceInfo in item.adviceIndex.items():
+        # special behaviour for finance advice
+        if not groupId == item.adapted().getFinanceGroupIdsForItem():
+            continue
         # double check if it is really editable...
         # to be editable, the advice has to be in an editable wf state
-        if groupId in FINANCE_GROUP_IDS and adviceInfo['advice_editable']:
+        if adviceInfo['advice_editable']:
             advice = getattr(item, adviceInfo['advice_id'])
             if not advice.queryState() in ('proposed_to_financial_controller',
                                            'proposed_to_financial_reviewer',
@@ -135,20 +138,28 @@ def onAdvicesUpdated(item, event):
                 # advice is no more editable, adapt adviceIndex
                 item.adviceIndex[groupId]['advice_editable'] = False
         # when a finance has accessed an item, he will always be able to access it after
-        if groupId in FINANCE_GROUP_IDS and \
-           not adviceInfo['item_viewable_by_advisers'] and \
+        if not adviceInfo['item_viewable_by_advisers'] and \
            getLastEvent(item, 'proposeToFinance'):
             # give access to the item to the finance group
             item.manage_addLocalRoles('%s_advisers' % groupId, (READER_USECASES['advices'],))
             item.adviceIndex[groupId]['item_viewable_by_advisers'] = True
         # the advice delay is really started when item completeness is 'complete' or 'evaluation_not_required'
         # until then, we do not let the delay start
-        if groupId in FINANCE_GROUP_IDS and \
-           adviceInfo['type'] == NOT_GIVEN_ADVICE_VALUE and \
+        if adviceInfo['type'] == NOT_GIVEN_ADVICE_VALUE and \
            not item.getCompleteness() in ('completeness_complete', 'completeness_evaluation_not_required'):
             adviceInfo['delay_started_on'] = None
             adviceInfo['advice_addable'] = False
             adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(groupId)
+
+        # when a finance advice is just timed out, we will validate the item
+        # so MeetingManagers receive the item and do what necessary
+        if adviceInfo['delay_infos']['delay_status'] == 'timed_out' and not \
+           event.old_adviceIndex[groupId]['delay_infos']['delay_status'] == 'timed_out':
+            if item.queryState() == 'proposed_to_finance':
+                wfTool = getToolByName(item, 'portal_workflow')
+                item.REQUEST.set('mayValidate', True)
+                wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_timed_out')
+                item.REQUEST.set('mayValidate', False)
 
     # when item is 'backToProposedToInternalReviewer', reinitialize advice delay
     if event.triggered_by_transition == 'backToProposedToInternalReviewer':

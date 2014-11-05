@@ -1333,15 +1333,22 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # first of all, the use must have the 'Review portal content permission'
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
             if item_state == 'itemcreated' and not isManager:
                 res = False
-            elif item_state == 'proposed_to_director':
-                # director may validate an item if no finance advice
-                # or finance advice and emergency is asked
-                finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
-                if finance_advice and self.context.getEmergency() == 'no_emergency':
-                    res = False
+            # special case for item having finance advice that was still under redaction when delay timed out
+            # a MeetingManager mut be able to validate it
+            elif item_state in ['proposed_to_finance', 'proposed_to_director', ] and \
+                    finance_advice and \
+                    self.context.getAdviceDataFor(finance_advice)['delay_infos']['delay_status'] == 'timed_out':
+                res = True
+            # director may validate an item if no finance advice
+            # or finance advice and emergency is asked
+            elif item_state == 'proposed_to_director' and \
+                    finance_advice and \
+                    self.context.getEmergency() == 'no_emergency':
+                res = False
             # special case for item being validable when emergency is asked on it
             elif item_state == 'proposed_to_finance' and self.context.getEmergency() == 'no_emergency':
                 res = False

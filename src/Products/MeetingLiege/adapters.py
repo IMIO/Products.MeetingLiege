@@ -762,13 +762,28 @@ class CustomMeetingItem(MeetingItem):
             item_num = item_num + 1
         return
 
+    def isCurrentUserInFDGroup(self, finance_group_id):
+        '''
+        Returns true if the current user has sufficient permission in
+        the finance group passed as parameter.
+        '''
+        user = self.context.portal_membership.getAuthenticatedMember()
+        userGroups = user.getGroups()
+        for suffixe in FINANCE_GROUP_SUFFIXES:
+            finance_group = finance_group_id + '_' + suffixe
+            for group in userGroups:
+                if finance_group == group:
+                    return True
+        return False
+
     def mayGenerateFDAdvice(self):
         '''
-        Return True if the current user has the right to generate the
+        Returns True if the current user has the right to generate the
         Financial Director Advice template.
         '''
         if (self.context.getFinanceAdvice()!='_none_' and
-            self.context.adviceIndex[self.context.getFinanceAdvice()]['hidden_during_redaction']==False):
+            (self.context.adviceIndex[self.context.getFinanceAdvice()]['hidden_during_redaction']==False or
+            self.isCurrentUserInFDGroup(self.context.getFinanceAdvice())==True)):
             return True
         return False
 

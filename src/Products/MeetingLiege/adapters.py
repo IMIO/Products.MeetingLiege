@@ -762,6 +762,16 @@ class CustomMeetingItem(MeetingItem):
             item_num = item_num + 1
         return
 
+    def mayGenerateFDAdvice(self):
+        '''
+        Return True if the current user has the right to generate the
+        Financial Director Advice template.
+        '''
+        if (self.context.getFinanceAdvice()!='_none_' and
+            self.context.adviceIndex[self.context.getFinanceAdvice()]['hidden_during_redaction']==False):
+            return True
+        return False
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the

@@ -1626,6 +1626,23 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return False
 
 
+from Products.PloneMeeting.content.advice import MeetingAdvice
+old_get_advice_given_on = MeetingAdvice.get_advice_given_on
+
+
+def get_advice_given_on(self):
+    '''Monkeypatch the meetingadvice.get_advice_given_on method, if it is
+       a finance advice, we will return date of last transition 'sign_advice'.'''
+    if self.advice_group in FINANCE_GROUP_IDS:
+        lastEvent = getLastEvent(self, 'signFinancialAdvice')
+        if not lastEvent:
+            return self.modified()
+        else:
+            return lastEvent['time']
+    else:
+        return old_get_advice_given_on(self)
+MeetingAdvice.get_advice_given_on = get_advice_given_on
+
 # ------------------------------------------------------------------------------
 InitializeClass(CustomMeetingItem)
 InitializeClass(CustomMeeting)

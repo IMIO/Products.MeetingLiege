@@ -314,10 +314,10 @@ class CustomMeeting(Meeting):
         cfg = tool.getMeetingConfig(self.context)
         for category in cfg.getCategories(onlySelectable=False):
             lst.append(self.getPrintableItemsByCategory(itemUids, late,
-                                                   ignore_review_states, by_proposing_group, group_prefixes,
-                                                   privacy, oralQuestion, toDiscuss, [category.getId(), ],
-                                                   excludedCategories, firstNumber, renumber,
-                                                   includeEmptyCategories, includeEmptyGroups))
+                                                        ignore_review_states, by_proposing_group, group_prefixes,
+                                                        privacy, oralQuestion, toDiscuss, [category.getId(), ],
+                                                        excludedCategories, firstNumber, renumber,
+                                                        includeEmptyCategories, includeEmptyGroups))
             #we can find department in description
         pre_dpt = '---'
         for intermlst in lst:
@@ -356,10 +356,13 @@ class CustomMeeting(Meeting):
                 res.append(sub_rest)
         return res
 
-    def getRepresentative(self, sublst, itemUids, privacy='public', late=False, oralQuestion='both', by_proposing_group=False):
+    def getRepresentative(self, sublst, itemUids, privacy='public',
+                          late=False, oralQuestion='both', by_proposing_group=False):
         '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
         previousCat = ''
-        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, late=late, oralQuestion=oralQuestion, by_proposing_group=by_proposing_group):
+        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, late=late,
+                                                        oralQuestion=oralQuestion,
+                                                        by_proposing_group=by_proposing_group):
             if sublist == sublst:
                 if sublist[0].Description() != previousCat:
                     return sublist[0].Description()
@@ -417,7 +420,7 @@ class CustomMeetingItem(MeetingItem):
         '''See doc in interfaces.py.'''
         return ('accepted', 'accepted_but_modified', 'accepted_and_returned')
 
-    def getExtraFieldsToCopyWhenCloning(self):
+    def getExtraFieldsToCopyWhenCloning(self, cloned_to_same_mc):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
@@ -436,7 +439,8 @@ class CustomMeetingItem(MeetingItem):
                         'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
                                                          domain="PloneMeeting",
                                                          context=item.REQUEST)}
-            elif getLastEvent(item, 'proposeToFinance') and item.queryState() in ('proposed_to_director', 'proposed_to_internal_reviewer'):
+            elif getLastEvent(item, 'proposeToFinance') and item.queryState() in ('proposed_to_director',
+                                                                                  'proposed_to_internal_reviewer'):
                 # advice was already given but item was returned back to the service
                 return {'displayDefaultComplementaryMessage': False,
                         'customAdviceMessage': translate('finance_advice_suspended_because_item_sent_back_to_proposing_group',
@@ -781,9 +785,9 @@ class CustomMeetingItem(MeetingItem):
         Returns True if the current user has the right to generate the
         Financial Director Advice template.
         '''
-        if (self.context.getFinanceAdvice()!='_none_' and
-            (self.context.adviceIndex[self.context.getFinanceAdvice()]['hidden_during_redaction']==False or
-            self.isCurrentUserInFDGroup(self.context.getFinanceAdvice())==True)):
+        if (self.context.getFinanceAdvice() != '_none_' and
+            (self.context.adviceIndex[self.context.getFinanceAdvice()]['hidden_during_redaction'] is False or
+             self.isCurrentUserInFDGroup(self.context.getFinanceAdvice()) is True)):
             return True
         return False
 

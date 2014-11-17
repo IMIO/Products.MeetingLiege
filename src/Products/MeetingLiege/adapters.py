@@ -370,6 +370,7 @@ class CustomMeeting(Meeting):
         return None
 
 old_showDuplicateItemAction = MeetingItem.showDuplicateItemAction
+old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
 
 
 class CustomMeetingItem(MeetingItem):
@@ -790,6 +791,22 @@ class CustomMeetingItem(MeetingItem):
              self.isCurrentUserInFDGroup(self.context.getFinanceAdvice()) is True)):
             return True
         return False
+
+    def _checkAlreadyClonedToOtherMC(self, destMeetingConfigId):
+        ''' '''
+        res = old_checkAlreadyClonedToOtherMC(self, destMeetingConfigId)
+        if not res:
+            # double check if a predecessor was not already sent to the other meetingConfig
+            # this can be the case when using 'accept_and_return' transition, the item is sent
+            # and another item is cloned with same informations, also the information "to be sent to"
+            predecessor = self.getPredecessor()
+            while predecessor:
+                if predecessor.queryState() == 'accepted_and_returned' and \
+                   old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
+                    return True
+                predecessor = predecessor.getPredecessor()
+        return res
+    MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
 
 
 class CustomMeetingConfig(MeetingConfig):
@@ -1399,7 +1416,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayAcceptAndReturn(self):
         '''This is a decision only avaialble if item will be sent to council.'''
         res = False
-        if checkPermission(ReviewPortalContent, self.context) and \
+        if self.mayDecide() and checkPermission(ReviewPortalContent, self.context) and \
            'meeting-config-council' in self.context.getOtherMeetingConfigsClonableTo():
             res = True
         return res

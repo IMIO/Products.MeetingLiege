@@ -24,6 +24,7 @@
 
 from datetime import datetime
 
+from zope.annotation import IAnnotations
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
@@ -547,6 +548,19 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(duplicatedLocally.portal_type == item.portal_type)
         #... and validated
         self.assertTrue(duplicatedLocally.queryState() == 'validated')
+        # informations about "needs to be sent to other mc" is kept
+        self.assertTrue(duplicatedLocally.getOtherMeetingConfigsClonableTo() == (self.meetingConfig2.getId(), ))
+        # now if duplicated item is accepted again, it will not be sent again the council
+        meeting2 = self.create('Meeting', date='2014/02/02 09:00:00')
+        # present the item into the meeting
+        self.presentItem(duplicatedLocally)
+        self.decideMeeting(meeting2)
+        # it already being considered as sent to the other mc
+        self.assertTrue(duplicatedLocally._checkAlreadyClonedToOtherMC(self.meetingConfig2.getId()))
+        # accept and return it again, this time it is not send as a predecessor was already send
+        self.do(duplicatedLocally, 'accept_and_return')
+        annotation_key = duplicatedLocally._getSentToOtherMCAnnotationKey(self.meetingConfig2.getId())
+        self.assertTrue(not annotation_key in IAnnotations(duplicatedLocally))
 
     def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
         '''Test that when a transition is triggered on a meetingadvice

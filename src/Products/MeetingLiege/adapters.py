@@ -1144,6 +1144,10 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             res = True  # At least at present
+            if not self.context.getRawItems():
+                res = No(translate('item_required_to_publish',
+                                   domain='PloneMeeting',
+                                   context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayClose')
@@ -1291,6 +1295,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayProposeToAdminstrativeReviewer')
 
     def mayProposeToAdminstrativeReviewer(self):
+        if not self.context.getCategory():
+            return No(translate('required_category_ko',
+                                domain="PloneMeeting",
+                                context=self.context.REQUEST))
         res = False
         if checkPermission(ReviewPortalContent, self.context):
             res = True

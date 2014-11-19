@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from plone.testing import z2, zca
 from plone.app.testing import PLONE_FIXTURE
-from plone.app.testing import PloneWithPackageLayer
 from plone.app.testing import FunctionalTesting
+from Products.PloneMeeting.testing import PloneMeetingLayer
 import Products.MeetingLiege
 
 
@@ -14,7 +14,7 @@ ML_Z2 = z2.IntegrationTesting(bases=(z2.STARTUP, ML_ZCML),
                               name='ML_Z2')
 
 
-class MeetingLiegeLayer(PloneWithPackageLayer):
+class MeetingLiegeLayer(PloneMeetingLayer):
     """Setup our own layer so we can load overrides.zcml."""
 
     defaultBases = (PLONE_FIXTURE,)

@@ -1287,7 +1287,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         wfTool = getToolByName(self.context, 'portal_workflow')
         self.context.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(newItem, 'validate')
-        self.context.REQUEST.set('mayValidate', True)
+        self.context.REQUEST.set('mayValidate', False)
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):

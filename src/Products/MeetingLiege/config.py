@@ -67,11 +67,6 @@ LIEGE_ADVICE_STATES_NO_MORE_EDITABLE = ('financial_advice_signed',
 PMconfig.ADVICE_STATES_STILL_EDITABLE = LIEGE_ADVICE_STATES_STILL_EDITABLE
 PMconfig.ADVICE_STATES_NO_MORE_EDITABLE = LIEGE_ADVICE_STATES_NO_MORE_EDITABLE
 
-# add field 'textCheckList' to field to keep while using itemtemplate
-from Products.PloneMeeting import config
-ML_EXTRA_COPIED_FIELDS_SAME_MC = config.EXTRA_COPIED_FIELDS_SAME_MC + ['textCheckList', ]
-config.EXTRA_COPIED_FIELDS_SAME_MC = ML_EXTRA_COPIED_FIELDS_SAME_MC
-
 # finance groups ids
 FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 

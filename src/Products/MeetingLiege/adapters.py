@@ -425,7 +425,10 @@ class CustomMeetingItem(MeetingItem):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
-        return ['labelForCouncil', 'privacyForCouncil', 'financeAdvice', 'decisionSuite', 'decisionEnd']
+        res = ['labelForCouncil', 'privacyForCouncil', 'decisionSuite', 'decisionEnd']
+        if cloned_to_same_mc:
+            res = res + ['financeAdvice', 'archivingRef', 'textCheckList']
+        return res
 
     def getCustomAdviceMessageFor(self, advice):
         '''If we are on a finance advice that is still not giveable because
@@ -1270,15 +1273,21 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
 
     def _returnCollege(self):
         '''
-          Manage 'return college', item is duplicated then
-          nex item is validated for a next meeting.
+          Manage 'return college', item is duplicated
+          then validated for a next meeting.
         '''
-        newItem = self.context.clone(cloneEventAction='return')
+        newItem = self.context.clone(cloneEventAction='return', keepProposingGroup=True)
         newItem.setPredecessor(self.context)
         # now that the item is cloned, we need to validate it
         # so it is immediately available for a next meeting
+        # we will also set back correct proposingGroup if it was changed
+        # we do not pass p_keepProposingGroup to clone() here above
+        # because we need to validate the newItem and if we change the proposingGroup
+        # maybe we could not...  So validate then set correct proposingGroup...
         wfTool = getToolByName(self.context, 'portal_workflow')
+        self.context.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(newItem, 'validate')
+        self.context.REQUEST.set('mayValidate', True)
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):

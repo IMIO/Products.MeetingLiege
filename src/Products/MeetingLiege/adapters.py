@@ -736,6 +736,8 @@ class CustomMeetingItem(MeetingItem):
             res = 'HOJ.%s' % item_num
         if not self.context.getToDiscuss():
             res = '%s (PA)' % res
+        if self.context.getSendToAuthority():
+            res = '%s (TG)' % res
         return res
 
     security.declarePublic('createItemNumerotationInIA')

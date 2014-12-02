@@ -745,7 +745,7 @@ class CustomMeetingItem(MeetingItem):
 
     security.declarePublic('getItemRefForActe')
 
-    def getItemRefForActe(self):
+    def getItemRefForActe(self, acte=True):
         '''the reference is cat id/itemnumber in this cat/PA if it's not to discuss'''
         ann = IAnnotations(self.context.REQUEST)
         self.adapted().createItemNumerotationInIA()
@@ -757,7 +757,7 @@ class CustomMeetingItem(MeetingItem):
             res = 'HOJ.%s' % item_num
         if not self.context.getToDiscuss():
             res = '%s (PA)' % res
-        if self.context.getSendToAuthority():
+        if self.context.getSendToAuthority() and acte==False:
             res = '%s (TG)' % res
         return res
 

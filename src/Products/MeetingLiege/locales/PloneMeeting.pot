@@ -48,6 +48,10 @@ msgstr ""
 msgid "front_page_body"
 msgstr ""
 
+#. Default: "This item is down the workflow from finances"
+msgid "icon_help_wf_down_finances"
+msgstr ""
+
 #. Default: "Accepted with modifications"
 msgid "icon_help_accepted_but_modified"
 msgstr ""

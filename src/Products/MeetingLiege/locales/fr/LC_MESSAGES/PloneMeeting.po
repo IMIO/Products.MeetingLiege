@@ -220,6 +220,10 @@ msgstr "Avis demandés par le validateur interne"
 msgid "icon_help_returned"
 msgstr "Retour Collège"
 
+#. Default: "This item is down the workflow from finances"
+msgid "icon_help_wf_down_finances"
+msgstr "Ce point redescend le workflow depuis les finances"
+
 #. Default: "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
 msgid "inserting_methods_not_using_to_discuss_error"
 msgstr "Vous ne pouvez pas sélectionner 'Par point avec acte (avec acte et ensuite sans acte)' car 'Point avec acte?' n'est pas sélectionné dans le champ 'Attributs utilisés pour caractériser un point' de cette configuration de séance."

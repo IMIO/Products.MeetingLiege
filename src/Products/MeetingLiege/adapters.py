@@ -447,9 +447,10 @@ class CustomMeetingItem(MeetingItem):
                                                                                   'proposed_to_internal_reviewer'):
                 # advice was already given but item was returned back to the service
                 return {'displayDefaultComplementaryMessage': False,
-                        'customAdviceMessage': translate('finance_advice_suspended_because_item_sent_back_to_proposing_group',
-                                                         domain="PloneMeeting",
-                                                         context=item.REQUEST)}
+                        'customAdviceMessage': translate(
+                            'finance_advice_suspended_because_item_sent_back_to_proposing_group',
+                            domain="PloneMeeting",
+                            context=item.REQUEST)}
         return {'displayDefaultComplementaryMessage': True,
                 'customAdviceMessage': None}
 
@@ -469,31 +470,51 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         res = []
         itemState = item.queryState()
+        tool = getToolByName(item, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(item)
         # Default PM item icons
         res = res + MeetingItem.getIcons(item, inMeeting, meeting)
         # Add our icons for some review states
         if itemState == 'accepted_but_modified':
-            res.append(('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
+            res.insert(0, ('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
         elif itemState == 'accepted_and_returned':
-            res.append(('accepted_and_returned.png', 'icon_help_accepted_and_returned'))
+            res.insert(0, ('accepted_and_returned.png', 'icon_help_accepted_and_returned'))
         elif itemState == 'returned':
-            res.append(('returned.png', 'icon_help_returned'))
+            res.insert(0, ('returned.png', 'icon_help_returned'))
         elif itemState == 'pre_accepted':
-            res.append(('pre_accepted.png', 'icon_help_pre_accepted'))
+            res.insert(0, ('pre_accepted.png', 'icon_help_pre_accepted'))
         elif itemState == 'itemcreated_waiting_advices':
-            res.append(('askAdvicesByItemCreator.png', 'icon_help_itemcreated_waiting_advices'))
+            res.insert(0, ('askAdvicesByItemCreator.png', 'icon_help_itemcreated_waiting_advices'))
         elif itemState == 'proposed_to_administrative_reviewer':
-            res.append(('proposeToAdministrativeReviewer.png', 'icon_help_proposed_to_administrative_reviewer'))
+            res.insert(0, ('proposeToAdministrativeReviewer.png',
+                           'icon_help_proposed_to_administrative_reviewer'))
         elif itemState == 'proposed_to_internal_reviewer':
-            res.append(('proposeToInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer'))
+            res.insert(0, ('proposeToInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer'))
         elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
-            res.append(('askAdvicesByInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer_waiting_advices'))
+            res.insert(0, ('askAdvicesByInternalReviewer.png',
+                           'icon_help_proposed_to_internal_reviewer_waiting_advices'))
         elif itemState == 'proposed_to_director':
-            res.append(('proposeToDirector.png', 'icon_help_proposed_to_director'))
+            res.insert(0, ('proposeToDirector.png', 'icon_help_proposed_to_director'))
         elif itemState == 'proposed_to_finance':
-            res.append(('proposeToFinance.png', 'icon_help_proposed_to_finance'))
+            res.insert(0, ('proposeToFinance.png', 'icon_help_proposed_to_finance'))
         elif itemState == 'marked_not_applicable':
-            res.append(('marked_not_applicable.png', 'icon_help_marked_not_applicable'))
+            res.insert(0, ('marked_not_applicable.png', 'icon_help_marked_not_applicable'))
+        # add an icon if item is down the workflow from the finances
+        # if item was ever gone the the finances and now it is down to the
+        # services, then it is considered as down the wf from the finances
+        # so take into account every states before 'validated/proposed_to_finance'
+        if not item.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
+            history = item.workflow_history[cfg.getItemWorkflow()]
+            for event in history:
+                if event['action'] == 'proposeToFinance':
+                    res.append(('wf_down_finances.png', 'icon_help_wf_down_finances'))
+                    # remove the 'wf_down.png' icon if it is in res
+                    if ('wf_down.png', 'icon_help_wf_down') in res:
+                        res.remove(('wf_down.png', 'icon_help_wf_down'))
+                    # remove the 'wf_up.png' icon if it is in res
+                    if ('wf_up.png', 'icon_help_wf_up') in res:
+                        res.remove(('wf_up.png', 'icon_help_wf_up'))
+                    break
         return res
 
     security.declarePublic('getAdvicesGroupsInfosForUser')

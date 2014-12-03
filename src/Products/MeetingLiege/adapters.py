@@ -1257,8 +1257,29 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doProposeToFinance')
 
     def doProposeToFinance(self, stateChange):
-        ''' '''
-        pass
+        '''When an item is proposed to finance again, make sure the item
+           completeness si no more in ('completeness_complete', 'completeness_evaluation_not_required')
+           so advice is not addable/editable when item come back again to the finance.'''
+        # if we found an event 'proposeToFinance' in workflow_history, it means that item is
+        # proposed again to the finances and we need to ask completeness evaluation again
+        # current transition 'proposeToFinance' is already in workflow_history...
+        wfTool = getToolByName(self.context, 'portal_workflow')
+        # take history but leave last event apart
+        history = self.context.workflow_history[wfTool.getWorkflowsFor(self.context)[0].getId()][:-1]
+        # if we find 'proposeToFinance' in previous actions, then item is proposed to finance again
+        for event in history:
+            if event['action'] == 'proposeToFinance':
+                changeCompleteness = self.context.restrictedTraverse('@@change-item-completeness')
+                comment = translate('completeness_asked_again_by_app',
+                                    domain='PloneMeeting',
+                                    context=self.context.REQUEST)
+                # change completeness even if current user is not able to set it to
+                # 'completeness_evaluation_asked_again', here it is the application that set
+                # it automatically
+                changeCompleteness._changeCompleteness('completeness_evaluation_asked_again',
+                                                       bypassSecurityCheck=True,
+                                                       comment=comment)
+                break
 
     security.declarePrivate('doPre_accept')
 

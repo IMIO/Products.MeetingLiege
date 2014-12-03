@@ -11,7 +11,6 @@ __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 from Products.CMFCore.utils import getToolByName
-from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import getLastEvent
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
@@ -145,10 +144,10 @@ def onAdvicesUpdated(item, event):
             item.adviceIndex[groupId]['item_viewable_by_advisers'] = True
         # the advice delay is really started when item completeness is 'complete' or 'evaluation_not_required'
         # until then, we do not let the delay start
-        if adviceInfo['type'] == NOT_GIVEN_ADVICE_VALUE and \
-           not item.getCompleteness() in ('completeness_complete', 'completeness_evaluation_not_required'):
+        if not item.getCompleteness() in ('completeness_complete', 'completeness_evaluation_not_required'):
             adviceInfo['delay_started_on'] = None
             adviceInfo['advice_addable'] = False
+            adviceInfo['advice_editable'] = False
             adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(groupId)
 
         # when a finance advice is just timed out, we will validate the item

@@ -144,6 +144,10 @@ msgstr ", objet complet"
 msgid "archiving_refs_descr"
 msgstr "Encodez les codes archivages qui pourront être utilisés par les points de cette configuration de séance."
 
+#. Default: "The completeness has been asked again by the application when the item has been proposed to the finances."
+msgid "completeness_asked_again_by_app"
+msgstr "La complétude a été remise automatiquement par l'application en 'Evaluation demandée à nouveau' lorsque le point a été proposé aux finances."
+
 #. Default: " "
 msgid "copy_groups_item_descr"
 msgstr "Transmission d’un point à une Direction à titre d’information. Choisissez-en plusieurs en maintenant la touche 'Ctrl' enfoncée."
@@ -407,3 +411,4 @@ msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
+

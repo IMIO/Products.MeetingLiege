@@ -420,3 +420,7 @@ msgstr ""
 #. Default: " "
 msgid "adopts_next_council_agenda_descr"
 msgstr ""
+
+#. Default: "The completeness has been asked again by the application when the item has been proposed to the finances."
+msgid "completeness_asked_again_by_app"
+msgstr ""

@@ -1,6 +1,11 @@
 /* <dtml-with base_properties> (do not remove this :) */
 /* <dtml-call "REQUEST.set('portal_url', portal_url())"> (not this either :) */
 
+/* remove this when we will use imio.actionspanel 1.9 */
+.notTriggerableTransitionImage {
+margin-left: 0.2em;
+}
+
 #portal-logo {
     margin: 0.3em 0 -1.8em !important;
 }

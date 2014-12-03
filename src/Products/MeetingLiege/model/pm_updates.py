@@ -12,6 +12,7 @@ from Products.DataGridField import SelectColumn
 
 from collective.datagridcolumns.MultiSelectColumn import MultiSelectColumn
 
+from Products.PloneMeeting.config import WriteRiskyConfig
 from Products.PloneMeeting.Meeting import Meeting
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -204,6 +205,7 @@ def update_config_schema(baseSchema):
             # do not use 'finance_advice' column for now, replaced (definitively?) by field 'financeAdvice'
             columns=('row_id', 'code', 'label', 'restrict_to_groups', 'active'),
             allow_empty_rows=False,
+            write_permission=WriteRiskyConfig,
         ),
     ),)
 

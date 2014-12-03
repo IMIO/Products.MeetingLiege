@@ -1327,12 +1327,12 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayProposeToAdminstrativeReviewer')
 
     def mayProposeToAdminstrativeReviewer(self):
-        if not self.context.getCategory():
-            return No(translate('required_category_ko',
-                                domain="PloneMeeting",
-                                context=self.context.REQUEST))
         res = False
         if checkPermission(ReviewPortalContent, self.context):
+            if not self.context.getCategory():
+                return No(translate('required_category_ko',
+                                    domain="PloneMeeting",
+                                    context=self.context.REQUEST))
             res = True
         return res
 
@@ -1419,6 +1419,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # first of all, the use must have the 'Review portal content permission'
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            if not self.context.getCategory():
+                return No(translate('required_category_ko',
+                                    domain="PloneMeeting",
+                                    context=self.context.REQUEST))
             finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
             if item_state == 'itemcreated' and not isManager:

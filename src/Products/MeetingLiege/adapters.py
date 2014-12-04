@@ -508,12 +508,6 @@ class CustomMeetingItem(MeetingItem):
             for event in history:
                 if event['action'] == 'proposeToFinance':
                     res.append(('wf_down_finances.png', 'icon_help_wf_down_finances'))
-                    # remove the 'wf_down.png' icon if it is in res
-                    if ('wf_down.png', 'icon_help_wf_down') in res:
-                        res.remove(('wf_down.png', 'icon_help_wf_down'))
-                    # remove the 'wf_up.png' icon if it is in res
-                    if ('wf_up.png', 'icon_help_wf_up') in res:
-                        res.remove(('wf_up.png', 'icon_help_wf_up'))
                     break
         return res
 

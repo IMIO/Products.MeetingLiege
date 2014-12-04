@@ -579,9 +579,8 @@ class CustomMeetingItem(MeetingItem):
 
         financeGroupId = item.adapted().getFinanceGroupIdsForItem()
         # a finance controller may evaluate if advice is actually asked
-        # and not already given
+        # and may not change completeness if advice is currently given or has been given
         if not financeGroupId or \
-           not item.adviceIndex[financeGroupId]['type'] == NOT_GIVEN_ADVICE_VALUE or \
            not '%s_financialcontrollers' % financeGroupId in member.getGroups():
             return False
 

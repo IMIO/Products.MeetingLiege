@@ -319,6 +319,38 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(advice.advice_hide_during_redaction)
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
+
+        # the item can be sent back to the internal reviewer, in this case, advice delay
+        # is stopped, and when item is sent back to the finance, advice delay does not
+        # start immediatelly because item completeness is automatically set to 'evaluate again'
+        # for now delay is started and advice is editable
+        self.do(item, 'backToProposedToInternalReviewer')
+        # advice delay is no more started and advice is no more editable
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+        # completeness did not changed
+        self.assertTrue(item.getCompleteness() == 'completeness_evaluation_not_required')
+        # if item is sent back to the finance, it will not be enabled as
+        # completeness was set automatically to 'completeness_evaluation_asked_again'
+        self.changeUser('pmManager')
+        self.do(item, 'proposeToDirector')
+        self.do(item, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # delay did not start
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+        # completeness was set automatically to evaluation asked again
+        self.assertTrue(item.getCompleteness() == 'completeness_evaluation_asked_again')
+        # if pmFinController set completeness to complete, advice can be added
+        self.request.set('new_completeness_value', 'completeness_complete')
+        changeCompleteness()
+        self.assertTrue(item.getCompleteness() == 'completeness_complete')
+        self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+
         # the advice can be proposed to the financial reviewer
         self.assertTrue(self.transitions(advice) == ['proposeToFinancialReviewer'])
         self.do(advice, 'proposeToFinancialReviewer')

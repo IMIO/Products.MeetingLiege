@@ -98,7 +98,8 @@ def onAdviceTransition(advice, event):
         return
 
     if not newStateId in stateToGroupSuffixMappings:
-        item.updateAdvices()
+        if not item.REQUEST.get('currentlyUpdatingAdvice', False):
+            item.updateAdvices()
         return
 
     # give 'Reader' role to every members of the _advisers and

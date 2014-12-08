@@ -824,8 +824,8 @@ class CustomMeetingItem(MeetingItem):
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
                     return True
                 predecessor = predecessor.getPredecessor()
-            return res
-        MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
+        return res
+    MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
 
     def getLegalTextForFDAdvice(self):
         '''

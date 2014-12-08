@@ -824,8 +824,40 @@ class CustomMeetingItem(MeetingItem):
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
                     return True
                 predecessor = predecessor.getPredecessor()
+            return res
+        MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
+
+    def getLegalTextForFDAdvice(self):
+        '''
+        Helper method. Return legal text for each advice type.
+        '''
+        res = "<p>Attendu la demande d'avis adressée sur base d'un \
+            dossier complet au directeur financier en date du " +\
+            self.getFinancialAdviceStuff()['out_of_financial_dpt_localized'] +\
+            ".<br/></p>"
+        advice = self.context.getAdviceDataFor(self.context.getFinanceAdvice())
+        hidden = advice['hidden_during_redaction']
+        statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
+        adviceType = advice['type'].encode('utf-8').replace('Avis finances', '')
+        comment = self.getFinancialAdviceStuff()['comment']
+
+        if not hidden and self.mayGenerateFDAdvice() and\
+            (adviceType == ' défavorable' or\
+            adviceType == ' favorable'):
+            res = res + "<p>Attendu l'avis " + adviceType +\
+                " du Directeur financier annexé  à la présente décision et \
+                rendu conformément à l'article L1124-40 du Code de la \
+                Démocratie locale et de la Décentralisation,</p>"
+            if comment and adviceType == ' défavorable':
+                res = res + "<p>" + comment + "</p>"
+        elif hidden and statusWhenStopped == 'stopped_timed_out':
+            res = res + "<p>Attendu l'absence d'avis du Directeur \
+                financier rendu dans le délai prescrit à l'article \
+                L1124-40 du Code de la Démocratie \
+                locale et de la Décentralisation,</p>"
+        else:
+            res = ''
         return res
-    MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
 
 
 class CustomMeetingConfig(MeetingConfig):

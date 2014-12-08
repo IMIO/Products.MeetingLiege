@@ -97,6 +97,10 @@ def onAdviceTransition(advice, event):
             advice.manage_addLocalRoles(adviserGroupId, ('MeetingFinanceEditor', 'Reader', ))
         return
 
+    # in some corner case, we could be here and we are actually already updating advices,
+    # this is the case if we validate an item and it triggers the fact that advice delay is exceeded
+    # this should never be the case as advice delay should have been updated during nightly cron...
+    # but if we are in a 'updateAdvices', do not updateAdvices again...
     if not newStateId in stateToGroupSuffixMappings:
         if not item.REQUEST.get('currentlyUpdatingAdvice', False):
             item.updateAdvices()

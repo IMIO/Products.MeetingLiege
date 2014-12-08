@@ -498,11 +498,18 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # give the advice
         item.setCompleteness('completeness_complete')
         item.at_post_edit_script()
-        createContentInContainer(item,
-                                 'meetingadvice',
-                                 **{'advice_group': FINANCE_GROUP_IDS[0],
-                                    'advice_type': u'positive_finance',
-                                    'advice_comment': RichTextValue(u'My comment finance')})
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'My comment finance')})
+        # sign advice, necessary to test updateAdvices called in updateAdvices...
+        self.do(advice, 'proposeToFinancialReviewer')
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'proposeToFinancialManager')
+        self.changeUser('pmFinManager')
+        self.do(advice, 'signFinancialAdvice')
+        self.assertTrue(advice.queryState() == 'financial_advice_signed')
         # can not be validated
         self.changeUser('pmManager')
         self.assertTrue(not 'validate' in self.transitions(item))

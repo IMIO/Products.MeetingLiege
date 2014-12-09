@@ -750,7 +750,7 @@ class CustomMeetingItem(MeetingItem):
             res = 'HOJ.%s' % item_num
         if not self.context.getToDiscuss():
             res = '%s (PA)' % res
-        if self.context.getSendToAuthority() and acte==False:
+        if self.context.getSendToAuthority() and acte is False:
             res = '%s (TG)' % res
         return res
 
@@ -841,9 +841,9 @@ class CustomMeetingItem(MeetingItem):
         adviceType = advice['type'].encode('utf-8').replace('Avis finances', '')
         comment = self.getFinancialAdviceStuff()['comment']
 
-        if not hidden and self.mayGenerateFDAdvice() and\
-            (adviceType == ' défavorable' or\
-            adviceType == ' favorable'):
+        if not hidden and \
+           self.mayGenerateFDAdvice() and \
+           (adviceType == ' défavorable' or adviceType == ' favorable'):
             res = res + "<p>Attendu l'avis " + adviceType +\
                 " du Directeur financier annexé  à la présente décision et \
                 rendu conformément à l'article L1124-40 du Code de la \

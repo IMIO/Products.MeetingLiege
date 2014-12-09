@@ -369,6 +369,14 @@ class CustomMeeting(Meeting):
             previousCat = sublist[0].Description()
         return None
 
+    def getCategoriesByNumber(self, numCateg):
+        tool = getToolByName(self.context,'portal_plonemeeting')
+        meetingConfig = tool.getMeetingConfig(self.context)
+        allCategories = meetingConfig.getCategories()
+        goodCategs = [item for item in allCategories
+                        if item.Title().split('.')[0] == numCateg]
+        return goodCategs
+
 old_showDuplicateItemAction = MeetingItem.showDuplicateItemAction
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
 

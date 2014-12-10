@@ -28,9 +28,21 @@ def onAdviceTransition(advice, event):
         return
 
     # when the finance advice state change, we have to reinitialize
-    # item.takenOverBy to nothing...
+    # item.takenOverBy to nothing if advice is not at the finance controller state
     item = advice.getParentNode()
-    item.setTakenOverBy('')
+    if not event.new_state.id in ['advice_under_edit',
+                                  'proposed_to_financial_controller']:
+        # we do not use the mutator setTakenOverBy because it
+        # clean takenOverByInfos and we need it to be kept if
+        # advice come back to controler
+        item.getField('takenOverBy').set(item, '', **{})
+    else:
+        # if advice review_state is back to financial controller
+        # set historized taker for item state
+        tool = getToolByName(item, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(item)
+        wf_state = "%s__wfstate__%s" % (cfg.getItemWorkflow(), item.queryState())
+        item.setHistorizedTakenOverBy(wf_state)
     item.reindexObject(idxs=['getTakenOverBy', ])
 
     # onAdviceTransition is called before onAdviceAdded...

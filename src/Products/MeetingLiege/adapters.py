@@ -645,7 +645,7 @@ class CustomMeetingItem(MeetingItem):
 
     security.declarePublic('mayTakeOver')
 
-    def mayTakeOver(self, member):
+    def mayTakeOver(self):
         '''Condition for editing 'takenOverBy' field.
            We still use default behaviour :
            A member may take an item over if he his able to change the review_state.

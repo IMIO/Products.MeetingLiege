@@ -369,13 +369,14 @@ class CustomMeeting(Meeting):
             previousCat = sublist[0].Description()
         return None
 
-    def getCategoriesByNumber(self, numCateg):
-        tool = getToolByName(self.context,'portal_plonemeeting')
+    def getCategoriesIdByNumber(self, numCateg):
+        '''Returns categories filtered by their roman numerals'''
+        tool = getToolByName(self.context, 'portal_plonemeeting')
         meetingConfig = tool.getMeetingConfig(self.context)
         allCategories = meetingConfig.getCategories()
-        goodCategs = [item for item in allCategories
-                        if item.Title().split('.')[0] == numCateg]
-        return goodCategs
+        categsId = [item.getId() for item in allCategories
+                    if item.Title().split('.')[0] == numCateg]
+        return categsId
 
 old_showDuplicateItemAction = MeetingItem.showDuplicateItemAction
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC

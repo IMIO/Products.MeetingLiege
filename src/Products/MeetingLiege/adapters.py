@@ -733,16 +733,21 @@ class CustomMeetingItem(MeetingItem):
         res = {}
         item = self.getSelf()
         financialAdvice = item.getFinanceAdvice()
-        res['comment'] = 'comment' in item.getAdviceDataFor(financialAdvice)\
-            and item.getAdviceDataFor(financialAdvice)['comment'] or ''
-        advice_id = 'advice_id' in item.getAdviceDataFor(financialAdvice)\
-            and item.getAdviceDataFor(financialAdvice)['advice_id'] or ''
+        adviceData = item.getAdviceDataFor(financialAdvice)
+        res['comment'] = 'comment' in adviceData\
+            and adviceData['comment'] or ''
+        advice_id = 'advice_id' in adviceData\
+            and adviceData['advice_id'] or ''
         signature_event = advice_id and getLastEvent(getattr(item, advice_id), 'signFinancialAdvice') or ''
         res['out_of_financial_dpt'] = 'time' in signature_event and signature_event['time'] or ''
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\
             and res['out_of_financial_dpt'].strftime('%d/%m/%Y') or ''
         res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % \
-                             (item.getAdviceDataFor(financialAdvice)['type'].encode('utf-8'))
+                             (adviceData['type'].encode('utf-8'))
+        res['delay_started_on_localized'] = 'delay_started_on_localized' in adviceData['delay_infos']\
+            and adviceData['delay_infos']['delay_started_on_localized'] or ''
+        res['delay_started_on'] = 'delay_started_on' in adviceData\
+            and adviceData['delay_started_on'] or ''
         return res
 
     security.declarePublic('getItemRefForActe')

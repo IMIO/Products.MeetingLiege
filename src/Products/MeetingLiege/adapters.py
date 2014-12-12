@@ -864,7 +864,7 @@ class CustomMeetingItem(MeetingItem):
                 Démocratie locale et de la Décentralisation,</p>"
             if comment and adviceType == ' défavorable':
                 res = res + "<p>" + comment + "</p>"
-        elif hidden and statusWhenStopped == 'stopped_timed_out':
+        elif statusWhenStopped == 'stopped_timed_out':
             res = res + "<p>Attendu l'absence d'avis du Directeur \
                 financier rendu dans le délai prescrit à l'article \
                 L1124-40 du Code de la Démocratie \

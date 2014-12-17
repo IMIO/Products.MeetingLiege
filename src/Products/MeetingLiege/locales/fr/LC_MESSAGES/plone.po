@@ -116,6 +116,10 @@ msgstr "Ajourné"
 msgid "financial_advice_signed"
 msgstr "Avis finance signé"
 
+#. Default: "Historize signed advice"
+msgid "historize_signed_advice_content"
+msgstr "Historiser avis DF signé"
+
 #. Default: "Advices asked by creator"
 msgid "itemcreated_waiting_advices"
 msgstr "Avis demandé par le créateur"
@@ -215,4 +219,3 @@ msgstr "Proposer à la séance"
 #. Default: "Validated"
 msgid "validated"
 msgstr "Proposé à la séance"
-

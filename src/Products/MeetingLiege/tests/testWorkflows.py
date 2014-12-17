@@ -33,9 +33,12 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 
+from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
 from Products.PloneMeeting.indexes import indexAdvisers
-from Products.PloneMeeting.utils import cleanRamCacheFor
+from Products.PloneMeeting.utils import getLastEvent
 
+
+from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
@@ -275,7 +278,6 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item.setCompleteness('completeness_incomplete')
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
-        cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting.getGroupsForUser')
         # pmFinController may not add advice for FINANCE_GROUP_IDS[0]
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and not toEdit)
@@ -310,7 +312,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                           'meetingadvice',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'My comment finance')})
+                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
+                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
         # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
         # when a financial advice is added, advice_hide_during_redaction
@@ -396,6 +399,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'proposed_to_director')
         self.assertTrue(advice.queryState() == 'advice_given')
         self.assertTrue(not advice.advice_hide_during_redaction)
+        # when an advice is signed, it is historized in the advice history
+        historizedAdvice = getLastEvent(advice, FINANCE_ADVICE_HISTORIZE_EVENT)
+        self.assertTrue(historizedAdvice['action'] == FINANCE_ADVICE_HISTORIZE_EVENT)
+        self.assertTrue(advice.advice_type in historizedAdvice['comments'])
+        self.assertTrue(advice.advice_comment.output in historizedAdvice['comments'])
+        self.assertTrue(advice.advice_observations.output in historizedAdvice['comments'])
         # as there is a finance advice on the item, finance keep read access to the item
         self.assertTrue(self.hasPermission(View, item))
         # now an item with a negative financial advice back to the director
@@ -432,6 +441,13 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                      'proposeToFinancialManager',
                                                      'signFinancialAdvice'])
         self.do(advice, 'signFinancialAdvice')
+        # each time an advice is signed, it is historized in the advice history
+        historizedAdvice = getLastEvent(advice, FINANCE_ADVICE_HISTORIZE_EVENT)
+        self.assertTrue(historizedAdvice['action'] == FINANCE_ADVICE_HISTORIZE_EVENT)
+        self.assertTrue(advice.advice_type in historizedAdvice['comments'])
+        self.assertTrue(advice.advice_comment.output in historizedAdvice['comments'])
+        self.assertTrue(advice.advice_observations.output in historizedAdvice['comments'])
+
         # this time, the item has been validated automatically
         self.assertTrue(item.queryState() == 'validated')
         # and the advice is visible to everybody
@@ -684,6 +700,69 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # so are not removable by item creators/reviewers
         #self.meetingConfig = getattr(self.tool, 'meeting-config-council')
         #self.test_pm_RemoveObjects()
+
+    def test_subproduct_AdviceCommentViewability(self):
+        '''Test that advice comments are only viewable to finance group members and MeetingManagers.
+           Except the FINANCE_ADVICE_HISTORIZE_EVENT that is viewable by everyone who may access the advice.'''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # create an item and ask finance advice
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='The first item')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item.at_post_edit_script()
+        self.proposeItem(item)
+        self.do(item, 'proposeToFinance')
+        # make item completeness complete and add advice
+        self.changeUser('pmFinController')
+        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
+                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
+        # as finance reviewer
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'proposeToFinancialManager', comment='My financial reviewer comment')
+        # as finance manager
+        self.changeUser('pmFinManager')
+        self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
+        # now check history comment viewability
+        # viewable to pmFinManager and other members of the finance group
+        history = advice.getHistory()
+        for event in history['events']:
+            self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+        # not viewable to the pmManager as only Managers may access those comments
+        # except the FINANCE_ADVICE_HISTORIZE_EVENT
+        self.changeUser('pmManager')
+        history = advice.getHistory()
+        for event in history['events']:
+            if event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
+                self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+            else:
+                self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+        # user able to see the advice have same access as a MeetingManager, so only
+        # access to the HISTORY_COMMENT_NOT_VIEWABLE
+        self.changeUser('pmCreator1')
+        # user may see advice history comments like a MeetingManager
+        self.hasPermission(View, advice)
+        history = advice.getHistory()
+        for event in history['events']:
+            if event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
+                self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+            else:
+                self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
 
 
 def test_suite():

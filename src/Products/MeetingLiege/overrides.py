@@ -2,6 +2,9 @@ from zope.component import queryUtility
 from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
+from Products.CMFCore.utils import getToolByName
+from Products.PloneMeeting.adapters import HistoryCommentViewableAdapter
+from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
@@ -43,3 +46,32 @@ class AdviceTypeVocabulary(object):
             if advice_id in usedAdviceTypes:
                 terms.append(SimpleTerm(advice_id, advice_id, advice_title))
         return SimpleVocabulary(terms)
+
+
+class AdviceHistoryCommentViewableAdapter(HistoryCommentViewableAdapter):
+    """
+      Manage the the fact that a given user may see or not a comment in an advice history.
+    """
+
+    def mayViewComment(self, event):
+        '''
+          If advice was given by a financial group, members of the financial group
+          may access every comments but other member will be able to access a special event
+          'historize_signed_advice_content' where we store the historized content of an advice
+          that was signed.
+        '''
+        # bypass for real Managers
+        tool = getToolByName(self.context, 'portal_plonemeeting')
+        if tool.isManager(True):
+            return True
+
+        # not a finance advice or special event 'historize_signed_advice_content'?  Comment is viewable...
+        if not self.context.advice_group in FINANCE_GROUP_IDS or \
+           event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
+            return True
+
+        # finance advice event, check if user is member of finance group
+        userMeetingGroupIds = [mGroup.getId() for mGroup in tool.getGroupsForUser()]
+        if self.context.advice_group in userMeetingGroupIds:
+            return True
+        return False

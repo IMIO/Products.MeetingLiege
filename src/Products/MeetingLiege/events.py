@@ -10,10 +10,12 @@
 __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
+from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import getLastEvent
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
 
 
 def onAdviceTransition(advice, event):
@@ -27,9 +29,12 @@ def onAdviceTransition(advice, event):
     if not advice.advice_group in FINANCE_GROUP_IDS:
         return
 
+    item = advice.getParentNode()
+    tool = getToolByName(item, 'portal_plonemeeting')
+    cfg = tool.getMeetingConfig(item)
+
     # when the finance advice state change, we have to reinitialize
     # item.takenOverBy to nothing if advice is not at the finance controller state
-    item = advice.getParentNode()
     if not event.new_state.id in ['advice_under_edit',
                                   'proposed_to_financial_controller']:
         # we do not use the mutator setTakenOverBy because it
@@ -39,8 +44,6 @@ def onAdviceTransition(advice, event):
     else:
         # if advice review_state is back to financial controller
         # set historized taker for item state
-        tool = getToolByName(item, 'portal_plonemeeting')
-        cfg = tool.getMeetingConfig(item)
         wf_state = "%s__wfstate__%s" % (cfg.getItemWorkflow(), item.queryState())
         item.setHistorizedTakenOverBy(wf_state)
     item.reindexObject(idxs=['getTakenOverBy', ])
@@ -74,6 +77,36 @@ def onAdviceTransition(advice, event):
                                   'proposed_to_financial_manager': 'financialmanagers', }
 
     if newStateId == 'financial_advice_signed':
+        # save the entire advice content in the workflow_history
+        # warning, we will save this event before last saved event that is the 'advice signed'
+        # event or workflow state after sign is not set because it use workflow history...
+        # that is why we use "insert(-1, ...)" here under
+        membershipTool = getToolByName(advice, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
+        wf_name = wfTool.getWorkflowsFor(advice)[0].getId()
+        workflow_history = list(advice.workflow_history[wf_name])
+
+        # compute advice data to store
+        adviceStyle = cfg.getAdviceStyle()
+        advice_type_icon = "advice_%s_%s.png" % (adviceStyle, advice.advice_type)
+        advice_type = item.getAdviceDataFor(advice.advice_group)['type']
+        advice_comment = advice.advice_comment and advice.advice_comment.output or '<p>-</p>'
+        advice_observations = advice.advice_observations and advice.advice_observations.output or '<p>-</p>'
+        comments = """<p id='historize_signed_advice_content-advice_type'><img src='{0}' />&nbsp;{1}</p>
+<p id='historize_signed_advice_content-advice_comment'>Motivation :</p>
+{2}
+<p id='historize_signed_advice_content-advice_observations'>Observations :</p>
+{3}""".format(advice_type_icon,
+              advice_type.encode('utf-8'),
+              advice_comment,
+              advice_observations)
+        wf_history_data = {'action': FINANCE_ADVICE_HISTORIZE_EVENT,
+                           'review_state': '',
+                           'comments': comments,
+                           'actor': member.getId(),
+                           'time': DateTime()}
+        workflow_history.insert(-1, wf_history_data, )
+        advice.workflow_history[wf_name] = tuple(workflow_history)
         # final state of the wf, make sure advice is not more hidden during redaction
         advice.advice_hide_during_redaction = False
         # if item was still in state 'proposed_to_finance', it is automatically validated

@@ -188,6 +188,10 @@ msgstr ""
 msgid "financial_advice_signed"
 msgstr ""
 
+#. Default: "Historize signed advice"
+msgid "historize_signed_advice_content"
+msgstr ""
+
 #. Default: "Back to proposed to financial controller"
 msgid "backToProposedToFinancialController"
 msgstr ""

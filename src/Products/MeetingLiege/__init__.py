@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# File: MeetingLiege.py
+# File: __init__.py
 #
-# Copyright (c) 2014 by Imio.be
+# Copyright (c) 2015 by Imio.be
 # Generator: ArchGenXML Version 2.7
 #            http://plone.org/products/archgenxml
 #
@@ -70,4 +70,3 @@ def initialize(context):
 
     ##code-section custom-init-bottom #fill in your manual code here
     ##/code-section custom-init-bottom
-

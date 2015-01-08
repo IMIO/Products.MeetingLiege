@@ -2,7 +2,7 @@
 #
 # File: testWorkflows.py
 #
-# Copyright (c) 2007-2014 by Imio.be
+# Copyright (c) 2015 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -483,6 +483,85 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.presentItem(item)
         self.closeMeeting(meeting)
         self.assertTrue(meeting.queryState() == 'closed')
+        self.assertTrue(advice.queryState() == 'advice_given')
+
+    def test_subproduct_CollegeProcessWithFinancesAdvicesWithEmergency(self):
+        '''If emergency is asked for an item by director, the item can be sent
+           to the meeting (validated) without finance advice, finance advice is still giveable...
+           Make sure a MeetingManager is able to present such an item or send back to the director.'''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # remove pmManager from 'developers' so he will not have the 'MeetingReviewer' role
+        # managed by the meetingadviceliege_workflow and giving access to 'Access contents information'
+        for group in self.portal.portal_membership.getMemberById('pmManager').getGroups():
+            if group.startswith('developers_'):
+                self.portal.portal_groups.removePrincipalFromGroup('pmManager', group)
+
+        self.changeUser('pmCreator1')
+        # create an item and ask finance advice
+        item = self.create('MeetingItem')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        # no emergency for now
+        item.setEmergency('no_emergency')
+        item.at_post_edit_script()
+        # finance advice is asked
+        self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
+        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        # propose the item to the director, he will send item to finance
+        self.proposeItem(item)
+        self.changeUser('pmReviewer1')
+        self.do(item, 'proposeToFinance')
+        # finance will add advice and send item back to the internal reviewer
+        self.changeUser('pmFinController')
+        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+        # give the advice
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
+                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.do(item, 'backToProposedToInternalReviewer')
+        # internal reviewer will send item to the director that will ask emergency
+        self.changeUser('pmInternalReviewer1')
+        self.do(item, 'proposeToDirector')
+        self.changeUser('pmReviewer1')
+        # no emergency for now so item can not be validated
+        self.assertTrue(not 'validate' in self.transitions(item))
+        item.setEmergency('emergency_asked')
+        # now item can be validated
+        self.assertTrue('validate' in self.transitions(item))
+        self.do(item, 'validate')
+        # item has been validated and is viewable by the MeetingManagers
+        self.changeUser('pmManager')
+        # for now, advice is still proposed to the financial controller
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
+        # item can be sent back to the director, this will test that advice state
+        # can be changed even if advice is not viewable
+        self.do(item, 'backToProposedToDirector')
+        self.assertTrue(advice.queryState() == 'advice_given')
+        # director validate item again
+        self.changeUser('pmReviewer1')
+        self.do(item, 'validate')
+        # create a meeting and make sure it can be frozen, aka it will
+        # change not viewable advice state to 'advice_given'
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        self.do(item, 'present')
+        # advice state is still 'proposed_to_financial_controller'
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
+        # if the meeting is frozen, every items are frozen as well
+        # and finance advices are no more giveable, so advice will go to 'advice_given'
+        self.do(meeting, 'freeze')
         self.assertTrue(advice.queryState() == 'advice_given')
 
     def test_subproduct_ItemWithTimedOutAdviceIsAutomaticallyValidated(self):

@@ -2,7 +2,7 @@
 #
 # File: setuphandlers.py
 #
-# Copyright (c) 2014 by Imio.be
+# Copyright (c) 2015 by Imio.be
 # Generator: ArchGenXML Version 2.7
 #            http://plone.org/products/archgenxml
 #
@@ -349,12 +349,10 @@ def _createFinanceGroups(site):
                                             id=financeGroup['id'],
                                             title=financeGroup['title'],
                                             acronym=financeGroup['acronym'],
-                                            itemAdviceStates=('meeting-config-college__state__itemfrozen',
-                                                              'meeting-config-college__state__proposed_to_finance',
+                                            itemAdviceStates=('meeting-config-college__state__proposed_to_finance',
                                                               'meeting-config-college__state__presented',
                                                               'meeting-config-college__state__validated'),
-                                            itemAdviceEditStates=('meeting-config-college__state__itemfrozen',
-                                                                  'meeting-config-college__state__proposed_to_finance',
+                                            itemAdviceEditStates=('meeting-config-college__state__proposed_to_finance',
                                                                   'meeting-config-college__state__presented',
                                                                   'meeting-config-college__state__validated'),
                                             itemAdviceViewStates=('meeting-config-college__state__accepted',

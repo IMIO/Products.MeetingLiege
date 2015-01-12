@@ -186,7 +186,7 @@ msgstr "<p>Avant de tester, nous vous recommandons de lire la <span class=\"link
 
 #. Default: "Select groups that are in charge of this matter.  Observers of this group will be able to access items using this category once it will be in state 'validated' and after."
 msgid "groups_of_matter_descr"
-msgstr "Séléctionnez les groupes en charge de cette matière.  Les observateurs de ce groupe auront un accès aux points créés avec cette catégories, ainsi qu'à leurs annexes, dès que le point sera 'proposé à la séance"."
+msgstr "Séléctionnez les groupes en charge de cette matière.  Les observateurs de ce groupe auront un accès aux points créés avec cette catégories, ainsi qu'à leurs annexes, dès que le point sera 'proposé à la séance'."
 
 #. Default: "Accepted and returned"
 msgid "icon_help_accepted_and_returned"

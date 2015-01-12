@@ -3,6 +3,7 @@ from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
+from Products.PloneMeeting.adapters import AnnexableAdapter
 from Products.PloneMeeting.adapters import HistoryCommentViewableAdapter
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
@@ -75,3 +76,37 @@ class AdviceHistoryCommentViewableAdapter(HistoryCommentViewableAdapter):
         if self.context.advice_group in userMeetingGroupIds:
             return True
         return False
+
+
+class MatterAwareAnnexableAdapter(AnnexableAdapter):
+    """
+      This overrides the AnnexableAdapter so power advisers have only access to annexes of items
+      of their own categories.  So if default _isViewableForCurrentUser returns True,
+      double check if we should not hide it anyway because current user is a power observer
+      not in charge of the item matter (category).
+    """
+
+    def _isViewableForCurrentUser(self, cfg, isPowerObserver, isRestrictedPowerObserver, annexInfo):
+        '''
+          Power observers may only access annexes of items they are in charge of.
+        '''
+        res = super(MatterAwareAnnexableAdapter, self)._isViewableForCurrentUser(cfg,
+                                                                                 isPowerObserver,
+                                                                                 isRestrictedPowerObserver,
+                                                                                 annexInfo)
+        # if user may see and isPowerObserver, double check
+        if res and isPowerObserver:
+            membershipTool = getToolByName(self.context, 'portal_membership')
+            member = membershipTool.getAuthenticatedMember()
+            cat = self.context.getCategory(True)
+            if not cat or not cat.meta_type == 'MeetingCategory':
+                return res
+
+            memberGroups = member.getGroups()
+            res = False
+            for groupOfMatter in cat.getGroupsOfMatter():
+                groupId = '%s_observers' % groupOfMatter
+                if groupId in memberGroups:
+                    res = True
+                    break
+        return res

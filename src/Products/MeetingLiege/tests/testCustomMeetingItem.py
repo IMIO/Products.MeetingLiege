@@ -24,6 +24,9 @@
 
 from DateTime import DateTime
 
+from Products.CMFCore.permissions import View
+
+from Products.PloneMeeting.interfaces import IAnnexable
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
@@ -91,7 +94,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # create an item for the 'developers' group
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
-        # select the right catefory
+        # select the right category
         item.setCategory(development.getId())
         item.at_post_edit_script()
         specialReaders = 'vendors_observers'
@@ -120,3 +123,57 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setCategory('projects')
         item.at_post_edit_script()
         self.assertTrue(not specialReaders in item.__ac_local_roles__)
+
+    def test_AnnexesConfidentialityDependingOnMatter(self):
+        '''Power observers may only access annexes of items they are in charge of.'''
+        # configure so we use categories, and adapt category 'development'
+        # so we select a group in it's groupsOfMatter
+        self.meetingConfig.setUseGroupsAsCategories(False)
+        # confidential annexes are hidden to restricted power observers
+        self.meetingConfig.setAnnexConfidentialFor(('restricted_power_observers', ))
+        self.meetingConfig.setUseGroupsAsCategories(False)
+        development = self.meetingConfig.categories.development
+        development.setGroupsOfMatter(('vendors', ))
+        # create an item for the 'developers' group
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        annex1 = self.addAnnex(item)
+        annex2 = self.addAnnex(item)
+        annex2.setIsConfidential(True)
+        # select the right category
+        item.setCategory(development.getId())
+        item.at_post_edit_script()
+        self.validateItem(item)
+        specialReaders = 'vendors_observers'
+
+        # power observers may access items when it is 'presented'
+        self.changeUser('pmManager')
+        self.create('Meeting', date='2015/01/01')
+        self.presentItem(item)
+        self.changeUser('powerobserver1')
+        # powerobservers1 is not member of 'vendors_observers' so he
+        # will not be able to access the annexes of the item
+        self.assertTrue(not specialReaders in self.member.getGroups())
+        self.hasPermission(View, item)
+        # no matter the annex is confidential or not, both are not viewable
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+                                                                    isPowerObserver=True,
+                                                                    isRestrictedPowerObserver=False,
+                                                                    annexInfo=annex1.getAnnexInfo()))
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+                                                                    isPowerObserver=True,
+                                                                    isRestrictedPowerObserver=False,
+                                                                    annexInfo=annex2.getAnnexInfo()))
+        # if we assign 'powerobserver1' to the 'vendors_observers' group
+        # he will be able to view the annexes of item as he is in charge of
+        self.portal.portal_groups.addPrincipalToGroup('powerobserver1', specialReaders)
+        # log again as 'powerobserver1' so getGroups is refreshed
+        self.changeUser('powerobserver1')
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex1.getAnnexInfo()))
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex2.getAnnexInfo()))

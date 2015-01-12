@@ -72,10 +72,15 @@
            factory="Products.MeetingLiege.adapters.CustomMeetingGroup"
            provides="Products.PloneMeeting.interfaces.IMeetingGroupCustom"/>
 
-  <!-- Override historyCommentViewable adapter for meetingadvice -->
+  <!-- Override HistoryCommentViewable adapter for meetingadvice -->
   <adapter for="Products.PloneMeeting.content.advice.MeetingAdvice"
            factory=".overrides.AdviceHistoryCommentViewableAdapter"
            provides="Products.PloneMeeting.interfaces.IHistoryCommentViewable" />
+
+  <!-- Override AnnexableAdapter adapter for MeetingItem-->
+  <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
+           factory=".overrides.MatterAwareAnnexableAdapter"
+           provides="Products.PloneMeeting.interfaces.IAnnexable" />
 
   <!-- ##/code-section configure.zcml.header -->
 

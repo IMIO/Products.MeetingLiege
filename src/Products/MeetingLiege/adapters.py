@@ -40,11 +40,12 @@ from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
+from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
 from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
 from Products.PloneMeeting.interfaces import IMeetingCustom, IMeetingItemCustom, \
-    IMeetingConfigCustom, IMeetingGroupCustom, IToolPloneMeetingCustom
+    IMeetingConfigCustom, IMeetingGroupCustom, IMeetingCategoryCustom, IToolPloneMeetingCustom
 from Products.MeetingLiege.interfaces import \
     IMeetingItemCollegeLiegeWorkflowConditions, IMeetingItemCollegeLiegeWorkflowActions,\
     IMeetingCollegeLiegeWorkflowConditions, IMeetingCollegeLiegeWorkflowActions, \
@@ -873,6 +874,39 @@ class CustomMeetingItem(MeetingItem):
             res = ''
         return res
 
+    security.declareProtected('Modify portal content', 'onEdit')
+
+    def onEdit(self, isCreated):
+        '''
+        '''
+        item = self.getSelf()
+        # update local_roles regarding the matterOfGroups
+        item._updateMatterOfGroupsLocalRoles()
+
+    def _updateMatterOfGroupsLocalRoles(self):
+        '''
+          When an item is edited or it's review_state changed, we will update
+          local_roles that give read access to the item once the item is at least
+          validated.  Read access is given to the _observers Plone group of the selected
+          matterOfGroups groups on the category used for the item.
+        '''
+        # when we are here, MeetingItem.updateLocalRoles already removed every unnecessary
+        # local roles given to Plone _subgroups, re-add if necessary
+        if not self.queryState() == 'validated' and not self.hasMeeting():
+            return
+
+        # compute _observers groups we will give local roles to
+        category = self.getCategory(theObject=True)
+        if not category or not category.meta_type == 'MeetingCategory':
+            return
+
+        # if we have a category, loop on groups of this matter
+        # and give 'Reader' local role to the item
+        for groupOfMatter in category.getGroupsOfMatter():
+            groupId = '%s_observers' % groupOfMatter
+            self.manage_addLocalRoles(groupId, ('Reader', ))
+    MeetingItem._updateMatterOfGroupsLocalRoles = _updateMatterOfGroupsLocalRoles
+
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the
@@ -1127,6 +1161,40 @@ class CustomMeetingGroup(MeetingGroup):
                 res.append(group)
         return res
     MeetingGroup.getPloneGroups = getPloneGroups
+
+
+class CustomMeetingCategory(MeetingCategory):
+    '''Adapter that adapts a meetingCategory implementing IMeetingCategory to the
+       interface IMeetingCategoryCustom.'''
+
+    implements(IMeetingCategoryCustom)
+    security = ClassSecurityInfo()
+
+    def __init__(self, item):
+        self.context = item
+
+    security.declarePrivate('listGroupsOfMatter')
+
+    def listGroupsOfMatter(self):
+        """
+          Vocabulary for the MeetingCategory.groupsOfMatter field.
+          It returns every active MeetingGroups.
+        """
+        res = []
+        tool = getToolByName(self, 'portal_plonemeeting')
+        for mGroup in tool.getMeetingGroups():
+            res.append((mGroup.getId(), mGroup.getName()))
+        # make sure that if a configuration was defined for a group
+        # that is now inactive, it is still displayed
+        storedGroupsOfMatter = self.getGroupsOfMatter()
+        if storedGroupsOfMatter:
+            groupsInVocab = [group[0] for group in res]
+            for storedGroupOfMatter in storedGroupsOfMatter:
+                if not storedGroupOfMatter in groupsInVocab:
+                    mGroup = getattr(tool, storedGroupOfMatter)
+                    res.append((mGroup.getId(), mGroup.getName()))
+        return DisplayList(res).sortedByValue()
+    MeetingCategory.listGroupsOfMatter = listGroupsOfMatter
 
 
 old_formatMeetingDate = ToolPloneMeeting.formatMeetingDate
@@ -1769,10 +1837,11 @@ def get_advice_given_on(self):
 MeetingAdvice.get_advice_given_on = get_advice_given_on
 
 # ------------------------------------------------------------------------------
-InitializeClass(CustomMeetingItem)
 InitializeClass(CustomMeeting)
+InitializeClass(CustomMeetingCategory)
 InitializeClass(CustomMeetingConfig)
 InitializeClass(CustomMeetingGroup)
+InitializeClass(CustomMeetingItem)
 InitializeClass(CustomToolPloneMeeting)
 InitializeClass(MeetingCollegeLiegeWorkflowActions)
 InitializeClass(MeetingCollegeLiegeWorkflowConditions)

@@ -424,3 +424,11 @@ msgstr ""
 #. Default: "The completeness has been asked again by the application when the item has been proposed to the finances."
 msgid "completeness_asked_again_by_app"
 msgstr ""
+
+#. Default: "Groups of matter"
+msgid "MeetingLiege_label_GroupsOfMatter"
+msgstr ""
+
+#. Default: "Select groups that are in charge of this matter.  Observers of this group will be able to access items using this category once it will be in state 'validated' and after."
+msgid "groups_of_matter_descr"
+msgstr ""

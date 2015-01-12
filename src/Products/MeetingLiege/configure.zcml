@@ -62,6 +62,11 @@
            factory="Products.MeetingLiege.adapters.CustomMeetingConfig"
            provides="Products.PloneMeeting.interfaces.IMeetingConfigCustom"/>
 
+  <!-- Customizations for every MeetingCategories -->
+  <adapter for="Products.PloneMeeting.interfaces.IMeetingCategory"
+           factory="Products.MeetingLiege.adapters.CustomMeetingCategory"
+           provides="Products.PloneMeeting.interfaces.IMeetingCategoryCustom"/>
+
   <!-- Customizations for every MeetingGroups -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingGroup"
            factory="Products.MeetingLiege.adapters.CustomMeetingGroup"

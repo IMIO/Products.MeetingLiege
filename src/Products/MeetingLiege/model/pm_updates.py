@@ -1,7 +1,9 @@
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import LinesField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import RichWidget
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import TextAreaWidget
@@ -16,6 +18,7 @@ from Products.PloneMeeting.config import WriteRiskyConfig
 from Products.PloneMeeting.Meeting import Meeting
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
+from Products.PloneMeeting.MeetingCategory import MeetingCategory
 
 
 def update_item_schema(baseSchema):
@@ -212,6 +215,32 @@ def update_config_schema(baseSchema):
     completeConfigSchema = baseSchema + specificSchema.copy()
     return completeConfigSchema
 MeetingConfig.schema = update_config_schema(MeetingConfig.schema)
+
+
+def update_category_schema(baseSchema):
+
+    specificSchema = Schema((
+        # field for defining a group that is responsible for this category and
+        # that will be able to see every items using this category once this item is validated
+        LinesField(
+            name='groupsOfMatter',
+            widget=MultiSelectionWidget(
+                size=10,
+                description="GroupsOfMatter",
+                description_msgid="groups_of_matter_descr",
+                label='Groupsofmatter',
+                label_msgid='MeetingLiege_label_GroupsOfMatter',
+                i18n_domain='PloneMeeting',
+            ),
+            optional=True,
+            multiValued=1,
+            vocabulary='listGroupsOfMatter',
+        ),
+    ),)
+
+    completeCategorySchema = baseSchema + specificSchema.copy()
+    return completeCategorySchema
+MeetingCategory.schema = update_category_schema(MeetingCategory.schema)
 
 
 # Classes have already been registered, but we register them again here

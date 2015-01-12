@@ -219,3 +219,4 @@ msgstr "Proposer à la séance"
 #. Default: "Validated"
 msgid "validated"
 msgstr "Proposé à la séance"
+

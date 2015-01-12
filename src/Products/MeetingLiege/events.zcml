@@ -16,4 +16,9 @@
                    Products.PloneMeeting.interfaces.IItemDuplicatedEvent"
               handler=".events.onItemDuplicated"/>
 
+  <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
+                   Products.PloneMeeting.interfaces.IItemAfterTransitionEvent"
+              handler=".events.onItemAfterTransition"/>
+
+
 </configure>

@@ -79,3 +79,44 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.at_post_edit_script()
         self.assertTrue(FINANCE_GROUP_IDS[1] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)
+
+    def test_GroupsOfMatter(self):
+        '''Once an item is 'validated' (and after in the WF), group selected on the used MeetingCategory as
+           responsible of this category (groupsOfMatter) will get 'Reader' access to this item.'''
+        # configure so we use categories, and adapt category 'development'
+        # so we select a group in it's groupsOfMatter
+        self.meetingConfig.setUseGroupsAsCategories(False)
+        development = self.meetingConfig.categories.development
+        development.setGroupsOfMatter(('vendors', ))
+        # create an item for the 'developers' group
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        # select the right catefory
+        item.setCategory(development.getId())
+        item.at_post_edit_script()
+        specialReaders = 'vendors_observers'
+        # right category is selected by item must be at least validated
+        self.assertTrue(not specialReaders in item.__ac_local_roles__)
+
+        # validate the item
+        self.validateItem(item)
+        # now local_roles are correct
+        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+        # going back to 'proposed' will remove given local roles
+        self.backToState(item, self.WF_STATE_NAME_MAPPINGS['proposed'])
+        self.assertTrue(not specialReaders in item.__ac_local_roles__)
+        self.validateItem(item)
+        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+
+        # functionnality is for validated items and for items in a meeting
+        # so present the item and check that it still works
+        self.changeUser('pmManager')
+        self.create('Meeting', date='2015/01/01')
+        self.presentItem(item)
+        self.assertTrue(item.queryState() != 'validated')
+        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+
+        # if we use another category, local roles are removed
+        item.setCategory('projects')
+        item.at_post_edit_script()
+        self.assertTrue(not specialReaders in item.__ac_local_roles__)

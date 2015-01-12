@@ -227,3 +227,11 @@ def onItemDuplicated(original, event):
         if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
             # we just sent an item from college to council
             newItem.setPrivacy(original.getPrivacyForCouncil())
+
+
+def onItemAfterTransition(item, event):
+    '''Called after the transition event called by default in PloneMeeting.
+       Here, we are sure that code done in the onItemTransition event is finished.
+       We call MeetingItem._updateMatterOfGroupsLocalRoles to update local roles
+       regarding the matterOfGroups.'''
+    item._updateMatterOfGroupsLocalRoles()

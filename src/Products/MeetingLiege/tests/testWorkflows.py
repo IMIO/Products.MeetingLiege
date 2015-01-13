@@ -29,6 +29,7 @@ from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 
+from Products.CMFCore.permissions import DeleteObjects
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
@@ -842,6 +843,29 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                 self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
             else:
                 self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+
+    def test_subproduct_MeetingManagersMayNotDeleteItems(self):
+        '''
+          MeetingManagers are not able to Delete an item.
+        '''
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        self.validateItem(item)
+        self.changeUser('pmManager')
+        self.assertFalse(self.hasPermission(DeleteObjects, item))
+        meeting = self.create('Meeting', date='2015/01/01')
+        self.presentItem(item)
+        self.assertTrue(item.queryState() == 'presented')
+        self.assertFalse(self.hasPermission(DeleteObjects, item))
+        self.freezeMeeting(meeting)
+        self.assertTrue(item.queryState() == 'itemfrozen')
+        self.assertFalse(self.hasPermission(DeleteObjects, item))
+        self.decideMeeting(meeting)
+        self.assertTrue(item.queryState() == 'itemfrozen')
+        self.assertFalse(self.hasPermission(DeleteObjects, item))
+        self.closeMeeting(meeting)
+        self.assertTrue(item.queryState() == 'accepted')
+        self.assertFalse(self.hasPermission(DeleteObjects, item))
 
 
 def test_suite():

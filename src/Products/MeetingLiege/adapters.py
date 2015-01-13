@@ -855,9 +855,12 @@ class CustomMeetingItem(MeetingItem):
         statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
         adviceType = advice['type'].encode('utf-8').replace('Avis finances', '')
         comment = self.getFinancialAdviceStuff()['comment']
+        adviceGivenOnLocalized = advice['advice_given_on_localized']
+        delayStatus = advice['delay_infos']['delay_status']
 
         if not hidden and \
            self.mayGenerateFDAdvice() and \
+           adviceGivenOnLocalized and \
            (adviceType == ' défavorable' or adviceType == ' favorable'):
             res = res + "<p>Attendu l'avis " + adviceType +\
                 " du Directeur financier annexé  à la présente décision et \
@@ -865,7 +868,8 @@ class CustomMeetingItem(MeetingItem):
                 Démocratie locale et de la Décentralisation,</p>"
             if comment and adviceType == ' défavorable':
                 res = res + "<p>" + comment + "</p>"
-        elif statusWhenStopped == 'stopped_timed_out':
+        elif statusWhenStopped == 'stopped_timed_out' or \
+            delayStatus == 'timed_out':
             res = res + "<p>Attendu l'absence d'avis du Directeur \
                 financier rendu dans le délai prescrit à l'article \
                 L1124-40 du Code de la Démocratie \

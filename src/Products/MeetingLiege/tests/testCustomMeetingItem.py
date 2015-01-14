@@ -125,7 +125,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(not specialReaders in item.__ac_local_roles__)
 
     def test_AnnexesConfidentialityDependingOnMatter(self):
-        '''Power observers may only access annexes of items they are in charge of.'''
+        '''Power observers may only access annexes of items they are in charge of.
+           A single exception is made for annex type 'annexeCahier' that is viewable
+           by every power observers.'''
         # configure so we use categories, and adapt category 'development'
         # so we select a group in it's groupsOfMatter
         self.meetingConfig.setUseGroupsAsCategories(False)
@@ -139,7 +141,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item = self.create('MeetingItem')
         annex1 = self.addAnnex(item)
         annex2 = self.addAnnex(item)
+        annex3 = self.addAnnex(item, annexType='annexeCahier')
         annex2.setIsConfidential(True)
+        annex3.setIsConfidential(True)
         # select the right category
         item.setCategory(development.getId())
         item.at_post_edit_script()
@@ -164,6 +168,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                                                     isPowerObserver=True,
                                                                     isRestrictedPowerObserver=False,
                                                                     annexInfo=annex2.getAnnexInfo()))
+        # an annex using "annexeCahier" will be viewable by power observers
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex3.getAnnexInfo()))
         # if we assign 'powerobserver1' to the 'vendors_observers' group
         # he will be able to view the annexes of item as he is in charge of
         self.portal.portal_groups.addPrincipalToGroup('powerobserver1', specialReaders)
@@ -177,3 +186,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex2.getAnnexInfo()))
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex3.getAnnexInfo()))

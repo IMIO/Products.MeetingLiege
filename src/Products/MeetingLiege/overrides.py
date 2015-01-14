@@ -95,7 +95,11 @@ class MatterAwareAnnexableAdapter(AnnexableAdapter):
                                                                                  isRestrictedPowerObserver,
                                                                                  annexInfo)
         # if user may see and isPowerObserver, double check
-        if res and isPowerObserver:
+        # power observer may only access annexes of items using the categories
+        # they are in charge of and annexes using type 'annexeCahier'
+        annexeCahierUID = cfg.meetingfiletypes.annexeCahier.UID()
+        if res and isPowerObserver and not annexInfo['meetingFileTypeObjectUID'] == annexeCahierUID:
+            # powerObservers may see annex using type
             membershipTool = getToolByName(self.context, 'portal_membership')
             member = membershipTool.getAuthenticatedMember()
             cat = self.context.getCategory(True)

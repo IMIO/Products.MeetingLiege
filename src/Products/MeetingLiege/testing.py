@@ -30,7 +30,8 @@ ML_TESTING_PROFILE = MeetingLiegeLayer(
     zcml_package=Products.MeetingLiege,
     additional_z2_products=('Products.MeetingLiege',
                             'Products.PloneMeeting',
-                            'Products.CMFPlacefulWorkflow'),
+                            'Products.CMFPlacefulWorkflow',
+                            'Products.PasswordStrength'),
     gs_profile_id='Products.MeetingLiege:testing',
     name="ML_TESTING_PROFILE")
 

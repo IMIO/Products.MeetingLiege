@@ -96,9 +96,14 @@ class MatterAwareAnnexableAdapter(AnnexableAdapter):
                                                                                  annexInfo)
         # if user may see and isPowerObserver, double check
         # power observer may only access annexes of items using the categories
-        # they are in charge of and annexes using type 'annexeCahier'
-        annexeCahierUID = cfg.meetingfiletypes.annexeCahier.UID()
-        if res and isPowerObserver and not annexInfo['meetingFileTypeObjectUID'] == annexeCahierUID:
+        # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
+        extraViewableFileTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
+        extraViewableFileTypeUids = []
+        for extraViewableFileTypeId in extraViewableFileTypeIds:
+            fileType = getattr(cfg.meetingfiletypes, extraViewableFileTypeId, None)
+            if fileType:
+                extraViewableFileTypeUids.append(fileType.UID())
+        if res and isPowerObserver and not annexInfo['meetingFileTypeObjectUID'] in extraViewableFileTypeUids:
             # powerObservers may see annex using type
             membershipTool = getToolByName(self.context, 'portal_membership')
             member = membershipTool.getAuthenticatedMember()

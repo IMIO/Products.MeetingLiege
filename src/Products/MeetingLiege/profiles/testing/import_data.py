@@ -16,6 +16,9 @@ from Products.PloneMeeting.profiles import UserDescriptor
 annexe = MeetingFileTypeDescriptor('annexe', 'Annexe', 'attach.png', '')
 annexeBudget = MeetingFileTypeDescriptor('annexeBudget', 'Article Budgetaire', 'budget.png', '')
 annexeCahier = MeetingFileTypeDescriptor('annexeCahier', 'Cahier des Charges', 'cahier.gif', '')
+courrierCollege = MeetingFileTypeDescriptor('courrier-a-valider-par-le-college',
+                                            'Courrier à valider par le Collège',
+                                            'courrierCollege.png', '')
 itemAnnex = MeetingFileTypeDescriptor('item-annex', 'Other annex(es)', 'attach.png', '')
 annexeDecision = MeetingFileTypeDescriptor('annexeDecision', 'Annexe a la decision', 'attach.png', '', 'item_decision')
 # Some type of annexes taken from the default PloneMeeting test profile
@@ -158,6 +161,7 @@ developers.administrativereviewers.append(pmManager)
 developers.internalreviewers.append(pmInternalReviewer1)
 developers.internalreviewers.append(pmManager)
 developers.creators.append(pmManager)
+developers.prereviewers.append(pmManager)
 developers.reviewers.append(pmReviewer1)
 developers.reviewers.append(pmManager)
 developers.observers.append(pmReviewer1)
@@ -215,9 +219,9 @@ collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, Secr�
 collegeMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
 collegeMeeting.categories = categories
 collegeMeeting.shortName = 'College'
-collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, itemAnnex,
-                                   annexeDecision, overheadAnalysis, marketingAnalysis,
-                                   adviceAnnex, adviceLegalAnalysis]
+collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
+                                   itemAnnex, annexeDecision, overheadAnalysis,
+                                   marketingAnalysis, adviceAnnex, adviceLegalAnalysis]
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'detailedDescription',
                                      'observations',
@@ -310,7 +314,7 @@ councilMeeting.signatures = 'Default signatures'
 councilMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
 councilMeeting.categories = categories
 councilMeeting.shortName = 'Council'
-councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier,
+councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
                                    itemAnnex, annexeDecision, adviceAnnex, adviceLegalAnalysis]
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'

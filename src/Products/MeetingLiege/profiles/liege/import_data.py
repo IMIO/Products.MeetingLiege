@@ -11,6 +11,9 @@ annexeBudget = MeetingFileTypeDescriptor('annexeBudget', 'Article Budgétaire',
                                          'budget.png', '')
 annexeCahier = MeetingFileTypeDescriptor('annexeCahier', 'Cahier des Charges',
                                          'cahier.gif', '')
+courrierCollege = MeetingFileTypeDescriptor('courrier-a-valider-par-le-college',
+                                            'Courrier à valider par le Collège',
+                                            'courrierCollege.png', '')
 annexeDecision = MeetingFileTypeDescriptor('annexeDecision', 'Annexe à la décision',
                                            'attach.png', '', 'item_decision')
 annexeAvis = MeetingFileTypeDescriptor('annexeAvis', 'Annexe à un avis',
@@ -199,7 +202,7 @@ categoriesCollege = [CategoryDescriptor('cat-coll-1', u'Catégorie collège 1'),
                      CategoryDescriptor('cat-coll-6', u'Catégorie collège 6'), ]
 collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
-collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
+collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'detailedDescription',
@@ -435,7 +438,7 @@ categoriesCouncil = [CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'
                      CategoryDescriptor('cat-council-6', u'Catégorie conseil 6'), ]
 councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
-councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, annexeDecision]
+councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',
                                      'observations',

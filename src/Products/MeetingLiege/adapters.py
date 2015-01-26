@@ -356,7 +356,7 @@ class CustomMeeting(Meeting):
 
     def getItemNumsForActe_cachekey(method, self):
         '''cachekey method for self.getItemNumsForActe.'''
-        return self.getAllItems(ordered=True)
+        return self.modified()
 
     security.declarePublic('getItemNumsForActe')
 
@@ -797,7 +797,7 @@ class CustomMeetingItem(MeetingItem):
         # invalidate cache if passed parameter changed or if item was modified
         item = self.getSelf()
         meeting = item.getMeeting()
-        return (item, acte, item.modified(), meeting.getAllItems(ordered=True))
+        return (item, acte, item.modified(), meeting.modified())
 
     security.declarePublic('getItemRefForActe')
 

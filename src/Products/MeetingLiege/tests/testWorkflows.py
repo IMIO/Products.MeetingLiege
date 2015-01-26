@@ -24,7 +24,6 @@
 
 from datetime import datetime
 
-from zope.annotation import IAnnotations
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
@@ -651,6 +650,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         '''Test behaviour of the 'accept_and_return' decision transition.
            This will send the item to the council then duplicate the original item (college)
            and automatically validate it so it is available for the next meetings.'''
+        cfg2Id = self.meetingConfig2.getId()
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='An item to return')
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
@@ -660,7 +660,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # as item is not to send to council, the 'accept_and_return' transition is not available
         self.assertTrue(not 'accept_and_return' in self.transitions(item))
         # make it to send to council
-        item.setOtherMeetingConfigsClonableTo((self.meetingConfig2.getId(), ))
+        item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         # now the transition 'accept_and_return' is available
         self.assertTrue('accept_and_return' in self.transitions(item))
         # accept_and_return, the item is send to the meetingConfig2
@@ -679,6 +679,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
             duplicatedToCfg2 = duplicated2
             duplicatedLocally = duplicated1
         self.assertTrue(duplicatedToCfg2.portal_type == self.meetingConfig2.getItemTypeName())
+        self.assertTrue(duplicatedToCfg2.UID() == item.getItemClonedToOtherMC(cfg2Id).UID())
         # duplicated locally...
         self.assertTrue(duplicatedLocally.portal_type == item.portal_type)
         #... and validated
@@ -692,10 +693,40 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.decideMeeting(meeting2)
         # it already being considered as sent to the other mc
         self.assertTrue(duplicatedLocally._checkAlreadyClonedToOtherMC(self.meetingConfig2.getId()))
-        # accept and return it again, this time it is not send as a predecessor was already send
+        # it will not be considered as sent to the other mc if item
+        # that was sent in the council is 'delayed' or 'marked_not_applicable'
+        # so insert duplicatedToCfg2 in a meeting and 'delay' it
+        councilMeeting = self.create('Meeting', date='2015/01/15 09:00:00', meetingConfig=self.meetingConfig2)
+        # meetingConfig2 is using categories
+        duplicatedToCfg2.setCategory('deployment')
+        self.presentItem(duplicatedToCfg2)
+        self.decideMeeting(councilMeeting)
+        self.do(duplicatedToCfg2, 'delay')
+        # now that item duplicated to council is delayed, item in college is no more
+        # considered as being send, deciding it will send it again to the council
+        self.assertFalse(duplicatedLocally._checkAlreadyClonedToOtherMC(cfg2Id))
+        # accept and return it again, it will be sent again to the council
         self.do(duplicatedLocally, 'accept_and_return')
-        annotation_key = duplicatedLocally._getSentToOtherMCAnnotationKey(self.meetingConfig2.getId())
-        self.assertTrue(not annotation_key in IAnnotations(duplicatedLocally))
+        self.assertTrue(duplicatedLocally.getItemClonedToOtherMC(cfg2Id))
+
+        # now, for the last test, make sure an already duplicated item
+        # with an item on the council that is not 'delayed' or 'marked_not_applicable' is
+        # not sent again
+        predecessors = duplicatedLocally.getBRefs('ItemPredecessor')
+        newduplicated1, newduplicated2 = predecessors
+        if newduplicated1.portal_type == self.meetingConfig2.getItemTypeName():
+            newDuplicatedLocally = newduplicated2
+        else:
+            newDuplicatedLocally = newduplicated1
+        self.assertTrue(newDuplicatedLocally.portal_type == self.meetingConfig.getItemTypeName())
+        meeting3 = self.create('Meeting', date='2014/02/02 09:00:00')
+        self.presentItem(newDuplicatedLocally)
+        self.decideMeeting(meeting3)
+        # it is considered sent, so accepting it will not send it again
+        self.assertTrue(newDuplicatedLocally._checkAlreadyClonedToOtherMC(cfg2Id))
+        self.do(newDuplicatedLocally, 'accept')
+        # it has not be sent again
+        self.assertFalse(newDuplicatedLocally.getItemClonedToOtherMC(cfg2Id))
 
     def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
         '''Test that when a transition is triggered on a meetingadvice

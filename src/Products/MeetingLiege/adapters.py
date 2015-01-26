@@ -826,18 +826,36 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
+    def getItemClonedToOtherMC(self, destMeetingConfigId):
+        '''XXX to be removed !!!'''
+        annotation_key = self._getSentToOtherMCAnnotationKey(destMeetingConfigId)
+        ann = IAnnotations(self)
+        itemUID = ann.get(annotation_key, None)
+        if itemUID:
+            catalog = getToolByName(self, 'portal_catalog')
+            brains = catalog(UID=itemUID)
+            if brains:
+                return brains[0].getObject()
+        return None
+    MeetingItem.getItemClonedToOtherMC = getItemClonedToOtherMC
+
     def _checkAlreadyClonedToOtherMC(self, destMeetingConfigId):
         ''' '''
         res = old_checkAlreadyClonedToOtherMC(self, destMeetingConfigId)
         if not res:
             # double check if a predecessor was not already sent to the other meetingConfig
             # this can be the case when using 'accept_and_return' transition, the item is sent
-            # and another item is cloned with same informations, also the information "to be sent to"
+            # and another item is cloned with same informations.  Check also that if a predecessor
+            # was already sent to the council, this item in the council is not 'delayed' or 'marked_not_applicable'
+            # in this case, we will send it again
             predecessor = self.getPredecessor()
             while predecessor:
                 if predecessor.queryState() == 'accepted_and_returned' and \
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
-                    return True
+                    # if item was sent to council, check that this item is not 'delayed' or 'marked_not_applicable'
+                    clonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
+                    if clonedItem and not clonedItem.queryState() in ('delayed', 'marked_not_applicable'):
+                        return True
                 predecessor = predecessor.getPredecessor()
         return res
     MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC

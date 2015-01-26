@@ -38,7 +38,7 @@ from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
-from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent
+from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent, cleanRamCacheFor
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -279,17 +279,14 @@ class CustomMeeting(Meeting):
                     # The method does nothing if the group (or another from the
                     # same macro-group) is already there.
         if renumber:
-            ann = IAnnotations(self.context.REQUEST)
-            #return a list of tuple with first element the number and second
-            #element the item itself
+            # return a list of tuple with first element the number and second
+            # element the item itself
             final_items = []
             final_res = []
             for elts in res:
                 # we received a list of tuple (cat, items_list)
                 for item in elts[1:]:
-                    item.adapted().createItemNumerotationInIA()
-                    # we received a list of items
-                    item_num = ann['Products.MeetingLiege.ItemNum'][item.UID()]
+                    item_num = self.getItemNumsForActe()[item.UID()]
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
@@ -357,6 +354,39 @@ class CustomMeeting(Meeting):
                 res.append(sub_rest)
         return res
 
+    def getItemNumsForActe_cachekey(method, self):
+        '''cachekey method for self.getItemNumsForActe.'''
+        return self.getAllItems(ordered=True)
+
+    security.declarePublic('getItemNumsForActe')
+
+    @ram.cache(getItemNumsForActe_cachekey)
+    def getItemNumsForActe(self):
+        '''Create a dict that store item number regarding the used category.'''
+        # for "normal" items, the item number depends on the used category
+        items = self.getItemsInOrder()
+        res = {}
+        for item in items:
+            item_num = 0
+            cat = item.getCategory(True).getCategoryId()
+            for item2 in items:
+                if item2.getCategory(True).getCategoryId() != cat:
+                    continue
+                item_num = item_num + 1
+                if item == item2:
+                    res[item.UID()] = item_num
+                    break
+        # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
+        items = self.getItemsInOrder(late=True)
+        item_num = 1
+        for item in items:
+            if item.UID() in res:
+                continue
+            res[item.UID()] = item_num
+            item_num = item_num + 1
+        return res
+    Meeting.getItemNumsForActe = getItemNumsForActe
+
     def getRepresentative(self, sublst, itemUids, privacy='public',
                           late=False, oralQuestion='both', by_proposing_group=False):
         '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
@@ -405,6 +435,17 @@ class CustomMeetingItem(MeetingItem):
 
     def __init__(self, item):
         self.context = item
+
+    security.declareProtected('Modify portal content', 'setCategory')
+    def setCategory(self, value, **kwargs):
+        '''Overrides the field 'category' mutator to invalidate
+           Meeting.getItemNumsForActe if the value changed.'''
+        current = self.getField('category').get(self)
+        if current != value:
+            # invalidate RAMCache for Meeting.getItemNumsForActe
+            cleanRamCacheFor('Products.MeetingLiege.adapters.getItemNumsForActe')
+        self.getField('category').set(self, value, **kwargs)
+    MeetingItem.setCategory = setCategory
 
     def showDuplicateItemAction_cachekey(method, self, brain=False):
         '''cachekey method for self.showDuplicateItemAction.'''
@@ -751,55 +792,30 @@ class CustomMeetingItem(MeetingItem):
             and adviceData['delay_started_on'] or ''
         return res
 
+    def getItemRefForActe_cachekey(method, self, acte=True):
+        '''cachekey method for self.getItemRefForActe.'''
+        # invalidate cache if passed parameter changed or if item was modified
+        item = self.getSelf()
+        meeting = item.getMeeting()
+        return (item, acte, item.modified(), meeting.getAllItems(ordered=True))
+
     security.declarePublic('getItemRefForActe')
 
+    @ram.cache(getItemRefForActe_cachekey)
     def getItemRefForActe(self, acte=True):
         '''the reference is cat id/itemnumber in this cat/PA if it's not to discuss'''
-        ann = IAnnotations(self.context.REQUEST)
-        self.adapted().createItemNumerotationInIA()
-        item_num = ann['Products.MeetingLiege.ItemNum'][self.context.UID()]
-        if not self.context.isLate():
-            res = '%s' % self.context.getCategory(True).getCategoryId()
+        item = self.getSelf()
+        item_num = item.getMeeting().getItemNumsForActe()[item.UID()]
+        if not item.isLate():
+            res = '%s' % item.getCategory(True).getCategoryId()
             res = '%s%s' % (res, item_num)
         else:
             res = 'HOJ.%s' % item_num
-        if not self.context.getToDiscuss():
+        if not item.getToDiscuss():
             res = '%s (PA)' % res
-        if self.context.getSendToAuthority() and acte is False:
+        if item.getSendToAuthority() and acte is False:
             res = '%s (TG)' % res
         return res
-
-    security.declarePublic('createItemNumerotationInIA')
-
-    def createItemNumerotationInIA(self):
-        '''Create dico in iannotation with (item_uid, item_number in his category)'''
-        ann = IAnnotations(self.context.REQUEST)
-        if 'Products.MeetingLiege.ItemNum' not in ann:
-            ann['Products.MeetingLiege.ItemNum'] = {}
-
-        # for "normal" items, use num byc cat
-        items = self.context.getMeeting().getItemsInOrder()
-        for item in items:
-            if item.UID() in ann['Products.MeetingLiege.ItemNum']:
-                continue
-            item_num = 0
-            cat = item.getCategory(True).getCategoryId()
-            for item2 in items:
-                if item2.getCategory(True).getCategoryId() != cat:
-                    continue
-                item_num = item_num + 1
-                if item == item2:
-                    ann['Products.MeetingLiege.ItemNum'][item.UID()] = item_num
-                    break
-        # for "late" items, use HOJ.1, HOJ2, HOJ3,...HOJn
-        items = self.context.getMeeting().getItemsInOrder(late=True)
-        item_num = 1
-        for item in items:
-            if item.UID() in ann['Products.MeetingLiege.ItemNum']:
-                continue
-            ann['Products.MeetingLiege.ItemNum'][item.UID()] = item_num
-            item_num = item_num + 1
-        return
 
     def isCurrentUserInFDGroup(self, finance_group_id):
         '''

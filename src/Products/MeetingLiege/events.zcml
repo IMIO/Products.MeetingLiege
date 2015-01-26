@@ -20,5 +20,4 @@
                    Products.PloneMeeting.interfaces.IItemAfterTransitionEvent"
               handler=".events.onItemAfterTransition"/>
 
-
 </configure>

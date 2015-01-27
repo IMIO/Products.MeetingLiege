@@ -354,16 +354,23 @@ class CustomMeeting(Meeting):
                 res.append(sub_rest)
         return res
 
-    def getItemNumsForActe_cachekey(method, self):
-        '''cachekey method for self.getItemNumsForActe.'''
-        return self.modified()
-
     security.declarePublic('getItemNumsForActe')
 
-    @ram.cache(getItemNumsForActe_cachekey)
     def getItemNumsForActe(self):
         '''Create a dict that store item number regarding the used category.'''
         # for "normal" items, the item number depends on the used category
+        # store this in an annotation on the meeting, we only recompte it if meeting was modified
+        ann = IAnnotations(self)
+        if not 'MeetingLiege-getItemNumsForActe' in ann:
+            ann['MeetingLiege-getItemNumsForActe'] = {}
+        itemNums = ann['MeetingLiege-getItemNumsForActe']
+        if 'modified' in itemNums and itemNums['modified'] == self.modified():
+            return itemNums['nums']
+        else:
+            itemNums['modified'] = self.modified()
+
+        import ipdb; ipdb.set_trace()
+
         items = self.getItemsInOrder()
         res = {}
         for item in items:
@@ -384,6 +391,7 @@ class CustomMeeting(Meeting):
                 continue
             res[item.UID()] = item_num
             item_num = item_num + 1
+        itemNums['nums'] = res
         return res
     Meeting.getItemNumsForActe = getItemNumsForActe
 

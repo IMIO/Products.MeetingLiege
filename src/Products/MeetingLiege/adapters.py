@@ -443,13 +443,19 @@ class CustomMeetingItem(MeetingItem):
         self.context = item
 
     security.declareProtected('Modify portal content', 'setCategory')
+
     def setCategory(self, value, **kwargs):
-        '''Overrides the field 'category' mutator to invalidate
-           Meeting.getItemNumsForActe if the value changed.'''
+        '''Overrides the field 'category' mutator to remove stored
+           result of the Meeting.getItemNumsForActe on the corresponding meeting.
+           If the category of an item in a meeting changed, invaildate also
+           MeetingItem.getItemRefForActe ram cache.'''
         current = self.getField('category').get(self)
-        if current != value:
-            # invalidate RAMCache for Meeting.getItemNumsForActe
-            cleanRamCacheFor('Products.MeetingLiege.adapters.getItemNumsForActe')
+        meeting = self.getMeeting()
+        if current != value and meeting:
+            ann = IAnnotations(meeting)
+            if 'MeetingLiege-getItemNumsForActe' in ann:
+                ann['MeetingLiege-getItemNumsForActe'] = {}
+            cleanRamCacheFor('Products.MeetingLiege.adapters.getItemRefForActe')
         self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
 
@@ -908,8 +914,7 @@ class CustomMeetingItem(MeetingItem):
                 Démocratie locale et de la Décentralisation,</p>"
             if comment and adviceType == ' défavorable':
                 res = res + "<p>" + comment + "</p>"
-        elif statusWhenStopped == 'stopped_timed_out' or \
-            delayStatus == 'timed_out':
+        elif statusWhenStopped == 'stopped_timed_out' or delayStatus == 'timed_out':
             res = res + "<p>Attendu l'absence d'avis du Directeur \
                 financier rendu dans le délai prescrit à l'article \
                 L1124-40 du Code de la Démocratie \

@@ -91,16 +91,16 @@ template2 = ItemTemplateDescriptor(id='template2',
 
 # Categories -------------------------------------------------------------------
 categories = [
-    CategoryDescriptor('deployment', 'Deployment topics'),
-    CategoryDescriptor('maintenance', 'Maintenance topics'),
-    CategoryDescriptor('development', 'Development topics'),
-    CategoryDescriptor('events', 'Events'),
-    CategoryDescriptor('research', 'Research topics'),
-    CategoryDescriptor('projects', 'Projects'),
+    CategoryDescriptor('deployment', 'Deployment topics', categoryId='deployment'),
+    CategoryDescriptor('maintenance', 'Maintenance topics', categoryId='maintenance'),
+    CategoryDescriptor('development', 'Development topics', categoryId='development'),
+    CategoryDescriptor('events', 'Events', categoryId='events'),
+    CategoryDescriptor('research', 'Research topics', categoryId='research'),
+    CategoryDescriptor('projects', 'Projects', categoryId='projects'),
     # A vintage category
-    CategoryDescriptor('marketing', 'Marketing', active=False),
+    CategoryDescriptor('marketing', 'Marketing', categoryId='marketing', active=False),
     # usingGroups category
-    CategoryDescriptor('subproducts', 'Subproducts wishes', usingGroups=('vendors',)),
+    CategoryDescriptor('subproducts', 'Subproducts wishes', categoryId='subproducts', usingGroups=('vendors',)),
 ]
 
 # Users and groups -------------------------------------------------------------
@@ -218,6 +218,7 @@ collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, Secr�
 collegeMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
 collegeMeeting.categories = categories
 collegeMeeting.shortName = 'College'
+collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
                                    itemAnnex, annexeDecision, overheadAnalysis,
                                    marketingAnalysis, adviceAnnex, adviceLegalAnalysis]

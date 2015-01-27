@@ -202,6 +202,7 @@ categoriesCollege = [CategoryDescriptor('cat-coll-1', u'Catégorie collège 1'),
                      CategoryDescriptor('cat-coll-6', u'Catégorie collège 6'), ]
 collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
+collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
@@ -438,6 +439,7 @@ categoriesCouncil = [CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'
                      CategoryDescriptor('cat-council-6', u'Catégorie conseil 6'), ]
 councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
+councilMeeting.itemReferenceFormat = "python: 'Ref. ' + (here.hasMeeting() and here.getMeeting().getDate().strftime('%Y%m%d') or '') + '/' + str(here.getItemNumber(relativeTo='meeting'))"
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',

@@ -369,8 +369,6 @@ class CustomMeeting(Meeting):
         else:
             itemNums['modified'] = self.modified()
 
-        import ipdb; ipdb.set_trace()
-
         items = self.getItemsInOrder()
         res = {}
         for item in items:

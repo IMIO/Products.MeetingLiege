@@ -286,7 +286,7 @@ class CustomMeeting(Meeting):
             for elts in res:
                 # we received a list of tuple (cat, items_list)
                 for item in elts[1:]:
-                    item_num = self.getItemNumsForActe()[item.UID()]
+                    item_num = self.context.getItemNumsForActe()[item.UID()]
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res

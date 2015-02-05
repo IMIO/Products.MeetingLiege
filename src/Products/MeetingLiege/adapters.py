@@ -667,7 +667,7 @@ class CustomMeetingItem(MeetingItem):
         if not item.getCompleteness() == 'completeness_incomplete' or \
            not member.has_permission(ModifyPortalContent, item) or \
            not (member.has_role('MeetingInternalReviewer', item) or
-                member.has_role('MeetingReviewer', item) or tool.isManager()):
+                member.has_role('MeetingReviewer', item) or tool.isManager(item)):
             return False
         return True
 
@@ -693,7 +693,7 @@ class CustomMeetingItem(MeetingItem):
         tool = getToolByName(item, 'portal_plonemeeting')
         membershipTool = getToolByName(item, 'portal_membership')
         member = membershipTool.getAuthenticatedMember()
-        if tool.isManager(realManagers=True) or \
+        if tool.isManager(item, realManagers=True) or \
            '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in member.getGroups():
             return True
         return False
@@ -745,7 +745,7 @@ class CustomMeetingItem(MeetingItem):
         tool = getToolByName(self, 'portal_plonemeeting')
         cfg = tool.getMeetingConfig(self)
         userGroups = set([group.getId() for group in tool.getGroupsForUser()])
-        isManager = tool.isManager()
+        isManager = tool.isManager(self)
         storedArchivingRef = self.getArchivingRef()
         for ref in cfg.getArchivingRefs():
             # if ref is not active, continue
@@ -787,7 +787,7 @@ class CustomMeetingItem(MeetingItem):
         res = {}
         item = self.getSelf()
         financialAdvice = item.getFinanceAdvice()
-        adviceData = item.getAdviceDataFor(financialAdvice)
+        adviceData = item.getAdviceDataFor(item, financialAdvice)
         res['comment'] = 'comment' in adviceData\
             and adviceData['comment'] or ''
         advice_id = 'advice_id' in adviceData\
@@ -896,7 +896,7 @@ class CustomMeetingItem(MeetingItem):
             dossier complet au directeur financier en date du " +\
             self.getFinancialAdviceStuff()['out_of_financial_dpt_localized'] +\
             ".<br/></p>"
-        advice = self.context.getAdviceDataFor(self.context.getFinanceAdvice())
+        advice = self.context.getAdviceDataFor(self.context, self.context.getFinanceAdvice())
         hidden = advice['hidden_during_redaction']
         statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
         adviceType = advice['type'].encode('utf-8').replace('Avis finances', '')
@@ -1188,7 +1188,7 @@ class CustomMeetingGroup(MeetingGroup):
             ploneGroup = portal_groups.getGroupById(groupId)
             if ploneGroup:
                 continue
-            group._createPloneGroup(groupSuffix)
+            group._createOrUpdatePloneGroup(groupSuffix)
 
     def getPloneGroups(self, idsOnly=False, acl=False):
         '''Returns the list of Plone groups tied to this MeetingGroup. If
@@ -1591,7 +1591,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if self.context.REQUEST.get('mayValidate', False):
             return True
         tool = getToolByName(self.context, 'portal_plonemeeting')
-        isManager = tool.isManager()
+        isManager = tool.isManager(self.context)
         item_state = self.context.queryState()
         # first of all, the use must have the 'Review portal content permission'
         if checkPermission(ReviewPortalContent, self.context):
@@ -1608,7 +1608,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # a MeetingManager mut be able to validate it
             elif item_state in ['proposed_to_finance', 'proposed_to_director', ] and \
                     finance_advice and \
-                    self.context.getAdviceDataFor(finance_advice)['delay_infos']['delay_status'] == 'timed_out':
+                    self.context.adviceIndex[finance_advice]['delay_infos']['delay_status'] == 'timed_out':
                 res = True
             # director may validate an item if no finance advice
             # or finance advice and emergency is asked

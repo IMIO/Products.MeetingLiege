@@ -108,7 +108,7 @@ pmFinController = UserDescriptor('pmFinController', [])
 pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
 pmFinReviewer = UserDescriptor('pmFinReviewer', [])
 pmFinManager = UserDescriptor('pmFinManager', [])
-pmManager = UserDescriptor('pmManager', ['MeetingManager'])
+pmManager = UserDescriptor('pmManager', [])
 pmCreator1 = UserDescriptor('pmCreator1', [])
 pmCreator1b = UserDescriptor('pmCreator1b', [])
 pmAdminReviewer1 = UserDescriptor('pmAdminReviewer1', [])
@@ -215,7 +215,19 @@ collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, Secrétaire communal'
-collegeMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
+collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
+                                      'name': u'Vraiment Présent',
+                                      'name': u'Mr Vraiment Présent',
+                                      'function': u'Le Secrétaire communal',
+                                      'date_from': '',
+                                      'date_to': ''},
+                                      {'signatureNumber': '2',
+                                      'name': u'Charles Exemple',
+                                      'name': u'Mr Charles Exemple',
+                                      'function': u'Le Bourgmestre',
+                                      'date_from': '',
+                                      'date_to': '',
+                                       }]
 collegeMeeting.categories = categories
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
@@ -311,7 +323,19 @@ councilMeeting = MeetingConfigDescriptor(
     'Conseil Communal')
 councilMeeting.assembly = 'Default assembly'
 councilMeeting.signatures = 'Default signatures'
-councilMeeting.certifiedSignatures = 'Mr Présent Actuellement, Bourgmestre ff - Charles Exemple, Secrétaire communal'
+councilMeeting.certifiedSignatures = [{'signatureNumber': '1',
+                                      'name': u'Vraiment Présent',
+                                      'name': u'Mr Vraiment Présent',
+                                      'function': u'Le Secrétaire communal',
+                                      'date_from': '',
+                                      'date_to': ''},
+                                      {'signatureNumber': '2',
+                                      'name': u'Charles Exemple',
+                                      'name': u'Mr Charles Exemple',
+                                      'function': u'Le Bourgmestre',
+                                      'date_from': '',
+                                      'date_to': '',
+                                       }]
 councilMeeting.categories = categories
 councilMeeting.shortName = 'Council'
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,

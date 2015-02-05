@@ -63,7 +63,7 @@ class AdviceHistoryCommentViewableAdapter(HistoryCommentViewableAdapter):
         '''
         # bypass for real Managers
         tool = getToolByName(self.context, 'portal_plonemeeting')
-        if tool.isManager(True):
+        if tool.isManager(self.context, True):
             return True
 
         # not a finance advice or special event 'historize_signed_advice_content'?  Comment is viewable...

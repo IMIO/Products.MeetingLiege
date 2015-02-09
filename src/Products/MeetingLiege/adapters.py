@@ -1068,11 +1068,20 @@ class CustomMeetingConfig(MeetingConfig):
         '''Queries all items for which there is completeness to evaluate, so where completeness
            is not 'completeness_complete'.'''
         # Create query parameters
+        # only query elements the current user may evaluate completeness of
+        groupIds = []
+        membershipTool = getToolByName(self, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        for financeGroup in FINANCE_GROUP_IDS:
+            # only keep finance groupIds the current user is controller for
+            if '%s_financialcontrollers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_advice_not_giveable' % financeGroup)
         params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'getCompleteness' use 'OR' by default
                   'getCompleteness': ('completeness_not_yet_evaluated',
                                       'completeness_incomplete',
                                       'completeness_evaluation_asked_again'),
+                  'indexAdvisers': groupIds,
                   'review_state': 'proposed_to_finance',
                   'sort_on': sortKey,
                   'sort_order': sortOrder, }
@@ -1090,8 +1099,12 @@ class CustomMeetingConfig(MeetingConfig):
     def searchItemsWithAdviceProposedToFinancialController(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.'''
         groupIds = []
+        membershipTool = getToolByName(self, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
-            groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
+            # only keep finance groupIds the current user is controller for
+            if '%s_financialcontrollers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
         # Create query parameters
         params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'indexAdvisers' use 'OR' by default
@@ -1113,8 +1126,12 @@ class CustomMeetingConfig(MeetingConfig):
     def searchItemsWithAdviceProposedToFinancialReviewer(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
         groupIds = []
+        membershipTool = getToolByName(self, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
-            groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
+            # only keep finance groupIds the current user is reviewer for
+            if '%s_financialreviewers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
         # Create query parameters
         params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'indexAdvisers' use 'OR' by default
@@ -1135,8 +1152,12 @@ class CustomMeetingConfig(MeetingConfig):
     def searchItemsWithAdviceProposedToFinancialManager(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
         groupIds = []
+        membershipTool = getToolByName(self, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
-            groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
+            # only keep finance groupIds the current user is manager for
+            if '%s_financialmanagers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
         # Create query parameters
         params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'indexAdvisers' use 'OR' by default

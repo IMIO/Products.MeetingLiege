@@ -23,6 +23,8 @@
 # 02110-1301, USA.
 #
 # ------------------------------------------------------------------------------
+import string
+import unicodedata
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
@@ -854,19 +856,6 @@ class CustomMeetingItem(MeetingItem):
             return True
         return False
 
-    def getItemClonedToOtherMC(self, destMeetingConfigId):
-        '''XXX to be removed !!!'''
-        annotation_key = self._getSentToOtherMCAnnotationKey(destMeetingConfigId)
-        ann = IAnnotations(self)
-        itemUID = ann.get(annotation_key, None)
-        if itemUID:
-            catalog = getToolByName(self, 'portal_catalog')
-            brains = catalog(UID=itemUID)
-            if brains:
-                return brains[0].getObject()
-        return None
-    MeetingItem.getItemClonedToOtherMC = getItemClonedToOtherMC
-
     def _checkAlreadyClonedToOtherMC(self, destMeetingConfigId):
         ''' '''
         res = old_checkAlreadyClonedToOtherMC(self, destMeetingConfigId)
@@ -926,10 +915,8 @@ class CustomMeetingItem(MeetingItem):
     security.declareProtected('Modify portal content', 'onEdit')
 
     def onEdit(self, isCreated):
-        '''
-        '''
+        '''Update local_roles regarding the matterOfGroups.'''
         item = self.getSelf()
-        # update local_roles regarding the matterOfGroups
         item._updateMatterOfGroupsLocalRoles()
 
     def _updateMatterOfGroupsLocalRoles(self):
@@ -955,6 +942,36 @@ class CustomMeetingItem(MeetingItem):
             groupId = '%s_observers' % groupOfMatter
             self.manage_addLocalRoles(groupId, ('Reader', ))
     MeetingItem._updateMatterOfGroupsLocalRoles = _updateMatterOfGroupsLocalRoles
+
+    def _findCustomOneLevelFor(self, insertMethod):
+        '''Manage our custom inserting method 'on_decision_first_word'.'''
+        if insertMethod == 'on_decision_first_word':
+            return 262626262626
+        raise NotImplementedError
+
+    def _findCustomOrderFor(self, insertMethod):
+        '''Manage our custom inserting method 'on_decision_first_word'.'''
+        item = self.getSelf()
+        if insertMethod == 'on_decision_first_word':
+            decision = item.getDecision(mimetype='text/plain').strip()
+            # make sure we do not have accents anymore and a lowerized string
+            if not isinstance(decision, unicode):
+                decision = unicode(decision, 'utf-8')
+            decision = ''.join(x for x in unicodedata.normalize('NFKD', decision) if x in string.ascii_letters).lower()
+            word = decision.split(' ')[0]
+            word = word[0:6]
+            # make sure first is a 6 characters long word
+            word = word.ljust(6, 'a')
+            # now that we have a 6 characters long string, we will build index by
+            # computing ord() for each char and making a long integer with it
+            index = []
+            for char in word:
+                # translate received value to less integer
+                # in theory, we have only lowercased chars in word
+                # ord('a') is 97, and ord('z') is 122, so remove 96...
+                index.append(str(ord(char) - 96).zfill(2))
+            return int(''.join(index))
+        raise NotImplementedError
 
 
 class CustomMeetingConfig(MeetingConfig):

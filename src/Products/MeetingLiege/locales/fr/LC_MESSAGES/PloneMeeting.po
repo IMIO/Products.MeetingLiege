@@ -320,6 +320,10 @@ msgstr "Sans incidence financière"
 msgid "not_required_finance"
 msgstr "Avis finances non requis"
 
+#. Default: "Follow first word of decision field order"
+msgid "on_decision_first_word"
+msgstr "Par ordre alphabétique du premier mot du champ 'Dispositif (essence de la décision)'"
+
 #. Default: "Follow to discuss (to discuss then not to discuss)"
 msgid "on_to_discuss"
 msgstr "Par point à discuter (à discuter et ensuite pas à discuter)"

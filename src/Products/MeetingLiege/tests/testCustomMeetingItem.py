@@ -287,3 +287,69 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                         ['development1', 'development2', 'deployment1', 'development3'])
         self.assertTrue([item.getId() for item in meeting.getItemsInOrder()] ==
                         ['o3', 'o5', 'o2', 'o7'])
+
+    def test_InsertingMethodOnDecisionFirstWord(self):
+        '''
+          Test our custom inserting method 'on_decision_first_word'.
+        '''
+        self.changeUser('pmManager')
+        self._removeConfigObjectsFor(self.meetingConfig)
+        insertingMethods = ({'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
+        # no decision, it will get minimum possible index value
+        item1 = self.create('MeetingItem')
+        item1.setDecision('<p></p>')
+        item1Id = item1.getId()
+        item1_order = item1.getInsertOrder(insertingMethods)
+        # decision < 6 chars
+        item2 = self.create('MeetingItem')
+        item2.setDecision('<p>EMET</p>')
+        item2Id = item2.getId()
+        item2_order = item2.getInsertOrder(insertingMethods)
+        # beginning with 'A'
+        item3 = self.create('MeetingItem')
+        item3.setDecision('<p>ACCORDE un avis de ...</p>')
+        item3Id = item3.getId()
+        item3_order = item3.getInsertOrder(insertingMethods)
+        # beginning with 'O'
+        item4 = self.create('MeetingItem')
+        item4.setDecision('<p>&nbsp;OCTROIE un avis de ...</p>')
+        item4Id = item4.getId()
+        item4_order = item4.getInsertOrder(insertingMethods)
+        # begin with a space then EMET
+        item5 = self.create('MeetingItem')
+        item5.setDecision('<p>&nbsp;</p><p>EMET</p>')
+        item5Id = item5.getId()
+        item5_order = item5.getInsertOrder(insertingMethods)
+        # use 'zzzzzz', it will get maximum possible index value
+        item6 = self.create('MeetingItem')
+        item6.setDecision('<p>zzzzzz</p>')
+        item6Id = item6.getId()
+        item6_order = item6.getInsertOrder(insertingMethods)
+        # use same beginning of sentence as item2 and item5 but
+        # with an extra letter that will be taken into account
+        item7 = self.create('MeetingItem')
+        item7.setDecision('<p>EMET un avis</p>')
+        item7Id = item7.getId()
+        item7_order = item7.getInsertOrder(insertingMethods)
+        # result should be item1, item3, item2, item5 (equals to item2) then item4
+        self.assertTrue(item1_order < item3_order < item2_order == item5_order < item7_order < item4_order < item6_order)
+        # every items use proposingGroup 'developers' that is in position 1
+        # if we use 'vendors' for item1, item1_order will become higher than item6_order
+        insertingMethods = ({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},
+                            {'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
+        for item in item1, item2, item3, item4, item5, item6, item7:
+            self.assertTrue(item.getProposingGroup() == 'developers')
+        self.assertTrue(item1._findOrderFor('on_proposing_groups') == 0)
+        item1.setProposingGroup('vendors')
+        self.assertTrue(item1._findOrderFor('on_proposing_groups') == 1)
+        # now order of item1 is higher than order of item6
+        self.assertTrue(item1.getInsertOrder(insertingMethods) > item6.getInsertOrder(insertingMethods))
+
+        # now insert items in a meeting and compare
+        self.meetingConfig.setInsertingMethodsOnAddItem(insertingMethods)
+        meeting = self.create('Meeting', date='2015/01/01')
+        for item in item1, item2, item3, item4, item5, item6, item7:
+            self.presentItem(item)
+        # items should have been added respecting following order item3, item2, item5, item4, item6, item1
+        self.assertTrue([item.getId() for item in meeting.getItemsInOrder()] ==
+                        [item3Id, item2Id, item5Id, item7Id, item4Id, item6Id, item1Id, ])

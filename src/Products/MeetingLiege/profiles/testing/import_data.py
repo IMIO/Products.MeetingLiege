@@ -210,6 +210,7 @@ muser_voter2 = MeetingUserDescriptor('voter2', duty='Voter2',
 collegeMeeting = MeetingConfigDescriptor(
     'meeting-config-college', u'College Communal',
     u'College communal', isDefault=True)
+collegeMeeting.meetingManagers = ('pmManager', )
 collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
@@ -321,6 +322,7 @@ collegeMeeting.itemTemplates = (template1, template2)
 councilMeeting = MeetingConfigDescriptor(
     'meeting-config-council', 'Conseil Communal',
     'Conseil Communal')
+councilMeeting.meetingManagers = ('pmManager', )
 councilMeeting.assembly = 'Default assembly'
 councilMeeting.signatures = 'Default signatures'
 councilMeeting.certifiedSignatures = [{'signatureNumber': '1',

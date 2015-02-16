@@ -189,7 +189,7 @@ groups[6].advisers.append(agentTrav)
 collegeMeeting = MeetingConfigDescriptor(
     'meeting-config-college', 'Collège Communal',
     'Collège Communal', isDefault=True)
-collegeMeeting.meetingManagers = ('pmManager', )
+collegeMeeting.meetingManagers = ('dgen', )
 collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
@@ -427,7 +427,7 @@ collegeMeeting.itemTemplates = [
 councilMeeting = MeetingConfigDescriptor(
     'meeting-config-council', 'Conseil Communal',
     'Conseil Communal', isDefault=True)
-councilMeeting.meetingManagers = ('pmManager', )
+councilMeeting.meetingManagers = ('dgen', )
 councilMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \

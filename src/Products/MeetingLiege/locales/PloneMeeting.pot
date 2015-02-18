@@ -436,3 +436,12 @@ msgstr ""
 #. Default: "Follow first word of decision field order"
 msgid "on_decision_first_word"
 msgstr ""
+
+#. Default: "Finance advice that was given on ${predecessor} that is in state ${predecessor_state} is still valid for current item."
+msgid "former_finance_advice_still_valid"
+msgstr ""
+
+#. Default: "this linked item"
+msgid "former_finance_advice_still_valid_this_linked_item"
+msgstr ""
+

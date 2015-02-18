@@ -40,6 +40,7 @@ from Products.Archetypes import DisplayList
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
+from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent, cleanRamCacheFor
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
@@ -461,6 +462,19 @@ class CustomMeetingItem(MeetingItem):
         self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
 
+    security.declareProtected('View', 'getFinanceAdvice')
+
+    def getFinanceAdvice(self, checkPredecessors=False, **kwargs):
+        '''Overrides the field 'financeAdvice' accessor to be able to pass
+           a p_checkPredecessors parameter that will also query predecessor if it is
+           in state 'return_college'.  Indeed, a finance advice is still valid if
+           predecessor was 'return_college', the advice is not asked again.'''
+        res = self.getField('financeAdvice').get(self)
+        if checkPredecessors:
+            pass
+        return res
+    MeetingItem.getFinanceAdvice = getFinanceAdvice
+
     def showDuplicateItemAction_cachekey(method, self, brain=False):
         '''cachekey method for self.showDuplicateItemAction.'''
         return (self, str(self.REQUEST.debug))
@@ -772,13 +786,16 @@ class CustomMeetingItem(MeetingItem):
 
     def needFinanceAdviceOf(self, financeGroupId):
         '''
-          Method that returns True if current item need advice of
+          Method that returns True if current item needs advice of
           given p_financeGroupId.
           We will check if given p_financeGroupId correspond to the selected
           value of MeetingItem.financeAdvice.
         '''
         item = self.getSelf()
-        if item.getFinanceAdvice() == financeGroupId:
+        # automatically ask finance advice if it is the currently selected financeAdvice
+        # and if the advice given on a predecessor is still not valid for this item
+        if item.getFinanceAdvice() == financeGroupId and \
+           item.adapted().getItemWithFinanceAdvice() == item:
             return True
         return False
 
@@ -850,9 +867,11 @@ class CustomMeetingItem(MeetingItem):
         Returns True if the current user has the right to generate the
         Financial Director Advice template.
         '''
-        if (self.context.getFinanceAdvice() != '_none_' and
-            (self.context.adviceIndex[self.context.getFinanceAdvice()]['hidden_during_redaction'] is False or
-             self.isCurrentUserInFDGroup(self.context.getFinanceAdvice()) is True)):
+        adviceHolder = self.getItemWithFinanceAdvice()
+
+        if (adviceHolder.getFinanceAdvice() != '_none_' and
+            (adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['hidden_during_redaction'] is False or
+             self.isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True)):
             return True
         return False
 
@@ -877,37 +896,72 @@ class CustomMeetingItem(MeetingItem):
         return res
     MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
 
+    def getItemWithFinanceAdvice(self):
+        '''
+          Make sure we have the item containing the finance advice.
+          Indeed, in case an item is created as a result of a 'return_college',
+          the advice itself is left on the original item (that is in state 'returned' or 'accepted_and_returned')
+          and no more on the current item.  In this case, get the advice on the predecessor item.
+        '''
+        # check if current self.context does not contain the given advice
+        # and if it is an item as result of a return college
+        # in case we use the finance advice of another item, the getFinanceAdvice is not _none_
+        # but the financeAdvice is not in adviceIndex
+        financeAdvice = self.context.getFinanceAdvice()
+        if financeAdvice == '_none_' or \
+           (financeAdvice in self.context.adviceIndex and
+            self.context.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
+           not getLastEvent(self.context, 'return'):
+            return self.context
+
+        # we will walk predecessors until we found a finance advice that has been given
+        # if we do not find a given advice, we will return the oldest item (last predecessor)
+        predecessor = self.context.getPredecessor()
+        validPredecessor = None
+        # consider only if predecessor is in state 'accepted_and_returned' or 'returned'
+        # otherwise, the predecessor could have been edited and advice is no longer valid
+        while predecessor and predecessor.queryState() in ('accepted_and_returned', 'returned'):
+            if predecessor.getFinanceAdvice() and \
+               predecessor.getFinanceAdvice() in predecessor.adviceIndex:
+                    validPredecessor = predecessor
+                    # return immediately the validPredecessor if advice was given on it
+                    if validPredecessor.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE:
+                        return validPredecessor
+            predecessor = predecessor.getPredecessor()
+        # either we found a valid predecessor, or we return self.context
+        return validPredecessor or self.context
+
     def getLegalTextForFDAdvice(self):
         '''
         Helper method. Return legal text for each advice type.
         '''
-        res = "<p>Attendu la demande d'avis adressée sur base d'un \
-            dossier complet au directeur financier en date du " +\
-            self.getFinancialAdviceStuff()['out_of_financial_dpt_localized'] +\
-            ".<br/></p>"
-        advice = self.context.getAdviceDataFor(self.context, self.context.getFinanceAdvice())
+        adviceHolder = self.getItemWithFinanceAdvice()
+        financialStuff = adviceHolder.adapted().getFinancialAdviceStuff()
+        res = ("<p>Attendu la demande d'avis adressée sur base d'un "
+               "dossier complet au directeur financier en date du "
+               "{0}.<br/></p>".format(financialStuff['out_of_financial_dpt_localized']))
+        advice = adviceHolder.getAdviceDataFor(adviceHolder, adviceHolder.getFinanceAdvice())
         hidden = advice['hidden_during_redaction']
         statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
         adviceType = advice['type'].encode('utf-8').replace('Avis finances', '')
-        comment = self.getFinancialAdviceStuff()['comment']
+        comment = financialStuff['comment']
         adviceGivenOnLocalized = advice['advice_given_on_localized']
         delayStatus = advice['delay_infos']['delay_status']
 
         if not hidden and \
-           self.mayGenerateFDAdvice() and \
+           adviceHolder.adapted().mayGenerateFDAdvice() and \
            adviceGivenOnLocalized and \
            (adviceType == ' défavorable' or adviceType == ' favorable'):
-            res = res + "<p>Attendu l'avis " + adviceType +\
-                " du Directeur financier annexé  à la présente décision et \
-                rendu conformément à l'article L1124-40 du Code de la \
-                Démocratie locale et de la Décentralisation,</p>"
+            res = res + "<p>Attendu l'avis {0} du Directeur financier annexé à la présente décision et " \
+                "rendu conformément à l'article L1124-40 du Code de la " \
+                "Démocratie locale et de la Décentralisation,</p>".format(adviceType.strip())
             if comment and adviceType == ' défavorable':
-                res = res + "<p>" + comment + "</p>"
+                res = res + "<p>{0}</p>".format(comment)
         elif statusWhenStopped == 'stopped_timed_out' or delayStatus == 'timed_out':
-            res = res + "<p>Attendu l'absence d'avis du Directeur \
-                financier rendu dans le délai prescrit à l'article \
-                L1124-40 du Code de la Démocratie \
-                locale et de la Décentralisation,</p>"
+            res = res + "<p>Attendu l'absence d'avis du Directeur " \
+                "financier rendu dans le délai prescrit à l'article " \
+                "L1124-40 du Code de la Démocratie " \
+                "locale et de la Décentralisation,</p>"
         else:
             res = ''
         return res
@@ -915,9 +969,28 @@ class CustomMeetingItem(MeetingItem):
     security.declareProtected('Modify portal content', 'onEdit')
 
     def onEdit(self, isCreated):
-        '''Update local_roles regarding the matterOfGroups.'''
+        '''Update local_roles regarding the matterOfGroups and access of finance advisers
+           to an item that has a predecessor that is 'returned' or 'accepted_and_returned'.'''
         item = self.getSelf()
+        item._updateFinanceAdvisersAccessOfReturnedItem()
         item._updateMatterOfGroupsLocalRoles()
+
+    def _updateFinanceAdvisersAccessOfReturnedItem(self):
+        '''
+          When an item is 'returned', if a finance advice was asked, the finance advice
+          given on the 'returned' item is still the advice we consider, also for the new item
+          that is directly validated.  But on this new item, finance advice is not asked anymore
+          but we need to give a read access to the corresponding finance advisers.
+        '''
+        # do only that is there is a itemWithFinanceAdvice
+        itemWithFinanceAdvice = self.adapted().getItemWithFinanceAdvice()
+        if itemWithFinanceAdvice == self:
+            return
+
+        # ok, we have a predecessor with finance access, given access to current item also
+        groupId = "{0}_advisers".format(self.getFinanceAdvice())
+        self.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
+    MeetingItem._updateFinanceAdvisersAccessOfReturnedItem = _updateFinanceAdvisersAccessOfReturnedItem
 
     def _updateMatterOfGroupsLocalRoles(self):
         '''

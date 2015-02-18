@@ -353,3 +353,52 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # items should have been added respecting following order item3, item2, item5, item4, item6, item1
         self.assertTrue([item.getId() for item in meeting.getItemsInOrder()] ==
                         [item3Id, item2Id, item5Id, item7Id, item4Id, item6Id, item1Id, ])
+
+    def test_GetItemWithFinanceAdvice(self):
+        '''Test the custom getItemWithFinanceAdvice method.
+           This will return the item an advice was given on in case the item
+           is the result of a 'return college' item.
+        '''
+        # create an item and check
+        self.changeUser('admin')
+        _createFinanceGroups(self.portal)
+        _configureCollegeCustomAdvisers(self.portal)
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        # ask emergency so finance step is passed
+        item.setEmergency('emergency_asked')
+        item.at_post_edit_script()
+        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        self.assertTrue(item.adapted().getItemWithFinanceAdvice() == item)
+
+        # duplicate and keep link to a new item
+        # new item will be item with finance advice
+        duplicatedItem = item.clone(cloneEventAction='Duplicate and keep link')
+        duplicatedItem.setPredecessor(item)
+        self.assertTrue(duplicatedItem.adapted().getItemWithFinanceAdvice() == duplicatedItem)
+        # the duplicatedItem still have the financeAdvice info
+        self.assertTrue(duplicatedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
+        self.assertTrue(FINANCE_GROUP_IDS[0] in duplicatedItem.adviceIndex)
+
+        # we will delay the item, new item is still considered the finance advice item
+        meeting = self.create('Meeting', date='2015/01/01')
+        self.presentItem(item)
+        self.decideMeeting(meeting)
+        self.do(item, 'delay')
+        # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
+        clonedDelayedItem = [newItem for newItem in item.getBRefs('ItemPredecessor') if not newItem == duplicatedItem][0]
+        self.assertTrue(clonedDelayedItem.adapted().getItemWithFinanceAdvice() == clonedDelayedItem)
+        # now correct item and 'accept and return' it
+        self.do(item, 'backToItemFrozen')
+        self.do(item, 'return')
+        # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
+        clonedReturnedItem = [newItem for newItem in item.getBRefs('ItemPredecessor') if not newItem in (duplicatedItem, clonedDelayedItem)][0]
+        # this time, the item with finance advice is the 'returned' item
+        itemWithFinanceAdvice = clonedReturnedItem.adapted().getItemWithFinanceAdvice()
+        self.assertTrue(itemWithFinanceAdvice == item)
+        self.assertTrue(itemWithFinanceAdvice.queryState() == 'returned')
+        # the info is kept in the financeAdvice attribute
+        # nevertheless, the advice is not asked automatically anymore
+        self.assertTrue(clonedReturnedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
+        self.assertTrue(not FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)

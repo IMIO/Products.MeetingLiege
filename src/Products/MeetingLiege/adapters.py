@@ -157,8 +157,8 @@ class CustomMeeting(Meeting):
     def getPrintableItemsByCategory(self, itemUids=[], late=False,
                                     ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                                     privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
-                                    excludedCategories=[], firstNumber=1, renumber=False,
-                                    includeEmptyCategories=False, includeEmptyGroups=False):
+                                    excludedCategories=[], groupIds=[], firstNumber=1, renumber=False,
+                                    includeEmptyCategories=False, includeEmptyGroups=False, withCollege=False):
         '''Returns a list of (late-)items (depending on p_late) ordered by
            category. Items being in a state whose name is in
            p_ignore_review_state will not be included in the result.
@@ -169,6 +169,7 @@ class CustomMeeting(Meeting):
            keys are prefixes and whose values are names of the logical big
            groups. A privacy,A toDiscuss and oralQuestion can also be given, the item is a
            toDiscuss (oralQuestion) or not (or both) item.
+           If p_groupIds are given, we will only consider these proposingGroups.
            If p_includeEmptyCategories is True, categories for which no
            item is defined are included nevertheless. If p_includeEmptyGroups
            is True, proposing groups for which no item is defined are included
@@ -188,6 +189,13 @@ class CustomMeeting(Meeting):
         # - at positions 1 to n: inner lists that contain:
         #   * at position 0: the proposing group object
         #   * at positions 1 to n: the items belonging to this group.
+        def _comp(v1, v2):
+            if v1[1]<v2[1]:
+                return -1
+            elif v1[1]>v2[1]:
+                return 1
+            else:
+                return 0
         res = []
         items = []
         previousCatId = None
@@ -196,7 +204,54 @@ class CustomMeeting(Meeting):
         for elt in itemUids:
             if elt == '':
                 itemUids.remove(elt)
-        items = self.context.getItemsInOrder(late=late, uids=itemUids)
+        if late == 'both':
+            items = self.context.getItemsInOrder(late=False, uids=itemUids)
+            items += self.context.getItemsInOrder(late=True, uids=itemUids)
+        else:
+            items = self.context.getItemsInOrder(late=late, uids=itemUids)
+        if withCollege:
+            meetingDate = self.context.getDate()
+            tool = getToolByName(self.context, 'portal_plonemeeting')
+            cfg = tool.getMeetingConfig(self.context)
+            insertMethods = cfg.getInsertingMethodsOnAddItem()
+            catalog = getToolByName(self.context, 'portal_catalog')
+            brains = catalog(portal_type='MeetingCollege',
+                              getDate={'query': meetingDate - 60,
+                              'range': 'min'}, sort_on='getDate',
+                              sort_order='reverse')
+            for brain in brains:
+                obj = brain.getObject()
+                isInNextCouncil = obj.getAdoptsNextCouncilAgenda()
+                if obj.getDate() < meetingDate and isInNextCouncil:
+                    collegeMeeting = obj
+                    break
+            if collegeMeeting:
+                collegeMeeting = collegeMeeting.getObject()
+            collegeItems = collegeMeeting.getItemsInOrder()
+            itemList = []
+            for collegeItem in collegeItems:
+                if 'meeting-config-council' in collegeItem.getOtherMeetingConfigsClonableTo() and not\
+                                collegeItem._checkAlreadyClonedToOtherMC('meeting-config-council'):
+                    itemPrivacy=collegeItem.getPrivacyForCouncil()
+                    itemProposingGroup=collegeItem.getProposingGroup()
+                    councilCategoryId = collegeItem.getCategory(theObject=True).getCategoryMappingsWhenCloningToOtherMC()
+                    itemCategory = getattr(tool.getMeetingConfig(self.context).categories, councilCategoryId[0].split('.')[1])
+                    meeting = self.context.getSelf()
+                    parent = meeting.aq_inner.aq_parent
+                    parent._v_tempItem = MeetingItem('')
+                    parent._v_tempItem.setPrivacy(itemPrivacy)
+                    parent._v_tempItem.setProposingGroup(itemProposingGroup)
+                    parent._v_tempItem.setCategory(itemCategory.getId())
+                    itemOrder = parent._v_tempItem.adapted().getInsertOrder(insertMethods)
+                    itemList.append((collegeItem, itemOrder))
+                    delattr(parent, '_v_tempItem')
+            councilItems = self.context.getItemsInOrder(uids=itemUids)
+            for councilItem in councilItems:
+                itemOrder = councilItem.adapted().getInsertOrder(insertMethods)
+                itemList.append((councilItem, itemOrder))
+
+            itemList.sort(cmp=_comp)
+            items = [i[0] for i in itemList]
         if by_proposing_group:
             groups = tool.getMeetingGroups()
         else:
@@ -212,32 +267,32 @@ class CustomMeeting(Meeting):
                     continue
                 elif not (toDiscuss == 'both' or item.getToDiscuss() == toDiscuss):
                     continue
+                elif groupIds and not item.getProposingGroup() in groupIds:
+                    continue
                 elif categories and not item.getCategory() in categories:
                     continue
                 elif excludedCategories and item.getCategory() in excludedCategories:
                     continue
-                currentCat = item.getCategory(theObject=True)
-                currentCatId = currentCat.getId()
-                if currentCatId != previousCatId:
-                    # Add the item to a new category, excepted if the
-                    # category already exists.
-                    catExists = False
-                    for catList in res:
-                        if catList[0] == currentCat:
-                            catExists = True
-                            break
-                    if catExists:
-                        self._insertItemInCategory(catList, item,
-                                                   by_proposing_group, group_prefixes, groups)
-                    else:
-                        res.append([currentCat])
-                        self._insertItemInCategory(res[-1], item,
-                                                   by_proposing_group, group_prefixes, groups)
-                    previousCatId = currentCatId
+                currentItemMeetingConfig = tool.getMeetingConfig(item)
+                if not withCollege or item.portal_type == 'MeetingItemCouncil':
+                    currentCat = item.getCategory(theObject=True)
                 else:
-                    # Append the item to the same category
+                    councilCategoryId = item.getCategory(theObject=True).getCategoryMappingsWhenCloningToOtherMC()
+                    currentCat = getattr(tool.getMeetingConfig(self.context).categories, councilCategoryId[0].split('.')[1])
+                # Add the item to a new category, excepted if the
+                # category already exists.
+                catExists = False
+                for catList in res:
+                    if catList[0] == currentCat:
+                        catExists = True
+                        break
+                if catExists:
+                    self._insertItemInCategory(catList, item,
+                                                by_proposing_group, group_prefixes, groups)
+                else:
+                    res.append([currentCat])
                     self._insertItemInCategory(res[-1], item,
-                                               by_proposing_group, group_prefixes, groups)
+                                                by_proposing_group, group_prefixes, groups)
         if includeEmptyCategories:
             meetingConfig = tool.getMeetingConfig(
                 self.context)
@@ -284,19 +339,22 @@ class CustomMeeting(Meeting):
         if renumber:
             # return a list of tuple with first element the number and second
             # element the item itself
-            final_items = []
             final_res = []
+            item_num = firstNumber-1
             for elts in res:
+                final_items = []
                 # we received a list of tuple (cat, items_list)
                 for item in elts[1:]:
-                    item_num = self.context.getItemNumsForActe()[item.UID()]
+                    if withCollege:
+                        item_num = item_num + 1
+                    else:
+                        item_num = self.context.getItemNumsForActe()[item.UID()]
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
         return res
 
     security.declarePublic('getItemsForAM')
-
     def getItemsForAM(self, itemUids=[], late=False,
                       ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                       privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
@@ -314,11 +372,16 @@ class CustomMeeting(Meeting):
         tool = getToolByName(self.context, 'portal_plonemeeting')
         cfg = tool.getMeetingConfig(self.context)
         for category in cfg.getCategories(onlySelectable=False):
-            lst.append(self.getPrintableItemsByCategory(itemUids, late,
-                                                        ignore_review_states, by_proposing_group, group_prefixes,
-                                                        privacy, oralQuestion, toDiscuss, [category.getId(), ],
-                                                        excludedCategories, firstNumber, renumber,
-                                                        includeEmptyCategories, includeEmptyGroups))
+            lst.append(self.getPrintableItemsByCategory(itemUids=itemUids, late=late,
+                                                        ignore_review_states=ignore_review_states,
+                                                        by_proposing_group=by_proposing_group,
+                                                        group_prefixes=group_prefixes,
+                                                        privacy=privacy, oralQuestion=oralQuestion,
+                                                        toDiscuss=toDiscuss, categories=[category.getId(), ],
+                                                        excludedCategories=excludedCategories,
+                                                        firstNumber=firstNumber, renumber=renumber,
+                                                        includeEmptyCategories=includeEmptyCategories,
+                                                        includeEmptyGroups=includeEmptyGroups))
             #we can find department in description
         pre_dpt = '---'
         for intermlst in lst:
@@ -397,12 +460,14 @@ class CustomMeeting(Meeting):
     Meeting.getItemNumsForActe = getItemNumsForActe
 
     def getRepresentative(self, sublst, itemUids, privacy='public',
-                          late=False, oralQuestion='both', by_proposing_group=False):
+                          late=False, oralQuestion='both', by_proposing_group=False, withCollege=False, renumber=False):
         '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
         previousCat = ''
         for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, late=late,
                                                         oralQuestion=oralQuestion,
-                                                        by_proposing_group=by_proposing_group):
+                                                        by_proposing_group=by_proposing_group,
+                                                        withCollege=withCollege,
+                                                        renumber=renumber):
             if sublist == sublst:
                 if sublist[0].Description() != previousCat:
                     return sublist[0].Description()

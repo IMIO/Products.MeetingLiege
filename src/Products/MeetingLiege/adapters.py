@@ -344,7 +344,7 @@ class CustomMeeting(Meeting):
             # return a list of tuple with first element the number and second
             # element the item itself
             final_res = []
-            item_num = firstNumber-1
+            item_num = self.context.REQUEST.get('renumber_first_number', firstNumber-1)
             for elts in res:
                 final_items = []
                 # we received a list of tuple (cat, items_list)
@@ -356,6 +356,11 @@ class CustomMeeting(Meeting):
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
+        if withCollege and not 'renumber_first_number' in self.context.REQUEST:
+            num = 0
+            for cat, items in res:
+                num += len(items)
+            self.context.REQUEST.set('renumber_first_number', num)
         return res
 
     security.declarePublic('getItemsForAM')

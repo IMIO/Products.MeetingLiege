@@ -261,7 +261,11 @@ class CustomMeeting(Meeting):
                 # Check if the review_state has to be taken into account
                 if item.queryState() in ignore_review_states:
                     continue
-                elif not (privacy == '*' or item.getPrivacy() == privacy):
+                elif not withCollege and not (privacy == '*' or item.getPrivacy() == privacy):
+                    continue
+                elif withCollege and not (privacy == '*' or
+                                          (item.portal_type=='MeetingItemCollege' and item.getPrivacyForCouncil() == privacy) or
+                                          (item.portal_type=='MeetingItemCouncil' and item.getPrivacy() == privacy)):
                     continue
                 elif not (oralQuestion == 'both' or item.getOralQuestion() == oralQuestion):
                     continue

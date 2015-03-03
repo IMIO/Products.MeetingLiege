@@ -449,12 +449,14 @@
                 <fieldset style="margin: 0;" tal:define="meetingItem python: context">
                 <legend i18n:translate="PloneMeeting_label_advices">Advices</legend>
                     <tal:comment replace="nothing">XXX added by MeetingLiege, item with finance advice</tal:comment>
+                    <tal:notDefinedInTool condition="not: context/isDefinedInTool">
                     <span class="discreet" style="color: red;"
                           tal:define="itemWithFinanceAdvice python: context.adapted().getItemWithFinanceAdvice()"
                           tal:condition="python: itemWithFinanceAdvice != context"
                           i18n:translate="former_finance_advice_still_valid">
                         Finance advice that was given on <a href="#" tal:attributes="href itemWithFinanceAdvice/absolute_url" i18n:name="predecessor" i18n:translate="former_finance_advice_still_valid_this_linked_item">that previous item</a> that is in state "<span tal:content="itemWithFinanceAdvice/queryState" i18n:domain="plone" i18n:translate="" i18n:name="predecessor_state">item state</span>" is still valid for current item.
                     </span>
+                    </tal:notDefinedInTool>
                     <metal:advices use-macro="context/@@advices-macros/macros/advicesIcons"/>
                 </fieldset>
             </td>

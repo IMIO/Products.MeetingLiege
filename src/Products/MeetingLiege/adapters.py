@@ -464,7 +464,7 @@ class CustomMeeting(Meeting):
                 continue
             res[item.UID()] = item_num
             item_num = item_num + 1
-        itemNums['nums'] = res
+        ann['MeetingLiege-getItemNumsForActe']['nums'] = res.copy()
         return res
     Meeting.getItemNumsForActe = getItemNumsForActe
 

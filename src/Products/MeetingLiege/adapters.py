@@ -442,7 +442,9 @@ class CustomMeeting(Meeting):
         if 'modified' in itemNums and itemNums['modified'] == self.modified():
             return itemNums['nums']
         else:
-            itemNums['modified'] = self.modified()
+            del ann['MeetingLiege-getItemNumsForActe']
+            ann['MeetingLiege-getItemNumsForActe'] = {}
+            ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
         items = self.getItemsInOrder()
         res = {}

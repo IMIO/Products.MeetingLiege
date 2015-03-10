@@ -485,6 +485,42 @@ class CustomMeeting(Meeting):
             previousCat = sublist[0].Description()
         return None
 
+    def getCategoriesByRepresentative(self):
+        '''
+        Gives a list of list of categories where the first element
+        is the description
+        '''
+        catByRepr = {}
+        previousDesc = 'not-an-actual-description'
+        tool = getToolByName(self.context, 'portal_plonemeeting')
+        meetingConfig = tool.getMeetingConfig(self.context)
+        allCategories = meetingConfig.getCategories()
+        # Makes a dictionnary with representative as key and
+        # a list of categories as value.
+        for category in allCategories:
+            if category.Description() not in catByRepr:
+                catByRepr[category.Description()] = []
+            catByRepr[category.Description()].append(category.getId())
+        # Because we need the category to be ordered as in the config,
+        # we make a list with representatives in the good order
+        representatives = []
+        for category in allCategories:
+            if category.Description() != previousDesc:
+                representatives.append(category.Description())
+                previousDesc = category.Description()
+        # Finally matches the representatives and categs together
+        # and puts everything in a list of list where every first
+        # element of the inner list is the representative.
+        finalList = []
+        catList = []
+        for representative in representatives:
+            catList.append(representative)
+            for category in catByRepr[representative]:
+                catList.append(category)
+            finalList.append(catList)
+            catList = []
+        return finalList
+
     def getCategoriesIdByNumber(self, numCateg):
         '''Returns categories filtered by their roman numerals'''
         tool = getToolByName(self.context, 'portal_plonemeeting')

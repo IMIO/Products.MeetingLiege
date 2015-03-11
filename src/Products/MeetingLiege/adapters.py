@@ -158,7 +158,8 @@ class CustomMeeting(Meeting):
                                     ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                                     privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
                                     excludedCategories=[], groupIds=[], firstNumber=1, renumber=False,
-                                    includeEmptyCategories=False, includeEmptyGroups=False, withCollege=False):
+                                    includeEmptyCategories=False, includeEmptyGroups=False, withCollege=False,
+                                    forCommission=False):
         '''Returns a list of (late-)items (depending on p_late) ordered by
            category. Items being in a state whose name is in
            p_ignore_review_state will not be included in the result.
@@ -349,7 +350,7 @@ class CustomMeeting(Meeting):
                 final_items = []
                 # we received a list of tuple (cat, items_list)
                 for item in elts[1:]:
-                    if withCollege:
+                    if withCollege or forCommission:
                         item_num = item_num + 1
                     else:
                         item_num = self.context.getItemNumsForActe()[item.UID()]

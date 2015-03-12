@@ -495,7 +495,7 @@ class CustomMeeting(Meeting):
         previousDesc = 'not-an-actual-description'
         tool = getToolByName(self.context, 'portal_plonemeeting')
         meetingConfig = tool.getMeetingConfig(self.context)
-        allCategories = meetingConfig.getCategories()
+        allCategories = meetingConfig.getCategories(onlySelectable=False)
         # Makes a dictionnary with representative as key and
         # a list of categories as value.
         for category in allCategories:

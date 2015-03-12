@@ -22,6 +22,7 @@
 # 02110-1301, USA.
 #
 
+from plone.app.testing import login
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
@@ -29,3 +30,13 @@ class testCustomMeeting(MeetingLiegeTestCase):
     """
         Tests the Meeting adapted methods
     """
+    def test_GetPrintableItemsByCategoryWithCollege(self):
+        import ipdb; ipdb.set_trace()  # XXX BREAKPOINT
+        login(self.portal, 'admin')
+        self.setMeetingConfig(self.meetingConfig2.getId())
+        meeting = self._createMeetingWithItems()
+        #build the list of uids
+        itemUids = []
+        for item in meeting.getItemsInOrder():
+            itemUids.append(item.UID())
+

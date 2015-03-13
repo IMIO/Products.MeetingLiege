@@ -51,7 +51,7 @@ def postInstall(context):
     # set correct wf for meetingadvice
     setCorrectWorkflowForAdvices(context, site)
     # add getAdoptsNextCouncilAgenda metadata
-    addOrUpdateColumns(site, columnInfos=('getAdoptsNextCouncilAgenda', ))
+    addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', ))
 
 
 

@@ -209,6 +209,13 @@ margin-left: 0.2em;
 #content a#showDataForCouncil {
     border-bottom: 1px dotted &dtml-linkColor;;
 }
+
+/* XXX to be removed when using plonetheme.imioapps >= 1.2.5 */
+.icons-on [class*="contenttype-meetingitem"],
+.icons-on .contenttype-meetingfile {
+    line-height: 1.2em !important;
+}
+
 /* </dtml-with> */
 /* DOCUMENTATION ON PRE-DEFINED PROPERTIES FROM PLONE */
 

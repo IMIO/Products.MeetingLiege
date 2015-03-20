@@ -1019,20 +1019,35 @@ class CustomMeetingItem(MeetingItem):
           the advice itself is left on the original item (that is in state 'returned' or 'accepted_and_returned')
           and no more on the current item.  In this case, get the advice on the predecessor item.
         '''
+        # if we are on a Council item, get the College item and proceed
+        item = self.context
+        if self.context.portal_type == 'MeetingItemCouncil':
+            # we need to work with the MeetingItemCollege
+            predecessor = self.context.getPredecessor()
+            while predecessor and not predecessor.portal_type == 'MeetingItemCollege':
+                predecessor = predecessor.getPredecessor()
+            # if we did not found a College item, we return current item
+            if not predecessor:
+                return self.context
+            item = predecessor
+
         # check if current self.context does not contain the given advice
         # and if it is an item as result of a return college
         # in case we use the finance advice of another item, the getFinanceAdvice is not _none_
         # but the financeAdvice is not in adviceIndex
-        financeAdvice = self.context.getFinanceAdvice()
-        if financeAdvice == '_none_' or \
-           (financeAdvice in self.context.adviceIndex and
-            self.context.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
-           not getLastEvent(self.context, 'return'):
+        financeAdvice = item.getFinanceAdvice()
+        # no finance advice, return self.context
+        if financeAdvice == '_none_':
             return self.context
+        # finance advice on self and not on a predecessor, return item
+        if (financeAdvice in item.adviceIndex and
+            item.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
+           not getLastEvent(item, 'return'):
+            return item
 
         # we will walk predecessors until we found a finance advice that has been given
         # if we do not find a given advice, we will return the oldest item (last predecessor)
-        predecessor = self.context.getPredecessor()
+        predecessor = item.getPredecessor()
         validPredecessor = None
         # consider only if predecessor is in state 'accepted_and_returned' or 'returned'
         # otherwise, the predecessor could have been edited and advice is no longer valid
@@ -1045,7 +1060,7 @@ class CustomMeetingItem(MeetingItem):
                         return validPredecessor
             predecessor = predecessor.getPredecessor()
         # either we found a valid predecessor, or we return self.context
-        return validPredecessor or self.context
+        return validPredecessor or item
 
     def getLegalTextForFDAdvice(self):
         '''

@@ -81,6 +81,18 @@ FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented
 
 # special event actions name used in workflow_history to historize signed finance advice
 FINANCE_ADVICE_HISTORIZE_EVENT = 'historize_signed_advice_content'
+
+# text about FD advice used in templates
+FINANCE_ADVICE_LEGAL_TEXT_PRE = "<p>Attendu la demande d'avis adressée sur base d'un "\
+    "dossier complet au directeur financier en date du {0}.<br/></p>"
+
+FINANCE_ADVICE_LEGAL_TEXT = "<p>Attendu l'avis {0} du Directeur financier annexé "\
+    "à la présente décision et rendu conformément à l'article L1124-40 "\
+    "du Code de la Démocratie locale et de la Décentralisation,</p>"
+
+FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN = "<p>Attendu l'absence d'avis du Directeur " \
+    "financier rendu dans le délai prescrit à l'article L1124-40 du Code " \
+    "de la Démocratie locale et de la Décentralisation,</p>"
 ##/code-section config-bottom
 
 

@@ -57,6 +57,9 @@ from Products.MeetingLiege.interfaces import \
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -1050,9 +1053,6 @@ class CustomMeetingItem(MeetingItem):
         '''
         adviceHolder = self.getItemWithFinanceAdvice()
         financialStuff = adviceHolder.adapted().getFinancialAdviceStuff()
-        res = ("<p>Attendu la demande d'avis adressée sur base d'un "
-               "dossier complet au directeur financier en date du "
-               "{0}.<br/></p>".format(financialStuff['out_of_financial_dpt_localized']))
         advice = adviceHolder.getAdviceDataFor(adviceHolder, adviceHolder.getFinanceAdvice())
         hidden = advice['hidden_during_redaction']
         statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
@@ -1060,21 +1060,20 @@ class CustomMeetingItem(MeetingItem):
         comment = financialStuff['comment']
         adviceGivenOnLocalized = advice['advice_given_on_localized']
         delayStatus = advice['delay_infos']['delay_status']
+        outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
+        res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(outOfFinancialdptLocalized)
 
         if not hidden and \
            adviceHolder.adapted().mayGenerateFDAdvice() and \
            adviceGivenOnLocalized and \
            (adviceType == ' défavorable' or adviceType == ' favorable'):
-            res = res + "<p>Attendu l'avis {0} du Directeur financier annexé à la présente décision et " \
-                "rendu conformément à l'article L1124-40 du Code de la " \
-                "Démocratie locale et de la Décentralisation,</p>".format(adviceType.strip())
+            res = res + FINANCE_ADVICE_LEGAL_TEXT.format(
+                adviceType.strip(),
+            )
             if comment and adviceType == ' défavorable':
                 res = res + "<p>{0}</p>".format(comment)
         elif statusWhenStopped == 'stopped_timed_out' or delayStatus == 'timed_out':
-            res = res + "<p>Attendu l'absence d'avis du Directeur " \
-                "financier rendu dans le délai prescrit à l'article " \
-                "L1124-40 du Code de la Démocratie " \
-                "locale et de la Décentralisation,</p>"
+            res = res + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
         else:
             res = ''
         return res

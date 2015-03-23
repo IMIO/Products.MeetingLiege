@@ -393,7 +393,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(item, 'backToItemFrozen')
         self.do(item, 'return')
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
-        clonedReturnedItem = [newItem for newItem in item.getBRefs('ItemPredecessor') if not newItem in (duplicatedItem, clonedDelayedItem)][0]
+        clonedReturnedItem = [newItem for newItem in item.getBRefs('ItemPredecessor')
+                              if not newItem in (duplicatedItem, clonedDelayedItem)][0]
         # this time, the item with finance advice is the 'returned' item
         itemWithFinanceAdvice = clonedReturnedItem.adapted().getItemWithFinanceAdvice()
         self.assertTrue(itemWithFinanceAdvice == item)
@@ -402,3 +403,35 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # nevertheless, the advice is not asked automatically anymore
         self.assertTrue(clonedReturnedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
         self.assertTrue(not FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
+
+        # now test when the item is in the council
+        # the right college item should be found too
+        # use 2 items, one that will be classicaly accepted and one that will 'accepted_and_returned'
+        itemToCouncil1 = self.create('MeetingItem')
+        itemToCouncil1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        itemToCouncil1.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        itemToCouncil2 = self.create('MeetingItem')
+        itemToCouncil2.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        itemToCouncil2.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        # ask emergency so finance step is passed
+        itemToCouncil1.setEmergency('emergency_asked')
+        itemToCouncil2.setEmergency('emergency_asked')
+        itemToCouncil1.at_post_edit_script()
+        itemToCouncil2.at_post_edit_script()
+        self.assertTrue(FINANCE_GROUP_IDS[0] in itemToCouncil1.adviceIndex)
+        self.assertTrue(FINANCE_GROUP_IDS[0] in itemToCouncil2.adviceIndex)
+        self.presentItem(itemToCouncil1)
+        self.presentItem(itemToCouncil2)
+        # accept itemToCouncil1 and check
+        self.do(itemToCouncil1, 'accept')
+        itemInCouncil1 = itemToCouncil1.getItemClonedToOtherMC('meeting-config-council')
+        self.assertTrue(itemInCouncil1.adapted().getItemWithFinanceAdvice() == itemToCouncil1)
+        # accept_and_return itemToCouncil2 and check
+        self.do(itemToCouncil2, 'accept_and_return')
+        itemInCouncil2 = itemToCouncil2.getItemClonedToOtherMC('meeting-config-council')
+        self.assertTrue(itemInCouncil2.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
+        # when college item was accepted_and_returned, it was cloned, the finance advice
+        # is also found for this cloned item
+        clonedAcceptedAndReturnedItem = [newItem for newItem in itemToCouncil2.getBRefs('ItemPredecessor')
+                                         if newItem.portal_type == 'MeetingItemCollege'][0]
+        self.assertTrue(clonedAcceptedAndReturnedItem.adapted().getItemWithFinanceAdvice() == itemToCouncil2)

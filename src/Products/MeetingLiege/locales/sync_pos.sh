@@ -1,5 +1,5 @@
 files="PloneMeeting plone imio.actionspanel datagridfield"
-languages="fr"
+languages="en fr"
 
 for file in $files; do
     for language in $languages; do

@@ -28,10 +28,20 @@ from Products.CMFCore.permissions import View
 
 from Products.PloneMeeting.interfaces import IAnnexable
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
+from datetime import datetime
+
+from plone.app.textfield.value import RichTextValue
+
+from plone.dexterity.utils import createContentInContainer
+
+from zope.i18n import translate
 
 class testCustomMeetingItem(MeetingLiegeTestCase):
     """
@@ -403,7 +413,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # nevertheless, the advice is not asked automatically anymore
         self.assertTrue(clonedReturnedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
         self.assertTrue(not FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
-
         # now test when the item is in the council
         # the right college item should be found too
         # use 2 items, one that will be classicaly accepted and one that will 'accepted_and_returned'
@@ -435,3 +444,83 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         clonedAcceptedAndReturnedItem = [newItem for newItem in itemToCouncil2.getBRefs('ItemPredecessor')
                                          if newItem.portal_type == 'MeetingItemCollege'][0]
         self.assertTrue(clonedAcceptedAndReturnedItem.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
+
+    def test_getLegalTextForFDAdvice(self):
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        self.changeUser('pmManager')
+        item1 = self.create('MeetingItem', title='Item with positive advice')
+        item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item2 = self.create('MeetingItem', title='Item with negative advice')
+        item2.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item3 = self.create('MeetingItem', title='Item with no advice')
+        item3.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+
+        self.proposeItem(item1)
+        self.proposeItem(item2)
+        self.proposeItem(item3)
+        self.do(item1, 'proposeToFinance')
+        item1.setCompleteness('completeness_complete')
+        self.do(item2, 'proposeToFinance')
+        item2.setCompleteness('completeness_complete')
+        self.do(item3, 'proposeToFinance')
+        item3.setCompleteness('completeness_complete')
+        item3.updateAdvices()
+        item3.adviceIndex[item3.getFinanceAdvice()]['delay_started_on'] = datetime(2012, 1, 1)
+        item3.updateAdvices()
+
+        self.changeUser('pmFinManager')
+        advice1 = createContentInContainer(item1,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': 'positive_finance',
+                                             'advice_comment': RichTextValue(u'My good comment finance')})
+        advice2 = createContentInContainer(item2,
+                                              'meetingadvice',
+                                              **{'advice_group': FINANCE_GROUP_IDS[0],
+                                                 'advice_type': 'negative_finance',
+                                                 'advice_comment': RichTextValue(u'My bad comment finance')})
+
+        # send to financial reviewer
+        self.changeUser('pmFinController')
+        self.do(advice1, 'proposeToFinancialReviewer')
+        self.do(advice2, 'proposeToFinancialReviewer')
+        # send to finance manager
+        self.do(advice1, 'proposeToFinancialManager')
+        self.do(advice2, 'proposeToFinancialManager')
+        # sign the advice
+        self.do(advice1, 'signFinancialAdvice')
+        self.do(advice2, 'signFinancialAdvice')
+
+        financialStuff1 = item1.adapted().getFinancialAdviceStuff()
+        financialStuff2 = item2.adapted().getFinancialAdviceStuff()
+        advice1 = item1.getAdviceDataFor(item1, item1.getFinanceAdvice())
+        advice2 = item2.getAdviceDataFor(item2, item2.getFinanceAdvice())
+        advice3 = item3.getAdviceDataFor(item3, item3.getFinanceAdvice())
+        delayStartedOn1 = advice1['delay_infos']['delay_started_on_localized']
+        delayStartedOn2 = advice2['delay_infos']['delay_started_on_localized']
+        delayStartedOn3 = advice3['delay_infos']['delay_started_on_localized']
+        outOfFinancialdptLocalized1 = financialStuff1['out_of_financial_dpt_localized']
+        outOfFinancialdptLocalized2 = financialStuff2['out_of_financial_dpt_localized']
+        comment2 = financialStuff2['comment']
+
+        res1 = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOn1)
+        res1 = res1 + FINANCE_ADVICE_LEGAL_TEXT.format('favorable',
+                                                       outOfFinancialdptLocalized1)
+        res2 = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOn2)
+        res2 = res2 + FINANCE_ADVICE_LEGAL_TEXT.format('défavorable',
+                                                       outOfFinancialdptLocalized2)
+        res2 = res2 + "<p>{0}</p>".format(comment2)
+
+        res3 = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOn3)
+        res3 = res3 + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+
+        self.assertTrue(item1.adapted().getLegalTextForFDAdvice() == res1)
+        self.assertTrue(item2.adapted().getLegalTextForFDAdvice() == res2)
+        self.assertTrue(item3.adapted().getLegalTextForFDAdvice() == res3)

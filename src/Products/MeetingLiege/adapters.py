@@ -1068,24 +1068,31 @@ class CustomMeetingItem(MeetingItem):
         '''
         adviceHolder = self.getItemWithFinanceAdvice()
         financialStuff = adviceHolder.adapted().getFinancialAdviceStuff()
+        adviceInd = adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]
         advice = adviceHolder.getAdviceDataFor(adviceHolder, adviceHolder.getFinanceAdvice())
         hidden = advice['hidden_during_redaction']
         statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
-        adviceType = advice['type'].encode('utf-8').replace('Avis finances', '')
+        adviceType = adviceInd['type']
         comment = financialStuff['comment']
         adviceGivenOnLocalized = advice['advice_given_on_localized']
+        delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized']
         delayStatus = advice['delay_infos']['delay_status']
         outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
-        res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(outOfFinancialdptLocalized)
+        res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOnLocalized)
 
         if not hidden and \
            adviceHolder.adapted().mayGenerateFDAdvice() and \
            adviceGivenOnLocalized and \
-           (adviceType == ' défavorable' or adviceType == ' favorable'):
+           (adviceType == u'positive_finance' or adviceType == u'negative_finance'):
+            if adviceType == u'positive_finance':
+                adviceTypeFr = 'favorable'
+            else:
+                adviceTypeFr = 'défavorable'
             res = res + FINANCE_ADVICE_LEGAL_TEXT.format(
-                adviceType.strip(),
+                adviceTypeFr,
+                outOfFinancialdptLocalized
             )
-            if comment and adviceType == ' défavorable':
+            if comment and adviceType == u'negative_finance':
                 res = res + "<p>{0}</p>".format(comment)
         elif statusWhenStopped == 'stopped_timed_out' or delayStatus == 'timed_out':
             res = res + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN

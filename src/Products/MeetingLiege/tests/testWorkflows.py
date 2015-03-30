@@ -852,13 +852,13 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # now check history comment viewability
         # viewable to pmFinManager and other members of the finance group
         history = advice.getHistory()
-        for event in history['events']:
+        for event in history:
             self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
         # not viewable to the pmManager as only Managers may access those comments
         # except the FINANCE_ADVICE_HISTORIZE_EVENT
         self.changeUser('pmManager')
         history = advice.getHistory()
-        for event in history['events']:
+        for event in history:
             if event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
                 self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
             else:
@@ -869,7 +869,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # user may see advice history comments like a MeetingManager
         self.hasPermission(View, advice)
         history = advice.getHistory()
-        for event in history['events']:
+        for event in history:
             if event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
                 self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
             else:

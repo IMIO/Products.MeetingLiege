@@ -74,8 +74,8 @@
 
   <!-- Override HistoryCommentViewable adapter for meetingadvice -->
   <adapter for="Products.PloneMeeting.content.advice.MeetingAdvice"
-           factory=".overrides.AdviceHistoryCommentViewableAdapter"
-           provides="Products.PloneMeeting.interfaces.IHistoryCommentViewable" />
+           factory=".overrides.AdviceHistoryAdapter"
+           provides="imio.history.interfaces.IImioHistory" />
 
   <!-- Override AnnexableAdapter adapter for MeetingItem-->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"

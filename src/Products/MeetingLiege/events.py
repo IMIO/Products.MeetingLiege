@@ -227,6 +227,8 @@ def onItemDuplicated(original, event):
         if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
             # we just sent an item from college to council
             newItem.setPrivacy(original.getPrivacyForCouncil())
+            # update finance group access on newItem
+            newItem._updateFinanceAdvisersAccess()
 
 
 def onItemAfterTransition(item, event):
@@ -235,3 +237,4 @@ def onItemAfterTransition(item, event):
        We call MeetingItem._updateMatterOfGroupsLocalRoles to update local roles
        regarding the matterOfGroups.'''
     item._updateMatterOfGroupsLocalRoles()
+    item._updateFinanceAdvisersAccess()

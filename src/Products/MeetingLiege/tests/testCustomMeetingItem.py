@@ -41,7 +41,6 @@ from plone.app.textfield.value import RichTextValue
 
 from plone.dexterity.utils import createContentInContainer
 
-from zope.i18n import translate
 
 class testCustomMeetingItem(MeetingLiegeTestCase):
     """
@@ -121,9 +120,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.validateItem(item)
         self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
 
+        # editing item keeps correct local roles
+        self.changeUser('pmManager')
+        item.at_post_edit_script()
+        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+
         # functionnality is for validated items and for items in a meeting
         # so present the item and check that it still works
-        self.changeUser('pmManager')
         self.create('Meeting', date='2015/01/01')
         self.presentItem(item)
         self.assertTrue(item.queryState() != 'validated')
@@ -367,31 +370,55 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_GetItemWithFinanceAdvice(self):
         '''Test the custom getItemWithFinanceAdvice method.
            This will return the item an advice was given on in case the item
-           is the result of a 'return college' item.
+           is the result of a 'return college' item or if it is a council item and
+           item in the college had the finance advice.
+           Moreover, when an advice holder is linked to another item, the finance group
+           gets automatically red access to the new item.
         '''
-        # create an item and check
         self.changeUser('admin')
-        _createFinanceGroups(self.portal)
+        # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        # ask emergency so finance step is passed
-        item.setEmergency('emergency_asked')
         item.at_post_edit_script()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.assertTrue(item.adapted().getItemWithFinanceAdvice() == item)
+        # give advice
+        self.proposeItem(item)
+        self.do(item, 'proposeToFinance')
+        self.changeUser('pmFinManager')
+        item.setCompleteness('completeness_complete')
+        item.setEmergency('emergency_accepted')
+        createContentInContainer(item,
+                                 'meetingadvice',
+                                 **{'advice_group': FINANCE_GROUP_IDS[0],
+                                    'advice_type': 'positive_finance',
+                                    'advice_comment': RichTextValue(u'My positive comment finance')})
+        # finance group has read access to the item
+        financeGroupAdvisersId = "{0}_advisers".format(item.getFinanceAdvice())
+        self.assertTrue(item.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
 
-        # duplicate and keep link to a new item
-        # new item will be item with finance advice
-        duplicatedItem = item.clone(cloneEventAction='Duplicate and keep link')
-        duplicatedItem.setPredecessor(item)
+        self.changeUser('pmManager')
+        # duplicate and keep link will not consider original finance advice
+        # as advice for the duplicated item
+        item.onDuplicateAndKeepLink()
+        duplicatedItem = item.getBRefs()[0]
+        # the duplicatedItem advice referent is the duplicatedItem...
         self.assertTrue(duplicatedItem.adapted().getItemWithFinanceAdvice() == duplicatedItem)
-        # the duplicatedItem still have the financeAdvice info
+        # the finance advice is asked on the duplicatedItem
         self.assertTrue(duplicatedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in duplicatedItem.adviceIndex)
+        # finance group did not get automatically access to the duplicatedItem
+        self.assertTrue(financeGroupAdvisersId not in duplicatedItem.__ac_local_roles__)
 
-        # we will delay the item, new item is still considered the finance advice item
+        # delaying an item will not make original item the item holder
+        # the finance advice is asked on the delayed item too
         meeting = self.create('Meeting', date='2015/01/01')
         self.presentItem(item)
         self.decideMeeting(meeting)
@@ -399,7 +426,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
         clonedDelayedItem = [newItem for newItem in item.getBRefs('ItemPredecessor') if not newItem == duplicatedItem][0]
         self.assertTrue(clonedDelayedItem.adapted().getItemWithFinanceAdvice() == clonedDelayedItem)
+        # the finance advice is asked on the clonedDelayedItem
+        self.assertTrue(clonedDelayedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
+        self.assertTrue(FINANCE_GROUP_IDS[0] in clonedDelayedItem.adviceIndex)
+        # finance group did not get automatically access to the clonedDelayedItem
+        self.assertTrue(financeGroupAdvisersId not in duplicatedItem.__ac_local_roles__)
+
         # now correct item and 'accept and return' it
+        # this time, the original item is considered the finance advice holder
         self.do(item, 'backToItemFrozen')
         self.do(item, 'return')
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
@@ -413,6 +447,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # nevertheless, the advice is not asked automatically anymore
         self.assertTrue(clonedReturnedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
         self.assertTrue(not FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
+        # finance group gets automatically access to the clonedReturnedItem
+        self.assertTrue(clonedReturnedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+
         # now test when the item is in the council
         # the right college item should be found too
         # use 2 items, one that will be classicaly accepted and one that will 'accepted_and_returned'
@@ -435,6 +472,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(itemToCouncil1, 'accept')
         itemInCouncil1 = itemToCouncil1.getItemClonedToOtherMC('meeting-config-council')
         self.assertTrue(itemInCouncil1.adapted().getItemWithFinanceAdvice() == itemToCouncil1)
+        # finance group gets automatically access to the itemInCouncil1
+        self.assertTrue(itemInCouncil1.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
         # accept_and_return itemToCouncil2 and check
         self.do(itemToCouncil2, 'accept_and_return')
         itemInCouncil2 = itemToCouncil2.getItemClonedToOtherMC('meeting-config-council')
@@ -444,6 +483,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         clonedAcceptedAndReturnedItem = [newItem for newItem in itemToCouncil2.getBRefs('ItemPredecessor')
                                          if newItem.portal_type == 'MeetingItemCollege'][0]
         self.assertTrue(clonedAcceptedAndReturnedItem.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
+        # finance group gets automatically access to the itemInCouncil2
+        self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        # roles are kept after edit or transition
+        itemInCouncil2.at_post_edit_script()
+        self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        # only available transition is 'present', so create a meeting in council to test...
+        self.setMeetingConfig(self.meetingConfig2.getId())
+        self.meetingConfig2.setUseGroupsAsCategories(True)
+        self.meetingConfig2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},))
+        self.create('Meeting', date='2015/01/01')
+        self.do(itemInCouncil2, 'present')
+        self.assertTrue(itemInCouncil2.queryState() == 'presented')
+        self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
 
     def test_getLegalTextForFDAdvice(self):
         self.changeUser('admin')

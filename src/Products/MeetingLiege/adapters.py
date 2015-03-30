@@ -1103,28 +1103,32 @@ class CustomMeetingItem(MeetingItem):
     security.declareProtected('Modify portal content', 'onEdit')
 
     def onEdit(self, isCreated):
-        '''Update local_roles regarding the matterOfGroups and access of finance advisers
-           to an item that has a predecessor that is 'returned' or 'accepted_and_returned'.'''
+        '''Update local_roles regarding :
+           - the matterOfGroups;
+           - access of finance advisers.'''
         item = self.getSelf()
-        item._updateFinanceAdvisersAccessOfReturnedItem()
         item._updateMatterOfGroupsLocalRoles()
+        item._updateFinanceAdvisersAccess()
 
-    def _updateFinanceAdvisersAccessOfReturnedItem(self):
+    def _updateFinanceAdvisersAccess(self):
         '''
-          When an item is 'returned', if a finance advice was asked, the finance advice
-          given on the 'returned' item is still the advice we consider, also for the new item
-          that is directly validated.  But on this new item, finance advice is not asked anymore
+          Make sure finance advisers have still access to items linked to an item for which they
+          give an advice on.  This could be the case :
+          - when an item is 'returned', the finance advice given on the 'returned' item is still
+            the advice we consider, also for the new item that is directly validated;
+          - when an item is sent to the council.
+          In both cases, the finance advice is not asked anymore
           but we need to give a read access to the corresponding finance advisers.
         '''
-        # do only that is there is a itemWithFinanceAdvice
+        # do only that if there is an itemWithFinanceAdvice
         itemWithFinanceAdvice = self.adapted().getItemWithFinanceAdvice()
         if itemWithFinanceAdvice == self:
             return
 
-        # ok, we have a predecessor with finance access, given access to current item also
-        groupId = "{0}_advisers".format(self.getFinanceAdvice())
+        # ok, we have a predecessor with finance access, give access to current item also
+        groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
         self.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
-    MeetingItem._updateFinanceAdvisersAccessOfReturnedItem = _updateFinanceAdvisersAccessOfReturnedItem
+    MeetingItem._updateFinanceAdvisersAccess = _updateFinanceAdvisersAccess
 
     def _updateMatterOfGroupsLocalRoles(self):
         '''
@@ -1721,8 +1725,9 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
           Manage 'return college', item is duplicated
           then validated for a next meeting.
         '''
-        newItem = self.context.clone(cloneEventAction='return', keepProposingGroup=True)
-        newItem.setPredecessor(self.context)
+        newItem = self.context.clone(cloneEventAction='return',
+                                     keepProposingGroup=True,
+                                     setCurrentAsPredecessor=True)
         # now that the item is cloned, we need to validate it
         # so it is immediately available for a next meeting
         # we will also set back correct proposingGroup if it was changed
@@ -1733,6 +1738,8 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         self.context.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(newItem, 'validate')
         self.context.REQUEST.set('mayValidate', False)
+        # update finance group access on newItem
+        newItem._updateFinanceAdvisersAccess()
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):

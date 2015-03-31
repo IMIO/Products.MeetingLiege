@@ -21,116 +21,116 @@ msgstr ""
 # portal_tabs
 #. Default: "College"
 msgid "Meeting config College"
-msgstr ""
+msgstr "College"
 
 #. Default: "Council"
 msgid "Meeting config Council"
-msgstr ""
+msgstr "Council"
 
 #. Default: " "
 msgid "MeetingLiege_descr_archivingRef"
 msgstr ""
 
-#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item"
+#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
-msgstr ""
+msgstr "If necessary, select the financial service that will have to give the legal financial advice on this item."
 
 #. Default: " "
 msgid "MeetingLiege_descr_labelForCouncil"
 msgstr ""
 
-#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
+#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'."
 msgid "MeetingLiege_descr_textCheckList"
-msgstr ""
+msgstr "Enter elements that are necessary for this kind of item to be considered as 'complete'."
 
 #. Default: "Groups of matter"
 msgid "MeetingLiege_label_GroupsOfMatter"
-msgstr ""
+msgstr "Groups of matter"
 
 #. Default: "This meeting adopts next council agenda"
 msgid "MeetingLiege_label_adoptsNextCouncilAgenda"
-msgstr ""
+msgstr "This meeting adopts next council agenda"
 
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
-msgstr ""
+msgstr "Sub-step number"
 
 #. Default: "Archiving reference"
 msgid "MeetingLiege_label_archivingRef"
-msgstr ""
+msgstr "Archiving reference"
 
 #. Default: "Archiving references"
 msgid "MeetingLiege_label_archivingRefs"
-msgstr ""
+msgstr "Archiving references"
 
 #. Default: "Decision (end)"
 msgid "MeetingLiege_label_decisionEnd"
-msgstr ""
+msgstr "Decision (end)"
 
 #. Default: "Decision (suite)"
 msgid "MeetingLiege_label_decisionSuite"
-msgstr ""
+msgstr "Decision (suite)"
 
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
-msgstr ""
+msgstr "Financial advice"
 
 #. Default: "Label to use for item in Council"
 msgid "MeetingLiege_label_labelForCouncil"
-msgstr ""
+msgstr "Label to use for item in Council"
 
 #. Default: "Privacy"
 msgid "MeetingLiege_label_privacyForCouncil"
-msgstr ""
+msgstr "Privacy"
 
 #. Default: "Checklist"
 msgid "MeetingLiege_label_textCheckList"
-msgstr ""
+msgstr "Checklist"
 
 #. Default: "Decision"
 msgid "PloneMeeting_label_decision"
-msgstr ""
+msgstr "Decision"
 
 #. Default: "Precise"
 msgid "PloneMeeting_label_detailedDescription"
-msgstr ""
+msgstr "Precise"
 
 #. Default: "Purpose"
 msgid "PloneMeeting_label_itemDescription"
-msgstr ""
+msgstr "Purpose"
 
 #. Default: "Summary of the purpose"
 msgid "PloneMeeting_label_itemTitle"
-msgstr ""
+msgstr "Summary of the purpose"
 
 # Override 'to discuss?' translations
 #. Default: "To discuss ?"
 msgid "PloneMeeting_label_toDiscuss"
-msgstr ""
+msgstr "To discuss ?"
 
 #. Default: "Default value of the 'toDiscuss' attribute for normal items"
 msgid "PloneMeeting_label_toDiscussDefault"
-msgstr ""
+msgstr "Default value of the 'toDiscuss' attribute for normal items"
 
 #. Default: "Default value of the 'toDiscuss' attribute for late items"
 msgid "PloneMeeting_label_toDiscussLateDefault"
-msgstr ""
+msgstr "Default value of the 'toDiscuss' attribute for late items"
 
 #. Default: "Set 'toDiscuss' field values when items are inserted into a meeting"
 msgid "PloneMeeting_label_toDiscussSetOnItemInsert"
-msgstr ""
+msgstr "Set 'toDiscuss' field values when items are inserted into a meeting"
 
 #. Default: "Show field 'to discuss' on lists of late items"
 msgid "PloneMeeting_label_toDiscussShownForLateItems"
-msgstr ""
+msgstr "Show field 'to discuss' on lists of late items"
 
 #. Default: "See/hide data used for council item"
 msgid "See/hide data used for council item"
-msgstr ""
+msgstr "See/hide data used for council item"
 
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
-msgstr ""
+msgstr "Administrative reviewers"
 
 #. Default: " "
 msgid "adopts_next_council_agenda_descr"
@@ -138,119 +138,115 @@ msgstr ""
 
 #. Default: "No advice to ask (apart from financial advice)"
 msgid "advice_required_to_ask_advices"
-msgstr ""
+msgstr "No advice to ask (apart from financial advice)"
 
 #. Default: ", complete purpose"
 msgid "and_description"
-msgstr ""
+msgstr ", complete purpose"
 
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
-msgstr ""
+msgstr "Enter archiving references that will be useable on items of this meeting config."
 
 #. Default: "The completeness has been asked again by the application when the item has been proposed to the finances."
 msgid "completeness_asked_again_by_app"
-msgstr ""
+msgstr "The completeness has been asked again by the application when the item has been proposed to the finances."
 
 #. Default: " "
 msgid "copy_groups_item_descr"
 msgstr ""
 
-#. Default: "Item created from a college item"
-msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
-msgstr ""
-
 #. Default: "This advice can not be given because the item is still not considered complete by the finance group."
 msgid "finance_advice_not_giveable_because_item_not_complete"
-msgstr ""
+msgstr "This advice can not be given because the item is still not considered complete by the finance group."
 
 #. Default: "This advice is suspended because the item has been sent back to the proposing group."
 msgid "finance_advice_suspended_because_item_sent_back_to_proposing_group"
-msgstr ""
+msgstr "This advice is suspended because the item has been sent back to the proposing group."
 
 #. Default: "Financial controllers"
 msgid "financialcontrollers"
-msgstr ""
+msgstr "Financial controllers"
 
 #. Default: "Financial managers"
 msgid "financialmanagers"
-msgstr ""
+msgstr "Financial managers"
 
 #. Default: "Financial reviewers"
 msgid "financialreviewers"
-msgstr ""
+msgstr "Financial reviewers"
 
 #. Default: "Finance advice that was given on ${predecessor} that is in state ${predecessor_state} is still valid for current item."
 msgid "former_finance_advice_still_valid"
-msgstr ""
+msgstr "Finance advice that was given on ${predecessor} that is in state ${predecessor_state} is still valid for current item."
 
 #. Default: "this linked item"
 msgid "former_finance_advice_still_valid_this_linked_item"
-msgstr ""
+msgstr "this linked item"
 
 #. Default: "Front page body"
 msgid "front_page_body"
-msgstr ""
+msgstr "Front page body"
 
 #. Default: "Select groups that are in charge of this matter.  Observers of this group will be able to access items using this category once it will be in state 'validated' and after."
 msgid "groups_of_matter_descr"
-msgstr ""
+msgstr "Select groups that are in charge of this matter.  Observers of this group will be able to access items using this category once it will be in state 'validated' and after."
 
 #. Default: "Accepted and returned"
 msgid "icon_help_accepted_and_returned"
-msgstr ""
+msgstr "Accepted and returned"
 
 #. Default: "Accepted with modifications"
 msgid "icon_help_accepted_but_modified"
-msgstr ""
+msgstr "Accepted with modifications"
 
 #. Default: "Advices asked by creator"
 msgid "icon_help_itemcreated_waiting_advices"
-msgstr ""
+msgstr "Advices asked by creator"
 
 #. Default: "Marked not applicable"
 msgid "icon_help_marked_not_applicable"
-msgstr ""
+msgstr "Marked not applicable"
 
 #. Default: "Pre accepted"
 msgid "icon_help_pre_accepted"
-msgstr ""
+msgstr "Pre accepted"
 
 #. Default: "Proposed to administrative reviewer"
 msgid "icon_help_proposed_to_administrative_reviewer"
-msgstr ""
+msgstr "Proposed to administrative reviewer"
 
 #. Default: "Proposed to director"
 msgid "icon_help_proposed_to_director"
-msgstr ""
+msgstr "Proposed to director"
 
 #. Default: "Proposed to finance"
 msgid "icon_help_proposed_to_finance"
-msgstr ""
+msgstr "Proposed to finance"
 
 #. Default: "Proposed to internal reviewer"
 msgid "icon_help_proposed_to_internal_reviewer"
-msgstr ""
+msgstr "Proposed to internal reviewer"
 
 #. Default: "Advices asked by internal reviewer"
 msgid "icon_help_proposed_to_internal_reviewer_waiting_advices"
-msgstr ""
+msgstr "Advices asked by internal reviewer"
 
 #. Default: "Returned"
 msgid "icon_help_returned"
-msgstr ""
+msgstr "Returned"
 
 #. Default: "This item is down the workflow from finances"
 msgid "icon_help_wf_down_finances"
-msgstr ""
+msgstr "This item is down the workflow from finances"
 
 #. Default: "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
 msgid "inserting_methods_not_using_to_discuss_error"
-msgstr ""
+msgstr "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
 
 #. Default: "Internal reviewers"
 msgid "internalreviewers"
-msgstr ""
+msgstr "Internal reviewers"
 
 #. Default: " "
 msgid "item_category_descr"
@@ -292,49 +288,37 @@ msgstr ""
 msgid "item_title_descr"
 msgstr ""
 
-#. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
-msgid "item_wf_changed_finance_advice_negative"
-msgstr ""
-
-#. Default: "The item has been automatically validated because the relevant finance advice was positive."
-msgid "item_wf_changed_finance_advice_positive"
-msgstr ""
-
-#. Default: "The item has been automatically validated because the finance advice was timed out."
-msgid "item_wf_changed_finance_advice_timed_out"
-msgstr ""
-
 #. Default: "Summary of the purpose"
 msgid "listingheader_item_title"
-msgstr ""
+msgstr "Summary of the purpose"
 
 #. Default: "Unfavorable opinion"
 msgid "negative_finance"
-msgstr ""
+msgstr "Unfavorable opinion"
 
 #. Default: "Nil"
 msgid "nil"
-msgstr ""
+msgstr "Nil"
 
 #. Default: "No finance advice"
 msgid "no_finance_advice"
-msgstr ""
+msgstr "No finance advice"
 
 #. Default: "No financial impact"
 msgid "no_financial_impact"
-msgstr ""
+msgstr "No financial impact"
 
 #. Default: "Not required opinion"
 msgid "not_required_finance"
-msgstr ""
+msgstr "Not required opinion"
 
 #. Default: "Follow first word of decision field order"
 msgid "on_decision_first_word"
-msgstr ""
+msgstr "Follow first word of decision field order"
 
 #. Default: "Follow to discuss (to discuss then not to discuss)"
 msgid "on_to_discuss"
-msgstr ""
+msgstr "Follow to discuss (to discuss then not to discuss)"
 
 #. Default: " "
 msgid "optional_advisers_item_descr"
@@ -342,93 +326,89 @@ msgstr ""
 
 #. Default: "Favorable opinion"
 msgid "positive_finance"
-msgstr ""
+msgstr "Favorable opinion"
 
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
-msgstr ""
+msgstr "Item College"
 
 #. Default: "MeetingItemCouncil"
 msgid "predecessor_MeetingItemCouncil"
-msgstr ""
-
-#. Default: "The item has been duplicated and the new item is available for a next meeting."
-msgid "return_comments"
-msgstr ""
+msgstr "Item Council"
 
 #. Default: "Reviewers"
 msgid "reviewers"
-msgstr ""
+msgstr "Reviewers"
 
 #. Default: "Advices proposed to financial controller"
 msgid "searchadviceproposedtocontroller"
-msgstr ""
+msgstr "Advices proposed to financial controller"
 
 #. Default: "Advices proposed to financial manager"
 msgid "searchadviceproposedtomanager"
-msgstr ""
+msgstr "Advices proposed to financial manager"
 
 #. Default: "Advices proposed to financial reviewer"
 msgid "searchadviceproposedtoreviewer"
-msgstr ""
+msgstr "Advices proposed to financial reviewer"
 
 #. Default: "Items to control completeness of"
 msgid "searchitemstocontrolcompletenessof"
-msgstr ""
+msgstr "Items to control completeness of"
 
 #. Default: "The item has been successfully transfered to the college."
 msgid "sendto_meeting-config-college_success"
-msgstr ""
+msgstr "The item has been successfully transfered to the college."
 
 #. Default: "The item has been successfully transfered to the council."
 msgid "sendto_meeting-config-council_success"
-msgstr ""
+msgstr "The item has been successfully transfered to the council."
 
 #. Default: "Sending emails to meeting managers has been disabled. Please contact them through other means for asking them to discuss this item."
 msgid "to_discuss_ask_mail_not_sent"
-msgstr ""
+msgstr "Sending emails to meeting managers has been disabled. Please contact them through other means for asking them to discuss this item."
 
 #. Default: "A mail was sent to the meeting managers for asking them to discuss this item."
 msgid "to_discuss_ask_mail_sent"
-msgstr ""
+msgstr "A mail was sent to the meeting managers for asking them to discuss this item."
 
 #. Default: "The optional item attribute 'to discuss' allows the meeting manager to specify if an item presented to a meeting should be discussed during this meeting or if, simply, it must appear in the agenda and the meeting decisions for traceability purposes but has already led to a decision before the meeting occurrence. Check the box if you want the items to be set to 'discussed' by default."
 msgid "to_discuss_default_descr"
-msgstr ""
+msgstr "The optional item attribute 'to discuss' allows the meeting manager to specify if an item presented to a meeting should be discussed during this meeting or if, simply, it must appear in the agenda and the meeting decisions for traceability purposes but has already led to a decision before the meeting occurrence. Check the box if you want the items to be set to 'discussed' by default."
 
 #. Default: "Check the box if you want the 'late' items to be set to 'discussed' by default."
 msgid "to_discuss_late_default_descr"
-msgstr ""
+msgstr "Check the box if you want the 'late' items to be set to 'discussed' by default."
 
 #. Default: "Not to be discussed during the meeting."
 msgid "to_discuss_no"
-msgstr ""
+msgstr "Not to be discussed during the meeting."
 
 #. Default: "Click on the image for asking to discuss this item."
 msgid "to_discuss_no_ask_edit"
-msgstr ""
+msgstr "Click on the image for asking to discuss this item."
 
 #. Default: "Not to be discussed during the meeting. Click on the image for discussing the item."
 msgid "to_discuss_no_edit"
-msgstr ""
+msgstr "Not to be discussed during the meeting. Click on the image for discussing the item."
 
 #. Default: "If you check this box, the value of field 'toDiscuss', for an item, will be set when inserting the item into a meeting, with a default value as defined by the fields below. Else, the user having the permission to edit the item will be able to give a value to this field, as soon as on item creation."
 msgid "to_discuss_set_on_item_insert_descr"
-msgstr ""
+msgstr "If you check this box, the value of field 'toDiscuss', for an item, will be set when inserting the item into a meeting, with a default value as defined by the fields below. Else, the user having the permission to edit the item will be able to give a value to this field, as soon as on item creation."
 
 #. Default: "Check the box if you want to show column 'to discuss' on lists of late items (checked is the default). For late items, users may not be allowed to choose the value for this field (ie, late items are to be discussed anyway)."
 msgid "to_discuss_shown_for_late_items_descr"
-msgstr ""
+msgstr "Check the box if you want to show column 'to discuss' on lists of late items (checked is the default). For late items, users may not be allowed to choose the value for this field (ie, late items are to be discussed anyway)."
 
 #. Default: "To be discussed during the meeting."
 msgid "to_discuss_yes"
-msgstr ""
+msgstr "To be discussed during the meeting."
 
 #. Default: "To be discussed during the meeting. Click on the image for not discussing the item."
 msgid "to_discuss_yes_edit"
-msgstr ""
+msgstr "To be discussed during the meeting. Click on the image for not discussing the item."
 
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
-msgstr ""
+msgstr "Items come validated"
 

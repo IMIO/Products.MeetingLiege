@@ -156,7 +156,7 @@ msgstr ""
 msgid "backToProposedToDirector"
 msgstr ""
 
-#. Default: "Propose to financialcontroller"
+#. Default: "Propose to financial controller"
 msgid "proposeToFinancialController"
 msgstr ""
 

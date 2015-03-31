@@ -16,21 +16,21 @@ msgstr ""
 
 #. Default: "Active?"
 msgid "Archiving reference active?"
-msgstr ""
+msgstr "Active?"
 
 #. Default: "Code"
 msgid "Archiving reference code"
-msgstr ""
+msgstr "Code"
 
 #. Default: "Finance advice"
 msgid "Archiving reference finance advice"
-msgstr ""
+msgstr "Finance advice"
 
 #. Default: "Label"
 msgid "Archiving reference label"
-msgstr ""
+msgstr "Label"
 
 #. Default: "Restrict to selected groups"
 msgid "Archiving reference restrict to selected groups"
-msgstr ""
+msgstr "Restrict to selected groups"
 

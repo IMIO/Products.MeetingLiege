@@ -1,4 +1,4 @@
-files="PloneMeeting plone imio.actionspanel datagridfield"
+files="PloneMeeting plone imio.actionspanel imio.history datagridfield"
 languages="en fr"
 
 for file in $files; do

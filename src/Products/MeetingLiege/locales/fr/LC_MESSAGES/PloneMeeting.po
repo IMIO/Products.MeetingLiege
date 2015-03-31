@@ -32,17 +32,17 @@ msgstr "Conseil communal"
 msgid "MeetingLiege_descr_archivingRef"
 msgstr "Code destiné à permettre au Service des archives de classer de façon informatique le dossier"
 
-#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item"
+#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
-msgstr "Sélectionnez ici le service DF qui devra émettre un avis de légalité sur le point"
+msgstr "Sélectionnez ici le service DF qui devra émettre un avis de légalité sur le point."
 
 #. Default: " "
 msgid "MeetingLiege_descr_labelForCouncil"
 msgstr "Intitulé du point tel qui apparaîtra à l’ordre du jour du Conseil communal"
 
-#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
+#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'."
 msgid "MeetingLiege_descr_textCheckList"
-msgstr "Encodez la liste des éléments nécessaires pour que ce type de point soit considéré 'complet'"
+msgstr "Encodez la liste des éléments nécessaires pour que ce type de point soit considéré 'complet'."
 
 #. Default: "Groups of matter"
 msgid "MeetingLiege_label_GroupsOfMatter"
@@ -155,10 +155,6 @@ msgstr "La complétude a été remise automatiquement par l'application en 'Eval
 #. Default: " "
 msgid "copy_groups_item_descr"
 msgstr "Transmission d’un point à une Direction à titre d’information. Choisissez-en plusieurs en maintenant la touche 'Ctrl' enfoncée."
-
-#. Default: "Item created from a college item"
-msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
-msgstr "Point créé depuis un point Collège"
 
 #. Default: "This advice can not be given because the item is still not considered complete by the finance group."
 msgid "finance_advice_not_giveable_because_item_not_complete"
@@ -292,18 +288,6 @@ msgstr "Service qui propose la décision, à savoir celui auquel est affecté l�
 msgid "item_title_descr"
 msgstr "Titre du modèle et du point présenté en séance et apparaissant dans la liste des points présentés"
 
-#. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
-msgid "item_wf_changed_finance_advice_negative"
-msgstr "Le point a été automatiquement renvoyé au directeur car l'avis du service finance rendu était défavorable."
-
-#. Default: "The item has been automatically validated because the relevant finance advice was positive."
-msgid "item_wf_changed_finance_advice_positive"
-msgstr "Le point a été automatiquement proposé à la séance car l'avis du service finance rendu était favorable."
-
-#. Default: "The item has been automatically validated because the finance advice was timed out."
-msgid "item_wf_changed_finance_advice_timed_out"
-msgstr "Le point a été automatiquement proposé à la séance car le délai pour rendre l'avis du service finance est dépassé."
-
 #. Default: "Summary of the purpose"
 msgid "listingheader_item_title"
 msgstr "Résumé de l'objet"
@@ -351,10 +335,6 @@ msgstr "Collège"
 #. Default: "MeetingItemCouncil"
 msgid "predecessor_MeetingItemCouncil"
 msgstr "Conseil"
-
-#. Default: "The item has been duplicated and the new item is available for a next meeting."
-msgid "return_comments"
-msgstr "Le point a été automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."
 
 #. Default: "Reviewers"
 msgid "reviewers"

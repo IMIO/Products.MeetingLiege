@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PloneMeeting\n"
+"POT-Creation-Date: 2011-03-01 09:00-100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-code: \n"
+"Language-name: \n"
+"Preferred-encodings: utf-8 latin1\n"
+"Domain: imio.history\n"
+
+#. Default: "Item created from a college item."
+msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
+msgstr ""
+
+#. Default: "The item has been duplicated and the new item is available for a next meeting."
+msgid "return_comments"
+msgstr ""
+
+#. Default: "The item has been automatically validated because the relevant finance advice was positive."
+msgid "item_wf_changed_finance_advice_positive"
+msgstr ""
+
+#. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
+msgid "item_wf_changed_finance_advice_negative"
+msgstr ""
+
+#. Default: "The item has been automatically validated because the finance advice was timed out."
+msgid "item_wf_changed_finance_advice_timed_out"
+msgstr ""

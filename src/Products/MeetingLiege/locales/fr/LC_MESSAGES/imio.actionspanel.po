@@ -15,6 +15,10 @@ msgstr ""
 "Domain: imio.actionspanel\n"
 "X-is-fallback-for: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr\n"
 
+#. Default: "The item has been accepted and returned, it has been duplicated and the new item is available for a next meeting."
+msgid "accept_and_return_done_descr"
+msgstr "Le point a été 'Accepté avec retour Collège', il a été automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."
+
 #. Default: "The item has been returned, it has been duplicated and the new item is available for a next meeting."
 msgid "return_done_descr"
 msgstr "Le point est maintenant en 'Retour Collège', il a été automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."

@@ -15,7 +15,7 @@
       description="Extension profile for MeetingLiege."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
-  
+
   <!-- ##code-section profiles.zcml-bottom #fill in your manual code here -->
   <genericsetup:registerProfile
    name="liege"
@@ -23,6 +23,15 @@
    description="PloneMeeting for City College and Council of Liege"
    provides="Products.GenericSetup.interfaces.EXTENSION"
    for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+  <genericsetup:upgradeStep
+      title="Go to MeetingLiege 3.4"
+      description=""
+      source="3.3"
+      destination="3.4"
+      handler="Products.MeetingLiege.migrations.migrate_to_3_4.migrate"
+      profile="Products.MeetingLiege:default" />
+
   <!-- ##/code-section profiles.zcml-bottom -->
 
 </configure>

@@ -152,7 +152,7 @@ msgstr "Proposer à la direction"
 msgid "proposeToFinance"
 msgstr "Proposer aux finances"
 
-#. Default: "Propose to financialcontroller"
+#. Default: "Propose to financial controller"
 msgid "proposeToFinancialController"
 msgstr "Proposer au contrôleur financier"
 

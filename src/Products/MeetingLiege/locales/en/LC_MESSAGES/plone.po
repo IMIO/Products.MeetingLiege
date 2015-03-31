@@ -17,205 +17,205 @@ msgstr ""
 # types
 #. Default: "MeetingCollege"
 msgid "MeetingCollege"
-msgstr ""
+msgstr "Meeting College"
 
 #. Default: "MeetincCouncil"
 msgid "MeetingCouncil"
-msgstr ""
+msgstr "Meeting Council"
 
 #. Default: "MeetingItemCollege"
 msgid "MeetingItemCollege"
-msgstr ""
+msgstr "Item College"
 
 #. Default: "MeetingItemCouncil"
 msgid "MeetingItemCouncil"
-msgstr ""
+msgstr "Item Council"
 
 #. Default: "Accept and return"
 msgid "accept_and_return"
-msgstr ""
+msgstr "Accept and return"
 
 #. Default: "Accept with modifications"
 msgid "accept_but_modify"
-msgstr ""
+msgstr "Accept with modifications"
 
 #. Default: "Accepted and returned"
 msgid "accepted_and_returned"
-msgstr ""
+msgstr "Accepted and returned"
 
 #. Default: "Accepted with modifications"
 msgid "accepted_but_modified"
-msgstr ""
+msgstr "Accepted with modifications"
 
 #. Default: "Ask advices"
 msgid "askAdvicesByInternalReviewer"
-msgstr ""
+msgstr "Ask advices"
 
 #. Default: "Ask advices"
 msgid "askAdvicesByItemCreator"
-msgstr ""
+msgstr "Ask advices"
 
 #. Default: "Back to created"
 msgid "backToCreated"
-msgstr ""
+msgstr "Back to created"
 
 #. Default: "Back to decided"
 msgid "backToDecided"
-msgstr ""
+msgstr "Back to decided"
 
 #. Default: "Back to decisions published"
 msgid "backToDecisionsPublished"
-msgstr ""
+msgstr "Back to decisions published"
 
 #. Default: "Back to frozen"
 msgid "backToFrozen"
-msgstr ""
+msgstr "Back to frozen"
 
 #. Default: "Back to item created"
 msgid "backToItemCreated"
-msgstr ""
+msgstr "Back to item created"
 
 #. Default: "Back to proposed to administrative reviewer"
 msgid "backToProposedToAdministrativeReviewer"
-msgstr ""
+msgstr "Back to proposed to administrative reviewer"
 
 #. Default: "Back to proposed to director"
 msgid "backToProposedToDirector"
-msgstr ""
+msgstr "Back to proposed to director"
 
 #. Default: "Back to proposed to financial controller"
 msgid "backToProposedToFinancialController"
-msgstr ""
+msgstr "Back to proposed to financial controller"
 
 #. Default: "Back to proposed to financial manager"
 msgid "backToProposedToFinancialManager"
-msgstr ""
+msgstr "Back to proposed to financial manager"
 
 #. Default: "Back to proposed to financial reviewer"
 msgid "backToProposedToFinancialReviewer"
-msgstr ""
+msgstr "Back to proposed to financial reviewer"
 
 #. Default: "Back to proposed to internal reviewer"
 msgid "backToProposedToInternalReviewer"
-msgstr ""
+msgstr "Back to proposed to internal reviewer"
 
 #. Default: "Create an item council from an item college"
 msgid "create_to_meeting-config-council_from_meeting-config-college"
-msgstr ""
+msgstr "Create an item council from an item college"
 
 #. Default: "Delay"
 msgid "delay"
-msgstr ""
+msgstr "Delay"
 
 #. Default: "Delayed"
 msgid "delayed"
-msgstr ""
+msgstr "Delayed"
 
 #. Default: "Financial advice signed"
 msgid "financial_advice_signed"
-msgstr ""
+msgstr "Financial advice signed"
 
 #. Default: "Historize signed advice"
 msgid "historize_signed_advice_content"
-msgstr ""
+msgstr "Historize signed advice"
 
 #. Default: "Advices asked by creator"
 msgid "itemcreated_waiting_advices"
-msgstr ""
+msgstr "Advices asked by creator"
 
 #. Default: "Mark not applicable"
 msgid "mark_not_applicable"
-msgstr ""
+msgstr "Mark not applicable"
 
 #. Default: "Marked not applicable"
 msgid "marked_not_applicable"
-msgstr ""
+msgstr "Marked not applicable"
 
 #. Default: "Pre accept"
 msgid "pre_accept"
-msgstr ""
+msgstr "Pre accept"
 
 #. Default: "Pre accepted"
 msgid "pre_accepted"
-msgstr ""
+msgstr "Pre accepted"
 
 #. Default: "Propose to administrative reviewer"
 msgid "proposeToAdministrativeReviewer"
-msgstr ""
+msgstr "Propose to administrative reviewer"
 
 #. Default: "Propose to director"
 msgid "proposeToDirector"
-msgstr ""
+msgstr "Propose to director"
 
 #. Default: "Propose to finance"
 msgid "proposeToFinance"
-msgstr ""
+msgstr "Propose to finance"
 
-#. Default: "Propose to financialcontroller"
+#. Default: "Propose to financial controller"
 msgid "proposeToFinancialController"
-msgstr ""
+msgstr "Propose to financial controller"
 
 #. Default: "Propose to financial manager"
 msgid "proposeToFinancialManager"
-msgstr ""
+msgstr "Propose to financial manager"
 
 #. Default: "Propose to financial reviewer"
 msgid "proposeToFinancialReviewer"
-msgstr ""
+msgstr "Propose to financial reviewer"
 
 #. Default: "Propose to internal reviewer"
 msgid "proposeToInternalReviewer"
-msgstr ""
+msgstr "Propose to internal reviewer"
 
 #. Default: "Proposed to administrative reviewer"
 msgid "proposed_to_administrative_reviewer"
-msgstr ""
+msgstr "Proposed to administrative reviewer"
 
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
-msgstr ""
+msgstr "Proposed to director"
 
 #. Default: "Proposed to finance"
 msgid "proposed_to_finance"
-msgstr ""
+msgstr "Proposed to finance"
 
 #. Default: "Proposed to financial controller"
 msgid "proposed_to_financial_controller"
-msgstr ""
+msgstr "Proposed to financial controller"
 
 #. Default: "Proposed to financial manager"
 msgid "proposed_to_financial_manager"
-msgstr ""
+msgstr "Proposed to financial manager"
 
 #. Default: "Proposed to financial reviewer"
 msgid "proposed_to_financial_reviewer"
-msgstr ""
+msgstr "Proposed to financial reviewer"
 
 #. Default: "Proposed to internal reviewer"
 msgid "proposed_to_internal_reviewer"
-msgstr ""
+msgstr "Proposed to internal reviewer"
 
 #. Default: "Advices asked by internal reviewer"
 msgid "proposed_to_internal_reviewer_waiting_advices"
-msgstr ""
+msgstr "Advices asked by internal reviewer"
 
 #. Default: "Return"
 msgid "return"
-msgstr ""
+msgstr "Return"
 
 #. Default: "Returned"
 msgid "returned"
-msgstr ""
+msgstr "Returned"
 
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"
-msgstr ""
+msgstr "Sign financial advice"
 
 #. Default: "Validate"
 msgid "validate"
-msgstr ""
+msgstr "Validate"
 
 #. Default: "Validated"
 msgid "validated"
-msgstr ""
+msgstr "Validated"
 

@@ -36,14 +36,6 @@ msgstr ""
 msgid "predecessor_MeetingItemCouncil"
 msgstr ""
 
-#. Default: "Item created from a college item"
-msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
-msgstr ""
-
-#. Default: "The item has been duplicated and the new item is available for a next meeting."
-msgid "return_comments"
-msgstr ""
-
 #. Default: "Front page body"
 msgid "front_page_body"
 msgstr ""
@@ -108,18 +100,6 @@ msgstr ""
 msgid "not_required_finance"
 msgstr ""
 
-#. Default: "The item has been automatically validated because the relevant finance advice was positive."
-msgid "item_wf_changed_finance_advice_positive"
-msgstr ""
-
-#. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
-msgid "item_wf_changed_finance_advice_negative"
-msgstr ""
-
-#. Default: "The item has been automatically validated because the finance advice was timed out."
-msgid "item_wf_changed_finance_advice_timed_out"
-msgstr ""
-
 #. Default: "Nil"
 msgid "nil"
 msgstr ""
@@ -176,7 +156,7 @@ msgstr ""
 msgid "MeetingLiege_label_financeAdvice"
 msgstr ""
 
-#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item"
+#. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr ""
 
@@ -212,7 +192,7 @@ msgstr ""
 msgid "MeetingLiege_label_textCheckList"
 msgstr ""
 
-#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'"
+#. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'."
 msgid "MeetingLiege_descr_textCheckList"
 msgstr ""
 
@@ -444,4 +424,3 @@ msgstr ""
 #. Default: "this linked item"
 msgid "former_finance_advice_still_valid_this_linked_item"
 msgstr ""
-

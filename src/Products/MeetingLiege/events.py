@@ -89,7 +89,7 @@ def onAdviceTransition(advice, event):
         # compute advice data to store
         adviceStyle = cfg.getAdviceStyle()
         advice_type_icon = "advice_%s_%s.png" % (adviceStyle, advice.advice_type)
-        advice_type = item.adviceIndex[advice.advice_group]['type']
+        translated_advice_type = item.getAdviceDataFor(item, advice.advice_group)['type']
         advice_comment = advice.advice_comment and advice.advice_comment.output or '<p>-</p>'
         advice_observations = advice.advice_observations and advice.advice_observations.output or '<p>-</p>'
         comments = """<p id='historize_signed_advice_content-advice_type'><img src='{0}' />&nbsp;{1}</p>
@@ -97,7 +97,7 @@ def onAdviceTransition(advice, event):
 {2}
 <p id='historize_signed_advice_content-advice_observations'>Observations :</p>
 {3}""".format(advice_type_icon,
-              advice_type.encode('utf-8'),
+              translated_advice_type.encode('utf-8'),
               advice_comment,
               advice_observations)
         wf_history_data = {'action': FINANCE_ADVICE_HISTORIZE_EVENT,

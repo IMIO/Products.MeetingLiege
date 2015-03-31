@@ -1303,7 +1303,10 @@ class CustomMeetingConfig(MeetingConfig):
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
+                # advice not given yet
                 groupIds.append('delay__%s_advice_not_giveable' % financeGroup)
+                # advice was already given once and come back to the finance
+                groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
         params = {'portal_type': self.getItemTypeName(),
                   # KeywordIndex 'getCompleteness' use 'OR' by default
                   'getCompleteness': ('completeness_not_yet_evaluated',
@@ -1325,7 +1328,8 @@ class CustomMeetingConfig(MeetingConfig):
     security.declarePublic('searchItemsWithAdviceProposedToFinancialController')
 
     def searchItemsWithAdviceProposedToFinancialController(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.'''
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
+           We only return items for which completeness has been evaluated to 'complete'.'''
         groupIds = []
         membershipTool = getToolByName(self, 'portal_membership')
         userGroups = membershipTool.getAuthenticatedMember().getGroups()
@@ -1335,6 +1339,7 @@ class CustomMeetingConfig(MeetingConfig):
                 groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
         # Create query parameters
         params = {'portal_type': self.getItemTypeName(),
+                  'getCompleteness': 'completeness_complete',
                   # KeywordIndex 'indexAdvisers' use 'OR' by default
                   'indexAdvisers': groupIds,
                   'sort_on': sortKey,

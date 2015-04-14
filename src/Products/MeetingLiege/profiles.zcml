@@ -20,6 +20,7 @@
   <genericsetup:registerProfile
    name="liege"
    title="PloneMeeting / For Liege"
+   directory="profiles/liege"
    description="PloneMeeting for City College and Council of Liege"
    provides="Products.GenericSetup.interfaces.EXTENSION"
    for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>

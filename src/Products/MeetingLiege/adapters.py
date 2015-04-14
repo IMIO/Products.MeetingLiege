@@ -60,6 +60,7 @@ from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+from DateTime import DateTime
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -1412,6 +1413,116 @@ class CustomMeetingConfig(MeetingConfig):
         for archivingRef in cfg.getArchivingRefs():
             if archivingRef['row_id'] == row_id:
                 return dict(archivingRef)
+
+    security.declarePublic('listCdldProposingGroup')
+
+    def listCdldProposingGroup(self):
+        '''Returns a list of groups that can be selected for cdld synthesis field
+        '''
+        tool = getToolByName(self, 'portal_plonemeeting')
+        res = []
+        # add delay-aware optionalAdvisers
+        customAdvisers = self.getSelf().getCustomAdvisers()
+        for customAdviser in customAdvisers:
+            groupId = customAdviser['group']
+            row_id = customAdviser['row_id']
+            groupDelay = customAdviser['delay']
+            groupDelayLabel = customAdviser['delay_label']
+            group = getattr(tool, groupId, None)
+            groupKey = '%s__%s' % (groupId, row_id)
+            groupValue = '%s - %s (%s)' % (group.Title(), groupDelay, groupDelayLabel)
+            if group:
+                res.append((groupKey, groupValue))
+        # only let select groups for which there is at least one user in
+        nonEmptyMeetingGroups = tool.getMeetingGroups(notEmptySuffix='advisers')
+        if nonEmptyMeetingGroups:
+            for mGroup in nonEmptyMeetingGroups:
+                res.append(('%s____' % mGroup.getId(), mGroup.getName()))
+        res = DisplayList(res)
+        return res
+    MeetingConfig.listCdldProposingGroup = listCdldProposingGroup
+
+    security.declarePublic('searchCDLDItems')
+
+    def searchCDLDItems(self, sortKey='', sortOrder='', filterKey='', filterValue='', **kwargs):
+        '''Queries all items for cdld synthesis'''
+        groups = []
+        cdldProposingGroups = self.getSelf().getCdldProposingGroup()
+        for cdldProposingGroup in cdldProposingGroups:
+            groupId = cdldProposingGroup.split('__')[0]
+            delay = ''
+            row_id = cdldProposingGroup.split('__')[1]
+            if row_id and self._dataForCustomAdviserRowId(row_id)['delay']:
+                delay = 'delay__'
+            groups.append('%s%s' % (delay, groupId))
+        # advised items are items that has an advice in a particular review_state
+        # just append every available meetingadvice state: we want "given" advices.
+        # this search will only return 'delay-aware' advices
+        wfTool = getToolByName(self, 'portal_workflow')
+        adviceWF = wfTool.getWorkflowsFor('meetingadvice')[0]
+        adviceStates = adviceWF.states.keys()
+        groupIds = []
+        advice_index__suffixs = ('advice_delay_exceeded', 'advice_not_given', 'advice_not_giveable')
+        # advice given
+        for adviceState in adviceStates:
+            groupIds += [g + '_%s' % adviceState for g in groups]
+        #advice not given
+        for advice_index__suffix in advice_index__suffixs:
+            groupIds += [g + '_%s' % advice_index__suffix for g in groups]
+        # Create query parameters
+        fromDate = DateTime(2014, 01, 01)
+        toDate = DateTime(2015, 12, 31, 23, 59)
+        params = {'portal_type': self.getItemTypeName(),
+                  # KeywordIndex 'indexAdvisers' use 'OR' by default
+                  'indexAdvisers': groupIds,
+                  'created': {'query': [fromDate, toDate], 'range': 'minmax'},
+                  'sort_on': sortKey,
+                  'sort_order': sortOrder, }
+        # Manage filter
+        if filterKey:
+            params[filterKey] = prepareSearchValue(filterValue)
+        # update params with kwargs
+        params.update(kwargs)
+        # Perform the query in portal_catalog
+        brains = self.portal_catalog(**params)
+        res = []
+        fromDate = DateTime(2014, 01, 01)  # redefine date to get advice in 2014
+        for brain in brains:
+            obj = brain.getObject()
+            if obj.getMeeting() and obj.getMeeting().getDate() >= fromDate and obj.getMeeting().getDate() <= toDate:
+                res.append(brain)
+        return res
+    MeetingConfig.searchCDLDItems = searchCDLDItems
+
+    security.declarePublic('printCDLDItems')
+
+    def printCDLDItems(self):
+        '''
+        Returns a list of advice for synthesis document (CDLD)
+        '''
+        meetingConfig = self.getSelf()
+        brains = meetingConfig.context.searchCDLDItems()
+        res = []
+        groups = []
+        cdldProposingGroups = meetingConfig.getCdldProposingGroup()
+        for cdldProposingGroup in cdldProposingGroups:
+            groupId = cdldProposingGroup.split('__')[0]
+            delay = False
+            if cdldProposingGroup.split('__')[1]:
+                delay = True
+            if not (groupId, delay) in groups:
+                groups.append((groupId, delay))
+        for brain in brains:
+            item = brain.getObject()
+            advicesIndex = item.adviceIndex
+            for groupId, delay in groups:
+                if groupId in advicesIndex:
+                    advice = advicesIndex[groupId]
+                    if advice['delay'] and not delay:
+                        continue
+                    if not (advice, item) in res:
+                        res.append((advice, item))
+        return res
 
 
 class CustomMeetingGroup(MeetingGroup):

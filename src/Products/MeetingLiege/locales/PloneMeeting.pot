@@ -424,3 +424,16 @@ msgstr ""
 #. Default: "this linked item"
 msgid "former_finance_advice_still_valid_this_linked_item"
 msgstr ""
+
+#searches
+#. Default: "cdld synthesis"
+msgid "searchcdlditems"
+msgstr ""
+
+#. Default: "Proposing group to keep for CDLD synthesis"
+msgid "MeetingLiege_label_cdldProposingGroup"
+msgstr ""
+
+#. Default: "Choose proposing group for cdld advice"
+msgid "MeetingLiege_descr_cdldProposingGroup"
+msgstr ""

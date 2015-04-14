@@ -30,4 +30,18 @@
    <property name="visible">True</property>
   </object>
  </object>
+ <object name="document_actions" meta_type="CMF Action Category">
+  <property name="title"></property>
+  <object name="cdld-document-generate" meta_type="CMF Action" i18n:domain="PloneMeeting">
+   <property name="title" i18n:translate="">CDLD</property>
+   <property name="description" i18n:translate=""></property>
+   <property name="url_expr">string:${object_url}/generateCDLD</property>
+   <property name="icon_expr">string:$portal_url/cdld.gif</property>
+   <property name="available_expr">python:context.REQUEST.form.get('search', '') == 'searchcdlditems'</property>
+   <property name="permissions">
+    <element value="View"/>
+   </property>
+   <property name="visible">True</property>
+  </object>
+ </object>
 </object>

@@ -412,3 +412,15 @@ msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
 
+#searches
+#. Default: "cdld synthesis"
+msgid "searchcdlditems"
+msgstr "Synthèse Avis DF"
+
+#. Default: "Proposing group to keep for CDLD synthesis"
+msgid "MeetingLiege_label_cdldProposingGroup"
+msgstr "Groupes proposants à garder pour la synthèse des avis pour le CDLD (avis DF)"
+
+#. Default: "Choose proposing group for cdld advice"
+msgid "MeetingLiege_descr_cdldProposingGroup"
+msgstr "Choisir les groupes donneurs d'avis qui seront repris dans la synthèse CDLD (avis DF)"

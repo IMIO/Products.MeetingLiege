@@ -210,6 +210,22 @@ def update_config_schema(baseSchema):
             allow_empty_rows=False,
             write_permission=WriteRiskyConfig,
         ),
+        # field used to define list of services for synthesis document for DF (legality advice)
+        LinesField(
+            name='cdldProposingGroup',
+            widget=MultiSelectionWidget(
+                size=10,
+                label='CdldProposingGroup',
+                label_msgid='MeetingLiege_label_cdldProposingGroup',
+                description='Choose proposing group for cdld advice',
+                description_msgid='MeetingLiege_descr_cdldProposingGroup',
+                i18n_domain='PloneMeeting',
+            ),
+            enforceVocabulary=True,
+            multiValued=1,
+            vocabulary='listCdldProposingGroup',
+            write_permission=WriteRiskyConfig,
+        ),
     ),)
 
     completeConfigSchema = baseSchema + specificSchema.copy()

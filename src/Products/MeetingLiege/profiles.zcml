@@ -33,6 +33,14 @@
       handler="Products.MeetingLiege.migrations.migrate_to_3_4.migrate"
       profile="Products.MeetingLiege:default" />
 
+  <genericsetup:upgradeStep
+      title="Add CDLD environment"
+      description=""
+      source="3.4"
+      destination="3.4"
+      handler="Products.MeetingLiege.migrations.migrate_to_cdld.migrate"
+      profile="Products.MeetingLiege:default" />
+
   <!-- ##/code-section profiles.zcml-bottom -->
 
 </configure>

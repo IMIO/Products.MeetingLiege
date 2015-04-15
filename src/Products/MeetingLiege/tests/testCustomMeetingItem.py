@@ -345,7 +345,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item7Id = item7.getId()
         item7_order = item7.getInsertOrder(insertingMethods)
         # result should be item1, item3, item2, item5 (equals to item2) then item4
-        self.assertTrue(item1_order < item3_order < item2_order == item5_order < item7_order < item4_order < item6_order)
+        self.assertTrue(item1_order < item3_order < item2_order == item5_order
+                        < item7_order < item4_order < item6_order)
         # every items use proposingGroup 'developers' that is in position 1
         # if we use 'vendors' for item1, item1_order will become higher than item6_order
         insertingMethods = ({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},
@@ -424,7 +425,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.decideMeeting(meeting)
         self.do(item, 'delay')
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
-        clonedDelayedItem = [newItem for newItem in item.getBRefs('ItemPredecessor') if not newItem == duplicatedItem][0]
+        clonedDelayedItem = [newItem for newItem in item.getBRefs('ItemPredecessor')
+                             if not newItem == duplicatedItem][0]
         self.assertTrue(clonedDelayedItem.adapted().getItemWithFinanceAdvice() == clonedDelayedItem)
         # the finance advice is asked on the clonedDelayedItem
         self.assertTrue(clonedDelayedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
@@ -529,15 +531,15 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(item1,
-                                          'meetingadvice',
-                                          **{'advice_group': FINANCE_GROUP_IDS[0],
-                                             'advice_type': 'positive_finance',
-                                             'advice_comment': RichTextValue(u'My good comment finance')})
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                              'advice_type': 'positive_finance',
+                                              'advice_comment': RichTextValue(u'My good comment finance')})
         advice2 = createContentInContainer(item2,
-                                              'meetingadvice',
-                                              **{'advice_group': FINANCE_GROUP_IDS[0],
-                                                 'advice_type': 'negative_finance',
-                                                 'advice_comment': RichTextValue(u'My bad comment finance')})
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                              'advice_type': 'negative_finance',
+                                              'advice_comment': RichTextValue(u'My bad comment finance')})
 
         # send to financial reviewer
         self.changeUser('pmFinController')

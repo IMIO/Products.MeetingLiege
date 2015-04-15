@@ -25,8 +25,6 @@ from DateTime import DateTime
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
-from plone.app.testing import login
-
 
 class testCustomMeeting(MeetingLiegeTestCase):
     """

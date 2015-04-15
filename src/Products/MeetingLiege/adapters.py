@@ -195,15 +195,14 @@ class CustomMeeting(Meeting):
         #   * at position 0: the proposing group object
         #   * at positions 1 to n: the items belonging to this group.
         def _comp(v1, v2):
-            if v1[1]<v2[1]:
+            if v1[1] < v2[1]:
                 return -1
-            elif v1[1]>v2[1]:
+            elif v1[1] > v2[1]:
                 return 1
             else:
                 return 0
         res = []
         items = []
-        previousCatId = None
         tool = getToolByName(self.context, 'portal_plonemeeting')
         # Retrieve the list of items
         for elt in itemUids:
@@ -221,9 +220,9 @@ class CustomMeeting(Meeting):
             insertMethods = cfg.getInsertingMethodsOnAddItem()
             catalog = getToolByName(self.context, 'portal_catalog')
             brains = catalog(portal_type='MeetingCollege',
-                              getDate={'query': meetingDate - 60,
-                              'range': 'min'}, sort_on='getDate',
-                              sort_order='reverse')
+                             getDate={'query': meetingDate - 60,
+                                      'range': 'min'}, sort_on='getDate',
+                             sort_order='reverse')
             for brain in brains:
                 obj = brain.getObject()
                 isInNextCouncil = obj.getAdoptsNextCouncilAgenda()
@@ -235,12 +234,14 @@ class CustomMeeting(Meeting):
             collegeItems = collegeMeeting.getItemsInOrder()
             itemList = []
             for collegeItem in collegeItems:
-                if 'meeting-config-council' in collegeItem.getOtherMeetingConfigsClonableTo() and not\
-                                collegeItem._checkAlreadyClonedToOtherMC('meeting-config-council'):
-                    itemPrivacy=collegeItem.getPrivacyForCouncil()
-                    itemProposingGroup=collegeItem.getProposingGroup()
-                    councilCategoryId = collegeItem.getCategory(theObject=True).getCategoryMappingsWhenCloningToOtherMC()
-                    itemCategory = getattr(tool.getMeetingConfig(self.context).categories, councilCategoryId[0].split('.')[1])
+                if 'meeting-config-council' in collegeItem.getOtherMeetingConfigsClonableTo() and not \
+                        collegeItem._checkAlreadyClonedToOtherMC('meeting-config-council'):
+                    itemPrivacy = collegeItem.getPrivacyForCouncil()
+                    itemProposingGroup = collegeItem.getProposingGroup()
+                    councilCategoryId = collegeItem.getCategory(theObject=True).\
+                        getCategoryMappingsWhenCloningToOtherMC()
+                    itemCategory = getattr(tool.getMeetingConfig(self.context).categories,
+                                           councilCategoryId[0].split('.')[1])
                     meeting = self.context.getSelf()
                     parent = meeting.aq_inner.aq_parent
                     parent._v_tempItem = MeetingItem('')
@@ -269,8 +270,10 @@ class CustomMeeting(Meeting):
                 elif not withCollege and not (privacy == '*' or item.getPrivacy() == privacy):
                     continue
                 elif withCollege and not (privacy == '*' or
-                                          (item.portal_type=='MeetingItemCollege' and item.getPrivacyForCouncil() == privacy) or
-                                          (item.portal_type=='MeetingItemCouncil' and item.getPrivacy() == privacy)):
+                                          (item.portal_type == 'MeetingItemCollege' and
+                                           item.getPrivacyForCouncil() == privacy) or
+                                          (item.portal_type == 'MeetingItemCouncil' and
+                                           item.getPrivacy() == privacy)):
                     continue
                 elif not (oralQuestion == 'both' or item.getOralQuestion() == oralQuestion):
                     continue
@@ -282,12 +285,12 @@ class CustomMeeting(Meeting):
                     continue
                 elif excludedCategories and item.getCategory() in excludedCategories:
                     continue
-                currentItemMeetingConfig = tool.getMeetingConfig(item)
                 if not withCollege or item.portal_type == 'MeetingItemCouncil':
                     currentCat = item.getCategory(theObject=True)
                 else:
                     councilCategoryId = item.getCategory(theObject=True).getCategoryMappingsWhenCloningToOtherMC()
-                    currentCat = getattr(tool.getMeetingConfig(self.context).categories, councilCategoryId[0].split('.')[1])
+                    currentCat = getattr(tool.getMeetingConfig(self.context).categories,
+                                         councilCategoryId[0].split('.')[1])
                 # Add the item to a new category, excepted if the
                 # category already exists.
                 catExists = False
@@ -296,12 +299,17 @@ class CustomMeeting(Meeting):
                         catExists = True
                         break
                 if catExists:
-                    self._insertItemInCategory(catList, item,
-                                                by_proposing_group, group_prefixes, groups)
+                    self._insertItemInCategory(catList,
+                                               item,
+                                               by_proposing_group,
+                                               group_prefixes, groups)
                 else:
                     res.append([currentCat])
-                    self._insertItemInCategory(res[-1], item,
-                                                by_proposing_group, group_prefixes, groups)
+                    self._insertItemInCategory(res[-1],
+                                               item,
+                                               by_proposing_group,
+                                               group_prefixes,
+                                               groups)
         if includeEmptyCategories:
             meetingConfig = tool.getMeetingConfig(
                 self.context)
@@ -345,7 +353,7 @@ class CustomMeeting(Meeting):
                                                 groups)
                     # The method does nothing if the group (or another from the
                     # same macro-group) is already there.
-        if withCollege and privacy=='public':
+        if withCollege and privacy == 'public':
             num = 0
             for items in res:
                 num += len(items[1:])
@@ -354,7 +362,7 @@ class CustomMeeting(Meeting):
             # return a list of tuple with first element the number and second
             # element the item itself
             final_res = []
-            if privacy=='secret':
+            if privacy == 'secret':
                 item_num = self.context.REQUEST.get('renumber_first_number', firstNumber-1)
             else:
                 item_num = firstNumber-1
@@ -372,6 +380,7 @@ class CustomMeeting(Meeting):
         return res
 
     security.declarePublic('getItemsForAM')
+
     def getItemsForAM(self, itemUids=[], late=False,
                       ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                       privacy='*', oralQuestion='both', toDiscuss='both', categories=[],

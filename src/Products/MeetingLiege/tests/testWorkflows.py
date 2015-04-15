@@ -812,6 +812,57 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         #self.meetingConfig = getattr(self.tool, 'meeting-config-council')
         #self.test_pm_RemoveObjects()
 
+    def test_subproduct_ItemCommentViewability(self):
+        '''Test that even when comments are only shown to the proposing group,
+           some specific comments are shown to the group the financial advice is asked to.'''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+        # enable comments hidden to members outside proposing group
+        self.meetingConfig.setHideItemHistoryCommentsToUsersOutsideProposingGroup(True)
+
+        # add an item and do what necessary for different cases to appear in it's workflow_history
+        # create it, send it to director :
+        # - send it back to internal review : from the director, the comment should not be visible to finances;
+        # - send it from director to finances : comment should be visible;
+        # - send it from finances to internal reviewer : comment should be visible.
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='The first item')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item.at_post_edit_script()
+        self.proposeItem(item)
+        # now director send the item back to the internal reviewer
+        # it will use transition 'backToProposedToInternalReviewer' but will
+        # not be visible by the finances group
+        self.do(item, 'backToProposedToInternalReviewer')
+        self.proposeItem(item)
+        # send item to finance
+        self.do(item, 'proposeToFinance', comment='Proposed to finances by director')
+        # save event index (position in the history) we will have to check access to
+        history = item.getHistory()
+        proposedToFinancesViewableIndex = history.index(history[-1])
+        # now finance send it back to the internal reviewer
+        self.do(item, 'backToProposedToInternalReviewer')
+        # save event
+        history = item.getHistory()
+        proposedToInternalReviewerViewableIndex = history.index(history[-1])
+
+        # ok now, check, the only viewable events for finance grou members
+        # should be proposedToFinancesViewableIndex and proposedToInternalReviewerViewableIndex
+        viewableCommentIndexes = (proposedToFinancesViewableIndex, proposedToInternalReviewerViewableIndex)
+        self.changeUser('pmFinController')
+        history = item.getHistory()
+        for event in history:
+            if history.index(event) in viewableCommentIndexes:
+                # comment is viewable
+                self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+            else:
+                self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+
     def test_subproduct_AdviceCommentViewability(self):
         '''Test that advice comments are only viewable to finance group members and MeetingManagers.
            Except the FINANCE_ADVICE_HISTORIZE_EVENT that is viewable by everyone who may access the advice.'''

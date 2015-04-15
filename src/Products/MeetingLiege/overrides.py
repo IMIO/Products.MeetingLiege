@@ -4,7 +4,9 @@ from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
 from imio.history.adapters import ImioHistoryAdapter
+from imio.history.utils import getPreviousEvent
 from Products.PloneMeeting.adapters import AnnexableAdapter
+from Products.PloneMeeting.adapters import PMHistoryAdapter
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
@@ -77,6 +79,41 @@ class AdviceHistoryAdapter(ImioHistoryAdapter):
         if self.context.advice_group in userMeetingGroupIds:
             return True
         return False
+
+
+class ItemHistoryAdapter(PMHistoryAdapter):
+    """
+      Manage the the fact that a given user may see or not a comment in an item history.
+    """
+    def mayViewComment(self, event):
+        """
+          By default, comments are hidden to everybody outside the proposing group
+          but here, we let comments between internal_reviewer, reviewer and
+          finance adviser viewable by relevant users.
+        """
+        # call super mayViewComment, if it returns False, maybe
+        # nevertheless user may see the comment
+        userMayAccessComment = super(ItemHistoryAdapter, self).mayViewComment(event)
+        financeAdvice = self.context.getFinanceAdvice()
+        if not userMayAccessComment and financeAdvice != '_none_':
+            # in case there is a finance advice asked comments of finance to internal_reviewer
+            # and from director to finance must be viewable by the finance group
+            # so comments in the 'proposeToFinance' and comments made by finance in
+            # the 'backToProposedToInternalReviewer' must be viewable.  Take care that for this
+            # last event 'backToProposedToInternalReviewer' it could be done by the director and
+            # we want only to show comment to the finance group when it is the finance group
+            # that triggered the transition...
+            action = event['action']
+            if action in ['backToProposedToInternalReviewer', 'proposeToFinance']:
+                isCurrentUserInFDGroup = self.context.adapted().isCurrentUserInFDGroup(financeAdvice)
+                if isCurrentUserInFDGroup and action == 'proposeToFinance':
+                    return True
+                else:
+                    # check that it is the finance group that made the transition 'backToProposedToInternalReviewer'
+                    previousEvent = getPreviousEvent(self.context, event, checkMayView=False)
+                    if previousEvent and previousEvent['review_state'] == 'proposed_to_finance':
+                        return True
+        return userMayAccessComment
 
 
 class MatterAwareAnnexableAdapter(AnnexableAdapter):

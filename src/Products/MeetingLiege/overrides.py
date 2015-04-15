@@ -15,7 +15,8 @@ class AdviceTypeVocabulary(object):
     def __call__(self, context):
         """"""
         terms = []
-        cfg = context.portal_plonemeeting.getMeetingConfig(context)
+        tool = getToolByName(context, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(context)
         if not cfg:
             return SimpleVocabulary(terms)
         usedAdviceTypes = cfg.getUsedAdviceTypes()

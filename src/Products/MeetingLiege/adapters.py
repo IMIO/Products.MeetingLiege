@@ -973,22 +973,22 @@ class CustomMeetingItem(MeetingItem):
 
     def isCurrentUserInFDGroup(self, finance_group_id):
         '''
-        Returns true if the current user has sufficient permission in
-        the finance group passed as parameter.
+          Returns True if the current user is in the given p_finance_group_id.
         '''
-        user = self.context.portal_membership.getAuthenticatedMember()
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        user = membershipTool.getAuthenticatedMember()
         userGroups = user.getGroups()
-        for suffixe in FINANCE_GROUP_SUFFIXES:
-            finance_group = finance_group_id + '_' + suffixe
-            for group in userGroups:
-                if finance_group == group:
-                    return True
+        suffixedGroups = []
+        for suffix in FINANCE_GROUP_SUFFIXES:
+            suffixedGroups.append("{0}_{1}".format(finance_group_id, suffix))
+        if set(userGroups).intersection(suffixedGroups):
+            return True
         return False
 
     def mayGenerateFDAdvice(self):
         '''
-        Returns True if the current user has the right to generate the
-        Financial Director Advice template.
+          Returns True if the current user has the right to generate the
+          Financial Director Advice template.
         '''
         adviceHolder = self.getItemWithFinanceAdvice()
 

@@ -345,11 +345,19 @@ class CustomMeeting(Meeting):
                                                 groups)
                     # The method does nothing if the group (or another from the
                     # same macro-group) is already there.
+        if withCollege and privacy=='public':
+            num = 0
+            for items in res[1:]:
+                num += len(items)
+            self.context.REQUEST.set('renumber_first_number', num)
         if renumber:
             # return a list of tuple with first element the number and second
             # element the item itself
             final_res = []
-            item_num = self.context.REQUEST.get('renumber_first_number', firstNumber-1)
+            if privacy=='secret':
+                item_num = self.context.REQUEST.get('renumber_first_number', firstNumber-1)
+            else:
+                item_num = firstNumber-1
             for elts in res:
                 final_items = []
                 # we received a list of tuple (cat, items_list)
@@ -361,11 +369,6 @@ class CustomMeeting(Meeting):
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
-        if withCollege and not 'renumber_first_number' in self.context.REQUEST:
-            num = 0
-            for cat, items in res:
-                num += len(items)
-            self.context.REQUEST.set('renumber_first_number', num)
         return res
 
     security.declarePublic('getItemsForAM')
@@ -476,14 +479,17 @@ class CustomMeeting(Meeting):
     Meeting.getItemNumsForActe = getItemNumsForActe
 
     def getRepresentative(self, sublst, itemUids, privacy='public',
-                          late=False, oralQuestion='both', by_proposing_group=False, withCollege=False, renumber=False):
+                          late=False, oralQuestion='both', by_proposing_group=False,
+                          withCollege=False, renumber=False, firstNumber=1):
         '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
         previousCat = ''
         for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, late=late,
                                                         oralQuestion=oralQuestion,
                                                         by_proposing_group=by_proposing_group,
                                                         withCollege=withCollege,
-                                                        renumber=renumber):
+                                                        renumber=renumber,
+                                                        firstNumber=firstNumber):
+
             if sublist == sublst:
                 if sublist[0].Description() != previousCat:
                     return sublist[0].Description()

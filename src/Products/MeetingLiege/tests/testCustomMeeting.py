@@ -56,12 +56,21 @@ class testCustomMeeting(MeetingLiegeTestCase):
         item0.setOtherMeetingConfigsClonableTo('meeting-config-council')
         item3 = collegeMeeting.getItemsInOrder()[3]
         item3.setOtherMeetingConfigsClonableTo('meeting-config-council')
-        #makes one item from events ready to go to council
+        #makes only one item from events ready to go to council
         item1 = collegeMeeting.getItemsInOrder()[1]
         item1.setOtherMeetingConfigsClonableTo('meeting-config-council')
         #makes one item from research ready to go to council
         item4 = collegeMeeting.getItemsInOrder()[4]
         item4.setOtherMeetingConfigsClonableTo('meeting-config-council')
+
+        #create another point in the development category to help the enum test
+        item5 = self.create('MeetingItem')
+        item5.setProposingGroup('vendors')
+        item5.setPrivacy('public')
+        item5.setCategory('development')
+        item5.setDecision('<p>A decision</p>')
+        item5.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        self.presentItem(item5)
 
         #makes the council one
         self.setMeetingConfig(meetingConfigCouncil)
@@ -85,7 +94,7 @@ class testCustomMeeting(MeetingLiegeTestCase):
         self.assertTrue([item[0].getId() for item in items] ==
                         ['development', 'events', 'research'])
         #Is there any item missing?
-        self.assertTrue([len(item) for item in items] == [5, 4, 2])
+        self.assertTrue([len(item) for item in items] == [6, 4, 2])
         #Checks from where come the items
         #For the development category
         self.assertTrue(items[0][1].getPortalTypeName() ==
@@ -93,8 +102,10 @@ class testCustomMeeting(MeetingLiegeTestCase):
         self.assertTrue(items[0][2].getPortalTypeName() ==
                         'MeetingItemCollege')
         self.assertTrue(items[0][3].getPortalTypeName() ==
-                        'MeetingItemCouncil')
+                        'MeetingItemCollege')
         self.assertTrue(items[0][4].getPortalTypeName() ==
+                        'MeetingItemCouncil')
+        self.assertTrue(items[0][5].getPortalTypeName() ==
                         'MeetingItemCouncil')
         #For the events category
         self.assertTrue(items[1][1].getPortalTypeName() ==
@@ -107,3 +118,26 @@ class testCustomMeeting(MeetingLiegeTestCase):
         self.assertTrue(items[2][1].getPortalTypeName() ==
                         'MeetingItemCollege')
 
+        #let's test the renumber part
+        publicItems = councilMeeting.adapted().getPrintableItemsByCategory(
+            itemUids=councilItemUids,
+            withCollege=True,
+            renumber=True,
+            privacy='public'
+        )
+        self.assertTrue(publicItems[0][1][0][0] == 1)
+        self.assertTrue(publicItems[0][1][1][0] == 2)
+        self.assertTrue(publicItems[0][1][2][0] == 3)
+        self.assertTrue(publicItems[0][1][3][0] == 4)
+        self.assertTrue(publicItems[1][1][0][0] == 5)
+        self.assertTrue(publicItems[1][1][1][0] == 6)
+        self.assertTrue(publicItems[2][1][0][0] == 7)
+
+        secretItems = councilMeeting.adapted().getPrintableItemsByCategory(
+            itemUids=councilItemUids,
+            withCollege=True,
+            renumber=True,
+            privacy='secret'
+        )
+        self.assertTrue(secretItems[0][1][0][0] == 8)
+        self.assertTrue(secretItems[1][1][0][0] == 9)

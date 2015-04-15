@@ -347,8 +347,8 @@ class CustomMeeting(Meeting):
                     # same macro-group) is already there.
         if withCollege and privacy=='public':
             num = 0
-            for items in res[1:]:
-                num += len(items)
+            for items in res:
+                num += len(items[1:])
             self.context.REQUEST.set('renumber_first_number', num)
         if renumber:
             # return a list of tuple with first element the number and second

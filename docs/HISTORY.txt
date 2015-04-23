@@ -1,6 +1,6 @@
 Products.MeetingLiege Changelog
 ===============================
 
-3.3 (unreleased)
+3.4 (unreleased)
 ----------------
 - Initial release

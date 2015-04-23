@@ -1740,21 +1740,6 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
             res = True
         return res
 
-    security.declarePublic('mayCorrect')
-
-    def mayCorrect(self):
-        '''Take the default behaviour except if the meeting is frozen
-           we still have the permission to correct it.'''
-        from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
-        res = MeetingWorkflowConditions.mayCorrect(self)
-        currentState = self.context.queryState()
-        if res is not True and currentState == "frozen":
-            # Change the behaviour for being able to correct a frozen meeting
-            # back to created.
-            if checkPermission(ReviewPortalContent, self.context):
-                return True
-        return res
-
 
 class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the

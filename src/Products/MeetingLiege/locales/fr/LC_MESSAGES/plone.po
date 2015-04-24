@@ -126,11 +126,11 @@ msgstr "Avis demandé par le créateur"
 
 #. Default: "Mark not applicable"
 msgid "mark_not_applicable"
-msgstr "Marquer sans objet"
+msgstr "Sans objet"
 
 #. Default: "Marked not applicable"
 msgid "marked_not_applicable"
-msgstr "Marqué sans objet"
+msgstr "Sans objet"
 
 #. Default: "Pre accept"
 msgid "pre_accept"
@@ -202,11 +202,11 @@ msgstr "Avis demandés par le validateur interne"
 
 #. Default: "Return"
 msgid "return"
-msgstr "Retour Collège"
+msgstr "Ajourner avec retour Collège"
 
 #. Default: "Returned"
 msgid "returned"
-msgstr "Retour Collège"
+msgstr "Ajourné avec retour Collège"
 
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"

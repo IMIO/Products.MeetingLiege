@@ -1916,7 +1916,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if checkPermission(ReviewPortalContent, self.context):
             # if no advice to ask or only advice to ask is financial advice,
             # we do not let item creator ask advices, non sense...
-            if self.context.hasAdvices(toGive=True, adviceIdsToBypass=FINANCE_GROUP_IDS):
+            # finance advice are not optional advices
+            adviceIdsToBypass = {}
+            for groupId in FINANCE_GROUP_IDS:
+                adviceIdsToBypass[groupId] = False
+            if self.context.hasAdvices(toGive=True, adviceIdsToBypass=adviceIdsToBypass):
                 res = True
             else:
                 # return a 'No' instance explaining that no advice is (still) asked on this item
@@ -1931,7 +1935,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''May advices be asked by internal reviewer.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            if self.context.hasAdvices(toGive=True, adviceIdsToBypass=FINANCE_GROUP_IDS):
+            # finance advice are not optional advices
+            adviceIdsToBypass = {}
+            for groupId in FINANCE_GROUP_IDS:
+                adviceIdsToBypass[groupId] = False
+            if self.context.hasAdvices(toGive=True, adviceIdsToBypass=adviceIdsToBypass):
                 res = True
             else:
                 # return a 'No' instance explaining that no advice is (still) asked on this item

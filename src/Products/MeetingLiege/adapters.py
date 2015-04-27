@@ -766,6 +766,12 @@ class CustomMeetingItem(MeetingItem):
         return (toAdd, toEdit)
     MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
 
+    def _sendAdviceToGiveToGroup(self, groupId):
+        """Do not send an email to FINANCE_GROUP_IDS."""
+        if groupId in FINANCE_GROUP_IDS:
+            return False
+        return True
+
     security.declarePublic('mayEvaluateCompleteness')
 
     def mayEvaluateCompleteness(self):

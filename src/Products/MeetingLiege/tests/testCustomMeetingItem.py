@@ -575,6 +575,18 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         res3 = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOn3)
         res3 = res3 + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 
+        res4 = '<p>Avis favorable du Directeur Financier du {0}</p>'.format(outOfFinancialdptLocalized1)
+
+        res5 = '<p>Avis défavorable du Directeur Financier du {0}</p>'.format(outOfFinancialdptLocalized2)
+        res5 = res5 + "<p>{0}</p>".format(comment2)
+
+        res6 = "<p>Absence d'avis - délai expiré</p>"
+
         self.assertTrue(item1.adapted().getLegalTextForFDAdvice() == res1)
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice() == res2)
         self.assertTrue(item3.adapted().getLegalTextForFDAdvice() == res3)
+
+        self.assertTrue(item1.adapted().getLegalTextForFDAdvice(isMeeting=True) == res4)
+        self.assertTrue(item2.adapted().getLegalTextForFDAdvice(isMeeting=True) == res5)
+        self.assertTrue(item3.adapted().getLegalTextForFDAdvice(isMeeting=True) == res6)
+

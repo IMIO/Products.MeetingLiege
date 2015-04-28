@@ -1084,7 +1084,7 @@ class CustomMeetingItem(MeetingItem):
         # either we found a valid predecessor, or we return self.context
         return validPredecessor or item
 
-    def getLegalTextForFDAdvice(self):
+    def getLegalTextForFDAdvice(self, isMeeting=False):
         '''
         Helper method. Return legal text for each advice type.
         '''
@@ -1100,7 +1100,8 @@ class CustomMeetingItem(MeetingItem):
         delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized']
         delayStatus = advice['delay_infos']['delay_status']
         outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
-        res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOnLocalized)
+        if not isMeeting:
+            res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOnLocalized)
 
         if not hidden and \
            adviceHolder.adapted().mayGenerateFDAdvice() and \
@@ -1110,14 +1111,25 @@ class CustomMeetingItem(MeetingItem):
                 adviceTypeFr = 'favorable'
             else:
                 adviceTypeFr = 'défavorable'
-            res = res + FINANCE_ADVICE_LEGAL_TEXT.format(
-                adviceTypeFr,
-                outOfFinancialdptLocalized
-            )
+            #if it's a meetingItem, return the legal bullshit.
+            if not isMeeting:
+                res = res + FINANCE_ADVICE_LEGAL_TEXT.format(
+                    adviceTypeFr,
+                    outOfFinancialdptLocalized
+                )
+            #if it's a meeting, returns only the type and date of the advice.
+            else:
+                res = "<p>Avis {0} du Directeur Financier du {1}</p>".format(adviceTypeFr,
+                                                                      outOfFinancialdptLocalized
+                                                                      )
+
             if comment and adviceType == u'negative_finance':
                 res = res + "<p>{0}</p>".format(comment)
         elif statusWhenStopped == 'stopped_timed_out' or delayStatus == 'timed_out':
-            res = res + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+            if not isMeeting:
+                res = res + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+            else:
+                res = "<p>Absence d'avis - délai expiré</p>"
         else:
             res = ''
         return res

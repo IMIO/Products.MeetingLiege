@@ -1100,6 +1100,8 @@ class CustomMeetingItem(MeetingItem):
         delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized']
         delayStatus = advice['delay_infos']['delay_status']
         outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
+        limitDate = advice['delay_infos']['limit_date']
+        limitDateLocalized = advice['delay_infos']['limit_date_localized']
         if not isMeeting:
             res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOnLocalized)
 
@@ -1129,7 +1131,7 @@ class CustomMeetingItem(MeetingItem):
             if not isMeeting:
                 res = res + FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
             else:
-                res = "<p>Absence d'avis - délai expiré</p>"
+                res = "<p>Avis du Directeur financier expiré le {0}</p>".format(limitDateLocalized)
         else:
             res = ''
         return res

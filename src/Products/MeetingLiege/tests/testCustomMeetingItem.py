@@ -563,6 +563,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         outOfFinancialdptLocalized1 = financialStuff1['out_of_financial_dpt_localized']
         outOfFinancialdptLocalized2 = financialStuff2['out_of_financial_dpt_localized']
         comment2 = financialStuff2['comment']
+        limitDateLocalized3 = advice3['delay_infos']['limit_date_localized']
 
         res1 = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOn1)
         res1 = res1 + FINANCE_ADVICE_LEGAL_TEXT.format('favorable',
@@ -580,7 +581,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         res5 = '<p>Avis défavorable du Directeur Financier du {0}</p>'.format(outOfFinancialdptLocalized2)
         res5 = res5 + "<p>{0}</p>".format(comment2)
 
-        res6 = "<p>Absence d'avis - délai expiré</p>"
+        res6 = "<p>Avis du Directeur financier expiré le {0}</p>".format(limitDateLocalized3)
 
         self.assertTrue(item1.adapted().getLegalTextForFDAdvice() == res1)
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice() == res2)

@@ -87,6 +87,23 @@
            factory=".overrides.MatterAwareAnnexableAdapter"
            provides="Products.PloneMeeting.interfaces.IAnnexable" />
 
+  <!-- Searches adapters -->
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsToControlCompletenessOfAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-to-control-completeness-of" />
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsWithAdviceProposedToFinancialControllerAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-with-advice-proposed-to-financial-controller" />
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsWithAdviceProposedToFinancialReviewerAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-with-advice-proposed-to-financial-reviewer" />
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsWithAdviceProposedToFinancialManagerAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-with-advice-proposed-to-financial-manager" />
   <!-- ##/code-section configure.zcml.header -->
 
   <i18n:registerTranslations directory="locales" />

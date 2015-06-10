@@ -260,7 +260,6 @@ def finalizeInstance(context):
     createArchivingReferences(context, site)
     reorderSkinsLayers(context, site)
     reorderCss(context)
-    addSearchTopics(context, site)
     # make sure we use the correct workflow for meetingadvice
     setCorrectWorkflowForAdvices(context, site)
     # create finance groups but not for the testing profile
@@ -367,54 +366,6 @@ def _createFinanceGroups(site):
                                                                   'meeting-config-college__state__validated'))
             newGroup = getattr(tool, newGroupId)
             newGroup.processForm(values={'dummy': None})
-
-
-def addSearchTopics(context,  site):
-    '''
-      Add some topics for specific searches.
-    '''
-    tool = getToolByName(site, 'portal_plonemeeting')
-    cfg = getattr(tool, 'meeting-config-college')
-
-    topicsInfo = (
-        # Items in state 'proposed_to_finance' for which completeness is not 'completeness_complete'
-        ('searchitemstocontrolcompletenessof',
-         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
-          ),
-         'created',
-         'searchItemsToControlCompletenessOf',
-         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
-         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
-         ),
-        # Items having advice in state 'proposed_to_financial_controller'
-        ('searchadviceproposedtocontroller',
-         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
-          ),
-         'created',
-         'searchItemsWithAdviceProposedToFinancialController',
-         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
-         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
-         ),
-        # Items having advice in state 'proposed_to_financial_reviewer'
-        ('searchadviceproposedtoreviewer',
-         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
-          ),
-         'created',
-         'searchItemsWithAdviceProposedToFinancialReviewer',
-         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialreviewers')) "
-         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
-         ),
-        # Items having advice in state 'proposed_to_financial_manager'
-        ('searchadviceproposedtomanager',
-         (('portal_type', 'ATPortalTypeCriterion', ('MeetingItem',)),
-          ),
-         'created',
-         'searchItemsWithAdviceProposedToFinancialManager',
-         "python: (fromPortletTodo and here.portal_plonemeeting.userIsAmong('financialmanagers')) "
-         "or (not fromPortletTodo and here.portal_plonemeeting.isFinancialUser())",
-         ),
-    )
-    cfg.createTopics(topicsInfo)
 
 
 def reorderCss(context):

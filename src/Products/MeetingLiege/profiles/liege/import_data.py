@@ -310,7 +310,7 @@ collegeMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 
                                            'validated', 'presented', 'refused',
                                            'returned_to_proposing_group', 'returned')
 collegeMeeting.meetingPowerObserversStates = ('closed', 'created', 'decided', 'frozen')
-collegeMeeting.meetingAppDefaultView = 'topic_searchmyitems'
+collegeMeeting.meetingAppDefaultView = 'searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
@@ -475,7 +475,7 @@ councilMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
                                                               'item_transition': 'accept'},)
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
-councilMeeting.meetingAppDefaultView = 'topic_searchmyitems'
+councilMeeting.meetingAppDefaultView = 'searchmyitems'
 councilMeeting.itemDocFormats = ('odt', 'pdf')
 councilMeeting.meetingDocFormats = ('odt', 'pdf')
 councilMeeting.useAdvices = False

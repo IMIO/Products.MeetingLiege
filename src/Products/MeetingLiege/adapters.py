@@ -1668,7 +1668,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         '''
         formatted_date = old_formatMeetingDate(self, meeting, lang, short, withHour, prefixed)
         adoptsNextCouncilAgenda = False
-        if meeting.__class__.__name__ == 'mybrains':
+        if meeting.__class__.__name__ in ['mybrains', 'CatalogContentListingObject']:
             if meeting.getAdoptsNextCouncilAgenda:
                 adoptsNextCouncilAgenda = True
         else:

@@ -1,5 +1,8 @@
+import os
+import logging
 from AccessControl import Unauthorized
 from Acquisition import aq_base
+from Products.CMFCore.utils import getToolByName
 
 
 def export_meetinggroups(self):
@@ -19,6 +22,49 @@ def export_meetinggroups(self):
     for mgr in pm.objectValues('MeetingGroup'):
         dict[mgr.getId()] = (mgr.Title(), mgr.Description(), mgr.getAcronym(), mgr.getGivesMandatoryAdviceOn())
     return dict
+
+
+def export_allItemTemplates(self, context=''):
+    member = self.portal_membership.getAuthenticatedMember()
+    if not member.has_role('Manager'):
+        raise Unauthorized, 'You must be a Manager to access this script !'
+
+    if not hasattr(self, 'portal_plonemeeting'):
+        return "PloneMeeting must be installed to run this script !"
+
+    tool = getToolByName(self, 'portal_plonemeeting')
+    meetingConfig = tool.getMeetingConfig(self)
+    podTemplatesFolder = getattr(meetingConfig, 'podtemplates')
+    template = getattr(podTemplatesFolder, 'catalogue-actes')
+
+    if context == '':
+        context = self
+    for itemId in context:
+        item = getattr(context, itemId)
+        trueItem=item
+        portalType = item.getPortalTypeName()
+
+        if portalType == 'Folder':
+            constructedPath = '/{0}'.format(itemId)
+        elif portalType in ('MeetingItemCouncil', 'MeetingItemCollege'):
+            constructedPath = ''
+
+        while item.getParentNode().getId()!='itemtemplates':
+            item=item.getParentNode()
+            constructedPath = '/{0}{1}'.format(item.getId(), constructedPath)
+        path = '/tmp/export{0}'.format(constructedPath)
+
+        if 'export' not in os.listdir('/tmp'):
+            os.mkdir('/tmp/export')
+        if portalType == 'Folder':
+            os.mkdir(path)
+            export_allItemTemplates(self, context=trueItem)
+        elif portalType in ('MeetingItemCouncil', 'MeetingItemCollege'):
+            res = template.generateDocument(trueItem, forBrowser=False)
+            os.chdir(path)
+            f = open(trueItem.getId(), 'w')
+            f.write(res)
+            f.close()
 
 
 def import_meetinggroups(self, dict=None):

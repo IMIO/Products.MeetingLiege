@@ -1,9 +1,12 @@
 import os
 import logging
+
 from AccessControl import Unauthorized
 from Acquisition import aq_base
 from Products.CMFCore.utils import getToolByName
 
+from plone.i18n.normalizer.interfaces import IFileNameNormalizer
+from zope.component import getUtility
 
 def export_meetinggroups(self):
     """
@@ -36,12 +39,13 @@ def export_allItemTemplates(self, context=''):
     meetingConfig = tool.getMeetingConfig(self)
     podTemplatesFolder = getattr(meetingConfig, 'podtemplates')
     template = getattr(podTemplatesFolder, 'catalogue-actes')
+    normalizer = getUtility(IFileNameNormalizer)
 
     if context == '':
         context = self
     for itemId in context:
         item = getattr(context, itemId)
-        trueItem=item
+        trueItem = item
         portalType = item.getPortalTypeName()
 
         if portalType == 'Folder':
@@ -49,8 +53,8 @@ def export_allItemTemplates(self, context=''):
         elif portalType in ('MeetingItemCouncil', 'MeetingItemCollege'):
             constructedPath = ''
 
-        while item.getParentNode().getId()!='itemtemplates':
-            item=item.getParentNode()
+        while item.getParentNode().getId() != 'itemtemplates':
+            item = item.getParentNode()
             constructedPath = '/{0}{1}'.format(item.getId(), constructedPath)
         path = '/tmp/export{0}'.format(constructedPath)
 
@@ -60,9 +64,10 @@ def export_allItemTemplates(self, context=''):
             os.mkdir(path)
             export_allItemTemplates(self, context=trueItem)
         elif portalType in ('MeetingItemCouncil', 'MeetingItemCollege'):
+            fileId = normalizer.normalize(trueItem.Title(), max_length=255)
             res = template.generateDocument(trueItem, forBrowser=False)
             os.chdir(path)
-            f = open(trueItem.getId(), 'w')
+            f = open(fileId, 'w')
             f.write(res)
             f.close()
 

@@ -64,7 +64,8 @@ def export_allItemTemplates(self, context=''):
             os.mkdir(path)
             export_allItemTemplates(self, context=trueItem)
         elif portalType in ('MeetingItemCouncil', 'MeetingItemCollege'):
-            fileId = normalizer.normalize(trueItem.Title(), max_length=255)
+            fileId = normalizer.normalize(trueItem.Title(), max_length=251)
+            fileId = fileId + '.pdf'
             res = template.generateDocument(trueItem, forBrowser=False)
             os.chdir(path)
             f = open(fileId, 'w')

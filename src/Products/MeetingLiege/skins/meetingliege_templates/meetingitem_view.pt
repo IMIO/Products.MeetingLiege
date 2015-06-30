@@ -36,16 +36,14 @@
         whose number is given by the user.</tal:comment>
 
     <form name="formGotoItem" tal:attributes="action python: context.absolute_url_path() + '/object_goto'">
-        <input type="hidden" name="objectId"/>
-        <input type="hidden" name="meetingUid"/>
-        <input type="hidden" name="idType" value="number"/>
+        <input type="hidden" name="uid"/>
     </form>
 
-<!--    <tal:comment replace="nothing">Show navigation between items of the same meeting</tal:comment>
+    <tal:comment replace="nothing">Show navigation between items of the same meeting</tal:comment>
     <tal:itemNavigation tal:condition="python: meeting">
-      <metal:itemNavigation  use-macro="here/@@navigate-macros/item"/>
+      <tal:itemNavigation replace="structure context/@@item-navigation-widget" />
     </tal:itemNavigation>
--->
+
     <table width="100%">
       <tr valign="top">
         <td width="50%" style="padding-right: 0.5em;">
@@ -263,12 +261,10 @@
                 <span class="item_attribute_label" i18n:translate="PloneMeeting_label_preferredMeeting"></span>:&nbsp;&nbsp;
                 <span tal:define="meetings python:here.portal_catalog(UID=here.getPreferredMeeting())">
                 <span tal:condition="meetings">
-                    <tal:block define="meeting python:meetings[0];
-                                       mayView python: tool.checkMayView(meeting)">
-                    <a tal:condition="mayView" tal:attributes="href meeting/getURL"
-                       tal:content="python: tool.formatMeetingDate(meeting, prefixed=True, withHour=True)"></a>
-                    <span tal:condition="not: mayView" tal:content="meeting/Title">
-                    </span>
+                    <tal:block define="meeting python:meetings[0];">
+                      <tal:link define="contentValue python: tool.formatMeetingDate(meeting, prefixed=True, withHour=True)"
+                                tal:replace="structure python: tool.getColoredLink(meeting, contentValue=contentValue)">
+                      </tal:link>
                     </tal:block>
                 </span>
                 <span tal:condition="not: meetings">-
@@ -280,12 +276,9 @@
             <div class="discreet">
               <span class="item_attribute_label" i18n:translate="presented_in_meeting">Presented in meeting</span>:&nbsp;&nbsp;
               <tal:hasMeeting condition="python: meeting">
-                <tal:block define="mayView python: tool.checkMayView(meeting)">
-                  <a tal:condition="mayView"
-                     tal:attributes="href meeting/absolute_url"
-                     tal:content="python: tool.formatMeetingDate(meeting, prefixed=True, withHour=True)"></a>
-                  <span tal:condition="not: mayView" tal:content="python: context.restrictedTraverse('@@pm_unrestricted_methods').getLinkedMeetingTitle()"></span>
-                </tal:block>
+                  <tal:link define="contentValue python: tool.formatMeetingDate(meeting, prefixed=True, withHour=True)"
+                            tal:replace="structure python: tool.getColoredLink(meeting, contentValue=contentValue)">
+                  </tal:link>
               </tal:hasMeeting>
               <span tal:condition="python: not meeting">-</span>
             </div>
@@ -494,10 +487,10 @@
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
-<!--    <tal:comment replace="nothing">Show navigation between items of the same meeting</tal:comment>
+   <tal:comment replace="nothing">Show navigation between items of the same meeting</tal:comment>
     <tal:itemNavigation tal:condition="python: meeting">
-      <metal:itemNavigation  use-macro="here/@@navigate-macros/item"/>
-    </tal:itemNavigation>-->
+      <tal:itemNavigation replace="structure context/@@item-navigation-widget" />
+    </tal:itemNavigation>
 
     <tal:comment replace="nothing">Fields that appear only if the item is defined in a configuration</tal:comment>
     <tal:itemInConfig condition="context/isDefinedInTool">

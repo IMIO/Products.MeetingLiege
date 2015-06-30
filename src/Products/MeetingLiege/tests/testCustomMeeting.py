@@ -45,20 +45,20 @@ class testCustomMeeting(MeetingLiegeTestCase):
         collegeMeeting = self._createMeetingWithItems(meetingDate=meetingDate)
         collegeMeeting.setAdoptsNextCouncilAgenda(True)
         #makes some items from development ready to go to council
-        for item in collegeMeeting.getItemsInOrder():
+        for item in collegeMeeting.getItems(ordered=True):
             #item.setOtherMeetingConfigsClonableTo('meeting-config-council')
             item.getCategory(theObject=True).setCategoryMappingsWhenCloningToOtherMC(
                 'meeting-config-council.%s' % item.getCategory()
             )
-        item0 = collegeMeeting.getItemsInOrder()[0]
+        item0 = collegeMeeting.getItems(ordered=True)[0]
         item0.setOtherMeetingConfigsClonableTo('meeting-config-council')
-        item3 = collegeMeeting.getItemsInOrder()[3]
+        item3 = collegeMeeting.getItems(ordered=True)[3]
         item3.setOtherMeetingConfigsClonableTo('meeting-config-council')
         #makes only one item from events ready to go to council
-        item1 = collegeMeeting.getItemsInOrder()[1]
+        item1 = collegeMeeting.getItems(ordered=True)[1]
         item1.setOtherMeetingConfigsClonableTo('meeting-config-council')
         #makes one item from research ready to go to council
-        item4 = collegeMeeting.getItemsInOrder()[4]
+        item4 = collegeMeeting.getItems(ordered=True)[4]
         item4.setOtherMeetingConfigsClonableTo('meeting-config-council')
 
         #create another point in the development category to help the enum test
@@ -75,12 +75,12 @@ class testCustomMeeting(MeetingLiegeTestCase):
         meetingDate = DateTime('2019/09/19 19:19:19')
         councilMeeting = self._createMeetingWithItems(meetingDate=meetingDate)
         #pull out the only council item from the research category
-        self.backToState(councilMeeting.getItemsInOrder()[4],
+        self.backToState(councilMeeting.getItems(ordered=True)[4],
                          self.WF_STATE_NAME_MAPPINGS['validated']
                          )
         #build the list of uids
         councilItemUids = []
-        for item in councilMeeting.getItemsInOrder():
+        for item in councilMeeting.getItems(ordered=True):
             councilItemUids.append(item.UID())
 
         items = councilMeeting.adapted().getPrintableItemsByCategory(

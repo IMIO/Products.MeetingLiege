@@ -75,12 +75,14 @@
   <!-- Override HistoryCommentViewable adapter for meetingadvice -->
   <adapter for="Products.PloneMeeting.content.advice.MeetingAdvice"
            factory=".overrides.AdviceHistoryAdapter"
-           provides="imio.history.interfaces.IImioHistory" />
+           name="workflow"
+           provides="imio.history.interfaces.IImioWfHistory" />
 
   <!-- Override HistoryCommentViewable adapter for MeetingItem -->
   <adapter for="Products.PloneMeeting.MeetingItem.MeetingItem"
            factory=".overrides.ItemHistoryAdapter"
-           provides="imio.history.interfaces.IImioHistory" />
+           name="workflow"
+           provides="imio.history.interfaces.IImioWfHistory" />
 
   <!-- Override AnnexableAdapter adapter for MeetingItem-->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"

@@ -288,7 +288,7 @@ collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'de
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.transitionReinitializingDelays = 'backToItemCreated'
 collegeMeeting.enforceAdviceMandatoriness = False
-collegeMeeting.itemPowerObserversStates = ('presented', 'accepted', 'delayed', 'refused')
+collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_proposing_groups',
                                              'reverse': '0'}, )
@@ -386,7 +386,7 @@ councilMeeting.itemAdviceEditStates = []
 councilMeeting.itemAdviceViewStates = []
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
-councilMeeting.itemPowerObserversStates = collegeMeeting.itemPowerObserversStates
+councilMeeting.itemPowerObserversStates = ('presented', 'accepted', 'delayed', 'refused')
 councilMeeting.meetingPowerObserversStates = collegeMeeting.meetingPowerObserversStates
 councilMeeting.useCopies = True
 councilMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]

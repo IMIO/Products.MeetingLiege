@@ -284,16 +284,16 @@ collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_r
                                   'positive', 'positive_with_remarks', 'negative', 'nil')
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
-collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'delayed', 'removed',
+collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'delayed',
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.transitionReinitializingDelays = 'backToItemCreated'
 collegeMeeting.enforceAdviceMandatoriness = False
-collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
+collegeMeeting.itemPowerObserversStates = ('presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_proposing_groups',
                                              'reverse': '0'}, )
 collegeMeeting.useGroupsAsCategories = True
-collegeMeeting.meetingPowerObserversStates = ('frozen', 'published', 'decided', 'closed')
+collegeMeeting.meetingPowerObserversStates = ('frozen', 'decided', 'closed')
 collegeMeeting.useCopies = True
 collegeMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
 collegeMeeting.podTemplates = [agendaTemplate, decisionsTemplate, itemTemplate]

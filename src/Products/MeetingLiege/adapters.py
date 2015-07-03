@@ -2038,6 +2038,12 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                     if financeSubGroupId in memberGroups:
                         res = True
                         break
+            # special case when automatically sending back an item to 'itemcreated' or
+            # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
+            elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
+                self.context.queryState() in ['itemcreated_waiting_advices',
+                                              'proposed_to_internal_reviewer_waiting_advices']:
+                return True
         return res
 
     security.declarePublic('mayBackToProposedToDirector')

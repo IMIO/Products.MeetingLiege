@@ -8,6 +8,14 @@
                    Products.DCWorkflow.interfaces.IAfterTransitionEvent"
               handler=".events.onAdviceTransition"/>
 
+  <subscriber for="Products.PloneMeeting.content.advice.IMeetingAdvice
+                   Products.PloneMeeting.interfaces.IAdviceAfterAddEvent"
+              handler=".events.onAdviceAdded"/>
+
+  <subscriber for="Products.PloneMeeting.content.advice.IMeetingAdvice
+                   Products.PloneMeeting.interfaces.IAdviceAfterModifyEvent"
+              handler=".events.onAdviceModified"/>
+
   <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
                    Products.PloneMeeting.interfaces.IAdvicesUpdatedEvent"
               handler=".events.onAdvicesUpdated"/>

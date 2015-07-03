@@ -21,12 +21,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 #
+
+from zope.event import notify
+from zope.lifecycleevent import ObjectModifiedEvent
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 
 from Products.MeetingCommunes.tests.testAdvices import testAdvices as mcta
 
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.events import _everyAdvicesAreGivenFor
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
@@ -94,6 +98,72 @@ class testAdvices(MeetingLiegeTestCase, mcta):
         # even the finance manager may no more edit advice delay
         self.do(advice, 'signFinancialAdvice')
         self.assertTrue(not delayView._mayEditDelays(isAutomatic=isAutomatic))
+
+    def test_subproduct_ItemSentBackToAskerWhenEveryAdvicesGiven(self):
+        '''Check that, when every advices are given, the item is automatically sent back to 'itemcreated'
+           of 'proposed_to_internal_reviewer' depending on which 'waiting advices' state it is.'''
+        self.changeUser('admin')
+        self.meetingConfig.setItemAdviceStates(('itemcreated_waiting_advices',
+                                                'proposed_to_internal_reviewer_waiting_advices'))
+        self.meetingConfig.setItemAdviceEditStates = (('itemcreated_waiting_advices',
+                                                       'proposed_to_internal_reviewer_waiting_advices'))
+        self.meetingConfig.setItemAdviceViewStates = (('itemcreated_waiting_advices',
+                                                       'proposed_to_administrative_reviewer',
+                                                       'proposed_to_internal_reviewer',
+                                                       'proposed_to_internal_reviewer_waiting_advices',
+                                                       'proposed_to_director', 'validated', 'presented',
+                                                       'itemfrozen', 'refused', 'delayed', 'removed',
+                                                       'pre_accepted', 'accepted', 'accepted_but_modified', ))
+        _configureCollegeCustomAdvisers(self.portal)
+        _createFinanceGroups(self.portal)
+        self._setupFinanceGroups()
+
+        # ask finance advice and vendors advice
+        # finance advice is not considered in the case we test here
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='The item')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        self.assertTrue('vendors' in item.adviceIndex)
+        # ask advices
+        self.do(item, 'askAdvicesByItemCreator')
+        # item can be sent back to 'itemcreated' by creator even if every advices are not given
+        self.assertTrue('backToItemCreated' in self.transitions(item))
+        self.assertFalse(_everyAdvicesAreGivenFor(item))
+
+        # now add advice as vendors and do not hide it, advice will be considered given
+        self.changeUser('pmReviewer2')
+        createContentInContainer(item,
+                                 'meetingadvice',
+                                 **{'advice_group': 'vendors',
+                                    'advice_type': u'positive',
+                                    'advice_hide_during_redaction': False,
+                                    'advice_comment': RichTextValue(u'My comment')})
+        # directly sent back to service
+        self.assertTrue(item.queryState() == 'itemcreated')
+        self.assertTrue(_everyAdvicesAreGivenFor(item))
+
+        # now add advice as vendors and do not hide it, advice will be considered given
+        self.changeUser('admin')
+        item.restrictedTraverse('@@delete_givenuid')(item.meetingadvice.UID())
+        self.do(item, 'askAdvicesByItemCreator')
+        self.changeUser('pmReviewer2')
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': 'vendors',
+                                             'advice_type': u'positive',
+                                             'advice_hide_during_redaction': True,
+                                             'advice_comment': RichTextValue(u'My comment')})
+        # still waiting advices
+        self.assertTrue(item.queryState() == 'itemcreated_waiting_advices')
+        self.assertFalse(_everyAdvicesAreGivenFor(item))
+        # if we just change 'advice_hide_during_redaction', advice is given and item's sent back
+        advice.advice_hide_during_redaction = False
+        notify(ObjectModifiedEvent(advice))
+        self.assertTrue(item.queryState() == 'itemcreated')
+        self.assertTrue(_everyAdvicesAreGivenFor(item))
 
 
 def test_suite():

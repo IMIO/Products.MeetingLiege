@@ -120,17 +120,40 @@ class testAdvices(MeetingLiegeTestCase, mcta):
 
         # ask finance advice and vendors advice
         # finance advice is not considered in the case we test here
-        self.changeUser('pmManager')
+        self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The item')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.assertTrue('vendors' in item.adviceIndex)
+
+        # check when item is 'itemcreated_waiting_advices'
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
+                                                              askAdvicesTr='askAdvicesByItemCreator',
+                                                              availableBackTr='backToItemCreated',
+                                                              returnState='itemcreated')
+        # now check for 'proposed_to_internal_reviewer_waiting_advices'
+        self.changeUser('admin')
+        item.restrictedTraverse('@@delete_givenuid')(item.meetingadvice.UID())
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.do(item, 'proposeToInternalReviewer')
+        self.changeUser('pmInternalReviewer1')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
+                                                              askAdvicesTr='askAdvicesByInternalReviewer',
+                                                              availableBackTr='backToProposedToInternalReviewer',
+                                                              returnState='proposed_to_internal_reviewer')
+
+    def _checkItemSentBackToServiceWhenEveryAdvicesGiven(self,
+                                                         item,
+                                                         askAdvicesTr,
+                                                         availableBackTr,
+                                                         returnState):
+        """Helper method for 'test_subproduct_ItemSentBackToAskerWhenEveryAdvicesGiven'."""
         # ask advices
-        self.do(item, 'askAdvicesByItemCreator')
-        # item can be sent back to 'itemcreated' by creator even if every advices are not given
-        self.assertTrue('backToItemCreated' in self.transitions(item))
+        self.do(item, askAdvicesTr)
+        # item can be sent back to returnState by creator even if every advices are not given
+        self.assertTrue(availableBackTr in self.transitions(item))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
 
         # now add advice as vendors and do not hide it, advice will be considered given
@@ -142,13 +165,13 @@ class testAdvices(MeetingLiegeTestCase, mcta):
                                     'advice_hide_during_redaction': False,
                                     'advice_comment': RichTextValue(u'My comment')})
         # directly sent back to service
-        self.assertTrue(item.queryState() == 'itemcreated')
+        self.assertTrue(item.queryState() == returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
         # now add advice as vendors and do not hide it, advice will be considered given
         self.changeUser('admin')
         item.restrictedTraverse('@@delete_givenuid')(item.meetingadvice.UID())
-        self.do(item, 'askAdvicesByItemCreator')
+        self.do(item, askAdvicesTr)
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
                                           'meetingadvice',
@@ -157,12 +180,12 @@ class testAdvices(MeetingLiegeTestCase, mcta):
                                              'advice_hide_during_redaction': True,
                                              'advice_comment': RichTextValue(u'My comment')})
         # still waiting advices
-        self.assertTrue(item.queryState() == 'itemcreated_waiting_advices')
+        self.assertTrue(item.queryState() == '{0}_waiting_advices'.format(returnState))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
         # if we just change 'advice_hide_during_redaction', advice is given and item's sent back
         advice.advice_hide_during_redaction = False
         notify(ObjectModifiedEvent(advice))
-        self.assertTrue(item.queryState() == 'itemcreated')
+        self.assertTrue(item.queryState() == returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
 

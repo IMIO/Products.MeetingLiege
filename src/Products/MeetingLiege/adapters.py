@@ -580,6 +580,22 @@ class CustomMeetingItem(MeetingItem):
     def __init__(self, item):
         self.context = item
 
+    security.declarePrivate('validate_archivingRef')
+
+    def validate_archivingRef(self, value):
+        '''Field is required.'''
+        tool = getToolByName(self, 'portal_plonemeeting')
+        meetingConfig = tool.getMeetingConfig(self)
+        # Value could be '_none_' if it was displayed as listbox or None if
+        # it was displayed as radio buttons...  Use 'flex' format
+        if (not self.isDefinedInTool()) and \
+           ('archivingRef' in meetingConfig.getUsedItemAttributes()) and \
+           (value == '_none_' or not value):
+            return translate('archivingRef_required',
+                             domain='PloneMeeting',
+                             context=self.REQUEST)
+    MeetingItem.validate_archivingRef = validate_archivingRef
+
     security.declareProtected('Modify portal content', 'setCategory')
 
     def setCategory(self, value, **kwargs):

@@ -152,6 +152,10 @@ msgstr "No advice to ask (apart from financial advice)"
 msgid "and_description"
 msgstr ", complete purpose"
 
+#. Default: "Please select an archiving reference."
+msgid "archivingRef_required"
+msgstr ""
+
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
 msgstr "Enter archiving references that will be useable on items of this meeting config."

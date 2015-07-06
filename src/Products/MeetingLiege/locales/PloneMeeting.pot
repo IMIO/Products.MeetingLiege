@@ -437,3 +437,7 @@ msgstr ""
 #. Default: "Choose proposing group for cdld advice"
 msgid "MeetingLiege_descr_cdldProposingGroup"
 msgstr ""
+
+#. Default: "Please select an archiving reference."
+msgid "archivingRef_required"
+msgstr ""

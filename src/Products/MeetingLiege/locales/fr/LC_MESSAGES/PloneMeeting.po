@@ -152,6 +152,10 @@ msgstr "Aucun avis à demander (hors avis financier)"
 msgid "and_description"
 msgstr ", objet complet"
 
+#. Default: "Please select an archiving reference."
+msgid "archivingRef_required"
+msgstr "Veuillez sélectionner un code archivage."
+
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
 msgstr "Encodez les codes archivages qui pourront être utilisés par les points de cette configuration de séance."
@@ -424,4 +428,3 @@ msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
-

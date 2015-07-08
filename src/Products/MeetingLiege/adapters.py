@@ -1240,6 +1240,9 @@ class CustomMeetingItem(MeetingItem):
         raise NotImplementedError
 
 
+old_listAdviceTypes = MeetingConfig.listAdviceTypes
+
+
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the
        interface IMeetingConfigCustom.'''
@@ -1252,16 +1255,13 @@ class CustomMeetingConfig(MeetingConfig):
 
     def listAdviceTypes(self):
         d = "PloneMeeting"
-        res = DisplayList((
+        adviceTypes = old_listAdviceTypes(self)
+        financeAdviceTypes = DisplayList((
             ("positive_finance", translate('positive_finance', domain=d, context=self.REQUEST)),
             ("negative_finance", translate('negative_finance', domain=d, context=self.REQUEST)),
             ("not_required_finance", translate('not_required_finance', domain=d, context=self.REQUEST)),
-            ("positive", translate('positive', domain=d, context=self.REQUEST)),
-            ("positive_with_remarks", translate('positive_with_remarks', domain=d, context=self.REQUEST)),
-            ("negative", translate('negative', domain=d, context=self.REQUEST)),
-            ("nil", translate('nil', domain=d, context=self.REQUEST)),
         ))
-        return res
+        return financeAdviceTypes + adviceTypes
     MeetingConfig.listAdviceTypes = listAdviceTypes
 
     security.declarePrivate('listArchivingReferenceFinanceAdvices')

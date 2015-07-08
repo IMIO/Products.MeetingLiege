@@ -24,7 +24,7 @@ def _everyAdvicesAreGivenFor(item):
        hidden_during_redaction and created.'''
     for adviceId, adviceInfos in item.adviceIndex.items():
         if not adviceId in FINANCE_GROUP_IDS and \
-           adviceInfos['type'] == NOT_GIVEN_ADVICE_VALUE or \
+           adviceInfos['type'] in (NOT_GIVEN_ADVICE_VALUE, 'asked_again') or \
            adviceInfos['hidden_during_redaction'] is True:
             return False
     return True
@@ -44,8 +44,9 @@ def _sendItemBackInWFIfNecessary(item):
         item.REQUEST.set('everyAdvicesAreGiven', True)
         # use actionspanel so we are redirected to viewable url
         actionsPanel = item.restrictedTraverse('@@actions_panel')
-        comment = 'item_wf_changed_every_advices_given'
-        redirectTo = actionsPanel.triggerTransition(transition=transition, comment=comment, redirect=True)
+        redirectTo = actionsPanel.triggerTransition(transition=transition,
+                                                    comment='item_wf_changed_every_advices_given',
+                                                    redirect=True)
         item.REQUEST.set('everyAdvicesAreGiven', False)
         if redirectTo:
             return item.REQUEST.RESPONSE.redirect(redirectTo)

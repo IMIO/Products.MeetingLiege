@@ -103,6 +103,7 @@ class testAdvices(MeetingLiegeTestCase, mcta):
         '''Check that, when every advices are given, the item is automatically sent back to 'itemcreated'
            of 'proposed_to_internal_reviewer' depending on which 'waiting advices' state it is.'''
         self.changeUser('admin')
+        self.meetingConfig.setUsedAdviceTypes(self.meetingConfig.getUsedAdviceTypes() + ('asked_again', ))
         self.meetingConfig.setItemAdviceStates(('itemcreated_waiting_advices',
                                                 'proposed_to_internal_reviewer_waiting_advices'))
         self.meetingConfig.setItemAdviceEditStates = (('itemcreated_waiting_advices',
@@ -150,6 +151,8 @@ class testAdvices(MeetingLiegeTestCase, mcta):
                                                          availableBackTr,
                                                          returnState):
         """Helper method for 'test_subproduct_ItemSentBackToAskerWhenEveryAdvicesGiven'."""
+        # save current logged in user, the group asker user
+        adviceAskerUserId = self.member.getId()
         # ask advices
         self.do(item, askAdvicesTr)
         # item can be sent back to returnState by creator even if every advices are not given
@@ -184,6 +187,22 @@ class testAdvices(MeetingLiegeTestCase, mcta):
         self.assertFalse(_everyAdvicesAreGivenFor(item))
         # if we just change 'advice_hide_during_redaction', advice is given and item's sent back
         advice.advice_hide_during_redaction = False
+        notify(ObjectModifiedEvent(advice))
+        self.assertTrue(item.queryState() == returnState)
+        self.assertTrue(_everyAdvicesAreGivenFor(item))
+
+        # now test with 'asked_again'
+        self.changeUser(adviceAskerUserId)
+        advice.restrictedTraverse('@@change-advice-asked-again')()
+        self.assertTrue(advice.advice_type == 'asked_again')
+        self.do(item, askAdvicesTr)
+        self.changeUser('pmReviewer2')
+        notify(ObjectModifiedEvent(advice))
+        # still waiting advices
+        self.assertTrue(item.queryState() == '{0}_waiting_advices'.format(returnState))
+        self.assertFalse(_everyAdvicesAreGivenFor(item))
+        # change advice_type, it will be sent back then
+        advice.advice_type = u'positive'
         notify(ObjectModifiedEvent(advice))
         self.assertTrue(item.queryState() == returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))

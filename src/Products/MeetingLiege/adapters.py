@@ -39,6 +39,7 @@ from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalConten
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
+from Products.PloneMeeting.adapters import PMPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
@@ -692,54 +693,6 @@ class CustomMeetingItem(MeetingItem):
             if advice_id in FINANCE_GROUP_IDS and not advice_info['optional']:
                 return advice_id
         return None
-
-    security.declarePublic('getIcons')
-
-    def getIcons(self, inMeeting, meeting):
-        '''Check docstring in PloneMeeting interfaces.py.'''
-        item = self.getSelf()
-        res = []
-        itemState = item.queryState()
-        tool = getToolByName(item, 'portal_plonemeeting')
-        cfg = tool.getMeetingConfig(item)
-        # Default PM item icons
-        res = res + MeetingItem.getIcons(item, inMeeting, meeting)
-        # Add our icons for some review states
-        if itemState == 'accepted_but_modified':
-            res.insert(0, ('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
-        elif itemState == 'accepted_and_returned':
-            res.insert(0, ('accepted_and_returned.png', 'icon_help_accepted_and_returned'))
-        elif itemState == 'returned':
-            res.insert(0, ('returned.png', 'icon_help_returned'))
-        elif itemState == 'pre_accepted':
-            res.insert(0, ('pre_accepted.png', 'icon_help_pre_accepted'))
-        elif itemState == 'itemcreated_waiting_advices':
-            res.insert(0, ('askAdvicesByItemCreator.png', 'icon_help_itemcreated_waiting_advices'))
-        elif itemState == 'proposed_to_administrative_reviewer':
-            res.insert(0, ('proposeToAdministrativeReviewer.png',
-                           'icon_help_proposed_to_administrative_reviewer'))
-        elif itemState == 'proposed_to_internal_reviewer':
-            res.insert(0, ('proposeToInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer'))
-        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
-            res.insert(0, ('askAdvicesByInternalReviewer.png',
-                           'icon_help_proposed_to_internal_reviewer_waiting_advices'))
-        elif itemState == 'proposed_to_director':
-            res.insert(0, ('proposeToDirector.png', 'icon_help_proposed_to_director'))
-        elif itemState == 'proposed_to_finance':
-            res.insert(0, ('proposeToFinance.png', 'icon_help_proposed_to_finance'))
-        elif itemState == 'marked_not_applicable':
-            res.insert(0, ('marked_not_applicable.png', 'icon_help_marked_not_applicable'))
-        # add an icon if item is down the workflow from the finances
-        # if item was ever gone the the finances and now it is down to the
-        # services, then it is considered as down the wf from the finances
-        # so take into account every states before 'validated/proposed_to_finance'
-        if not item.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
-            history = item.workflow_history[cfg.getItemWorkflow()]
-            for event in history:
-                if event['action'] == 'proposeToFinance':
-                    res.append(('wf_down_finances.png', 'icon_help_wf_down_finances'))
-                    break
-        return res
 
     security.declarePublic('getAdvicesGroupsInfosForUser')
 
@@ -2357,3 +2310,85 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
                 groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
         return {'portal_type': self.cfg.getItemTypeName(),
                 'indexAdvisers': groupIds}
+
+
+class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
+    """
+      Override to take into account MeetingLiege use cases...
+    """
+
+    def _leadingIcons(self):
+        """
+          Manage icons to display before the icons managed by PrettyLink._icons.
+        """
+        res = []
+        if not self.context.meta_type == 'MeetingItem':
+            return res
+
+        # Default PM item icons
+        icons = super(MLPrettyLinkAdapter, self)._leadingIcons()
+
+        itemState = self.context.queryState()
+        # Add our icons for some review states
+        if itemState == 'accepted_and_returned':
+            icons.append(('accepted_and_returned.png',
+                          translate('icon_help_accepted_and_returned',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'returned':
+            icons.append(('returned.png',
+                          translate('icon_help_returned',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'itemcreated_waiting_advices':
+            icons.append(('askAdvicesByItemCreator.png',
+                          translate('icon_help_itemcreated_waiting_advices',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_administrative_reviewer':
+            icons.append(('proposeToAdministrativeReviewer.png',
+                          translate('icon_help_proposed_to_administrative_reviewer',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_internal_reviewer':
+            icons.append(('proposeToInternalReviewer.png',
+                          translate('icon_help_proposed_to_internal_reviewer',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
+            icons.append(('askAdvicesByInternalReviewer.png',
+                          translate('icon_help_proposed_to_internal_reviewer_waiting_advices',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_director':
+            icons.append(('proposeToDirector.png',
+                          translate('icon_help_proposed_to_director',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_finance':
+            icons.append(('proposeToFinance.png',
+                          translate('icon_help_proposed_to_finance',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'marked_not_applicable':
+            icons.append(('marked_not_applicable.png',
+                          translate('icon_help_marked_not_applicable',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+
+        # add an icon if item is down the workflow from the finances
+        # if item was ever gone the the finances and now it is down to the
+        # services, then it is considered as down the wf from the finances
+        # so take into account every states before 'validated/proposed_to_finance'
+        if not self.context.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
+            tool = getToolByName(self.context, 'portal_plonemeeting')
+            cfg = tool.getMeetingConfig(self.context)
+            history = self.context.workflow_history[cfg.getItemWorkflow()]
+            for event in history:
+                if event['action'] == 'proposeToFinance':
+                    icons.append(('wf_down_finances.png',
+                                  translate('icon_help_wf_down_finances',
+                                            domain="PloneMeeting",
+                                            context=self.request)))
+                    break
+        return icons

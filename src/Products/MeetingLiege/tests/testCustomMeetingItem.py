@@ -591,3 +591,20 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice(isMeeting=True) == res5)
         self.assertTrue(item3.adapted().getLegalTextForFDAdvice(isMeeting=True) == res6)
 
+    def test_DecisionAnnexesNotKeptOnDuplicated(self):
+        """When an item is duplicated using the 'duplicate and keep link',
+           we do not keep the decision annexes."""
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        annex = self.addAnnex(item)
+        annexDecision = self.addAnnex(item, relatedTo='item_decision')
+        self.assertTrue(IAnnexable(item).getAnnexes(relatedTo='item') == [annex, ])
+        self.assertTrue(IAnnexable(item).getAnnexes(relatedTo='item_decision') == [annexDecision, ])
+        # cloned and link not kept, decison annexes are removed
+        clonedItem = item.clone()
+        self.assertTrue(IAnnexable(clonedItem).getAnnexes(relatedTo='item'))
+        self.assertFalse(IAnnexable(clonedItem).getAnnexes(relatedTo='item_decision'))
+        # cloned but link kept, decison annexes are also kept
+        clonedItem = item.clone(setCurrentAsPredecessor=True)
+        self.assertTrue(IAnnexable(clonedItem).getAnnexes(relatedTo='item'))
+        self.assertFalse(IAnnexable(clonedItem).getAnnexes(relatedTo='item_decision'))

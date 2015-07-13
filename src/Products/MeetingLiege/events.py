@@ -12,7 +12,9 @@ __docformat__ = 'plaintext'
 
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
+from imio.actionspanel.interfaces import IContentDeletable
 from Products.PloneMeeting.config import READER_USECASES
+from Products.PloneMeeting.interfaces import IAnnexable
 from Products.PloneMeeting.utils import getLastEvent
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
@@ -222,13 +224,25 @@ def onAdvicesUpdated(item, event):
 
 def onItemDuplicated(original, event):
         '''When an item is sent to the Council, we need to initialize
-           title and privacy from what was defined on the college item.'''
+           title and privacy from what was defined on the college item.
+           More over we manage here the fact that in some cases, decision
+           annexes are not kept.'''
         newItem = event.newItem
         if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
             # we just sent an item from college to council
             newItem.setPrivacy(original.getPrivacyForCouncil())
             # update finance group access on newItem
             newItem._updateFinanceAdvisersAccess()
+
+        # make sure we do not keep decision annexes
+        decisionAnnexes = IAnnexable(newItem).getAnnexes(relatedTo='item_decision')
+        # if item is sent to Council, user may not delete annexes...
+        # in this case, we simply pass because it is supposed not possible to have that
+        # kind of annex on an item that is sent to council, and moreover, the item in the council
+        # is only editable by MeetingManagers
+        if decisionAnnexes and IContentDeletable(newItem).mayDelete():
+            toDelete = [annex.getId() for annex in decisionAnnexes]
+            newItem.manage_delObjects(ids=toDelete)
 
 
 def onItemAfterTransition(item, event):

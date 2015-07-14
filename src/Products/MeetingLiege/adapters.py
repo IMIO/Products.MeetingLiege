@@ -926,7 +926,7 @@ class CustomMeetingItem(MeetingItem):
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\
             and res['out_of_financial_dpt'].strftime('%d/%m/%Y') or ''
         res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % \
-                             (adviceData['type'].encode('utf-8'))
+                             (adviceData['type_translated'].encode('utf-8'))
         res['delay_started_on_localized'] = 'delay_started_on_localized' in adviceData['delay_infos']\
             and adviceData['delay_infos']['delay_started_on_localized'] or ''
         res['delay_started_on'] = 'delay_started_on' in adviceData\

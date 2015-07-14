@@ -31,6 +31,10 @@ msgstr "Council"
 msgid "MeetingLiege_descr_archivingRef"
 msgstr ""
 
+#. Default: "Choose proposing group for cdld advice"
+msgid "MeetingLiege_descr_cdldProposingGroup"
+msgstr ""
+
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr "If necessary, select the financial service that will have to give the legal financial advice on this item."
@@ -62,6 +66,10 @@ msgstr "Archiving reference"
 #. Default: "Archiving references"
 msgid "MeetingLiege_label_archivingRefs"
 msgstr "Archiving references"
+
+#. Default: "Proposing group to keep for CDLD synthesis"
+msgid "MeetingLiege_label_cdldProposingGroup"
+msgstr ""
 
 #. Default: "Decision (end)"
 msgid "MeetingLiege_label_decisionEnd"
@@ -143,6 +151,10 @@ msgstr "No advice to ask (apart from financial advice)"
 #. Default: ", complete purpose"
 msgid "and_description"
 msgstr ", complete purpose"
+
+#. Default: "Please select an archiving reference."
+msgid "archivingRef_required"
+msgstr ""
 
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
@@ -351,6 +363,11 @@ msgstr "Advices proposed to financial manager"
 #. Default: "Advices proposed to financial reviewer"
 msgid "searchadviceproposedtoreviewer"
 msgstr "Advices proposed to financial reviewer"
+
+# searches
+#. Default: "cdld synthesis"
+msgid "searchcdlditems"
+msgstr ""
 
 #. Default: "Items to control completeness of"
 msgid "searchitemstocontrolcompletenessof"

@@ -31,6 +31,14 @@ class testMeetingItem(MeetingLiegeTestCase, mctmi):
         Tests the MeetingItem class methods.
     """
 
+    def test_subproduct_call_Completeness(self):
+        '''Already tested in testWorkflows.'''
+        pass
+
+    def test_subproduct_call_Emergency(self):
+        '''Already tested in testWorkflows.'''
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

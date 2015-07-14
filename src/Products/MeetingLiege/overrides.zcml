@@ -24,6 +24,12 @@
             template="browser/templates/advicedelays.pt"
             layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
             permission="zope2.View" />
+        <browser:view
+            for="Products.PloneMeeting.content.advice.IMeetingAdvice"
+            name="change-advice-asked-again"
+            class="Products.MeetingLiege.browser.overrides.MeetingLiegeChangeAdviceAskedAgainView"
+            layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
+            permission="zope2.View" />
     </configure>
 
     <utility

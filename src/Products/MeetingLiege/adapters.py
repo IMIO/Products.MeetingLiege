@@ -25,6 +25,7 @@
 # ------------------------------------------------------------------------------
 import string
 import unicodedata
+from collections import OrderedDict
 from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
@@ -37,6 +38,8 @@ from plone.memoize import ram
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
+from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
+from Products.PloneMeeting.adapters import PMPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
@@ -103,16 +106,17 @@ class CustomMeeting(Meeting):
            will be returned with first element the number and second element, the item.
            In this case, the firstNumber value can be used.'''
         # We just filter ignore_review_states here and privacy and call
-        # getItemsInOrder(uids), passing the correct uids and removing empty
+        # getItems(uids, ordered=True), passing the correct uids and removing empty
         # uids.
         # privacy can be '*' or 'public' or 'secret'
         # oralQuestion can be 'both' or False or True
+        listType = late and 'late' or 'normal'
         for elt in itemUids:
             if elt == '':
                 itemUids.remove(elt)
         #no filtering, returns the items ordered
         if not categories and not ignore_review_states and privacy == '*' and oralQuestion == 'both':
-            return self.context.getItemsInOrder(late=late, uids=itemUids)
+            return self.context.getItems(uids=itemUids, listType=listType, ordered=True)
         # Either, we will have to filter the state here and check privacy
         filteredItemUids = []
         uid_catalog = self.context.uid_catalog
@@ -133,7 +137,7 @@ class CustomMeeting(Meeting):
         if not filteredItemUids:
             return []
         else:
-            items = self.context.getItemsInOrder(late=late, uids=filteredItemUids)
+            items = self.context.getItems(uids=filteredItemUids, listType=listType, ordered=True)
             if renumber:
                 #returns a list of tuple with first element the number
                 #and second element the item itself
@@ -209,10 +213,10 @@ class CustomMeeting(Meeting):
             if elt == '':
                 itemUids.remove(elt)
         if late == 'both':
-            items = self.context.getItemsInOrder(late=False, uids=itemUids)
-            items += self.context.getItemsInOrder(late=True, uids=itemUids)
+            items = self.context.getItems(uids=itemUids)
         else:
-            items = self.context.getItemsInOrder(late=late, uids=itemUids)
+            listType = late and 'late' or 'normal'
+            items = self.context.getItems(uids=itemUids, listType=listType, ordered=True)
         if withCollege:
             meetingDate = self.context.getDate()
             tool = getToolByName(self.context, 'portal_plonemeeting')
@@ -231,7 +235,7 @@ class CustomMeeting(Meeting):
                     break
             if collegeMeeting:
                 collegeMeeting = collegeMeeting.getObject()
-            collegeItems = collegeMeeting.getItemsInOrder()
+            collegeItems = collegeMeeting.getItems(ordered=True)
             itemList = []
             for collegeItem in collegeItems:
                 if 'meeting-config-council' in collegeItem.getOtherMeetingConfigsClonableTo() and not \
@@ -251,7 +255,7 @@ class CustomMeeting(Meeting):
                     itemOrder = parent._v_tempItem.adapted().getInsertOrder(insertMethods)
                     itemList.append((collegeItem, itemOrder))
                     delattr(parent, '_v_tempItem')
-            councilItems = self.context.getItemsInOrder(uids=itemUids)
+            councilItems = self.context.getItems(uids=itemUids, ordered=True)
             for councilItem in councilItems:
                 itemOrder = councilItem.adapted().getInsertOrder(insertMethods)
                 itemList.append((councilItem, itemOrder))
@@ -463,7 +467,7 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe'] = {}
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
-        items = self.getItemsInOrder()
+        items = self.getItems(ordered=True)
         res = {}
         for item in items:
             item_num = 0
@@ -476,7 +480,7 @@ class CustomMeeting(Meeting):
                     res[item.UID()] = item_num
                     break
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        items = self.getItemsInOrder(late=True)
+        items = self.getItems(listType='late', ordered=True)
         item_num = 1
         for item in items:
             if item.UID() in res:
@@ -577,6 +581,22 @@ class CustomMeetingItem(MeetingItem):
     def __init__(self, item):
         self.context = item
 
+    security.declarePrivate('validate_archivingRef')
+
+    def validate_archivingRef(self, value):
+        '''Field is required.'''
+        tool = getToolByName(self, 'portal_plonemeeting')
+        meetingConfig = tool.getMeetingConfig(self)
+        # Value could be '_none_' if it was displayed as listbox or None if
+        # it was displayed as radio buttons...  Use 'flex' format
+        if (not self.isDefinedInTool()) and \
+           ('archivingRef' in meetingConfig.getUsedItemAttributes()) and \
+           (value == '_none_' or not value):
+            return translate('archivingRef_required',
+                             domain='PloneMeeting',
+                             context=self.REQUEST)
+    MeetingItem.validate_archivingRef = validate_archivingRef
+
     security.declareProtected('Modify portal content', 'setCategory')
 
     def setCategory(self, value, **kwargs):
@@ -673,54 +693,6 @@ class CustomMeetingItem(MeetingItem):
             if advice_id in FINANCE_GROUP_IDS and not advice_info['optional']:
                 return advice_id
         return None
-
-    security.declarePublic('getIcons')
-
-    def getIcons(self, inMeeting, meeting):
-        '''Check docstring in PloneMeeting interfaces.py.'''
-        item = self.getSelf()
-        res = []
-        itemState = item.queryState()
-        tool = getToolByName(item, 'portal_plonemeeting')
-        cfg = tool.getMeetingConfig(item)
-        # Default PM item icons
-        res = res + MeetingItem.getIcons(item, inMeeting, meeting)
-        # Add our icons for some review states
-        if itemState == 'accepted_but_modified':
-            res.insert(0, ('accepted_but_modified.png', 'icon_help_accepted_but_modified'))
-        elif itemState == 'accepted_and_returned':
-            res.insert(0, ('accepted_and_returned.png', 'icon_help_accepted_and_returned'))
-        elif itemState == 'returned':
-            res.insert(0, ('returned.png', 'icon_help_returned'))
-        elif itemState == 'pre_accepted':
-            res.insert(0, ('pre_accepted.png', 'icon_help_pre_accepted'))
-        elif itemState == 'itemcreated_waiting_advices':
-            res.insert(0, ('askAdvicesByItemCreator.png', 'icon_help_itemcreated_waiting_advices'))
-        elif itemState == 'proposed_to_administrative_reviewer':
-            res.insert(0, ('proposeToAdministrativeReviewer.png',
-                           'icon_help_proposed_to_administrative_reviewer'))
-        elif itemState == 'proposed_to_internal_reviewer':
-            res.insert(0, ('proposeToInternalReviewer.png', 'icon_help_proposed_to_internal_reviewer'))
-        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
-            res.insert(0, ('askAdvicesByInternalReviewer.png',
-                           'icon_help_proposed_to_internal_reviewer_waiting_advices'))
-        elif itemState == 'proposed_to_director':
-            res.insert(0, ('proposeToDirector.png', 'icon_help_proposed_to_director'))
-        elif itemState == 'proposed_to_finance':
-            res.insert(0, ('proposeToFinance.png', 'icon_help_proposed_to_finance'))
-        elif itemState == 'marked_not_applicable':
-            res.insert(0, ('marked_not_applicable.png', 'icon_help_marked_not_applicable'))
-        # add an icon if item is down the workflow from the finances
-        # if item was ever gone the the finances and now it is down to the
-        # services, then it is considered as down the wf from the finances
-        # so take into account every states before 'validated/proposed_to_finance'
-        if not item.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
-            history = item.workflow_history[cfg.getItemWorkflow()]
-            for event in history:
-                if event['action'] == 'proposeToFinance':
-                    res.append(('wf_down_finances.png', 'icon_help_wf_down_finances'))
-                    break
-        return res
 
     security.declarePublic('getAdvicesGroupsInfosForUser')
 
@@ -1221,6 +1193,9 @@ class CustomMeetingItem(MeetingItem):
         raise NotImplementedError
 
 
+old_listAdviceTypes = MeetingConfig.listAdviceTypes
+
+
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the
        interface IMeetingConfigCustom.'''
@@ -1233,16 +1208,13 @@ class CustomMeetingConfig(MeetingConfig):
 
     def listAdviceTypes(self):
         d = "PloneMeeting"
-        res = DisplayList((
+        adviceTypes = old_listAdviceTypes(self)
+        financeAdviceTypes = DisplayList((
             ("positive_finance", translate('positive_finance', domain=d, context=self.REQUEST)),
             ("negative_finance", translate('negative_finance', domain=d, context=self.REQUEST)),
             ("not_required_finance", translate('not_required_finance', domain=d, context=self.REQUEST)),
-            ("positive", translate('positive', domain=d, context=self.REQUEST)),
-            ("positive_with_remarks", translate('positive_with_remarks', domain=d, context=self.REQUEST)),
-            ("negative", translate('negative', domain=d, context=self.REQUEST)),
-            ("nil", translate('nil', domain=d, context=self.REQUEST)),
         ))
-        return res
+        return financeAdviceTypes + adviceTypes
     MeetingConfig.listAdviceTypes = listAdviceTypes
 
     security.declarePrivate('listArchivingReferenceFinanceAdvices')
@@ -1325,122 +1297,6 @@ class CustomMeetingConfig(MeetingConfig):
             return True
         return self.getField('defaultAdviceHiddenDuringRedaction').get(self, **kwargs)
     MeetingConfig.getDefaultAdviceHiddenDuringRedaction = getDefaultAdviceHiddenDuringRedaction
-
-    security.declarePublic('searchItemsToControlCompletenessOf')
-
-    def searchItemsToControlCompletenessOf(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Queries all items for which there is completeness to evaluate, so where completeness
-           is not 'completeness_complete'.'''
-        # Create query parameters
-        # only query elements the current user may evaluate completeness of
-        groupIds = []
-        membershipTool = getToolByName(self, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
-        for financeGroup in FINANCE_GROUP_IDS:
-            # only keep finance groupIds the current user is controller for
-            if '%s_financialcontrollers' % financeGroup in userGroups:
-                # advice not given yet
-                groupIds.append('delay__%s_advice_not_giveable' % financeGroup)
-                # advice was already given once and come back to the finance
-                groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
-        params = {'portal_type': self.getItemTypeName(),
-                  # KeywordIndex 'getCompleteness' use 'OR' by default
-                  'getCompleteness': ('completeness_not_yet_evaluated',
-                                      'completeness_incomplete',
-                                      'completeness_evaluation_asked_again'),
-                  'indexAdvisers': groupIds,
-                  'review_state': 'proposed_to_finance',
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder, }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsToControlCompletenessOf = searchItemsToControlCompletenessOf
-
-    security.declarePublic('searchItemsWithAdviceProposedToFinancialController')
-
-    def searchItemsWithAdviceProposedToFinancialController(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
-           We only return items for which completeness has been evaluated to 'complete'.'''
-        groupIds = []
-        membershipTool = getToolByName(self, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
-        for financeGroup in FINANCE_GROUP_IDS:
-            # only keep finance groupIds the current user is controller for
-            if '%s_financialcontrollers' % financeGroup in userGroups:
-                groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
-        # Create query parameters
-        params = {'portal_type': self.getItemTypeName(),
-                  'getCompleteness': 'completeness_complete',
-                  # KeywordIndex 'indexAdvisers' use 'OR' by default
-                  'indexAdvisers': groupIds,
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder, }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsWithAdviceProposedToFinancialController = \
-        searchItemsWithAdviceProposedToFinancialController
-
-    security.declarePublic('searchItemsWithAdviceProposedToFinancialReviewer')
-
-    def searchItemsWithAdviceProposedToFinancialReviewer(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
-        groupIds = []
-        membershipTool = getToolByName(self, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
-        for financeGroup in FINANCE_GROUP_IDS:
-            # only keep finance groupIds the current user is reviewer for
-            if '%s_financialreviewers' % financeGroup in userGroups:
-                groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
-        # Create query parameters
-        params = {'portal_type': self.getItemTypeName(),
-                  # KeywordIndex 'indexAdvisers' use 'OR' by default
-                  'indexAdvisers': groupIds,
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder, }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsWithAdviceProposedToFinancialReviewer = searchItemsWithAdviceProposedToFinancialReviewer
-
-    security.declarePublic('searchItemsWithAdviceProposedToFinancialManager')
-
-    def searchItemsWithAdviceProposedToFinancialManager(self, sortKey, sortOrder, filterKey, filterValue, **kwargs):
-        '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
-        groupIds = []
-        membershipTool = getToolByName(self, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
-        for financeGroup in FINANCE_GROUP_IDS:
-            # only keep finance groupIds the current user is manager for
-            if '%s_financialmanagers' % financeGroup in userGroups:
-                groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
-        # Create query parameters
-        params = {'portal_type': self.getItemTypeName(),
-                  # KeywordIndex 'indexAdvisers' use 'OR' by default
-                  'indexAdvisers': groupIds,
-                  'sort_on': sortKey,
-                  'sort_order': sortOrder, }
-        # Manage filter
-        if filterKey:
-            params[filterKey] = prepareSearchValue(filterValue)
-        # update params with kwargs
-        params.update(kwargs)
-        # Perform the query in portal_catalog
-        return self.portal_catalog(**params)
-    MeetingConfig.searchItemsWithAdviceProposedToFinancialManager = searchItemsWithAdviceProposedToFinancialManager
 
     def _dataForArchivingRefRowId(self, row_id):
         '''Returns the data for the given p_row_id from the field 'archivingRefs'.'''
@@ -1559,6 +1415,82 @@ class CustomMeetingConfig(MeetingConfig):
                         res.append((advice, item))
         return res
 
+    def _extraSearchesInfo(self, infos):
+        """Add some specific searches."""
+
+        extra_infos = OrderedDict(
+            [
+                # Items in state 'proposed_to_finance' for which completeness is not 'completeness_complete'
+                ('searchitemstocontrolcompletenessof',
+                {
+                    'subFolderId': 'searches_items',
+                    'query':
+                    [
+                        {'i': 'CompoundCriterion',
+                         'o': 'plone.app.querystring.operation.compound.is',
+                         'v': 'items-to-control-completeness-of'},
+                    ],
+                    'sort_on': u'created',
+                    'sort_reversed': True,
+                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+                                     "or (not here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.isFinancialUser())",
+                    'roles_bypassing_talcondition': ['Manager', ]
+                }),
+                # Items having advice in state 'proposed_to_financial_controller'
+                ('searchadviceproposedtocontroller',
+                {
+                    'subFolderId': 'searches_items',
+                    'query':
+                    [
+                        {'i': 'CompoundCriterion',
+                         'o': 'plone.app.querystring.operation.compound.is',
+                         'v': 'items-with-advice-proposed-to-financial-controller'},
+                    ],
+                    'sort_on': u'created',
+                    'sort_reversed': True,
+                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+                                     "or (not here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.isFinancialUser())",
+                    'roles_bypassing_talcondition': ['Manager', ]
+                }),
+
+                # Items having advice in state 'proposed_to_financial_reviewer'
+                ('searchadviceproposedtoreviewer',
+                {
+                    'subFolderId': 'searches_items',
+                    'query':
+                    [
+                        {'i': 'CompoundCriterion',
+                         'o': 'plone.app.querystring.operation.compound.is',
+                         'v': 'items-with-advice-proposed-to-financial-reviewer'},
+                    ],
+                    'sort_on': u'created',
+                    'sort_reversed': True,
+                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.userIsAmong('financialreviewers')) "
+                                     "or (not here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.isFinancialUser())",
+                    'roles_bypassing_talcondition': ['Manager', ]
+                }),
+
+                # Items having advice in state 'proposed_to_financial_manager'
+                ('searchadviceproposedtomanager',
+                {
+                    'subFolderId': 'searches_items',
+                    'query':
+                    [
+                        {'i': 'CompoundCriterion',
+                         'o': 'plone.app.querystring.operation.compound.is',
+                         'v': 'items-with-advice-proposed-to-financial-manager'},
+                    ],
+                    'sort_on': u'created',
+                    'sort_reversed': True,
+                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.userIsAmong('financialmanagers')) "
+                                     "or (not here.REQUEST.get('fromPortletTodo', False) and here.portal_plonemeeting.isFinancialUser())",
+                    'roles_bypassing_talcondition': ['Manager', ]
+                }),
+            ]
+        )
+        infos.update(extra_infos)
+        return infos
+
 
 class CustomMeetingGroup(MeetingGroup):
     '''Adapter that adapts a meetingGroup implementing IMeetingGroup to the
@@ -1668,7 +1600,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         '''
         formatted_date = old_formatMeetingDate(self, meeting, lang, short, withHour, prefixed)
         adoptsNextCouncilAgenda = False
-        if meeting.__class__.__name__ == 'mybrains':
+        if meeting.__class__.__name__ in ['mybrains', 'CatalogContentListingObject']:
             if meeting.getAdoptsNextCouncilAgenda:
                 adoptsNextCouncilAgenda = True
         else:
@@ -2075,6 +2007,12 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                     if financeSubGroupId in memberGroups:
                         res = True
                         break
+            # special case when automatically sending back an item to 'itemcreated' or
+            # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
+            elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
+                self.context.queryState() in ['itemcreated_waiting_advices',
+                                              'proposed_to_internal_reviewer_waiting_advices']:
+                return True
         return res
 
     security.declarePublic('mayBackToProposedToDirector')
@@ -2297,3 +2235,160 @@ InitializeClass(MeetingCouncilLiegeWorkflowConditions)
 InitializeClass(MeetingItemCouncilLiegeWorkflowActions)
 InitializeClass(MeetingItemCouncilLiegeWorkflowConditions)
 # ------------------------------------------------------------------------------
+
+
+class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
+
+    @property
+    def query(self):
+        '''Queries all items for which there is completeness to evaluate, so where completeness
+           is not 'completeness_complete'.'''
+        groupIds = []
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        for financeGroup in FINANCE_GROUP_IDS:
+            # only keep finance groupIds the current user is controller for
+            if '%s_financialcontrollers' % financeGroup in userGroups:
+                # advice not given yet
+                groupIds.append('delay__%s_advice_not_giveable' % financeGroup)
+                # advice was already given once and come back to the finance
+                groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
+        return {'portal_type': self.cfg.getItemTypeName(),
+                'getCompleteness': ('completeness_not_yet_evaluated',
+                                    'completeness_incomplete',
+                                    'completeness_evaluation_asked_again'),
+                'indexAdvisers': groupIds,
+                'review_state': 'proposed_to_finance'}
+
+
+class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseAdapter):
+
+    @property
+    def query(self):
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
+           We only return items for which completeness has been evaluated to 'complete'.'''
+        groupIds = []
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        for financeGroup in FINANCE_GROUP_IDS:
+            # only keep finance groupIds the current user is controller for
+            if '%s_financialcontrollers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
+        # Create query parameters
+        return {'portal_type': self.cfg.getItemTypeName(),
+                'getCompleteness': 'completeness_complete',
+                'indexAdvisers': groupIds}
+
+
+class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAdapter):
+
+    @property
+    def query(self):
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
+        groupIds = []
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        for financeGroup in FINANCE_GROUP_IDS:
+            # only keep finance groupIds the current user is reviewer for
+            if '%s_financialreviewers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
+        return {'portal_type': self.cfg.getItemTypeName(),
+                'indexAdvisers': groupIds}
+
+
+class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdapter):
+
+    @property
+    def query(self):
+        '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
+        groupIds = []
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        for financeGroup in FINANCE_GROUP_IDS:
+            # only keep finance groupIds the current user is manager for
+            if '%s_financialmanagers' % financeGroup in userGroups:
+                groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
+        return {'portal_type': self.cfg.getItemTypeName(),
+                'indexAdvisers': groupIds}
+
+
+class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
+    """
+      Override to take into account MeetingLiege use cases...
+    """
+
+    def _leadingIcons(self):
+        """
+          Manage icons to display before the icons managed by PrettyLink._icons.
+        """
+        res = []
+        if not self.context.meta_type == 'MeetingItem':
+            return res
+
+        # Default PM item icons
+        icons = super(MLPrettyLinkAdapter, self)._leadingIcons()
+
+        itemState = self.context.queryState()
+        # Add our icons for some review states
+        if itemState == 'accepted_and_returned':
+            icons.append(('accepted_and_returned.png',
+                          translate('icon_help_accepted_and_returned',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'returned':
+            icons.append(('returned.png',
+                          translate('icon_help_returned',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'itemcreated_waiting_advices':
+            icons.append(('askAdvicesByItemCreator.png',
+                          translate('icon_help_itemcreated_waiting_advices',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_administrative_reviewer':
+            icons.append(('proposeToAdministrativeReviewer.png',
+                          translate('icon_help_proposed_to_administrative_reviewer',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_internal_reviewer':
+            icons.append(('proposeToInternalReviewer.png',
+                          translate('icon_help_proposed_to_internal_reviewer',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
+            icons.append(('askAdvicesByInternalReviewer.png',
+                          translate('icon_help_proposed_to_internal_reviewer_waiting_advices',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_director':
+            icons.append(('proposeToDirector.png',
+                          translate('icon_help_proposed_to_director',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_finance':
+            icons.append(('proposeToFinance.png',
+                          translate('icon_help_proposed_to_finance',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'marked_not_applicable':
+            icons.append(('marked_not_applicable.png',
+                          translate('icon_help_marked_not_applicable',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+
+        # add an icon if item is down the workflow from the finances
+        # if item was ever gone the the finances and now it is down to the
+        # services, then it is considered as down the wf from the finances
+        # so take into account every states before 'validated/proposed_to_finance'
+        if not self.context.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
+            tool = getToolByName(self.context, 'portal_plonemeeting')
+            cfg = tool.getMeetingConfig(self.context)
+            history = self.context.workflow_history[cfg.getItemWorkflow()]
+            for event in history:
+                if event['action'] == 'proposeToFinance':
+                    icons.append(('wf_down_finances.png',
+                                  translate('icon_help_wf_down_finances',
+                                            domain="PloneMeeting",
+                                            context=self.request)))
+                    break
+        return icons

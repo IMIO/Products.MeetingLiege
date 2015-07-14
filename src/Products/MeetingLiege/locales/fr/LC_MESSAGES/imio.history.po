@@ -18,6 +18,10 @@ msgstr ""
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Point créé depuis un point Collège."
 
+#. Default: "This transition was automatically triggered because every asked advices have been given."
+msgid "item_wf_changed_every_advices_given"
+msgstr "Le point a automatiquement changé d'état car tous les avis demandés ont été rendus."
+
 #. Default: "The item has been automatically sent back to the director because the relevant finance advice was negative."
 msgid "item_wf_changed_finance_advice_negative"
 msgstr "Le point a été automatiquement renvoyé au directeur car l'avis du service finance rendu était défavorable."

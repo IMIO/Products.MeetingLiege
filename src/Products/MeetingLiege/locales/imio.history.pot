@@ -30,3 +30,7 @@ msgstr ""
 #. Default: "The item has been automatically validated because the finance advice was timed out."
 msgid "item_wf_changed_finance_advice_timed_out"
 msgstr ""
+
+#. Default: "This transition was automatically triggered because every asked advices have been given."
+msgid "item_wf_changed_every_advices_given"
+msgstr ""

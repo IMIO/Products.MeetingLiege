@@ -3,7 +3,7 @@ from zope.interface import implements
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
-from imio.history.adapters import ImioHistoryAdapter
+from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
 from Products.PloneMeeting.adapters import AnnexableAdapter
 from Products.PloneMeeting.adapters import PMHistoryAdapter
@@ -52,7 +52,7 @@ class AdviceTypeVocabulary(object):
         return SimpleVocabulary(terms)
 
 
-class AdviceHistoryAdapter(ImioHistoryAdapter):
+class AdviceHistoryAdapter(ImioWfHistoryAdapter):
     """
       Manage the the fact that a given user may see or not a comment in an advice history.
     """

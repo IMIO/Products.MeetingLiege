@@ -13,11 +13,57 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from imio.actionspanel.interfaces import IContentDeletable
+from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.interfaces import IAnnexable
 from Products.PloneMeeting.utils import getLastEvent
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
+
+
+def _everyAdvicesAreGivenFor(item):
+    '''Every advices are considered given on an item if no more
+       hidden_during_redaction and created.'''
+    for adviceId, adviceInfos in item.adviceIndex.items():
+        if not adviceId in FINANCE_GROUP_IDS and \
+           adviceInfos['type'] in (NOT_GIVEN_ADVICE_VALUE, 'asked_again') or \
+           adviceInfos['hidden_during_redaction'] is True:
+            return False
+    return True
+
+
+def _sendItemBackInWFIfNecessary(item):
+    '''Check if we need to send the item backToItemCreated
+       or backToProposedToInternalReviewer.'''
+    itemState = item.queryState()
+    if itemState in ['itemcreated_waiting_advices',
+                     'proposed_to_internal_reviewer_waiting_advices'] and \
+       _everyAdvicesAreGivenFor(item):
+        if itemState == 'itemcreated_waiting_advices':
+            transition = 'backToItemCreated'
+        else:
+            transition = 'backToProposedToInternalReviewer'
+        item.REQUEST.set('everyAdvicesAreGiven', True)
+        # use actionspanel so we are redirected to viewable url
+        actionsPanel = item.restrictedTraverse('@@actions_panel')
+        redirectTo = actionsPanel.triggerTransition(transition=transition,
+                                                    comment='item_wf_changed_every_advices_given',
+                                                    redirect=True)
+        item.REQUEST.set('everyAdvicesAreGiven', False)
+        if redirectTo:
+            return item.REQUEST.RESPONSE.redirect(redirectTo)
+
+
+def onAdviceAdded(advice, event):
+    '''Called when a meetingadvice is added.'''
+    item = advice.getParentNode()
+    _sendItemBackInWFIfNecessary(item)
+
+
+def onAdviceModified(advice, event):
+    '''Called when a meetingadvice is edited.'''
+    item = advice.getParentNode()
+    _sendItemBackInWFIfNecessary(item)
 
 
 def onAdviceTransition(advice, event):

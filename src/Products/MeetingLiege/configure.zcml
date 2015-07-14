@@ -75,17 +75,42 @@
   <!-- Override HistoryCommentViewable adapter for meetingadvice -->
   <adapter for="Products.PloneMeeting.content.advice.MeetingAdvice"
            factory=".overrides.AdviceHistoryAdapter"
-           provides="imio.history.interfaces.IImioHistory" />
+           name="workflow"
+           provides="imio.history.interfaces.IImioWfHistory" />
 
   <!-- Override HistoryCommentViewable adapter for MeetingItem -->
   <adapter for="Products.PloneMeeting.MeetingItem.MeetingItem"
            factory=".overrides.ItemHistoryAdapter"
-           provides="imio.history.interfaces.IImioHistory" />
+           name="workflow"
+           provides="imio.history.interfaces.IImioWfHistory" />
 
   <!-- Override AnnexableAdapter adapter for MeetingItem-->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
            factory=".overrides.MatterAwareAnnexableAdapter"
            provides="Products.PloneMeeting.interfaces.IAnnexable" />
+
+  <!-- Searches adapters -->
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsToControlCompletenessOfAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-to-control-completeness-of" />
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsWithAdviceProposedToFinancialControllerAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-with-advice-proposed-to-financial-controller" />
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsWithAdviceProposedToFinancialReviewerAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-with-advice-proposed-to-financial-reviewer" />
+  <adapter for="*"
+           factory="Products.MeetingLiege.adapters.ItemsWithAdviceProposedToFinancialManagerAdapter"
+           provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
+           name="items-with-advice-proposed-to-financial-manager" />
+
+  <!-- IPrettyLink for MeetingItem -->
+  <adapter for="Products.PloneMeeting.MeetingItem.MeetingItem"
+           factory=".adapters.MLPrettyLinkAdapter"
+           provides="imio.prettylink.interfaces.IPrettyLink" />
 
   <!-- ##/code-section configure.zcml.header -->
 

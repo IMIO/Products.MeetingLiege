@@ -28,7 +28,8 @@ class MeetingLiegeLayer(PloneMeetingLayer):
 ML_TESTING_PROFILE = MeetingLiegeLayer(
     zcml_filename="testing.zcml",
     zcml_package=Products.MeetingLiege,
-    additional_z2_products=('Products.MeetingLiege',
+    additional_z2_products=('imio.dashboard',
+                            'Products.MeetingLiege',
                             'Products.PloneMeeting',
                             'Products.CMFPlacefulWorkflow',
                             'Products.PasswordStrength'),

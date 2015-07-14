@@ -26,6 +26,7 @@ from datetime import datetime
 
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
+from plone.app.querystring import queryparser
 from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFCore.permissions import DeleteObjects
@@ -113,7 +114,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                    'backToProposedToDirector', ])
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         # the item is available for the meeting
-        availableItemUids = [brain.UID for brain in meeting.adapted().getAvailableItems()]
+        availableItemsQuery = queryparser.parseFormquery(meeting, meeting.adapted()._availableItemsQuery())
+        availableItemUids = [brain.UID for brain in self.portal.portal_catalog(availableItemsQuery)]
         self.assertTrue(item.UID() in availableItemUids)
         self.do(item, 'present')
         self.assertTrue(item.queryState() == 'presented')
@@ -275,6 +277,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmFinController')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
         # set the item to "incomplete"
+        self.assertTrue(item.adapted().mayEvaluateCompleteness())
         item.setCompleteness('completeness_incomplete')
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
@@ -537,6 +540,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmReviewer1')
         # no emergency for now so item can not be validated
         self.assertTrue(not 'validate' in self.transitions(item))
+        # ask emergency
+        self.assertTrue(item.adapted().mayAskEmergency())
         item.setEmergency('emergency_asked')
         # now item can be validated
         self.assertTrue('validate' in self.transitions(item))

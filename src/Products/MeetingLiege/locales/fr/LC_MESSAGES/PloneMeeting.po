@@ -358,7 +358,7 @@ msgstr "Avis proposés aux contrôleurs financiers"
 
 #. Default: "Advices proposed to financial manager"
 msgid "searchadviceproposedtomanager"
-msgstr "Avis proposés aux directeurs financiers"
+msgstr "Avis proposés au directeur financier"
 
 #. Default: "Advices proposed to financial reviewer"
 msgid "searchadviceproposedtoreviewer"

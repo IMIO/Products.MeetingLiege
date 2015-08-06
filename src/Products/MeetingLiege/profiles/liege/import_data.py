@@ -98,7 +98,6 @@ dfcontrol.itemAdviceViewStates = ('meeting-config-college__state__accepted',
                                   'meeting-config-college__state__proposed_to_finance',
                                   'meeting-config-college__state__presented',
                                   'meeting-config-college__state__refused',
-                                  'meeting-config-college__state__removed',
                                   'meeting-config-college__state__validated')
 dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
                            u'DF - Comptabilité et Audit financier',
@@ -106,11 +105,11 @@ dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
 dfcompta.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
                              'meeting-config-college__state__proposed_to_finance',
                              'meeting-config-college__state__presented',
-                             'meeting-config-college__state__validated'),
+                             'meeting-config-college__state__validated')
 dfcompta.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
                                  'meeting-config-college__state__proposed_to_finance',
                                  'meeting-config-college__state__presented',
-                                 'meeting-config-college__state__validated'),
+                                 'meeting-config-college__state__validated')
 dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
                                  'meeting-config-college__state__accepted_but_modified',
                                  'meeting-config-college__state__pre_accepted',
@@ -119,7 +118,6 @@ dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
                                  'meeting-config-college__state__proposed_to_finance',
                                  'meeting-config-college__state__presented',
                                  'meeting-config-college__state__refused',
-                                 'meeting-config-college__state__removed',
                                  'meeting-config-college__state__validated')
 
 groups = [GroupDescriptor('dirgen', 'Directeur Général', 'DG'),
@@ -247,13 +245,9 @@ collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
                                                               'item_transition': 'itemfreeze'},
                                                              {'meeting_transition': 'close',
                                                               'item_transition': 'accept'},)
-collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed', 'removed')
+collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed')
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
-collegeMeeting.itemsListVisibleColumns = ['state', 'proposingGroupAcronym', 'advices',
-                                          'annexes', 'annexesDecision', 'actions']
-collegeMeeting.itemColumns = ['creationDate', 'creator', 'state', 'annexes', 'annexesDecision',
-                              'proposingGroupAcronym', 'advices', 'actions', 'meeting']
 collegeMeeting.customAdvisers = [
     {'row_id': 'unique_id_002',
      'group': 'df-contrale',
@@ -307,8 +301,7 @@ collegeMeeting.customAdvisers = [
 collegeMeeting.powerAdvisersGroups = ('dirgen', 'dirfin')
 collegeMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned',
                                            'pre_accepted', 'delayed', 'itemfrozen', 'marked_not_applicable',
-                                           'validated', 'presented', 'refused',
-                                           'returned_to_proposing_group', 'returned')
+                                           'validated', 'presented', 'refused', 'returned')
 collegeMeeting.meetingPowerObserversStates = ('closed', 'created', 'decided', 'frozen')
 collegeMeeting.meetingAppDefaultView = 'searchmyitems'
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
@@ -323,7 +316,7 @@ collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices',
 collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_to_administrative_reviewer',
                                        'proposed_to_internal_reviewer', 'proposed_to_internal_reviewer_waiting_advices',
                                        'proposed_to_director', 'validated', 'presented',
-                                       'itemfrozen', 'refused', 'delayed', 'removed',
+                                       'itemfrozen', 'refused', 'delayed',
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.transitionReinitializingDelays = 'backToProposedToDirector'
 collegeMeeting.enforceAdviceMandatoriness = False
@@ -337,7 +330,7 @@ collegeMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[5].getIdSuffixed('reviewers'),
                                        groups[6].getIdSuffixed('reviewers'), ]
 collegeMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
-                                       'itemfrozen', 'refused', 'delayed', 'removed')
+                                       'itemfrozen', 'refused', 'delayed')
 collegeMeeting.podTemplates = collegeTemplates
 collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},
@@ -489,7 +482,7 @@ councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[4].getIdSuffixed('reviewers'),
                                        groups[5].getIdSuffixed('reviewers'),
                                        groups[6].getIdSuffixed('reviewers'), ]
-councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed', 'removed')
+councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed')
 councilMeeting.podTemplates = collegeTemplates
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},)

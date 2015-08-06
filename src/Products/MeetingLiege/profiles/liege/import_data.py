@@ -502,5 +502,4 @@ data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(collegeMeeting, councilMeeting),
                                  groups=groups)
 data.unoEnabledPython = '/usr/bin/python'
-data.usedColorSystem = 'state_color'
 # ------------------------------------------------------------------------------

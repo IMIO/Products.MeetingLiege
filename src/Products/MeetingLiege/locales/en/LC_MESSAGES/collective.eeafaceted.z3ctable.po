@@ -18,3 +18,7 @@ msgstr ""
 msgid "header_purpose"
 msgstr ""
 
+#. Default: "Item with act?"
+msgid "header_toDiscuss"
+msgstr ""
+

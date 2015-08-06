@@ -407,7 +407,7 @@ msgstr "Cliquez sur l'image pour demander de passer en point avec acte."
 
 #. Default: "Not to be discussed during the meeting. Click on the image for discussing the item."
 msgid "to_discuss_no_edit"
-msgstr "'Point sans acte', cliquez sur l'image pour passer en 'Point avec acte'."
+msgstr "Point sans acte, cliquez sur l'image pour passer en 'Point avec acte'."
 
 #. Default: "If you check this box, the value of field 'toDiscuss', for an item, will be set when inserting the item into a meeting, with a default value as defined by the fields below. Else, the user having the permission to edit the item will be able to give a value to this field, as soon as on item creation."
 msgid "to_discuss_set_on_item_insert_descr"

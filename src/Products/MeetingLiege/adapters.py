@@ -629,7 +629,7 @@ class CustomMeetingItem(MeetingItem):
 
     def showDuplicateItemAction_cachekey(method, self, brain=False):
         '''cachekey method for self.showDuplicateItemAction.'''
-        return (self, str(self.REQUEST.debug))
+        return (self, str(self.REQUEST._debug))
 
     security.declarePublic('showDuplicateItemAction')
 
@@ -1613,7 +1613,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
 
     def isFinancialUser_cachekey(method, self, brain=False):
         '''cachekey method for self.isFinancialUser.'''
-        return str(self.REQUEST.debug)
+        return str(self.REQUEST._debug)
 
     security.declarePublic('isFinancialUser')
 

@@ -265,8 +265,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if we insert a new item, references are updated
         newItem = self.create('MeetingItem')
         newItem.setCategory('development')
-        # force it to be inserted as a normal item
-        self.request.form['itemInsertForceNormal'] = True
         self.presentItem(newItem)
         # item is inserted at the end
         self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
@@ -300,6 +298,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                         ['development1', 'development2', 'deployment1', 'development3'])
         self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
                         ['o3', 'o5', 'o2', 'o7'])
+
+        # test late items, reference is HOJ.1, HOJ.2, ...
+        self.changeUser('pmManager')
+        lateItem1 = self.create('MeetingItem')
+        lateItem1.setCategory('development')
+        lateItem1.setPreferredMeeting(meeting.UID())
+        lateItem2 = self.create('MeetingItem')
+        lateItem2.setCategory('deployment')
+        lateItem2.setPreferredMeeting(meeting.UID())
+        self.presentItem(lateItem1)
+        self.presentItem(lateItem2)
+        self.assertEquals(lateItem1.getItemReference(), 'HOJ.1')
+        self.assertEquals(lateItem2.getItemReference(), 'HOJ.2')
 
     def test_InsertingMethodOnDecisionFirstWord(self):
         '''

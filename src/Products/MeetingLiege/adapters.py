@@ -467,7 +467,7 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe'] = {}
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
-        items = self.getItems(ordered=True)
+        items = self.getItems(listType='normal', ordered=True)
         res = {}
         for item in items:
             item_num = 0

@@ -1192,6 +1192,27 @@ class CustomMeetingItem(MeetingItem):
             return int(''.join(index))
         raise NotImplementedError
 
+    def getOfficeManager(self):
+        '''
+        Allows to get the office manager's name, even if the item is
+        returned multiple times.
+        '''
+        # If we have the name of the office manager, we just return it.
+        if self.context.getLastEvent('proposeToDirector'):
+            offMan = self.context.getLastEvent('proposeToDirector')
+            return self.context.portal_membership.getMemberInfo(str(offMan['actor']))['fullname']
+        # Else we look for a predecessor which can have the intel.
+        elif self.context.getPredecessor():
+            predecessor = self.context.getPredecessor()
+            # loops while the item has no office manager
+            while predecessor:
+                if predecessor.getLastEvent('proposeToDirector'):
+                    offMan = predecessor.getLastEvent('proposeToDirector')
+                    return predecessor.portal_membership.getMemberInfo(str(offMan['actor']))['fullname']
+                predecessor = predecessor.getPredecessor()
+            return ''
+        else:
+            return ''
 
 old_listAdviceTypes = MeetingConfig.listAdviceTypes
 

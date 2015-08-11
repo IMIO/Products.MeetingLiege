@@ -619,3 +619,60 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         clonedItem = item.clone(setCurrentAsPredecessor=True)
         self.assertTrue(IAnnexable(clonedItem).getAnnexes(relatedTo='item'))
         self.assertFalse(IAnnexable(clonedItem).getAnnexes(relatedTo='item_decision'))
+
+    def test_getOfficeManager(self):
+        self.changeUser('pmManager')
+
+        # simple item following the workflow until it is validated.
+        itemValidated = self.create('MeetingItem')
+        self.do(itemValidated, 'proposeToAdministrativeReviewer')
+        self.do(itemValidated, 'proposeToInternalReviewer')
+        self.do(itemValidated, 'proposeToDirector')
+        self.do(itemValidated, 'validate')
+        # item directly validated from the created state. This one has no
+        # informations about office manager because he didn't go through
+        # the state "proposedToDirector"
+        itemDirectlyValidated = self.create('MeetingItem')
+        self.do(itemDirectlyValidated, 'validate')
+
+        # Item that gonna be postponed and directly presented to another meeting
+        itemToReturn = self.create('MeetingItem')
+        self.do(itemToReturn, 'proposeToAdministrativeReviewer')
+        self.do(itemToReturn, 'proposeToInternalReviewer')
+        self.do(itemToReturn, 'proposeToDirector')
+        self.do(itemToReturn, 'validate')
+
+        # Item that gonna be postponed, presented to another meeting and then
+        # postponed and presented a second time.
+        itemToReturnTwice = self.create('MeetingItem')
+        self.do(itemToReturnTwice, 'proposeToAdministrativeReviewer')
+        self.do(itemToReturnTwice, 'proposeToInternalReviewer')
+        self.do(itemToReturnTwice, 'proposeToDirector')
+        self.do(itemToReturnTwice, 'validate')
+
+        # Creates a meeting, presents and postpones the items.
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        self.presentItem(itemToReturn)
+        self.presentItem(itemToReturnTwice)
+        self.decideMeeting(meeting)
+        self.do(itemToReturn, 'return')
+        self.do(itemToReturnTwice, 'return')
+
+        # Gets the items which have been duplicated when postponed.
+        itemReturned = itemToReturn.getBRefs('ItemPredecessor')[0]
+        itemReturnedOnce = itemToReturnTwice.getBRefs('ItemPredecessor')[0]
+
+        # Put back the meeting in creation to add the duplicated item into it.
+        # Presents and postpones again.
+        self.backToState(meeting, 'created')
+        self.presentItem(itemReturnedOnce)
+        self.decideMeeting(meeting)
+        self.do(itemReturnedOnce, 'return')
+        itemReturnedTwice = itemReturnedOnce.getBRefs('ItemPredecessor')[0]
+
+        # Checks if we have the name of the office manager when we are supposed
+        # to have it.
+        self.assertTrue(itemValidated.adapted().getOfficeManager() == 'M. PmManager')
+        self.assertTrue(itemDirectlyValidated.adapted().getOfficeManager() == '')
+        self.assertTrue(itemReturned.adapted().getOfficeManager() == 'M. PmManager')
+        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager() == 'M. PmManager')

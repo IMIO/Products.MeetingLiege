@@ -158,6 +158,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
         # asked by item creator and when item in state 'proposed_to_internal_reviewer_waiting_advices',
         # asekd by internal reviewer
+        self.meetingConfig.setUsedAdviceTypes(('asked_again', ) + self.meetingConfig.getUsedAdviceTypes())
         self.meetingConfig.setItemAdviceStates(('itemcreated_waiting_advices',
                                                 'proposed_to_internal_reviewer_waiting_advices'))
         self.meetingConfig.setItemAdviceEditStates = (('itemcreated_waiting_advices',
@@ -231,6 +232,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
     def test_subproduct_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
         self.changeUser('admin')
+        self.meetingConfig.setUsedAdviceTypes(('asked_again', ) + self.meetingConfig.getUsedAdviceTypes())
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
         # add finance groups

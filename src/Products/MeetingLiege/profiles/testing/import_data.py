@@ -279,7 +279,7 @@ collegeMeeting.maxDaysDecisions = 60
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
-collegeMeeting.usedAdviceTypes = ('asked_again', 'positive_finance', 'negative_finance', 'not_required_finance',
+collegeMeeting.usedAdviceTypes = ('positive_finance', 'negative_finance', 'not_required_finance',
                                   'positive', 'positive_with_remarks', 'negative', 'nil')
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')

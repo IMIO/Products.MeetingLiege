@@ -187,11 +187,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(item, 'askAdvicesByItemCreator')
         # pmReviewer2 is adviser for vendors
         self.changeUser('pmReviewer2')
-        createContentInContainer(item,
-                                 'meetingadvice',
-                                 **{'advice_group': 'vendors',
-                                    'advice_type': u'positive',
-                                    'advice_comment': RichTextValue(u'My comment vendors')})
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': 'vendors',
+                                             'advice_type': u'positive',
+                                             'advice_comment': RichTextValue(u'My comment vendors')})
         # no more advice to give
         self.assertTrue(not item.hasAdvices(toGive=True))
         # item may be proposed directly to administrative reviewer
@@ -205,6 +205,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # no advice to give so not askable
         self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
                                                    'proposeToDirector', ])
+        # advice could be asked again
+        self.assertTrue(item.adapted().mayAskAdviceAgain(advice))
         item.setOptionalAdvisers(('vendors', 'developers'))
         item.at_post_edit_script()
         # now that there is an advice to give (developers)
@@ -415,6 +417,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
                                                    'proposeToFinance'])
+        # a financial advice can not be 'asked_again'
+        self.assertFalse(item.adapted().mayAskAdviceAgain(advice))
         # a director can send the item back to director or internal reviewer even
         # when advice is on the way by finance.  So send it again to finance and take it back
         self.do(item, 'proposeToFinance')

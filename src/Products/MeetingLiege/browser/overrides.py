@@ -53,14 +53,3 @@ class MeetingLiegeAdviceDelaysView(AdviceDelaysView):
                 return False
 
         return True
-
-
-class MeetingLiegeChangeAdviceAskedAgainView(ChangeAdviceAskedAgainView):
-    """Override to not be able to ask advice again for finance groups."""
-
-    def mayAskAdviceAgain(self):
-        ''' '''
-        if self.context.advice_group in FINANCE_GROUP_IDS:
-            return False
-
-        return super(MeetingLiegeChangeAdviceAskedAgainView, self).mayAskAdviceAgain()

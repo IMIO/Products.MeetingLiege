@@ -849,6 +849,14 @@ class CustomMeetingItem(MeetingItem):
                 return True
         return False
 
+    security.declarePublic('mayAskAdviceAgain')
+
+    def mayAskAdviceAgain(self, advice):
+        '''Do not let advice 'asked_again' for finance groups.'''
+        if advice.advice_group in FINANCE_GROUP_IDS:
+            return False
+        return self.context.mayAskAdviceAgain(advice)
+
     security.declarePrivate('listFinanceAdvices')
 
     def listFinanceAdvices(self):

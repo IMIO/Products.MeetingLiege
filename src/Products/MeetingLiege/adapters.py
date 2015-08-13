@@ -1305,28 +1305,6 @@ class CustomMeetingConfig(MeetingConfig):
         self.getField('archivingRefs').set(self, value, **kwargs)
     MeetingConfig.setArchivingRefs = setArchivingRefs
 
-    security.declarePublic('getDefaultAdviceHiddenDuringRedaction')
-
-    def getDefaultAdviceHiddenDuringRedaction(self, **kwargs):
-        '''
-          Override the accessor of field MeetingConfig.defaultAdviceHiddenDuringRedaction
-          to force to 'True' when used for a finance group.
-        '''
-        factory = queryUtility(IVocabularyFactory, u'Products.PloneMeeting.content.advice.advice_group_vocabulary')
-        published = self.REQUEST.get('PUBLISHED', '')
-        if not published:
-            return False
-        if not hasattr(published, 'context'):
-            # we are on the MeetingConfig, return the stored value
-            return self.getField('defaultAdviceHiddenDuringRedaction').get(self, **kwargs)
-        context = published.context
-        groupVocab = factory(context)
-        groupIds = set([group.value for group in groupVocab._terms])
-        if set(FINANCE_GROUP_IDS).intersection(groupIds):
-            return True
-        return self.getField('defaultAdviceHiddenDuringRedaction').get(self, **kwargs)
-    MeetingConfig.getDefaultAdviceHiddenDuringRedaction = getDefaultAdviceHiddenDuringRedaction
-
     def _dataForArchivingRefRowId(self, row_id):
         '''Returns the data for the given p_row_id from the field 'archivingRefs'.'''
         cfg = self.getSelf()

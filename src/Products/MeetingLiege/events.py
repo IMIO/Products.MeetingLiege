@@ -212,6 +212,7 @@ def onAdviceTransition(advice, event):
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, ))
+
     item.updateAdvices()
 
 
@@ -250,7 +251,8 @@ def onAdvicesUpdated(item, event):
 
         # when a finance advice is just timed out, we will validate the item
         # so MeetingManagers receive the item and do what necessary
-        if adviceInfo['delay_infos']['delay_status'] == 'timed_out' and not \
+        if adviceInfo['delay_infos']['delay_status'] == 'timed_out' and \
+           'delay_infos' in event.old_adviceIndex[groupId] and not \
            event.old_adviceIndex[groupId]['delay_infos']['delay_status'] == 'timed_out':
             if item.queryState() == 'proposed_to_finance':
                 wfTool = getToolByName(item, 'portal_workflow')

@@ -2,8 +2,6 @@ from Products.CMFCore.utils import getToolByName
 from plone.memoize.view import memoize_contextless
 from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
-from Products.PloneMeeting.browser.advices import ChangeAdviceAskedAgainView
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
 class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):

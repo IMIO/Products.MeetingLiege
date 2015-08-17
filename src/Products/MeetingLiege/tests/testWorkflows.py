@@ -424,6 +424,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # a director can send the item back to director or internal reviewer even
         # when advice is on the way by finance.  So send it again to finance and take it back
         self.do(item, 'proposeToFinance')
+        # completeness was 'completeness_evaluation_asked_again'
+        self.assertEquals(item.getCompleteness(), 'completeness_evaluation_asked_again')
         self.assertTrue(item.queryState() == 'proposed_to_finance')
         self.assertTrue(self.transitions(item) == ['backToProposedToDirector',
                                                    'backToProposedToInternalReviewer'])
@@ -490,9 +492,15 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # close the meeting, the advice will be set to 'advice_given'
         # the advice could still be given if not already in state 'presented' and 'itemfrozen'
         self.presentItem(item)
-        self.closeMeeting(meeting)
-        self.assertTrue(meeting.queryState() == 'closed')
+        self.freezeMeeting(meeting)
+        self.assertTrue(meeting.queryState() == 'frozen')
+        self.assertTrue(item.queryState() == 'itemfrozen')
         self.assertTrue(advice.queryState() == 'advice_given')
+
+        # item could go back to 'presented', in this case, advice is editable again
+        self.do(item, 'backToPresented')
+        self.assertTrue(item.queryState() == 'presented')
+        self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
 
     def test_subproduct_CollegeProcessWithFinancesAdvicesWithEmergency(self):
         '''If emergency is asked for an item by director, the item can be sent
@@ -632,6 +640,30 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue('validate' in self.transitions(item))
         self.changeUser('pmManager')
         self.assertTrue('validate' in self.transitions(item))
+
+        # now test that a 'timed_out' advice can be set back to editable
+        # by finance advice from no more editable, for this, go to 'itemfrozen'
+        # this test a corrected bug where 'delay_infos' key was no more present
+        # in the adviceIndex because updateAdvices is called during updateAdvices
+        self.do(item, 'validate')
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting', date='2015/05/05')
+        self.presentItem(item)
+        self.assertTrue(advice.queryState() == 'advice_given')
+        self.assertFalse(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
+        self.freezeMeeting(meeting)
+        self.assertTrue(advice.queryState() == 'advice_given')
+        self.assertFalse(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'no_more_giveable')
+        self.assertTrue(item.queryState() == 'itemfrozen')
+        # now back to 'presented'
+        self.do(item, 'backToPresented')
+        self.assertTrue(item.queryState() == 'presented')
+        # advice is back to editable state
+        self.assertEquals(advice.queryState(), 'proposed_to_financial_controller')
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
 
     def test_subproduct_ReturnCollege(self):
         '''Test behaviour of the 'return' decision transition.

@@ -117,7 +117,6 @@ def onAdviceTransition(advice, event):
         # hide the advice
         advice.advice_hide_during_redaction = True
         advice.REQUEST.set('mayProposeToFinancialController', False)
-        return
 
     adviserGroupId = '%s_advisers' % advice.advice_group
     stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',

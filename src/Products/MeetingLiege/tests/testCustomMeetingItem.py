@@ -670,9 +670,21 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(itemReturnedOnce, 'return')
         itemReturnedTwice = itemReturnedOnce.getBRefs('ItemPredecessor')[0]
 
-        # Checks if we have the name of the office manager when we are supposed
+        # Checks if we have the infos of the office manager when we are supposed
         # to have it.
-        self.assertTrue(itemValidated.adapted().getOfficeManager() == 'M. PmManager')
+        pmManagerObj = self.portal.portal_membership.getMemberById('pmManager')
+        pmManagerObj.setProperties(description='0497/696969     brol')
+
+        self.assertTrue(itemValidated.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
+        self.assertTrue(itemValidated.adapted().getOfficeManager()['phone'] == '0497/696969')
+        self.assertTrue(itemValidated.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')
+
         self.assertTrue(itemDirectlyValidated.adapted().getOfficeManager() == '')
-        self.assertTrue(itemReturned.adapted().getOfficeManager() == 'M. PmManager')
-        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager() == 'M. PmManager')
+
+        self.assertTrue(itemReturned.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
+        self.assertTrue(itemReturned.adapted().getOfficeManager()['phone'] == '0497/696969')
+        self.assertTrue(itemReturned.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')
+
+        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
+        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['phone'] == '0497/696969')
+        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')

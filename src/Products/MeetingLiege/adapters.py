@@ -1207,20 +1207,25 @@ class CustomMeetingItem(MeetingItem):
         '''
         # If we have the name of the office manager, we just return it.
         if self.context.getLastEvent('proposeToDirector'):
-            offMan = self.context.getLastEvent('proposeToDirector')
-            return self.context.portal_membership.getMemberInfo(str(offMan['actor']))['fullname']
+            offMan = self.context.getLastEvent('proposeToDirector')['actor']
         # Else we look for a predecessor which can have the intel.
         elif self.context.getPredecessor():
+            offMan = ''
             predecessor = self.context.getPredecessor()
             # loops while the item has no office manager
-            while predecessor:
+            while predecessor and not offMan:
                 if predecessor.getLastEvent('proposeToDirector'):
-                    offMan = predecessor.getLastEvent('proposeToDirector')
-                    return predecessor.portal_membership.getMemberInfo(str(offMan['actor']))['fullname']
+                    offMan = predecessor.getLastEvent('proposeToDirector')['actor']
                 predecessor = predecessor.getPredecessor()
-            return ''
         else:
             return ''
+
+        user = {}
+        user['fullname'] = self.context.portal_membership.getMemberInfo(str(offMan))['fullname']
+        memberInfos = self.context.portal_membership.getMemberById(offMan)
+        user['phone'] = memberInfos.getProperty('description').split("     ")[0]
+        user['email'] = memberInfos.getProperty('email')
+        return user
 
 old_listAdviceTypes = MeetingConfig.listAdviceTypes
 

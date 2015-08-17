@@ -108,7 +108,10 @@ pmFinController = UserDescriptor('pmFinController', [])
 pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
 pmFinReviewer = UserDescriptor('pmFinReviewer', [])
 pmFinManager = UserDescriptor('pmFinManager', [])
-pmManager = UserDescriptor('pmManager', [], fullname='M. PmManager')
+pmManager = UserDescriptor('pmManager',
+                           [],
+                           email='pmmanager@plonemeeting.org',
+                           fullname='M. PmManager')
 pmCreator1 = UserDescriptor('pmCreator1', [])
 pmCreator1b = UserDescriptor('pmCreator1b', [])
 pmAdminReviewer1 = UserDescriptor('pmAdminReviewer1', [])

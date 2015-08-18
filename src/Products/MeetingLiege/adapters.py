@@ -30,10 +30,8 @@ from appy.gen import No
 from AccessControl import getSecurityManager, ClassSecurityInfo
 from Globals import InitializeClass
 from zope.annotation.interfaces import IAnnotations
-from zope.component import queryUtility
 from zope.interface import implements
 from zope.i18n import translate
-from zope.schema.interfaces import IVocabularyFactory
 from plone.memoize import ram
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -1226,6 +1224,13 @@ class CustomMeetingItem(MeetingItem):
         user['phone'] = memberInfos.getProperty('description').split("     ")[0]
         user['email'] = memberInfos.getProperty('email')
         return user
+
+    def _itemIsSignedStates(self):
+        """In which states must we show the itemIsSigned widget?
+           Default (item is decided) and presented/itemfrozen."""
+        item = self.getSelf()
+        return ('presented', 'itemfrozen') + item._itemIsSignedStates()
+
 
 old_listAdviceTypes = MeetingConfig.listAdviceTypes
 

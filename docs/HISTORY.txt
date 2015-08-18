@@ -5,3 +5,6 @@ Products.MeetingLiege Changelog
 ----------------
 - Finance advisers of an item are now able to add decision annexes
   when the item is decided
+- Added possibility to manage MeetingItem.itemIsSigned when item is
+  'presented' or 'itemfrozen' besides the fact that it is still manageable
+  when the item is decided

@@ -248,7 +248,8 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'privacyForCouncil',
                                      'archivingRef',
                                      'motivation',
-                                     'textCheckList', ]
+                                     'textCheckList',
+                                     'itemIsSigned']
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
@@ -372,12 +373,11 @@ councilMeeting.maxDaysDecisions = 60
 councilMeeting.itemDocFormats = ('odt', 'pdf')
 councilMeeting.meetingDocFormats = ('odt', 'pdf')
 councilMeeting.usedItemAttributes = ['budgetInfos',
-                                     'itemIsSigned',
                                      'labelForCouncil',
                                      'observations',
                                      'privacy',
                                      'itemAssembly',
-                                     'motivation', ]
+                                     'motivation']
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'}, )
 councilMeeting.useGroupsAsCategories = False

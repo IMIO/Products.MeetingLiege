@@ -688,3 +688,22 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
         self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['phone'] == '0497/696969')
         self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')
+
+    def test_ItemSignableSooner(self):
+        """itemIsSigned can be changed when item is 'presented' or 'itemfrozen'."""
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        meeting = self.create('Meeting', date='2015/05/05')
+        self.assertFalse(item.adapted().maySignItem())
+        self.validateItem(item)
+        self.assertFalse(item.adapted().maySignItem())
+        # ok, now present the item, it will be signable
+        self.presentItem(item)
+        self.assertEquals(item.queryState(), 'presented')
+        self.assertTrue(item.maySignItem())
+        self.freezeMeeting(meeting)
+        self.assertEquals(item.queryState(), 'itemfrozen')
+        self.assertTrue(item.maySignItem())
+        self.closeMeeting(meeting)
+        self.assertEquals(item.queryState(), 'accepted')
+        self.assertTrue(item.maySignItem())

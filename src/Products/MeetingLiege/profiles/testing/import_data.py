@@ -377,7 +377,8 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'privacy',
                                      'itemAssembly',
-                                     'motivation']
+                                     'motivation',
+                                     'itemIsSigned']
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'}, )
 councilMeeting.useGroupsAsCategories = False

@@ -39,6 +39,11 @@ class testMeetingItem(MeetingLiegeTestCase, mctmi):
         '''Already tested in testWorkflows.'''
         pass
 
+    def test_subproduct_call_ItemIsSigned(self):
+        '''Bypass as we changed states in which itemIsSigned may
+           be changed, tested in testCustomMeetingItem.test_ItemSignableSooner.'''
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

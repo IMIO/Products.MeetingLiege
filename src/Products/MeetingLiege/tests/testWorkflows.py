@@ -24,6 +24,7 @@
 
 from datetime import datetime
 
+from AccessControl import Unauthorized
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
@@ -36,6 +37,7 @@ from Products.CMFCore.utils import getToolByName
 
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
 from Products.PloneMeeting.indexes import indexAdvisers
+from Products.PloneMeeting.interfaces import IAnnexable
 from Products.PloneMeeting.utils import getLastEvent
 
 
@@ -502,6 +504,29 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'presented')
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
 
+        # a finance adviser is able to add decision annexes to the item when it is decided
+        self.changeUser('pmFinController')
+        adviserGroupId = '%s_advisers' % FINANCE_GROUP_IDS[0]
+        self.assertEquals(item.__ac_local_roles__[adviserGroupId], ['Reader', ])
+        self.assertEquals(item.queryState(), 'presented')
+        self.assertRaises(Unauthorized, self.addAnnex, item, relatedTo='item_decision')
+        self.changeUser('pmManager')
+        self.decideMeeting(meeting)
+        self.do(item, 'accept')
+        self.assertTrue(item.queryState() == 'accepted')
+        self.changeUser('pmFinController')
+        self.assertEquals(item.__ac_local_roles__[adviserGroupId], ['Reader', 'MeetingFinanceEditor'])
+        self.changeUser('pmFinController')
+        self.assertFalse(IAnnexable(item).getAnnexes('item_decision'))
+        # user is able to add
+        self.addAnnex(item, relatedTo='item_decision')
+        self.assertTrue(IAnnexable(item).getAnnexes('item_decision'))
+        # if we go back to itemfrozen, 'MeetingFinanceEditor' is removed
+        self.changeUser('pmManager')
+        self.do(item, 'backToItemFrozen')
+        self.assertTrue(item.queryState() == 'itemfrozen')
+        self.assertEquals(item.__ac_local_roles__[adviserGroupId], ['Reader', ])
+
     def test_subproduct_CollegeProcessWithFinancesAdvicesWithEmergency(self):
         '''If emergency is asked for an item by director, the item can be sent
            to the meeting (validated) without finance advice, finance advice is still giveable...
@@ -660,9 +685,9 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # now back to 'presented'
         self.do(item, 'backToPresented')
         self.assertTrue(item.queryState() == 'presented')
-        # advice is back to editable state
-        self.assertEquals(advice.queryState(), 'proposed_to_financial_controller')
-        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        # advice is back to 'presented' but as 'timed_out', no more editable
+        self.assertEquals(advice.queryState(), 'advice_given')
+        self.assertFalse(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
 
     def test_subproduct_ReturnCollege(self):

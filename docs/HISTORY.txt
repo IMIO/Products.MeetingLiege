@@ -3,4 +3,5 @@ Products.MeetingLiege Changelog
 
 3.4 (unreleased)
 ----------------
-- Initial release
+- Finance advisers of an item are now able to add decision annexes
+  when the item is decided

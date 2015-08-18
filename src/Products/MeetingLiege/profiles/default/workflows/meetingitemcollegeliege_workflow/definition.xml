@@ -50,6 +50,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -124,6 +125,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">
@@ -178,6 +180,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -252,6 +255,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">
@@ -306,6 +310,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -380,6 +385,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">
@@ -434,6 +440,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -508,6 +515,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">
@@ -906,6 +914,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -980,6 +989,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">
@@ -1960,6 +1970,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -2034,6 +2045,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">
@@ -2088,6 +2100,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
@@ -2162,6 +2175,7 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
+   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item observations"
                   acquired="False">

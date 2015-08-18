@@ -78,8 +78,13 @@ def onAdviceTransition(advice, event):
         return
 
     item = advice.getParentNode()
+    itemState = item.queryState()
     tool = getToolByName(item, 'portal_plonemeeting')
     cfg = tool.getMeetingConfig(item)
+    adviserGroupId = '%s_advisers' % advice.advice_group
+    stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',
+                                  'proposed_to_financial_reviewer': 'financialreviewers',
+                                  'proposed_to_financial_manager': 'financialmanagers', }
 
     # when the finance advice state change, we have to reinitialize
     # item.takenOverBy to nothing if advice is not at the finance controller state
@@ -92,7 +97,7 @@ def onAdviceTransition(advice, event):
     else:
         # if advice review_state is back to financial controller
         # set historized taker for item state
-        wf_state = "%s__wfstate__%s" % (cfg.getItemWorkflow(), item.queryState())
+        wf_state = "%s__wfstate__%s" % (cfg.getItemWorkflow(), itemState)
         item.setHistorizedTakenOverBy(wf_state)
     item.reindexObject(idxs=['getTakenOverBy', ])
 
@@ -117,11 +122,6 @@ def onAdviceTransition(advice, event):
         # hide the advice
         advice.advice_hide_during_redaction = True
         advice.REQUEST.set('mayProposeToFinancialController', False)
-
-    adviserGroupId = '%s_advisers' % advice.advice_group
-    stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',
-                                  'proposed_to_financial_reviewer': 'financialreviewers',
-                                  'proposed_to_financial_manager': 'financialmanagers', }
 
     if newStateId == 'financial_advice_signed':
         # save the entire advice content in the workflow_history
@@ -159,7 +159,7 @@ def onAdviceTransition(advice, event):
         # if item was still in state 'proposed_to_finance', it is automatically validated
         # and a specific message is added to the wf history regarding this
         # validate or send the item back to director depending on advice_type
-        if item.queryState() == 'proposed_to_finance':
+        if itemState == 'proposed_to_finance':
             if advice.advice_type in ('positive_finance', 'not_required_finance'):
                 item.REQUEST.set('mayValidate', True)
                 wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_positive')
@@ -225,6 +225,22 @@ def onAdvicesUpdated(item, event):
         # special behaviour for finance advice
         if not groupId == item.adapted().getFinanceGroupIdsForItem():
             continue
+
+        itemState = item.queryState()
+        tool = getToolByName(item, 'portal_plonemeeting')
+        cfg = tool.getMeetingConfig(item)
+        adviserGroupId = '%s_advisers' % groupId
+
+        # if item is decided, we need to give the _advisers, the 'MeetingFinanceEditor'
+        # role on the item so he is able to add decision annexes
+        if itemState in cfg.getItemDecidedStates():
+            item.manage_addLocalRoles(adviserGroupId, ('MeetingFinanceEditor', ))
+        else:
+            localRoles = item.__ac_local_roles__.get(adviserGroupId, ())
+            if 'MeetingFinanceEditor' in localRoles:
+                localRoles.remove('MeetingFinanceEditor')
+                item.__ac_local_roles__[adviserGroupId] = localRoles
+
         # double check if it is really editable...
         # to be editable, the advice has to be in an editable wf state
         if adviceInfo['advice_editable']:

@@ -22,7 +22,7 @@ from Products.CMFCore.utils import getToolByName
 import transaction
 ##code-section HEAD
 from DateTime import DateTime
-from imio.dashboard.utils import enableFacetedDashboardFor
+#from imio.dashboard.utils import enableFacetedDashboardFor
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
 from Products.PloneMeeting.exportimport.content import ToolInitializer

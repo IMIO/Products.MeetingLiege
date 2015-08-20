@@ -8,3 +8,4 @@ Products.MeetingLiege Changelog
 - Added possibility to manage MeetingItem.itemIsSigned when item is
   'presented' or 'itemfrozen' besides the fact that it is still manageable
   when the item is decided
+- Added a 'Echevinat' faceted advanced criterion based on groupsOfMatter index

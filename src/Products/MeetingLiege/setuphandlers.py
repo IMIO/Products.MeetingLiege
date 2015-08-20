@@ -22,7 +22,9 @@ from Products.CMFCore.utils import getToolByName
 import transaction
 ##code-section HEAD
 from DateTime import DateTime
+from imio.dashboard.utils import enableFacetedDashboardFor
 from imio.helpers.catalog import addOrUpdateColumns
+from imio.helpers.catalog import addOrUpdateIndexes
 from Products.PloneMeeting.exportimport.content import ToolInitializer
 ##/code-section HEAD
 
@@ -52,7 +54,10 @@ def postInstall(context):
     setCorrectWorkflowForAdvices(context, site)
     # add getAdoptsNextCouncilAgenda metadata
     addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', ))
-
+    # add the groupsOfMatter index
+    addOrUpdateIndexes(site, {'groupsOfMatter': ('KeywordIndex', {})})
+    # add our own faceted advanced criteria
+    #addFacetedCriteria(context, site)
 
 
 ##code-section FOOT
@@ -134,6 +139,15 @@ def setCorrectWorkflowForAdvices(context, site):
     wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
     # update role mappings of existing meetingadvice
     updateRoleMappings(context)
+
+
+def addFacetedCriteria(context, site):
+    """ """
+    logStep("addFacetedCriteria", context)
+    tool = getToolByName(site, 'portal_plonemeeting')
+    for cfg in tool.objectValues('MeetingConfig'):
+        enableFacetedDashboardFor(cfg.searches.searches_items,
+                                  os.path.dirname(__file__) + '/faceted_conf/meetingliege_dashboard_items_widgets.xml')
 
 
 def createArchivingReferences(context, site):

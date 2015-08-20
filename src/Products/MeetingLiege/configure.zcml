@@ -112,6 +112,13 @@
            factory=".adapters.MLPrettyLinkAdapter"
            provides="imio.prettylink.interfaces.IPrettyLink" />
 
+  <!-- Indexes -->
+  <adapter name="groupsOfMatter" factory=".indexes.groupsOfMatter" />
+
+  <!-- Vocabularies -->
+  <utility component=".vocabularies.GroupsOfMatterVocabularyFactory"
+           name="Products.MeetingLiege.vocabularies.groupsofmattervocabulary" />
+
   <!-- ##/code-section configure.zcml.header -->
 
   <i18n:registerTranslations directory="locales" />

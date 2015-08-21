@@ -22,7 +22,6 @@ from Products.CMFCore.utils import getToolByName
 import transaction
 ##code-section HEAD
 from DateTime import DateTime
-#from imio.dashboard.utils import enableFacetedDashboardFor
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
 from Products.PloneMeeting.exportimport.content import ToolInitializer
@@ -146,8 +145,9 @@ def addFacetedCriteria(context, site):
     logStep("addFacetedCriteria", context)
     tool = getToolByName(site, 'portal_plonemeeting')
     for cfg in tool.objectValues('MeetingConfig'):
-        enableFacetedDashboardFor(cfg.searches.searches_items,
-                                  os.path.dirname(__file__) + '/faceted_conf/meetingliege_dashboard_items_widgets.xml')
+        tool._enableFacetedDashboardFor(cfg.searches.searches_items,
+                                        os.path.dirname(__file__) +
+                                        '/faceted_conf/meetingliege_dashboard_items_widgets.xml')
 
 
 def createArchivingReferences(context, site):

@@ -13,6 +13,7 @@ __docformat__ = 'plaintext'
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from imio.actionspanel.interfaces import IContentDeletable
+from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.interfaces import IAnnexable
@@ -320,5 +321,4 @@ def onItemAfterTransition(item, event):
 def onCategoryRemoved(category, event):
     '''Called when a MeetingCategory is removed.'''
     # clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
-    tool = getToolByName(category, 'portal_plonemeeting')
-    tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+    cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")

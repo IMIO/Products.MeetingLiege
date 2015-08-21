@@ -36,13 +36,15 @@ from plone.memoize import ram
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
+from imio.helpers.cache import cleanRamCacheFor
+from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import PMPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.config import READER_USECASES
-from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent, cleanRamCacheFor
+from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -1598,9 +1600,7 @@ class CustomMeetingCategory(MeetingCategory):
     def onEdit(self, isCreated):
         '''Clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary",
            no matter category is created or edited.'''
-        category = self.getSelf()
-        tool = getToolByName(category, 'portal_plonemeeting')
-        tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+        cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
 
 
 old_formatMeetingDate = ToolPloneMeeting.formatMeetingDate

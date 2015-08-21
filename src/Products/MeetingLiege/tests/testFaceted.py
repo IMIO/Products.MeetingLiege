@@ -26,6 +26,7 @@ from zope.component import queryUtility
 from zope.schema.interfaces import IVocabularyFactory
 from plone.memoize.instance import Memojito
 
+from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testFaceted import testFaceted as mctf
 
@@ -51,7 +52,7 @@ class testFaceted(MeetingLiegeTestCase, mctf):
         '''Test the "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
            vocabulary, especially because it is cached.'''
         # memoizing instance is kept across tests...
-        self.tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+        cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
         cfg, pmFolder, vocab = self._setupGroupsOfMatter()
         self.assertFalse(getattr(vocab, memPropName, {}))
         # once get, it is cached
@@ -94,7 +95,7 @@ class testFaceted(MeetingLiegeTestCase, mctf):
 
         # clean cache and test when cfg.useGroupsAsCategories is True, vocab will be empty
         cfg.setUseGroupsAsCategories(True)
-        self.tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+        cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
         self.assertEquals([term.token for term in vocab(pmFolder)._terms],
                           [])
 

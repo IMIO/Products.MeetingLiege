@@ -11,7 +11,7 @@ from Products.CMFPlone.utils import safe_unicode
 
 from plone.memoize.instance import memoize
 
-IGNORED_GROUPIDS = ('ssc', 'sc', 'secra-c-tariat-collage-conseil')
+IGNORED_GROUP_IDS = ('ssc', 'sc', 'secra-c-tariat-collage-conseil')
 
 
 class GroupsOfMatterVocabulary(object):
@@ -28,10 +28,9 @@ class GroupsOfMatterVocabulary(object):
         if not cfg.getUseGroupsAsCategories():
             for category in categories:
                 groupsOfMatter = category.getGroupsOfMatter()
-                if category.getId() in IGNORED_GROUPIDS:
-                    continue
                 for groupOfMatter in groupsOfMatter:
-                    if groupOfMatter in existingGroupsIdsInVocab:
+                    if groupOfMatter in existingGroupsIdsInVocab or \
+                       groupOfMatter in IGNORED_GROUP_IDS:
                         continue
                     else:
                         existingGroupsIdsInVocab.append(groupOfMatter)

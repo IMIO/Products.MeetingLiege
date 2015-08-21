@@ -86,6 +86,12 @@ class testFaceted(MeetingLiegeTestCase, mctf):
         self.assertEquals([term.token for term in vocab(pmFolder)._terms],
                           ['developers', 'vendors'])
 
+        # some groupIds are ignored, like "ssc"
+        self.tool.invokeFactory('MeetingGroup', id='ssc', title='SSC')
+        cfg.categories.maintenance.setGroupsOfMatter(('developers', 'ssc'))
+        cfg.categories.maintenance.at_post_edit_script()
+        self.assertFalse('ssc' in [term.token for term in vocab(pmFolder)._terms])
+
         # clean cache and test when cfg.useGroupsAsCategories is True, vocab will be empty
         cfg.setUseGroupsAsCategories(True)
         self.tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")

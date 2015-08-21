@@ -22,12 +22,75 @@
 # 02110-1301, USA.
 #
 
+from zope.component import queryUtility
+from zope.schema.interfaces import IVocabularyFactory
+from plone.memoize.instance import Memojito
+
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testFaceted import testFaceted as mctf
+
+memPropName = Memojito.propname
 
 
 class testFaceted(MeetingLiegeTestCase, mctf):
     '''Tests the faceted navigation.'''
+
+    def _setupGroupsOfMatter(self):
+        """ """
+        self.changeUser('siteadmin')
+        pmFolder = self.getMeetingFolder()
+        cfg = self.meetingConfig
+        cfg.useGroupsAsCategories = False
+        cfg.categories.deployment.setGroupsOfMatter(('vendors', 'developers', ))
+        cfg.categories.development.setGroupsOfMatter(('vendors', ))
+        cfg.categories.maintenance.setGroupsOfMatter(('developers', ))
+        return cfg, pmFolder, queryUtility(IVocabularyFactory,
+                                           "Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+
+    def test_subproduct_GroupsOfMatterVocabularyCache(self):
+        '''Test the "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
+           vocabulary, especially because it is cached.'''
+        # memoizing instance is kept across tests...
+        self.tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+        cfg, pmFolder, vocab = self._setupGroupsOfMatter()
+        self.assertFalse(getattr(vocab, memPropName, {}))
+        # once get, it is cached
+        vocab(pmFolder)
+        self.assertTrue(getattr(vocab, memPropName))
+
+        # if we add/remove/edit a category, then the cache is cleaned
+        # add a category
+        newCatId = cfg.categories.invokeFactory('MeetingCategory', id='new-category', title='New category')
+        newCat = getattr(cfg.categories, newCatId)
+        newCat.at_post_create_script()
+        # cache was cleaned
+        self.assertFalse(getattr(vocab, memPropName, {}))
+        vocab(pmFolder)
+        self.assertTrue(getattr(vocab, memPropName))
+
+        # edit a category
+        newCat.at_post_edit_script()
+        # cache was cleaned
+        self.assertFalse(getattr(vocab, memPropName, {}))
+        vocab(pmFolder)
+        self.assertTrue(getattr(vocab, memPropName))
+
+        # remove a category
+        self.portal.restrictedTraverse('@@delete_givenuid')(newCat.UID())
+        # cache was cleaned
+        self.assertFalse(getattr(vocab, memPropName, {}))
+
+    def test_subproduct_GroupsOfMatterVocabulary(self):
+        """Returns groupsOfMatter defined on categories."""
+        cfg, pmFolder, vocab = self._setupGroupsOfMatter()
+        self.assertEquals([term.token for term in vocab(pmFolder)._terms],
+                          ['developers', 'vendors'])
+
+        # clean cache and test when cfg.useGroupsAsCategories is True, vocab will be empty
+        cfg.setUseGroupsAsCategories(True)
+        self.tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+        self.assertEquals([term.token for term in vocab(pmFolder)._terms],
+                          [])
 
 
 def test_suite():

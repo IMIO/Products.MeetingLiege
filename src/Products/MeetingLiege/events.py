@@ -315,3 +315,10 @@ def onItemAfterTransition(item, event):
        regarding the matterOfGroups.'''
     item._updateMatterOfGroupsLocalRoles()
     item._updateFinanceAdvisersAccess()
+
+
+def onCategoryRemoved(category, event):
+    '''Called when a MeetingCategory is removed.'''
+    # clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
+    tool = getToolByName(category, 'portal_plonemeeting')
+    tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")

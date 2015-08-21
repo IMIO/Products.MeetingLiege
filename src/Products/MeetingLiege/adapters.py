@@ -1594,6 +1594,14 @@ class CustomMeetingCategory(MeetingCategory):
         return DisplayList(res).sortedByValue()
     MeetingCategory.listGroupsOfMatter = listGroupsOfMatter
 
+    security.declareProtected('Modify portal content', 'onEdit')
+    def onEdit(self, isCreated):
+        '''Clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary",
+           no matter category is created or edited.'''
+        category = self.getSelf()
+        tool = getToolByName(category, 'portal_plonemeeting')
+        tool.cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+
 
 old_formatMeetingDate = ToolPloneMeeting.formatMeetingDate
 

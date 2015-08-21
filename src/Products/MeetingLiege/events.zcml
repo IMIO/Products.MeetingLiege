@@ -28,4 +28,8 @@
                    Products.PloneMeeting.interfaces.IItemAfterTransitionEvent"
               handler=".events.onItemAfterTransition"/>
 
+  <subscriber for="Products.PloneMeeting.interfaces.IMeetingCategory
+                   zope.container.interfaces.IObjectRemovedEvent"
+              handler=".events.onCategoryRemoved"/>
+
 </configure>

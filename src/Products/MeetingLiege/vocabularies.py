@@ -11,6 +11,8 @@ from Products.CMFPlone.utils import safe_unicode
 
 from plone.memoize.instance import memoize
 
+IGNORED_GROUPIDS = ('ssc', 'sc', 'secra-c-tariat-collage-conseil')
+
 
 class GroupsOfMatterVocabulary(object):
     implements(IVocabularyFactory)
@@ -23,20 +25,21 @@ class GroupsOfMatterVocabulary(object):
         categories = cfg.getCategories(onlySelectable=False)
         res = []
         existingGroupsIdsInVocab = []
-        for category in categories:
-            if not category.meta_type == 'MeetingCategory':
-                continue
-            groupsOfMatter = category.getGroupsOfMatter()
-            for groupOfMatter in groupsOfMatter:
-                if groupOfMatter in existingGroupsIdsInVocab:
+        if not cfg.getUseGroupsAsCategories():
+            for category in categories:
+                groupsOfMatter = category.getGroupsOfMatter()
+                if category.getId() in IGNORED_GROUPIDS:
                     continue
-                else:
-                    existingGroupsIdsInVocab.append(groupOfMatter)
-                    res.append(SimpleTerm(groupOfMatter,
-                                          groupOfMatter,
-                                          safe_unicode(getattr(tool, groupOfMatter).Title())
-                                          )
-                               )
+                for groupOfMatter in groupsOfMatter:
+                    if groupOfMatter in existingGroupsIdsInVocab:
+                        continue
+                    else:
+                        existingGroupsIdsInVocab.append(groupOfMatter)
+                        res.append(SimpleTerm(groupOfMatter,
+                                              groupOfMatter,
+                                              safe_unicode(getattr(tool, groupOfMatter).Title())
+                                              )
+                                   )
         res = sorted(res, key=attrgetter('title'))
         return SimpleVocabulary(res)
 

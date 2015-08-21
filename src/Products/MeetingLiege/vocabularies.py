@@ -11,7 +11,7 @@ from Products.CMFPlone.utils import safe_unicode
 
 from plone.memoize.instance import memoize
 
-IGNORED_GROUP_IDS = ('ssc', 'sc', 'secra-c-tariat-collage-conseil')
+IGNORED_GROUP_IDS = ('scc', 'sc', 'secra-c-tariat-collage-conseil')
 
 
 class GroupsOfMatterVocabulary(object):

@@ -87,10 +87,10 @@ class testFaceted(MeetingLiegeTestCase, mctf):
                           ['developers', 'vendors'])
 
         # some groupIds are ignored, like "ssc"
-        self.tool.invokeFactory('MeetingGroup', id='ssc', title='SSC')
-        cfg.categories.maintenance.setGroupsOfMatter(('developers', 'ssc'))
+        self.tool.invokeFactory('MeetingGroup', id='scc', title='SCC')
+        cfg.categories.maintenance.setGroupsOfMatter(('developers', 'scc'))
         cfg.categories.maintenance.at_post_edit_script()
-        self.assertFalse('ssc' in [term.token for term in vocab(pmFolder)._terms])
+        self.assertFalse('scc' in [term.token for term in vocab(pmFolder)._terms])
 
         # clean cache and test when cfg.useGroupsAsCategories is True, vocab will be empty
         cfg.setUseGroupsAsCategories(True)

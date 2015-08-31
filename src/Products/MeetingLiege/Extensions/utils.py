@@ -49,13 +49,13 @@ def export_allItemTemplates(self, context=''):
         portalType = item.getPortalTypeName()
 
         if portalType == 'Folder':
-            constructedPath = '/{0}'.format(itemId)
+            constructedPath = '/{0}'.format(item.Title())
         elif portalType in ('MeetingItemTemplateCouncil', 'MeetingItemTemplateCollege'):
             constructedPath = ''
 
         while item.getParentNode().getId() != 'itemtemplates':
             item = item.getParentNode()
-            constructedPath = '/{0}{1}'.format(item.getId(), constructedPath)
+            constructedPath = '/{0}{1}'.format(item.Title(), constructedPath)
         path = '/tmp/export{0}'.format(constructedPath)
 
         if 'export' not in os.listdir('/tmp'):
@@ -64,7 +64,8 @@ def export_allItemTemplates(self, context=''):
             os.mkdir(path)
             export_allItemTemplates(self, context=trueItem)
         elif portalType in ('MeetingItemTemplateCouncil', 'MeetingItemTemplateCollege'):
-            fileId = normalizer.normalize(trueItem.Title(), max_length=251)
+            fileId = trueItem.Title()
+            fileId = fileId[:251]
             fileId = fileId + '.pdf'
             res = template.generateDocument(trueItem, forBrowser=False)
             os.chdir(path)

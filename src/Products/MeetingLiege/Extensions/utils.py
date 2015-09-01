@@ -49,13 +49,13 @@ def export_allItemTemplates(self, context=''):
         portalType = item.getPortalTypeName()
 
         if portalType == 'Folder':
-            constructedPath = '/{0}'.format(item.Title())
+            constructedPath = '/{0}'.format(item.Title().replace('/', '-'))
         elif portalType in ('MeetingItemTemplateCouncil', 'MeetingItemTemplateCollege'):
             constructedPath = ''
 
         while item.getParentNode().getId() != 'itemtemplates':
             item = item.getParentNode()
-            constructedPath = '/{0}{1}'.format(item.Title(), constructedPath)
+            constructedPath = '/{0}{1}'.format(item.Title().replace('/', '-'), constructedPath)
         path = '/tmp/export{0}'.format(constructedPath)
 
         if 'export' not in os.listdir('/tmp'):

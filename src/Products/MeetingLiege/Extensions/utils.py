@@ -71,7 +71,7 @@ def export_allItemTemplates(self, context=''):
             export_allItemTemplates(self, context=trueItem)
         elif portalType in ('MeetingItemTemplateCouncil', 'MeetingItemTemplateCollege'):
             fileId = trueItem.Title()
-            fileId = fileId[:251]
+            fileId = fileId[:124]
             fileId = fileId.replace('/', '-')
             fileId = fileId.replace('.', '')
             fileId = fileId + '.pdf'

@@ -2278,12 +2278,12 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
                 groupIds.append('delay__%s_advice_not_giveable' % financeGroup)
                 # advice was already given once and come back to the finance
                 groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
-        return {'portal_type': self.cfg.getItemTypeName(),
-                'getCompleteness': ('completeness_not_yet_evaluated',
-                                    'completeness_incomplete',
-                                    'completeness_evaluation_asked_again'),
-                'indexAdvisers': groupIds,
-                'review_state': 'proposed_to_finance'}
+        return {'portal_type': {'query': self.cfg.getItemTypeName()},
+                'getCompleteness': {'query': ('completeness_not_yet_evaluated',
+                                              'completeness_incomplete',
+                                              'completeness_evaluation_asked_again')},
+                'indexAdvisers': {'query': groupIds},
+                'review_state': {'query': 'proposed_to_finance'}}
 
 
 class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseAdapter):
@@ -2300,9 +2300,9 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
             if '%s_financialcontrollers' % financeGroup in userGroups:
                 groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
         # Create query parameters
-        return {'portal_type': self.cfg.getItemTypeName(),
-                'getCompleteness': 'completeness_complete',
-                'indexAdvisers': groupIds}
+        return {'portal_type': {'query': self.cfg.getItemTypeName()},
+                'getCompleteness': {'query': 'completeness_complete'},
+                'indexAdvisers': {'query': groupIds}}
 
 
 class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAdapter):
@@ -2317,8 +2317,8 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
             # only keep finance groupIds the current user is reviewer for
             if '%s_financialreviewers' % financeGroup in userGroups:
                 groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
-        return {'portal_type': self.cfg.getItemTypeName(),
-                'indexAdvisers': groupIds}
+        return {'portal_type': {'query': self.cfg.getItemTypeName()},
+                'indexAdvisers': {'query': groupIds}}
 
 
 class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdapter):
@@ -2333,8 +2333,8 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
             # only keep finance groupIds the current user is manager for
             if '%s_financialmanagers' % financeGroup in userGroups:
                 groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
-        return {'portal_type': self.cfg.getItemTypeName(),
-                'indexAdvisers': groupIds}
+        return {'portal_type': {'query': self.cfg.getItemTypeName()},
+                'indexAdvisers': {'query': groupIds}}
 
 
 class MLPrettyLinkAdapter(PMPrettyLinkAdapter):

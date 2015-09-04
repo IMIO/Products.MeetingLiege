@@ -1017,6 +1017,94 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'accepted')
         self.assertFalse(self.hasPermission(DeleteObjects, item))
 
+    def test_subproduct_FinanceAdvisersAccessToLinkedItems(self):
+        """Finance adviser have still access to items linked to
+           an item they give advice on.
+           This is the case for 'returned' items and items sent to Council."""
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # first 'return' an item and test
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='An item to return')
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        # ask finance advice and give it
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item.at_post_edit_script()
+        self.proposeItem(item)
+        self.do(item, 'proposeToFinance')
+        # make item completeness complete and add advice
+        self.changeUser('pmFinController')
+        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
+                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
+        # as finance reviewer
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'proposeToFinancialManager', comment='My financial reviewer comment')
+        # as finance manager
+        self.changeUser('pmFinManager')
+        self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
+
+        # present the item into the meeting
+        self.changeUser('pmManager')
+        self.presentItem(item)
+        self.decideMeeting(meeting)
+        self.do(item, 'return')
+        self.assertTrue(item.queryState() == 'returned')
+        # now that the item is 'returned', it has been duplicated
+        # and the finance advisers have access to the newItem
+        newItem = item.getBRefs('ItemPredecessor')[0]
+        self.assertTrue(newItem.__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+        # right, remove newItem and 'accept_and_return' item
+        self.do(item, 'backToItemFrozen')
+        self.changeUser('admin')
+        newItem.getParentNode().manage_delObjects(ids=[newItem.getId(), ])
+        self.changeUser('pmManager')
+        item.setOtherMeetingConfigsClonableTo((self.meetingConfig2.getId(), ))
+        self.do(item, 'accept_and_return')
+        self.assertEquals(item.queryState(), 'accepted_and_returned')
+        predecessors = item.getBRefs('ItemPredecessor')
+        self.assertEquals(len(predecessors), 2)
+        self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+        self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
+        # now, corner case
+        # first item with given finance advice is 'returned' in a meeting
+        # new item is accepted and returned in a second meeting
+        # item sent to council should keep advisers access
+        self.changeUser('admin')
+        predecessors[0].getParentNode().manage_delObjects(ids=[predecessors[0].getId(), ])
+        predecessors[1].getParentNode().manage_delObjects(ids=[predecessors[1].getId(), ])
+        self.changeUser('pmManager')
+        self.do(item, 'backToItemFrozen')
+        self.do(item, 'return')
+        self.assertTrue(item.queryState() == 'returned')
+        newItem = item.getBRefs('ItemPredecessor')[0]
+        self.assertEquals(newItem.adapted().getItemWithFinanceAdvice(), item)
+        # right accept_and_return newItem
+        meeting2 = self.create('Meeting', date='2015/01/01 09:00:00')
+        self.presentItem(newItem)
+        self.decideMeeting(meeting2)
+        self.do(newItem, 'accept_and_return')
+        self.assertEquals(newItem.queryState(), 'accepted_and_returned')
+        predecessors = newItem.getBRefs('ItemPredecessor')
+        self.assertEquals(len(predecessors), 2)
+        self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+        self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

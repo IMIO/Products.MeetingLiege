@@ -108,7 +108,7 @@
       </tr>
       <tal:comment replace="nothing">XXX begin change by MeetingLiege, management of title/privacy fields for council.</tal:comment>
       <tr valign="top">
-        <td>
+        <td colspan="5">
             <metal:field use-macro="python:here.widget('otherMeetingConfigsClonableTo', mode='edit')"/>
         <script type="text/javascript">
             $( "#otherMeetingConfigsClonableTo_1" ).bind( "click", function() {

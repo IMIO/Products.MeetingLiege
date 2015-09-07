@@ -6,6 +6,7 @@ from Acquisition import aq_base
 from Products.CMFCore.utils import getToolByName
 
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
+from plone import api
 from zope.component import getUtility
 
 def export_meetinggroups(self):
@@ -377,3 +378,49 @@ def _getProposingGroupsBaseOnAcronym(pm, acronyms):
                 res.append(group.id)
 
     return res
+
+def swapUsersNameAndFirstname(self, isTest = True):
+    member = self.portal_membership.getAuthenticatedMember()
+    out = []
+    test = {}
+    if not member.has_role('Manager'):
+        raise Unauthorized, 'You must be a Manager to access this script !'
+
+    users = api.user.get_users()
+    for user in users:
+        fullname = user.getProperty('fullname')
+        splitName = fullname.split()
+        correctedName = ''
+        upperName = ''
+        if len(splitName) == 2:
+            correctedName = splitName[1] + " " + splitName[0]
+            if not isTest:
+                user.setMemberProperties({'fullname': correctedName})
+            else:
+                test[fullname] = correctedName
+        elif len(splitName) > 2:
+            for part in splitName:
+                if part.isupper() and part != '(ADMIN)':
+                    if upperName:
+                        upperName = upperName + " " + part
+                    else:
+                        upperName = part
+                else:
+                    if correctedName:
+                        correctedName = correctedName + " " + part
+                    else:
+                        correctedName = part
+            if not upperName:
+                out.append(fullname)
+            else:
+                correctedName = upperName + " " + correctedName
+                if not isTest:
+                    user.setMemberProperties({'fullname': correctedName})
+                else:
+                    test[fullname] = correctedName
+        else:
+            out.append(fullname)
+    if not isTest:
+        return '\n'.join(out)
+    else:
+        return '\n'.join(test)

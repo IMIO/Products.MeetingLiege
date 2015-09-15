@@ -9,3 +9,4 @@ Products.MeetingLiege Changelog
   'presented' or 'itemfrozen' besides the fact that it is still manageable
   when the item is decided
 - Added a 'Echevinat' faceted advanced criterion based on groupsOfMatter index
+- Moved historization of signed financial advice to real versions

@@ -6,8 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
 from Products.PloneMeeting.adapters import AnnexableAdapter
-from Products.PloneMeeting.adapters import PMHistoryAdapter
-from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
+from Products.PloneMeeting.adapters import PMWfHistoryAdapter
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
@@ -52,7 +51,7 @@ class AdviceTypeVocabulary(object):
         return SimpleVocabulary(terms)
 
 
-class AdviceHistoryAdapter(ImioWfHistoryAdapter):
+class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
     """
       Manage the the fact that a given user may see or not a comment in an advice history.
     """
@@ -69,9 +68,8 @@ class AdviceHistoryAdapter(ImioWfHistoryAdapter):
         if tool.isManager(self.context, True):
             return True
 
-        # not a finance advice or special event 'historize_signed_advice_content'?  Comment is viewable...
-        if not self.context.advice_group in FINANCE_GROUP_IDS or \
-           event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
+        # if not a finance advice comment is viewable...
+        if not self.context.advice_group in FINANCE_GROUP_IDS:
             return True
 
         # finance advice event, check if user is member of finance group
@@ -81,7 +79,7 @@ class AdviceHistoryAdapter(ImioWfHistoryAdapter):
         return False
 
 
-class ItemHistoryAdapter(PMHistoryAdapter):
+class ItemWfHistoryAdapter(PMWfHistoryAdapter):
     """
       Manage the the fact that a given user may see or not a comment in an item history.
     """
@@ -93,7 +91,7 @@ class ItemHistoryAdapter(PMHistoryAdapter):
         """
         # call super mayViewComment, if it returns False, maybe
         # nevertheless user may see the comment
-        userMayAccessComment = super(ItemHistoryAdapter, self).mayViewComment(event)
+        userMayAccessComment = super(ItemWfHistoryAdapter, self).mayViewComment(event)
         financeAdvice = self.context.getFinanceAdvice()
         if not userMayAccessComment and financeAdvice != '_none_':
             # in case there is a finance advice asked comments of finance to internal_reviewer

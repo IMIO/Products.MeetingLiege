@@ -26,6 +26,18 @@
             permission="zope2.View" />
     </configure>
 
+    <!-- Override HistoryCommentViewable adapter for meetingadvice -->
+    <adapter for="Products.PloneMeeting.content.advice.IMeetingAdvice"
+             factory=".overrides.AdviceWfHistoryAdapter"
+             name="workflow"
+             provides="imio.history.interfaces.IImioWfHistory" />
+
+    <!-- Override HistoryCommentViewable adapter for MeetingItem -->
+    <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
+             factory=".overrides.ItemWfHistoryAdapter"
+             name="workflow"
+             provides="imio.history.interfaces.IImioWfHistory" />
+
     <utility
       provides="zope.schema.interfaces.IVocabularyFactory"
       factory=".overrides.AdviceTypeVocabulary"

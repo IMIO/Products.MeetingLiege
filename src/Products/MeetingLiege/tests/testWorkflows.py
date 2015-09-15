@@ -38,10 +38,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
 from Products.PloneMeeting.indexes import indexAdvisers
 from Products.PloneMeeting.interfaces import IAnnexable
-from Products.PloneMeeting.utils import getLastEvent
 
-
-from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_EVENT
+from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
@@ -408,12 +406,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'proposed_to_director')
         self.assertTrue(advice.queryState() == 'advice_given')
         self.assertTrue(not advice.advice_hide_during_redaction)
-        # when an advice is signed, it is historized in the advice history
-        historizedAdvice = getLastEvent(advice, FINANCE_ADVICE_HISTORIZE_EVENT)
-        self.assertTrue(historizedAdvice['action'] == FINANCE_ADVICE_HISTORIZE_EVENT)
-        self.assertTrue(advice.advice_type in historizedAdvice['comments'])
-        self.assertTrue(advice.advice_comment.output in historizedAdvice['comments'])
-        self.assertTrue(advice.advice_observations.output in historizedAdvice['comments'])
+        # when an advice is signed, it is automatically versioned
+        pr = self.portal.portal_repository
+        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(0)
+        self.assertTrue(retrievedAdvice['metadata']['sys_metadata']['comment'] == FINANCE_ADVICE_HISTORIZE_COMMENTS)
         # as there is a finance advice on the item, finance keep read access to the item
         self.assertTrue(self.hasPermission(View, item))
         # now an item with a negative financial advice back to the director
@@ -455,11 +451,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                      'signFinancialAdvice'])
         self.do(advice, 'signFinancialAdvice')
         # each time an advice is signed, it is historized in the advice history
-        historizedAdvice = getLastEvent(advice, FINANCE_ADVICE_HISTORIZE_EVENT)
-        self.assertTrue(historizedAdvice['action'] == FINANCE_ADVICE_HISTORIZE_EVENT)
-        self.assertTrue(advice.advice_type in historizedAdvice['comments'])
-        self.assertTrue(advice.advice_comment.output in historizedAdvice['comments'])
-        self.assertTrue(advice.advice_observations.output in historizedAdvice['comments'])
+        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(1)
+        self.assertTrue(retrievedAdvice['metadata']['sys_metadata']['comment'] == FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # this time, the item has been validated automatically
         self.assertTrue(item.queryState() == 'validated')
@@ -974,25 +967,18 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         for event in history:
             self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
         # not viewable to the pmManager as only Managers may access those comments
-        # except the FINANCE_ADVICE_HISTORIZE_EVENT
         self.changeUser('pmManager')
         history = advice.getHistory()
         for event in history:
-            if event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
-                self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
-            else:
-                self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+            self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
         # user able to see the advice have same access as a MeetingManager, so only
         # access to the HISTORY_COMMENT_NOT_VIEWABLE
         self.changeUser('pmCreator1')
-        # user may see advice history comments like a MeetingManager
+        # user may not see advice history comments like a MeetingManager
         self.hasPermission(View, advice)
         history = advice.getHistory()
         for event in history:
-            if event['action'] == FINANCE_ADVICE_HISTORIZE_EVENT:
-                self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
-            else:
-                self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
+            self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
 
     def test_subproduct_MeetingManagersMayNotDeleteItems(self):
         '''

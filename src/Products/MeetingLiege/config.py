@@ -79,8 +79,8 @@ FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
 # in those states, finance advice can still be given
 FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen')
 
-# special event actions name used in workflow_history to historize signed finance advice
-FINANCE_ADVICE_HISTORIZE_EVENT = 'historize_signed_advice_content'
+# comment used when a finance advice has been signed and so historized
+FINANCE_ADVICE_HISTORIZE_COMMENTS = 'financial_advice_signed_historized_comments'
 
 # text about FD advice used in templates
 FINANCE_ADVICE_LEGAL_TEXT_PRE = "<p>Attendu la demande d'avis adressée sur "\

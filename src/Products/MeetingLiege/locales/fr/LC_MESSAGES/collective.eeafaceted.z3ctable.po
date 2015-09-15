@@ -21,3 +21,4 @@ msgstr "Résumé de l'objet"
 #. Default: "Item with act?"
 msgid "header_toDiscuss"
 msgstr "Point avec acte?"
+

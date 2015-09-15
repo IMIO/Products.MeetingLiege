@@ -18,6 +18,10 @@ msgstr ""
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Item created from a college item."
 
+#. Default: "The advice has been automatically historized when it was signed."
+msgid "financial_advice_signed_historized_comments"
+msgstr ""
+
 #. Default: "This transition was automatically triggered because every asked advices have been given."
 msgid "item_wf_changed_every_advices_given"
 msgstr ""

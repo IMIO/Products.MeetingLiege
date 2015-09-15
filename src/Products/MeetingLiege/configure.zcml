@@ -79,13 +79,7 @@
 
   <!-- Override HistoryCommentViewable adapter for meetingadvice -->
   <adapter for="Products.PloneMeeting.content.advice.MeetingAdvice"
-           factory=".overrides.AdviceHistoryAdapter"
-           name="workflow"
-           provides="imio.history.interfaces.IImioWfHistory" />
-
-  <!-- Override HistoryCommentViewable adapter for MeetingItem -->
-  <adapter for="Products.PloneMeeting.MeetingItem.MeetingItem"
-           factory=".overrides.ItemHistoryAdapter"
+           factory=".overrides.AdviceWfHistoryAdapter"
            name="workflow"
            provides="imio.history.interfaces.IImioWfHistory" />
 

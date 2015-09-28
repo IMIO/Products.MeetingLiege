@@ -511,7 +511,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(item.__ac_local_roles__[adviserGroupId], ['Reader', 'MeetingFinanceEditor'])
         self.changeUser('pmFinController')
         self.assertFalse(IAnnexable(item).getAnnexes('item_decision'))
-        # user is able to add
+        # finance user is able to add a decision annex
         self.addAnnex(item, relatedTo='item_decision')
         self.assertTrue(IAnnexable(item).getAnnexes('item_decision'))
         # if we go back to itemfrozen, 'MeetingFinanceEditor' is removed

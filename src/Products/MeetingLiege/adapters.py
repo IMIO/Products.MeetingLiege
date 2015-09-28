@@ -1590,7 +1590,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         """Return the history view for templates. """
         historyView = realContext.restrictedTraverse('historyview')()
         historyViewRendered = lxml.html.fromstring(historyView)
-        return lxml.html.tostring(historyViewRendered.get_element_by_id('content-core'))
+        return lxml.html.tostring(historyViewRendered.get_element_by_id('content-core'), method='xml')
 
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):

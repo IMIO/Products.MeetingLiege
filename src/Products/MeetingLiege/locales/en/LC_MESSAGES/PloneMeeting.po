@@ -373,6 +373,10 @@ msgstr ""
 msgid "searchitemstocontrolcompletenessof"
 msgstr "Items to control completeness of"
 
+#. Default: "Synthesis finance advices"
+msgid "searchitemswithfinanceadvice"
+msgstr ""
+
 #. Default: "The item has been successfully transfered to the college."
 msgid "sendto_meeting-config-college_success"
 msgstr "The item has been successfully transfered to the college."

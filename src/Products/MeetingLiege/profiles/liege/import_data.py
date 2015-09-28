@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 from DateTime import DateTime
-from Products.PloneMeeting.profiles import *
+from Products.PloneMeeting.profiles import CategoryDescriptor
+from Products.PloneMeeting.profiles import GroupDescriptor
+from Products.PloneMeeting.profiles import ItemTemplateDescriptor
+from Products.PloneMeeting.profiles import MeetingConfigDescriptor
+from Products.PloneMeeting.profiles import MeetingFileTypeDescriptor
+from Products.PloneMeeting.profiles import PodTemplateDescriptor
+from Products.PloneMeeting.profiles import PloneMeetingConfiguration
+from Products.PloneMeeting.profiles import UserDescriptor
 
 today = DateTime().strftime('%Y/%m/%d')
 
@@ -66,10 +73,15 @@ itemTemplatePDF.pod_formats = ['pdf', ]
 itemTemplatePDF.pod_portal_types = ['MeetingItemCollege']
 itemTemplatePDF.tal_condition = 'python: here.hasMeeting()'
 
+dfAdviceTemplate = PodTemplateDescriptor('synthese-finance-advice', 'Synthèse Avis DF')
+dfAdviceTemplate.odt_file = 'synthese_avis_df.odt'
+dfAdviceTemplate.pod_portal_types = ['Folder']
+dfAdviceTemplate.tal_condition = ''
+
 collegeTemplates = [agendaTemplate, agendaTemplatePDF,
                     decisionsTemplate, decisionsTemplatePDF,
                     itemProjectTemplate, itemProjectTemplatePDF,
-                    itemTemplate, itemTemplatePDF]
+                    itemTemplate, itemTemplatePDF, dfAdviceTemplate]
 
 # Users and groups -------------------------------------------------------------
 dgen = UserDescriptor('dgen', [], email="test@test.be", fullname="Henry Directeur")
@@ -355,16 +367,16 @@ collegeMeeting.itemTemplates = [
         description='Tutelle CPAS',
         proposingGroup='',
         templateUsingGroups=[],
-        decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
-        <p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>
-        <p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du XXX ont été reçues le XXX dans le cadre de la tutelle générale sur les centres publics d'action sociale :</p>
+        decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale...;</p>
+        <p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la...;</p>
+        <p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du ...:</p>
         <p>- ...;</p>
         <p>- ...;</p>
         <p>- ...</p>
         <p>Attendu que ces décisions sont conformes à la loi et à l'intérêt général;</p>
         <p>Déclare à l'unanimité que :</p>
         <p><strong>Article 1er :</strong></p>
-        <p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes à la loi et à l'intérêt général et qu'il n'y a, dès lors, pas lieu de les annuler.</p>
+        <p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes...</p>
         <p><strong>Article 2 :</strong></p>
         <p>Copie de la présente délibération sera transmise au Bureau permanent/Conseil de l'Action sociale.</p>"""),
     ItemTemplateDescriptor(
@@ -375,16 +387,16 @@ collegeMeeting.itemTemplates = [
         templateUsingGroups=[],
         decision="""
         <p>Vu la loi du 26 mai 2002 instituant le droit à l’intégration sociale;</p>
-        <p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges relatif au marché de services portant sur le contrôle des agents communaux absents pour raisons médicales;</p>
-        <p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour la mission de contrôle médical des agents de l’Administration communale;</p>
-        <p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière systématique et pour une période d’essai d’un trimestre;</p>
-        <p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, avec la mention « XXX »;</p>
-        <p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le rapport de contrôle mentionnant l’absence de XXX ce XXX à XXX;</p>
-        <p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système de contrôle systématique que le médecin-contrôleur;</p>
-        <p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite du médecin-contrôleur;</p>
+        <p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges...;</p>
+        <p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour...;</p>
+        <p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière...;</p>
+        <p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, ...;</p>
+        <p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le...;</p>
+        <p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système...;</p>
+        <p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite...;</p>
         <p>DECIDE :</p>
-        <p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de lui rappeler ses obligations en la matière.</p>
-        <p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par le Secrétaire communal au Collège de transformer les jours de congés de maladie en absence injustifiée (retenue sur traitement avec application de la loi du 26 mai 2002 citée ci-dessus).</p>
+        <p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de...</p>
+        <p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par...</p>
         <p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>"""),
     ItemTemplateDescriptor(
         id='template4',
@@ -392,18 +404,18 @@ collegeMeeting.itemTemplates = [
         description='Prestation réduite',
         proposingGroup='',
         templateUsingGroups=[],
-        decision="""<p>Vu la loi de redressement du 22 janvier 1985 (article 99 et suivants) et de l’Arrêté Royal du 12 août 1991 (tel que modifié) relatifs à l’interruption de carrière professionnelle dans l’enseignement;</p>
-        <p>Vu la lettre du XXX par laquelle Madame XXX, institutrice maternelle, sollicite le renouvellement pendant l’année scolaire 2009/2010 de son congé pour prestations réduites mi-temps pour convenances personnelles dont elle bénéficie depuis le 01 septembre 2006;</p>
+        decision="""<p>Vu la loi de redressement du 22 janvier 1985 (article 99 et suivants) et de l’Arrêté...;</p>
+        <p>Vu la lettre du XXX par laquelle Madame XXX, institutrice maternelle, sollicite le renouvellement...;</p>
         <p>Attendu que le remplacement de l’intéressée&nbsp;est assuré pour la prochaine rentrée scolaire;</p>
-        <p>Vu le décret de la Communauté Française du 13 juillet 1988 portant restructuration de l’enseignement maternel et primaire ordinaires avec effet au 1er octobre 1998;</p>
-        <p>Vu la loi du 29 mai 1959 (Pacte Scolaire) et les articles L1122-19 et L1213-1 du code de la démocratie locale et de la décentralisation;</p>
+        <p>Vu le décret de la Communauté Française du 13 juillet 1988 portant restructuration de l’enseignement...;</p>
+        <p>Vu la loi du 29 mai 1959 (Pacte Scolaire) et les articles L1122-19 et L1213-1 du code de la...;</p>
         <p>Vu l’avis favorable de l’Echevin de l’Enseignement;</p>
         <p><b>DECIDE&nbsp;:</b><br><b><br> Article 1<sup>er</sup></b>&nbsp;:</p>
-        <p>Au scrutin secret et à l’unanimité, d’accorder à Madame XXX le congé pour prestations réduites mi-temps sollicité pour convenances personnelles en qualité d’institutrice maternelle aux écoles communales fondamentales&nbsp;&nbsp;de Sambreville (section de XXX).</p>
+        <p>Au scrutin secret et à l’unanimité, d’accorder à Madame XXX le congé pour prestations réduites...</p>
         <p><b>Article 2</b> :</p>
-        <p>Une activité lucrative est autorisée durant ce congé qui est assimilé à une période d’activité de service, dans le respect de la réglementation relative au cumul.</p>
+        <p>Une activité lucrative est autorisée durant ce congé qui est assimilé à une période d’activité...</p>
         <p><b>Article 3&nbsp;:</b></p>
-        <p>La présente délibération sera soumise pour accord au prochain Conseil, transmise au Bureau Régional de l’Enseignement primaire et maternel, à&nbsp;l’Inspectrice Cantonale, à la direction concernée et à l’intéressée.</p>"""),
+        <p>La présente délibération sera soumise pour accord au prochain Conseil, transmise au Bureau...,</p>"""),
     ItemTemplateDescriptor(
         id='template5',
         title='Exemple modèle disponible pour tous',
@@ -442,7 +454,9 @@ categoriesCouncil = [CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'
                      CategoryDescriptor('cat-council-6', u'Catégorie conseil 6'), ]
 councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
-councilMeeting.itemReferenceFormat = "python: 'Ref. ' + (here.hasMeeting() and here.getMeeting().getDate().strftime('%Y%m%d') or '') + '/' + str(here.getItemNumber(relativeTo='meeting'))"
+councilMeeting.itemReferenceFormat = \
+    "python: 'Ref. ' + (here.hasMeeting() and here.getMeeting().getDate().strftime('%Y%m%d') or '') + '/' + " \
+    "str(here.getItemNumber(relativeTo='meeting'))"
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',
@@ -490,7 +504,9 @@ councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[4].getIdSuffixed('reviewers'),
                                        groups[5].getIdSuffixed('reviewers'),
                                        groups[6].getIdSuffixed('reviewers'), ]
-councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'itemfrozen', 'refused', 'delayed')
+councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified',
+                                       'pre_accepted', 'itemfrozen',
+                                       'refused', 'delayed')
 councilMeeting.podTemplates = collegeTemplates
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},)

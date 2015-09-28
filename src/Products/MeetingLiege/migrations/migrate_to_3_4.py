@@ -87,10 +87,19 @@ class Migrate_To_3_4(Migrator):
             advice.workflow_history['meetingadviceliege_workflow'] = newEvents
         logger.info('Done.')
 
+    def _cleanMeetingConfig(self):
+        """Clean attribute 'cdldProposingGroup' that was removed from schema."""
+        logger.info('Cleaning MeetingConfigs...')
+        for cfg in self.tool.objectValues('MeetingConfig'):
+            if hasattr(cfg, 'cdldProposingGroup'):
+                delattr(cfg, 'cdldProposingGroup')
+        logger.info('Done.')
+
     def run(self):
         logger.info('Migrating to MeetingLiege 3.4...')
-        #self._updateHistorizedFinanceAdviceInWFHistory()
-        self._moveHistorizedFinanceAdviceToVersions()
+        # self._updateHistorizedFinanceAdviceInWFHistory()
+        # self._moveHistorizedFinanceAdviceToVersions()
+        self._cleanMeetingConfigs()
         self.finish()
 
 

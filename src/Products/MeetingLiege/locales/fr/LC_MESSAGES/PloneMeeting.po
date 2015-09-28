@@ -373,6 +373,10 @@ msgstr "Synthèse Avis DF"
 msgid "searchitemstocontrolcompletenessof"
 msgstr "complétude à contrôler"
 
+#. Default: "Synthesis finance advices"
+msgid "searchitemswithfinanceadvice"
+msgstr "Synthèse avis DF"
+
 #. Default: "The item has been successfully transfered to the college."
 msgid "sendto_meeting-config-college_success"
 msgstr "Le point a été envoyé au Collège communal."
@@ -428,4 +432,3 @@ msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
-

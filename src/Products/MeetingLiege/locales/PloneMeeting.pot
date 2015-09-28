@@ -441,3 +441,7 @@ msgstr ""
 #. Default: "Please select an archiving reference."
 msgid "archivingRef_required"
 msgstr ""
+
+#. Default: "Synthesis finance advices"
+msgid "searchitemswithfinanceadvice"
+msgstr ""

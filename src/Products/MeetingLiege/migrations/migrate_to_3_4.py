@@ -59,7 +59,7 @@ class Migrate_To_3_4(Migrator):
             for event in advice.workflow_history['meetingadviceliege_workflow']:
                 if event['action'] == 'historize_signed_advice_content':
                     # turn saved infos into a lxml html tree so it is easy to handle
-                    infos = lxml.html.fromstring(event['comments'])
+                    infos = lxml.html.fromstring(safe_unicode(event['comments']))
                     advice_type = adviceTypes[infos.getchildren()[0].find('img').attrib['src']]
                     advice_comment = infos.getchildren()[2].text_content().strip()
                     advice_observations = infos.getchildren()[4].text_content().strip()
@@ -70,8 +70,8 @@ class Migrate_To_3_4(Migrator):
                     old_advice_comment = advice.advice_comment and advice.advice_comment.output
                     old_advice_observations = advice.advice_observations and advice.advice_observations.output
                     advice.advice_type = advice_type
-                    advice.advice_comment = RichTextValue(safe_unicode(advice_comment))
-                    advice.advice_observations = RichTextValue(safe_unicode(advice_observations))
+                    advice.advice_comment = RichTextValue(advice_comment)
+                    advice.advice_observations = RichTextValue(advice_observations)
                     pr.save(obj=advice, comment='financial_advice_signed_historized_comments')
                     # get freshly versioned element and adapt some metadata
                     lastVersion = pr.getHistoryMetadata(advice).nextVersionId - 1
@@ -80,14 +80,14 @@ class Migrate_To_3_4(Migrator):
                     retrieved['metadata']['sys_metadata']['review_state'] = 'advice_given'
                     # set back old_data
                     advice.advice_type = old_advice_type
-                    advice.advice_comment = RichTextValue(safe_unicode(old_advice_comment))
-                    advice.advice_observations = RichTextValue(safe_unicode(old_advice_observations))
+                    advice.advice_comment = RichTextValue(old_advice_comment)
+                    advice.advice_observations = RichTextValue(old_advice_observations)
                 else:
                     newEvents.append(event)
             advice.workflow_history['meetingadviceliege_workflow'] = newEvents
         logger.info('Done.')
 
-    def _cleanMeetingConfig(self):
+    def _cleanMeetingConfigs(self):
         """Clean attribute 'cdldProposingGroup' that was removed from schema."""
         logger.info('Cleaning MeetingConfigs...')
         for cfg in self.tool.objectValues('MeetingConfig'):
@@ -98,7 +98,7 @@ class Migrate_To_3_4(Migrator):
     def run(self):
         logger.info('Migrating to MeetingLiege 3.4...')
         # self._updateHistorizedFinanceAdviceInWFHistory()
-        # self._moveHistorizedFinanceAdviceToVersions()
+        self._moveHistorizedFinanceAdviceToVersions()
         self._cleanMeetingConfigs()
         self.finish()
 

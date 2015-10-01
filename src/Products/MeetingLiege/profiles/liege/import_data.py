@@ -73,15 +73,21 @@ itemTemplatePDF.pod_formats = ['pdf', ]
 itemTemplatePDF.pod_portal_types = ['MeetingItemCollege']
 itemTemplatePDF.tal_condition = 'python: here.hasMeeting()'
 
-dfAdviceTemplate = PodTemplateDescriptor('synthese-finance-advice', 'Synthèse Avis DF')
+dfAdviceTemplate = PodTemplateDescriptor('synthese-finance-advice', 'Synthèse Avis DF', dashboard=True)
 dfAdviceTemplate.odt_file = 'synthese_avis_df.odt'
 dfAdviceTemplate.pod_portal_types = ['Folder']
+dfAdviceTemplate.dashboard_collections_ids = ['searchitemswithfinanceadvice']
 dfAdviceTemplate.tal_condition = ''
 
 collegeTemplates = [agendaTemplate, agendaTemplatePDF,
                     decisionsTemplate, decisionsTemplatePDF,
                     itemProjectTemplate, itemProjectTemplatePDF,
                     itemTemplate, itemTemplatePDF, dfAdviceTemplate]
+
+councilTemplates = [agendaTemplate, agendaTemplatePDF,
+                    decisionsTemplate, decisionsTemplatePDF,
+                    itemProjectTemplate, itemProjectTemplatePDF,
+                    itemTemplate, itemTemplatePDF]
 
 # Users and groups -------------------------------------------------------------
 dgen = UserDescriptor('dgen', [], email="test@test.be", fullname="Henry Directeur")
@@ -268,56 +274,8 @@ collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
 collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed')
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
-collegeMeeting.customAdvisers = [
-    {'row_id': 'unique_id_002',
-     'group': 'df-contrale',
-     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
-     'for_item_created_from': today,
-     'delay': '10',
-     'delay_left_alert': '4',
-     'delay_label': 'Incidence financière',
-     },
-    {'row_id': 'unique_id_003',
-     'group': 'df-contrale',
-     'for_item_created_from': today,
-     'delay': '5',
-     'delay_left_alert': '4',
-     'delay_label': 'Incidence financière (Urgence)',
-     'is_linked_to_previous_row': '1',
-     },
-    {'row_id': 'unique_id_004',
-     'group': 'df-contrale',
-     'for_item_created_from': today,
-     'delay': '20',
-     'delay_left_alert': '4',
-     'delay_label': 'Incidence financière (Prolongation)',
-     'is_linked_to_previous_row': '1',
-     },
-    {'row_id': 'unique_id_005',
-     'group': 'df-comptabilita-c-et-audit-financier',
-     'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
-     'for_item_created_from': today,
-     'delay': '10',
-     'delay_left_alert': '4',
-     'delay_label': 'Incidence financière',
-     },
-    {'row_id': 'unique_id_006',
-     'group': 'df-comptabilita-c-et-audit-financier',
-     'for_item_created_from': today,
-     'delay': '5',
-     'delay_left_alert': '4',
-     'delay_label': 'Incidence financière (Urgence)',
-     'is_linked_to_previous_row': '1',
-     },
-    {'row_id': 'unique_id_007',
-     'group': 'df-comptabilita-c-et-audit-financier',
-     'for_item_created_from': today,
-     'delay': '20',
-     'delay_left_alert': '4',
-     'delay_label': 'Incidence financière (Prolongation)',
-     'is_linked_to_previous_row': '1',
-     }, ]
-
+# done in setuphandlers._configureCollegeCustomAdvisers
+collegeMeeting.customAdvisers = []
 collegeMeeting.powerAdvisersGroups = ('dirgen', 'dirfin')
 collegeMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned',
                                            'pre_accepted', 'delayed', 'itemfrozen', 'marked_not_applicable',
@@ -507,7 +465,7 @@ councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
 councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified',
                                        'pre_accepted', 'itemfrozen',
                                        'refused', 'delayed')
-councilMeeting.podTemplates = collegeTemplates
+councilMeeting.podTemplates = councilTemplates
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},)
 councilMeeting.useGroupsAsCategories = False

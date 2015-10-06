@@ -63,9 +63,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
-        # a MeetingManager is able to validate an item immediatelly, bypassing the entire validation workflow
+        # a MeetingManager is able to validate an item immediatelly, bypassing
+        # the entire validation workflow.
+        # a director who is able to propose to administrative and internal
+        # reviewer can also bypass those 2 transitions and propose the item directly to
+        # the direction.
         self.changeUser('pmManager')
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer',
+                                                   'proposeToDirector',
                                                    'validate', ])
         # the pmCreator1 send the item to the administrative reviewer
         self.changeUser('pmCreator1')

@@ -56,7 +56,6 @@ def postInstall(context):
     # add the groupsOfMatter index
     addOrUpdateIndexes(site, {'groupsOfMatter': ('KeywordIndex', {})})
     # add our own faceted advanced criteria
-    #addFacetedCriteria(context, site)
 
 
 ##code-section FOOT

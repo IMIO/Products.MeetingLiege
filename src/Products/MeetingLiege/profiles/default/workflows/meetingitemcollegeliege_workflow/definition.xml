@@ -548,6 +548,7 @@
   <exit-transition transition_id="proposeToAdministrativeReviewer"/>
   <exit-transition transition_id="askAdvicesByItemCreator"/>
   <exit-transition transition_id="validate"/>
+  <exit-transition transition_id="proposeToDirector"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -2343,7 +2344,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/accept.png" category="workflow" i18n:translate="">accept</action>
+  <action url="" category="workflow" i18n:translate="">accept</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2355,7 +2356,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/accept_and_return.png" category="workflow" i18n:translate="">accept_and_return</action>
+  <action url="" category="workflow" i18n:translate="">accept_and_return</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayAcceptAndReturn()</guard-expression>
   </guard>
@@ -2367,7 +2368,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/accept_but_modify.png" category="workflow" i18n:translate="">accept_but_modify</action>
+  <action url="" category="workflow" i18n:translate="">accept_but_modify</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2379,7 +2380,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/askAdvicesByInternalReviewer.png" category="workflow" i18n:translate="">askAdvicesByInternalReviewer</action>
+  <action url="" category="workflow" i18n:translate="">askAdvicesByInternalReviewer</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayAskAdvicesByInternalReviewer()</guard-expression>
   </guard>
@@ -2391,7 +2392,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/askAdvicesByItemCreator.png" category="workflow" i18n:translate="">askAdvicesByItemCreator</action>
+  <action url="" category="workflow" i18n:translate="">askAdvicesByItemCreator</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayAskAdvicesByItemCreator()</guard-expression>
   </guard>
@@ -2403,7 +2404,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToItemCreated.png" category="workflow" i18n:translate="">backToItemCreated</action>
+  <action url="" category="workflow" i18n:translate="">backToItemCreated</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -2415,7 +2416,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToItemFrozen.png" category="workflow" i18n:translate="">backToItemFrozen</action>
+  <action url="" category="workflow" i18n:translate="">backToItemFrozen</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -2427,7 +2428,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToPresented.png" category="workflow" i18n:translate="">backToPresented</action>
+  <action url="" category="workflow" i18n:translate="">backToPresented</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -2439,7 +2440,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToProposedToAdministrativeReviewer.png" category="workflow" i18n:translate="">backToProposedToAdministrativeReviewer</action>
+  <action url="" category="workflow" i18n:translate="">backToProposedToAdministrativeReviewer</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -2451,7 +2452,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToProposedToDirector.png" category="workflow" i18n:translate="">backToProposedToDirector</action>
+  <action url="" category="workflow" i18n:translate="">backToProposedToDirector</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayBackToProposedToDirector()</guard-expression>
   </guard>
@@ -2463,7 +2464,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToProposedToInternalReviewer.png" category="workflow" i18n:translate="">backToProposedToInternalReviewer</action>
+  <action url="" category="workflow" i18n:translate="">backToProposedToInternalReviewer</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -2475,7 +2476,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/backToValidated.png" category="workflow" i18n:translate="">backToValidated</action>
+  <action url="" category="workflow" i18n:translate="">backToValidated</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -2487,7 +2488,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/delay.png" category="workflow" i18n:translate="">delay</action>
+  <action url="" category="workflow" i18n:translate="">delay</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2499,7 +2500,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/itemfreeze.png" category="workflow" i18n:translate="">itemfreeze</action>
+  <action url="" category="workflow" i18n:translate="">itemfreeze</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayFreeze()</guard-expression>
   </guard>
@@ -2511,7 +2512,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/mark_not_applicable.png" category="workflow" i18n:translate="">mark_not_applicable</action>
+  <action url="" category="workflow" i18n:translate="">mark_not_applicable</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2523,7 +2524,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/pre_accept.png" category="workflow" i18n:translate="">pre_accept</action>
+  <action url="" category="workflow" i18n:translate="">pre_accept</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2535,7 +2536,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/present.png" category="workflow" i18n:translate="">present</action>
+  <action url="" category="workflow" i18n:translate="">present</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayPresent()</guard-expression>
   </guard>
@@ -2547,7 +2548,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/proposeToAdministrativeReviewer.png" category="workflow" i18n:translate="">proposeToAdministrativeReviewer</action>
+  <action url="" category="workflow" i18n:translate="">proposeToAdministrativeReviewer</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayProposeToAdminstrativeReviewer()</guard-expression>
   </guard>
@@ -2559,7 +2560,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/proposeToDirector.png" category="workflow" i18n:translate="">proposeToDirector</action>
+  <action url="" category="workflow" i18n:translate="">proposeToDirector</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayProposeToDirector()</guard-expression>
   </guard>
@@ -2571,7 +2572,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/proposeToFinance.png" category="workflow" i18n:translate="">proposeToFinance</action>
+  <action url="" category="workflow" i18n:translate="">proposeToFinance</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayProposeToFinance()</guard-expression>
   </guard>
@@ -2583,7 +2584,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/proposeToInternalReviewer.png" category="workflow" i18n:translate="">proposeToInternalReviewer</action>
+  <action url="" category="workflow" i18n:translate="">proposeToInternalReviewer</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayProposeToInternalReviewer()</guard-expression>
   </guard>
@@ -2595,7 +2596,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/refuse.png" category="workflow" i18n:translate="">refuse</action>
+  <action url="" category="workflow" i18n:translate="">refuse</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2607,7 +2608,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/return.png" category="workflow" i18n:translate="">return</action>
+  <action url="" category="workflow" i18n:translate="">return</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -2619,7 +2620,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" icon="%(portal_url)s/validate.png" category="workflow" i18n:translate="">validate</action>
+  <action url="" category="workflow" i18n:translate="">validate</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayValidate()</guard-expression>
   </guard>

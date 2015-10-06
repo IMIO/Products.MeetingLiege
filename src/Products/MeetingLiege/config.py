@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# File: config.py
+# File: MeetingLiege.py
 #
 # Copyright (c) 2015 by Imio.be
 # Generator: ArchGenXML Version 2.7

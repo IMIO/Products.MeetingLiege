@@ -1808,8 +1808,15 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayProposeToDirector(self):
         res = False
+        item_state = self.context.queryState()
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            if item_state == 'itemcreated' and \
+                (not member.has_role('MeetingAdminReviewer', self.context) or \
+                 not member.has_role('MeetingInternalReviewer', self.context)):
+                res = False
         return res
 
     security.declarePublic('mayProposeToFinance')

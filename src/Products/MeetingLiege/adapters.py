@@ -45,7 +45,7 @@ from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowCo
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.config import READER_USECASES
-from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent
+from Products.PloneMeeting.utils import checkPermission, getLastEvent
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -64,7 +64,6 @@ from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
-from DateTime import DateTime
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -1291,8 +1290,9 @@ class CustomMeetingConfig(MeetingConfig):
             for storedArchivingRefsGroup in storedArchivingRefsGroups:
                 for group in storedArchivingRefsGroup:
                     if not group in groupsInVocab:
-                        mGroup = getattr(tool, group)
-                        res.append((mGroup.getId(), mGroup.getName()))
+                        mGroup = getattr(tool, group, None)
+                        groupName = mGroup and mGroup.getName() or group
+                        res.append((group, groupName))
         return DisplayList(res).sortedByValue()
     MeetingConfig.listActiveMeetingGroupsForArchivingRefs = listActiveMeetingGroupsForArchivingRefs
 

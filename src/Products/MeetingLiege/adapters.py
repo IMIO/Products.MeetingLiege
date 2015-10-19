@@ -1049,7 +1049,7 @@ class CustomMeetingItem(MeetingItem):
         # finance advice on self and not on a predecessor, return item
         if (financeAdvice in item.adviceIndex and
             item.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
-           not getLastEvent(item, 'return'):
+           not (getLastEvent(item, 'return') or getLastEvent(item, 'accept_and_return')):
             return item
 
         # we will walk predecessors until we found a finance advice that has been given

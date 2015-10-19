@@ -120,7 +120,7 @@ margin-left: 0.2em;
 .state-returned, .label-state-returned,
 .state-accepted_and_returned, .label-state-accepted_and_returned,
 .state-marked_not_applicable, .label-state-marked_not_applicable {
-    color: grey !important;
+    color: green !important;
 }
 #plone-contentmenu-workflow .state-delayed,
 #plone-contentmenu-workflow .state-returned_to_proposing_group,

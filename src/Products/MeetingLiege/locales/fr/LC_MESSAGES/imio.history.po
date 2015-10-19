@@ -14,6 +14,10 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: imio.history\n"
 
+#. Default: "The item has been sent to Council then duplicated and the new item is available for a next meeting."
+msgid "accept_and_return_comments"
+msgstr "Le point a été envoyé au Conseil Communal puis automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."
+
 #. Default: "Item created from a college item."
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Point créé depuis un point Collège."
@@ -41,4 +45,3 @@ msgstr "Le point a été automatiquement proposé à la séance car le délai po
 #. Default: "The item has been duplicated and the new item is available for a next meeting."
 msgid "return_comments"
 msgstr "Le point a été automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."
-

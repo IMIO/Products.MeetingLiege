@@ -996,7 +996,8 @@ class CustomMeetingItem(MeetingItem):
     def _checkAlreadyClonedToOtherMC(self, destMeetingConfigId):
         ''' '''
         res = old_checkAlreadyClonedToOtherMC(self, destMeetingConfigId)
-        if not res:
+        if not res and not getLastEvent(self, 'Duplicate and keep link'):
+            # if current item is not linked automatically using a 'Duplicate and keep link'
             # double check if a predecessor was not already sent to the other meetingConfig
             # this can be the case when using 'accept_and_return' transition, the item is sent
             # and another item is cloned with same informations.  Check also that if a predecessor
@@ -1004,6 +1005,10 @@ class CustomMeetingItem(MeetingItem):
             # in this case, we will send it again
             predecessor = self.getPredecessor()
             while predecessor:
+                # break the loop if we encounter an item that was 'Duplicated and keep link'
+                # while walking up the predecessors
+                if getLastEvent(predecessor, 'Duplicate and keep link'):
+                    return res
                 if predecessor.queryState() == 'accepted_and_returned' and \
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
                     # if item was sent to council, check that this item is not 'delayed' or 'marked_not_applicable'
@@ -1740,7 +1745,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doAccept_and_return')
 
     def doAccept_and_return(self, stateChange):
-        self._returnCollege()
+        self._returnCollege('accept_and_return')
 
     security.declarePrivate('doReturn')
 
@@ -1749,14 +1754,14 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
           When the item is 'returned', it will be automatically
           duplicated then validated for a next meeting.
         '''
-        self._returnCollege()
+        self._returnCollege('return')
 
-    def _returnCollege(self):
+    def _returnCollege(self, cloneEventAction):
         '''
           Manage 'return college', item is duplicated
           then validated for a next meeting.
         '''
-        newItem = self.context.clone(cloneEventAction='return',
+        newItem = self.context.clone(cloneEventAction=cloneEventAction,
                                      keepProposingGroup=True,
                                      setCurrentAsPredecessor=True)
         # now that the item is cloned, we need to validate it

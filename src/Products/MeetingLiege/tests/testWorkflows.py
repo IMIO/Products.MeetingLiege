@@ -38,6 +38,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
 from Products.PloneMeeting.indexes import indexAdvisers
 from Products.PloneMeeting.interfaces import IAnnexable
+from Products.PloneMeeting.utils import getLastEvent
 
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
@@ -770,7 +771,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(duplicatedLocally, 'accept_and_return')
         self.assertTrue(duplicatedLocally.getItemClonedToOtherMC(cfg2Id))
 
-        # now, for the last test, make sure an already duplicated item
+        # now, make sure an already duplicated item
         # with an item on the council that is not 'delayed' or 'marked_not_applicable' is
         # not sent again
         predecessors = duplicatedLocally.getBRefs('ItemPredecessor')
@@ -788,6 +789,22 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(newDuplicatedLocally, 'accept')
         # it has not be sent again
         self.assertFalse(newDuplicatedLocally.getItemClonedToOtherMC(cfg2Id))
+
+        # make sure an item that is 'Duplicated and keep link' with an item
+        # that was 'accepted_and_returned' is sendable to another mc
+        self.assertEquals(duplicatedLocally.queryState(), 'accepted_and_returned')
+        dupLinkedItemURL = duplicatedLocally.onDuplicateAndKeepLink()
+        dupLinkedItem = duplicatedLocally.getParentNode().restrictedTraverse(dupLinkedItemURL.split('/')[-1])
+        self.assertEquals(dupLinkedItem.getPredecessor(), duplicatedLocally)
+        self.assertTrue(getLastEvent(dupLinkedItem, 'Duplicate and keep link'))
+        self.assertEquals(dupLinkedItem.getOtherMeetingConfigsClonableTo(),
+                          (cfg2Id,))
+        meeting4 = self.create('Meeting', date='2014/03/03 09:00:00')
+        self.presentItem(dupLinkedItem)
+        self.decideMeeting(meeting4)
+        # once accepted, it has been sent to the council
+        self.do(dupLinkedItem, 'accept')
+        self.assertTrue(dupLinkedItem.getItemClonedToOtherMC(cfg2Id))
 
     def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
         '''Test that when a transition is triggered on a meetingadvice

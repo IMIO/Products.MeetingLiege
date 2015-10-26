@@ -1005,16 +1005,16 @@ class CustomMeetingItem(MeetingItem):
             # in this case, we will send it again
             predecessor = self.getPredecessor()
             while predecessor:
-                # break the loop if we encounter an item that was 'Duplicated and keep link'
-                # while walking up the predecessors
-                if getLastEvent(predecessor, 'Duplicate and keep link'):
-                    return res
                 if predecessor.queryState() == 'accepted_and_returned' and \
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
                     # if item was sent to council, check that this item is not 'delayed' or 'marked_not_applicable'
                     clonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
                     if clonedItem and not clonedItem.queryState() in ('delayed', 'marked_not_applicable'):
                         return True
+                # break the loop if we encounter an item that was 'Duplicated and keep link'
+                # and it is not an item that is 'accepted_and_returned'
+                if getLastEvent(predecessor, 'Duplicate and keep link'):
+                    return res
                 predecessor = predecessor.getPredecessor()
         return res
     MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC

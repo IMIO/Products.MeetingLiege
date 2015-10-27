@@ -104,8 +104,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmReviewer1')
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
-        # he may send the item back to the internal reviewer or validate it
-        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+        # he may send the item back to the internal reviewer, validate it
+        # or send it back to itemCreated.
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'backToProposedToInternalReviewer',
                                                    'validate', ])
         self.do(item, 'validate')
         # pmReviewer1 can no more edit item but can still view it
@@ -264,12 +266,15 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the step 'proposed_to_finances' is required
         self.assertTrue(item.queryState() == 'proposed_to_director')
         # from here, we can not validate the item, it can only be sent
-        # to the finances or back to the internal reviewer
-        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+        # to the finances, back to the internal reviewer or back to
+        # itemCreated.
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'backToProposedToInternalReviewer',
                                                    'proposeToFinance'])
         # if emergency is asked, a director may either propose the item to finance or validate it
         item.setEmergency('emergency_asked')
-        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'backToProposedToInternalReviewer',
                                                    'proposeToFinance',
                                                    'validate', ])
         item.setEmergency('no_emergency')
@@ -420,7 +425,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # now an item with a negative financial advice back to the director
         # as no emergency is asked, the item can not be validated
         self.changeUser('pmReviewer1')
-        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'backToProposedToInternalReviewer',
                                                    'proposeToFinance'])
         # a financial advice can not be 'asked_again'
         self.assertFalse(item.adapted().mayAskAdviceAgain(advice))
@@ -1095,6 +1101,28 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(len(predecessors), 2)
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
+    def test_subproduct_CollegeShortcutProcess(self):
+        '''
+        A reviewer doesn't have to click 3 times to send an item from creation
+        to proposedToDirector.
+        '''
+        # pmCreator1 creates an item and proposes it to the administrative reviewer
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', title='The first item')
+        # pmCreator may only 'proposeToAdministrativeReviewer'
+        self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        # a MeetingManager is able to validate an item immediatelly, bypassing
+        # the entire validation workflow.
+        # a reviewer can also bypass those 2 transitions and propose the item directly to
+        # the direction.
+        self.changeUser('pmManager')
+        self.assertTrue(self.transitions(item)) == ['proposeToAdministrativeReviewer',
+                                                    'proposeToDirector',
+                                                    'validate', ]
+        self.do(item, 'proposeToDirector')
+        # A director can also send back to creation a proposedToDirector item.
+        self.assertTrue(self.transitions(item)) == ['backToItemCreated', 'backToProposedToInternalReviewer', 'validate']
 
 
 def test_suite():

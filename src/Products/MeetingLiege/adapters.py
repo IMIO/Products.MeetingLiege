@@ -1814,8 +1814,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             if item_state == 'itemcreated' and \
-                (not member.has_role('MeetingAdminReviewer', self.context) or \
-                 not member.has_role('MeetingInternalReviewer', self.context)):
+                not member.has_role('MeetingReviewer', self.context):
                 res = False
         return res
 
@@ -1997,6 +1996,26 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         if self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
            checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayBackToItemCreated')
+
+    def mayBackToItemCreated(self):
+        '''
+            A proposedToDirector item may be directly sent back to the
+            'itemCreated' state if the user is reviewer.
+        '''
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
+        res = False
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+        # special case when automatically sending back an item to 'itemcreated' or
+        # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
+        elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
+            self.context.queryState() in ['itemcreated_waiting_advices',
+                                          'proposed_to_internal_reviewer_waiting_advices']:
             res = True
         return res
 

@@ -253,7 +253,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToAdviceUnderEdit</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToAdviceUnderEdit</action>
   <guard>
     <guard-expression>python:here.REQUEST.get('mayBackToAdviceUnderEdit', False)</guard-expression>
   </guard>
@@ -265,7 +265,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToProposedToFinancialController</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToProposedToFinancialController</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayBackToProposedToFinancialController()</guard-expression>
   </guard>
@@ -277,7 +277,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToProposedToFinancialManager</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToProposedToFinancialManager</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayBackToProposedToFinancialManager()</guard-expression>
   </guard>
@@ -289,7 +289,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToProposedToFinancialReviewer</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToProposedToFinancialReviewer</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayBackToProposedToFinancialReviewer()</guard-expression>
   </guard>
@@ -301,7 +301,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">giveAdvice</action>
+  <action url="" icon="" category="workflow" i18n:translate="">giveAdvice</action>
   <guard>
     <guard-expression>python:here.REQUEST.get('mayGiveAdvice', False)</guard-expression>
   </guard>
@@ -313,7 +313,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">proposeToFinancialController</action>
+  <action url="" icon="" category="workflow" i18n:translate="">proposeToFinancialController</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayProposeToFinancialController()</guard-expression>
   </guard>
@@ -325,7 +325,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">proposeToFinancialManager</action>
+  <action url="" icon="" category="workflow" i18n:translate="">proposeToFinancialManager</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayProposeToFinancialManager()</guard-expression>
   </guard>
@@ -337,7 +337,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">proposeToFinancialReviewer</action>
+  <action url="" icon="" category="workflow" i18n:translate="">proposeToFinancialReviewer</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').mayProposeToFinancialReviewer()</guard-expression>
   </guard>
@@ -349,7 +349,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">signFinancialAdvice</action>
+  <action url="" icon="" category="workflow" i18n:translate="">signFinancialAdvice</action>
   <guard>
     <guard-expression>python:here.restrictedTraverse('@@advice-wf-conditions').maySignFinancialAdvice()</guard-expression>
   </guard>

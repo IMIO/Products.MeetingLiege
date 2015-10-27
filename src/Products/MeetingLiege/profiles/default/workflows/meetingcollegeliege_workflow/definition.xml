@@ -152,7 +152,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToCreated</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToCreated</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -164,7 +164,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToDecided</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToDecided</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -176,7 +176,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">backToFrozen</action>
+  <action url="" icon="" category="workflow" i18n:translate="">backToFrozen</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
   </guard>
@@ -188,7 +188,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">close</action>
+  <action url="" icon="" category="workflow" i18n:translate="">close</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayClose()</guard-expression>
   </guard>
@@ -200,7 +200,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">decide</action>
+  <action url="" icon="" category="workflow" i18n:translate="">decide</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>
@@ -212,7 +212,7 @@
              before_script=""
              after_script=""
              i18n:attributes="title">
-  <action url="" category="workflow" i18n:translate="">freeze</action>
+  <action url="" icon="" category="workflow" i18n:translate="">freeze</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayFreeze()</guard-expression>
   </guard>

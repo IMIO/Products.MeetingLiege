@@ -255,7 +255,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                         ['o2', 'o1', 'o3', 'o4', 'o5'])
         # move depItem2 to last position
         changeOrder = depItem2.restrictedTraverse('@@change-item-order')
-        changeOrder(moveType='number', moveNumber=5)
+        changeOrder('number', '5')
         # now depItem1 reference is back to 'deployment1' and depItem2 in last position
         self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
                         ['deployment1', 'development1', 'development2', 'research1', 'deployment2'])

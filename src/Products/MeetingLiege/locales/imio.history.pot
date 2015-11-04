@@ -19,6 +19,10 @@ msgstr ""
 msgid "return_comments"
 msgstr ""
 
+#. Default: "The item has been sent to Council then duplicated and the new item is available for a next meeting."
+msgid "accept_and_return_comments"
+msgstr ""
+
 #. Default: "The advice has been automatically historized when it was signed."
 msgid "financial_advice_signed_historized_comments"
 msgstr ""

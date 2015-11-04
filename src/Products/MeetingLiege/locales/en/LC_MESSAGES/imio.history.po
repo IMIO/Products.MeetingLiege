@@ -14,6 +14,10 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
+#. Default: "The item has been sent to Council then duplicated and the new item is available for a next meeting."
+msgid "accept_and_return_comments"
+msgstr ""
+
 #. Default: "Item created from a college item."
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Item created from a college item."

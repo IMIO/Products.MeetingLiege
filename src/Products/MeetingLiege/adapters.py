@@ -45,7 +45,7 @@ from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowCo
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.config import READER_USECASES
-from Products.PloneMeeting.utils import checkPermission, prepareSearchValue, getLastEvent
+from Products.PloneMeeting.utils import checkPermission, getLastEvent
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
@@ -64,7 +64,6 @@ from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
-from DateTime import DateTime
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -997,7 +996,8 @@ class CustomMeetingItem(MeetingItem):
     def _checkAlreadyClonedToOtherMC(self, destMeetingConfigId):
         ''' '''
         res = old_checkAlreadyClonedToOtherMC(self, destMeetingConfigId)
-        if not res:
+        if not res and not getLastEvent(self, 'Duplicate and keep link'):
+            # if current item is not linked automatically using a 'Duplicate and keep link'
             # double check if a predecessor was not already sent to the other meetingConfig
             # this can be the case when using 'accept_and_return' transition, the item is sent
             # and another item is cloned with same informations.  Check also that if a predecessor
@@ -1011,6 +1011,10 @@ class CustomMeetingItem(MeetingItem):
                     clonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
                     if clonedItem and not clonedItem.queryState() in ('delayed', 'marked_not_applicable'):
                         return True
+                # break the loop if we encounter an item that was 'Duplicated and keep link'
+                # and it is not an item that is 'accepted_and_returned'
+                if getLastEvent(predecessor, 'Duplicate and keep link'):
+                    return res
                 predecessor = predecessor.getPredecessor()
         return res
     MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
@@ -1045,7 +1049,7 @@ class CustomMeetingItem(MeetingItem):
         # finance advice on self and not on a predecessor, return item
         if (financeAdvice in item.adviceIndex and
             item.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
-           not getLastEvent(item, 'return'):
+           not (getLastEvent(item, 'return') or getLastEvent(item, 'accept_and_return')):
             return item
 
         # we will walk predecessors until we found a finance advice that has been given
@@ -1291,8 +1295,9 @@ class CustomMeetingConfig(MeetingConfig):
             for storedArchivingRefsGroup in storedArchivingRefsGroups:
                 for group in storedArchivingRefsGroup:
                     if not group in groupsInVocab:
-                        mGroup = getattr(tool, group)
-                        res.append((mGroup.getId(), mGroup.getName()))
+                        mGroup = getattr(tool, group, None)
+                        groupName = mGroup and mGroup.getName() or group
+                        res.append((group, groupName))
         return DisplayList(res).sortedByValue()
     MeetingConfig.listActiveMeetingGroupsForArchivingRefs = listActiveMeetingGroupsForArchivingRefs
 
@@ -1740,7 +1745,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doAccept_and_return')
 
     def doAccept_and_return(self, stateChange):
-        self._returnCollege()
+        self._returnCollege('accept_and_return')
 
     security.declarePrivate('doReturn')
 
@@ -1749,14 +1754,14 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
           When the item is 'returned', it will be automatically
           duplicated then validated for a next meeting.
         '''
-        self._returnCollege()
+        self._returnCollege('return')
 
-    def _returnCollege(self):
+    def _returnCollege(self, cloneEventAction):
         '''
           Manage 'return college', item is duplicated
           then validated for a next meeting.
         '''
-        newItem = self.context.clone(cloneEventAction='return',
+        newItem = self.context.clone(cloneEventAction=cloneEventAction,
                                      keepProposingGroup=True,
                                      setCurrentAsPredecessor=True)
         # now that the item is cloned, we need to validate it

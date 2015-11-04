@@ -1789,9 +1789,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         self.context = item  # Implements IMeetingItem
         self.sm = getSecurityManager()
 
-    security.declarePublic('mayProposeToAdminstrativeReviewer')
+    security.declarePublic('mayProposeToAdministrativeReviewer')
 
-    def mayProposeToAdminstrativeReviewer(self):
+    def mayProposeToAdministrativeReviewer(self):
         res = False
         item_state = self.context.queryState()
         membershipTool = getToolByName(self.context, 'portal_membership')
@@ -1821,8 +1821,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            # Only administrative reviewers and managers
-            # may propose to internal reviewer.
+            # Only administrative reviewers may propose to internal reviewer.
             if item_state == 'itemcreated' and \
                     not member.has_role('MeetingAdminReviewer', self.context):
                 res = False
@@ -1837,8 +1836,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            # Only internal reviewers, reviewers and managers
-            # may propose to director.
+            # Only reviewers and internal reviewers may propose to director.
             if item_state == 'itemcreated' and \
                     not (member.has_role('MeetingReviewer', self.context) or
                          member.has_role('MeetingInternalReviewer', self.context)):

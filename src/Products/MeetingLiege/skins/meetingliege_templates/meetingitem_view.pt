@@ -285,9 +285,9 @@
 
             <tal:comment replace="nothing">List type</tal:comment>
             <div class="discreet" tal:condition="python: meeting">
-              <span tal:attributes="class string:item_attribute_label item_listType_${context/getListType}"
-                    tal:content="context/getListType"
-                    i18n:translate="" />
+              <span tal:attributes="class string:item_attribute_label item_listType_${context/getListType}" i18n:translate="">
+                <metal:listType use-macro="python: here.widget('listType', mode='view')" />
+              </span>
             </div>
 
             <tal:comment replace="nothing">Send to authority?</tal:comment>
@@ -512,7 +512,7 @@
         <span class="discreet item_attribute_label"
               i18n:translate="PloneMeeting_label_meetingTransitionInsertingMe" />&nbsp:<br />
         <span metal:use-macro="python: here.widget('meetingTransitionInsertingMe', mode='view')" /><p>&nbsp;</p>
-        <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#recItems'" i18n:translate="back"></a>
+        <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#recurringitems'" i18n:translate="back"></a><br /><br />
       </tal:transitionsForRecurring>
 
     </tal:itemInConfig>

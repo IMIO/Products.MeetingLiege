@@ -1128,7 +1128,15 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         A reviewer doesn't have to click 3 times to send an item from creation
         to proposedToDirector.
         '''
-        # pmCreator1 creates an item and proposes it to the administrative reviewer
+        # We give the creator role to the reviewers because they must
+        # have the right to create îtems.
+        self.changeUser('admin')
+        dcGroup = self.portal.portal_groups.getGroupById('developers_creators')
+        dcGroup.addMember('pmAdminReviewer1')
+        dcGroup.addMember('pmInternalReviewer1')
+        dcGroup.addMember('pmReviewer1')
+
+        # pmCreator1 creates an item
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'

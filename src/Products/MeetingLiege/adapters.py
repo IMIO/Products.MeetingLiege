@@ -1803,8 +1803,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                                     context=self.context.REQUEST))
             res = True
             # Item in creation can only be send to administrative reviewer
-            # by creators.
+            # by creators and managers.
             if item_state == 'itemcreated' and \
+                    not member.has_role('MeetingManager', self.context) and \
                     (member.has_role('MeetingAdminReviewer', self.context) or
                      member.has_role('MeetingInternalReviewer', self.context) or
                      member.has_role('MeetingReviewer', self.context)):
@@ -1820,7 +1821,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            # Only an Administrative Reviewer may propose to
+            # Only administrative reviewers and managers
+            # may propose to internal reviewer.
             if item_state == 'itemcreated' and \
                     not member.has_role('MeetingAdminReviewer', self.context):
                 res = False
@@ -1835,6 +1837,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            # Only internal reviewers, reviewers and managers
+            # may propose to director.
             if item_state == 'itemcreated' and \
                     not (member.has_role('MeetingReviewer', self.context) or
                          member.has_role('MeetingInternalReviewer', self.context)):

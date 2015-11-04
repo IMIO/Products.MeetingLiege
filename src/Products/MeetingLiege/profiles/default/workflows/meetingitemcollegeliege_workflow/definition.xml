@@ -549,6 +549,7 @@
   <exit-transition transition_id="askAdvicesByItemCreator"/>
   <exit-transition transition_id="validate"/>
   <exit-transition transition_id="proposeToDirector"/>
+  <exit-transition transition_id="proposeToInternalReviewer"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -1695,6 +1696,7 @@
   <exit-transition transition_id="backToProposedToAdministrativeReviewer"/>
   <exit-transition transition_id="proposeToDirector"/>
   <exit-transition transition_id="askAdvicesByInternalReviewer"/>
+  <exit-transition transition_id="backToItemCreated"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>

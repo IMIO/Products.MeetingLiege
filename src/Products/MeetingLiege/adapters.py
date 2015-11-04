@@ -1788,20 +1788,37 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayProposeToAdminstrativeReviewer(self):
         res = False
+        item_state = self.context.queryState()
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             if not self.context.getCategory():
                 return No(translate('required_category_ko',
                                     domain="PloneMeeting",
                                     context=self.context.REQUEST))
             res = True
+            # Item in creation can only be send to administrative reviewer
+            # by creators.
+            if item_state == 'itemcreated' and \
+                    (member.has_role('MeetingAdminReviewer', self.context) or
+                     member.has_role('MeetingInternalReviewer', self.context) or
+                     member.has_role('MeetingReviewer', self.context)):
+                res = False
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
 
     def mayProposeToInternalReviewer(self):
         res = False
+        item_state = self.context.queryState()
+        membershipTool = getToolByName(self.context, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            # Only an Administrative Reviewer may propose to
+            if item_state == 'itemcreated' and \
+                    not member.has_role('MeetingAdminReviewer', self.context):
+                res = False
         return res
 
     security.declarePublic('mayProposeToDirector')
@@ -1814,7 +1831,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             if item_state == 'itemcreated' and \
-                not member.has_role('MeetingReviewer', self.context):
+                    not (member.has_role('MeetingReviewer', self.context) or
+                         member.has_role('MeetingInternalReviewer', self.context)):
                 res = False
         return res
 

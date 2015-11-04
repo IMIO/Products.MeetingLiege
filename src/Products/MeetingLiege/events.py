@@ -13,10 +13,13 @@ __docformat__ = 'plaintext'
 from Products.CMFCore.utils import getToolByName
 from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
+from Products.PloneMeeting import PloneMeetingError
+from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.interfaces import IAnnexable
 from Products.PloneMeeting.utils import getLastEvent
+from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 
@@ -295,3 +298,32 @@ def onCategoryRemoved(category, event):
     '''Called when a MeetingCategory is removed.'''
     # clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
     cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+
+
+def onItemListTypeChanged(item, event):
+    '''Called when MeetingItem.listType is changed :
+       - if going to 'addendum', adapt itemNumber if not already a subnumber;
+       - if going back from 'addendum', adapt itemNumbe if not already an interger.'''
+    # going to 'addendum'
+    if item.getListType() == u'addendum' and _is_integer(item.getItemNumber()):
+        view = item.restrictedTraverse('@@change-item-order')
+        # we will set previous number + 1 so get previous item
+        meeting = item.getMeeting()
+        items = meeting.getItems(ordered=True, useCatalog=True)
+        itemUID = item.UID()
+        previous = None
+        for item in items:
+            if item.UID == itemUID:
+                break
+            previous = item
+        # first item of the meeting can not be set to 'addendum'
+        if not previous:
+            raise PloneMeetingError("First item of the meeting may not be set to 'Addendum' !")
+        newNumber = _storedItemNumber_to_itemNumber(previous.getItemNumber + 1)
+        view('number', newNumber)
+    # going back from 'addendum'
+    elif event.old_listType == u'addendum' and not _is_integer(item.getItemNumber()):
+        view = item.restrictedTraverse('@@change-item-order')
+        # we will use next integer
+        nextInteger = (item.getItemNumber() + 100) / 100
+        view('number', str(nextInteger))

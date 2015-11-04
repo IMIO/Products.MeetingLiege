@@ -707,3 +707,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.closeMeeting(meeting)
         self.assertEquals(item.queryState(), 'accepted')
         self.assertTrue(item.maySignItem())
+
+    def test_ItemSetToAddendum(self):
+        """When an item is set to/from 'addendum', it's itemNumber
+           is automatically adapted accordingly.  An 'addendum' item
+           will use a subnumber."""
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        meeting = self.create('Meeting', date=DateTime())

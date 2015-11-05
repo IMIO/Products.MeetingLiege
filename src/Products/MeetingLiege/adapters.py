@@ -2161,14 +2161,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             res = True
         return res
 
-    security.declarePublic('isLateFor')
-
-    def isLateFor(self, meeting):
-        """
-          No late functionnality for Council
-        """
-        return False
-
 
 from Products.PloneMeeting.content.advice import MeetingAdvice
 old_get_advice_given_on = MeetingAdvice.get_advice_given_on

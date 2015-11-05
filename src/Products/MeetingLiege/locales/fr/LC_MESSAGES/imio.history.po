@@ -45,3 +45,4 @@ msgstr "Le point a été automatiquement proposé à la séance car le délai po
 #. Default: "The item has been duplicated and the new item is available for a next meeting."
 msgid "return_comments"
 msgstr "Le point a été automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."
+

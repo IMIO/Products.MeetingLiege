@@ -35,6 +35,10 @@ msgstr ""
 msgid "MeetingLiege_descr_cdldProposingGroup"
 msgstr ""
 
+#. Default: "Check this box if you want this item to be sent to the next Council meeting as an 'emergency item'"
+msgid "MeetingLiege_descr_emergencyForCouncil"
+msgstr ""
+
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr "If necessary, select the financial service that will have to give the legal financial advice on this item."
@@ -78,6 +82,10 @@ msgstr "Decision (end)"
 #. Default: "Decision (suite)"
 msgid "MeetingLiege_label_decisionSuite"
 msgstr "Decision (suite)"
+
+#. Default: "Emergency"
+msgid "MeetingLiege_label_emergencyForCouncil"
+msgstr ""
 
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
@@ -401,7 +409,8 @@ msgstr "The optional item attribute 'to discuss' allows the meeting manager to s
 msgid "to_discuss_late_default_descr"
 msgstr "Check the box if you want the 'late' items to be set to 'discussed' by default."
 
-#. Default: "Not to be discussed during the meeting."
+#. Default: "Not to be discussed during the meeting"
+#, fuzzy
 msgid "to_discuss_no"
 msgstr "Not to be discussed during the meeting."
 
@@ -421,7 +430,8 @@ msgstr "If you check this box, the value of field 'toDiscuss', for an item, will
 msgid "to_discuss_shown_for_late_items_descr"
 msgstr "Check the box if you want to show column 'to discuss' on lists of late items (checked is the default). For late items, users may not be allowed to choose the value for this field (ie, late items are to be discussed anyway)."
 
-#. Default: "To be discussed during the meeting."
+#. Default: "To be discussed during the meeting"
+#, fuzzy
 msgid "to_discuss_yes"
 msgstr "To be discussed during the meeting."
 

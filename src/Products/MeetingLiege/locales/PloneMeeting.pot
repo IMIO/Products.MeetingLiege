@@ -112,6 +112,14 @@ msgstr ""
 msgid "MeetingLiege_label_privacyForCouncil"
 msgstr ""
 
+#. Default: "Emergency"
+msgid "MeetingLiege_label_emergencyForCouncil"
+msgstr ""
+
+#. Default: "Check this box if you want this item to be sent to the next Council meeting as an 'emergency item'"
+msgid "MeetingLiege_descr_emergencyForCouncil"
+msgstr ""
+
 #. Default: "Data that will be used once item will be in the council"
 msgid "Data that will be used once item will be in the council"
 msgstr ""
@@ -337,11 +345,11 @@ msgstr ""
 msgid "PloneMeeting_label_toDiscussShownForLateItems"
 msgstr ""
 
-#. Default: "To be discussed during the meeting."
+#. Default: "To be discussed during the meeting"
 msgid "to_discuss_yes"
 msgstr ""
 
-#. Default: "Not to be discussed during the meeting."
+#. Default: "Not to be discussed during the meeting"
 msgid "to_discuss_no"
 msgstr ""
 

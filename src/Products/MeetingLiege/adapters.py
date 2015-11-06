@@ -1338,78 +1338,80 @@ class CustomMeetingConfig(MeetingConfig):
                 # Items in state 'proposed_to_finance' for which
                 # completeness is not 'completeness_complete'
                 ('searchitemstocontrolcompletenessof',
-                {
-                    'subFolderId': 'searches_items',
-                    'query':
-                    [
-                        {'i': 'CompoundCriterion',
-                         'o': 'plone.app.querystring.operation.compound.is',
-                         'v': 'items-to-control-completeness-of'},
-                    ],
-                    'sort_on': u'created',
-                    'sort_reversed': True,
-                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
-                                     "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.isFinancialUser())",
-                    'roles_bypassing_talcondition': ['Manager', ]
-                }),
+                    {
+                        'subFolderId': 'searches_items',
+                        'query':
+                        [
+                            {'i': 'CompoundCriterion',
+                             'o': 'plone.app.querystring.operation.compound.is',
+                             'v': 'items-to-control-completeness-of'},
+                        ],
+                        'sort_on': u'created',
+                        'sort_reversed': True,
+                        'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+                                         "or (not here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.isFinancialUser())",
+                        'roles_bypassing_talcondition': ['Manager', ]
+                    }
+                 ),
                 # Items having advice in state 'proposed_to_financial_controller'
                 ('searchadviceproposedtocontroller',
-                {
-                    'subFolderId': 'searches_items',
-                    'query':
-                    [
-                        {'i': 'CompoundCriterion',
-                         'o': 'plone.app.querystring.operation.compound.is',
-                         'v': 'items-with-advice-proposed-to-financial-controller'},
-                    ],
-                    'sort_on': u'created',
-                    'sort_reversed': True,
-                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
-                                     "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.isFinancialUser())",
-                    'roles_bypassing_talcondition': ['Manager', ]
-                }),
-
+                    {
+                        'subFolderId': 'searches_items',
+                        'query':
+                        [
+                            {'i': 'CompoundCriterion',
+                             'o': 'plone.app.querystring.operation.compound.is',
+                             'v': 'items-with-advice-proposed-to-financial-controller'},
+                        ],
+                        'sort_on': u'created',
+                        'sort_reversed': True,
+                        'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+                                         "or (not here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.isFinancialUser())",
+                        'roles_bypassing_talcondition': ['Manager', ]
+                    }
+                 ),
                 # Items having advice in state 'proposed_to_financial_reviewer'
                 ('searchadviceproposedtoreviewer',
-                {
-                    'subFolderId': 'searches_items',
-                    'query':
-                    [
-                        {'i': 'CompoundCriterion',
-                         'o': 'plone.app.querystring.operation.compound.is',
-                         'v': 'items-with-advice-proposed-to-financial-reviewer'},
-                    ],
-                    'sort_on': u'created',
-                    'sort_reversed': True,
-                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.userIsAmong('financialreviewers')) "
-                                     "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.isFinancialUser())",
-                    'roles_bypassing_talcondition': ['Manager', ]
-                }),
-
+                    {
+                        'subFolderId': 'searches_items',
+                        'query':
+                        [
+                            {'i': 'CompoundCriterion',
+                             'o': 'plone.app.querystring.operation.compound.is',
+                             'v': 'items-with-advice-proposed-to-financial-reviewer'},
+                        ],
+                        'sort_on': u'created',
+                        'sort_reversed': True,
+                        'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.userIsAmong('financialreviewers')) "
+                                         "or (not here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.isFinancialUser())",
+                        'roles_bypassing_talcondition': ['Manager', ]
+                    }
+                 ),
                 # Items having advice in state 'proposed_to_financial_manager'
                 ('searchadviceproposedtomanager',
-                {
-                    'subFolderId': 'searches_items',
-                    'query':
-                    [
-                        {'i': 'CompoundCriterion',
-                         'o': 'plone.app.querystring.operation.compound.is',
-                         'v': 'items-with-advice-proposed-to-financial-manager'},
-                    ],
-                    'sort_on': u'created',
-                    'sort_reversed': True,
-                    'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.userIsAmong('financialmanagers')) "
-                                     "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                     "here.portal_plonemeeting.isFinancialUser())",
-                    'roles_bypassing_talcondition': ['Manager', ]
-                }),
+                    {
+                        'subFolderId': 'searches_items',
+                        'query':
+                        [
+                            {'i': 'CompoundCriterion',
+                             'o': 'plone.app.querystring.operation.compound.is',
+                             'v': 'items-with-advice-proposed-to-financial-manager'},
+                        ],
+                        'sort_on': u'created',
+                        'sort_reversed': True,
+                        'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.userIsAmong('financialmanagers')) "
+                                         "or (not here.REQUEST.get('fromPortletTodo', False) and "
+                                         "here.portal_plonemeeting.isFinancialUser())",
+                        'roles_bypassing_talcondition': ['Manager', ]
+                    }
+                 ),
             ]
         )
 
@@ -1420,28 +1422,29 @@ class CustomMeetingConfig(MeetingConfig):
                 [
                     # Items for finance advices synthesis
                     ('searchitemswithfinanceadvice',
-                    {
-                        'subFolderId': 'searches_items',
-                        'query':
-                        [
-                            {'i': 'portal_type',
-                             'o': 'plone.app.querystring.operation.selection.is',
-                             'v': [itemType, ]},
-                            {'i': 'indexAdvisers',
-                             'o': 'plone.app.querystring.operation.selection.is',
-                             'v': ['delay_real_group_id__unique_id_002',
-                                   'delay_real_group_id__unique_id_003',
-                                   'delay_real_group_id__unique_id_004',
-                                   'delay_real_group_id__unique_id_005',
-                                   'delay_real_group_id__unique_id_006',
-                                   'delay_real_group_id__unique_id_007']}
-                        ],
-                        'sort_on': u'created',
-                        'sort_reversed': True,
-                        'tal_condition': "python: here.portal_plonemeeting.isFinancialUser() or "
-                        "here.portal_plonemeeting.isManager(here)",
-                        'roles_bypassing_talcondition': ['Manager', ]
-                    }),
+                        {
+                            'subFolderId': 'searches_items',
+                            'query':
+                            [
+                                {'i': 'portal_type',
+                                 'o': 'plone.app.querystring.operation.selection.is',
+                                 'v': [itemType, ]},
+                                {'i': 'indexAdvisers',
+                                 'o': 'plone.app.querystring.operation.selection.is',
+                                 'v': ['delay_real_group_id__unique_id_002',
+                                       'delay_real_group_id__unique_id_003',
+                                       'delay_real_group_id__unique_id_004',
+                                       'delay_real_group_id__unique_id_005',
+                                       'delay_real_group_id__unique_id_006',
+                                       'delay_real_group_id__unique_id_007']}
+                            ],
+                            'sort_on': u'created',
+                            'sort_reversed': True,
+                            'tal_condition': "python: here.portal_plonemeeting.isFinancialUser() or "
+                            "here.portal_plonemeeting.isManager(here)",
+                            'roles_bypassing_talcondition': ['Manager', ]
+                       }
+                     ),
                 ]
             )
             infos.update(finance_infos)
@@ -1528,8 +1531,11 @@ class CustomMeetingCategory(MeetingCategory):
             groupsInVocab = [group[0] for group in res]
             for storedGroupOfMatter in storedGroupsOfMatter:
                 if not storedGroupOfMatter in groupsInVocab:
-                    mGroup = getattr(tool, storedGroupOfMatter)
-                    res.append((mGroup.getId(), mGroup.getName()))
+                    mGroup = getattr(tool, storedGroupOfMatter, None)
+                    if mGroup:
+                        res.append((mGroup.getId(), mGroup.getName()))
+                    else:
+                        res.append((storedGroupOfMatter, storedGroupOfMatter))
         return DisplayList(res).sortedByValue()
     MeetingCategory.listGroupsOfMatter = listGroupsOfMatter
 

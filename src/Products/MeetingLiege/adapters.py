@@ -1796,19 +1796,29 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         item_state = self.context.queryState()
         membershipTool = getToolByName(self.context, 'portal_membership')
         member = membershipTool.getAuthenticatedMember()
+        groupId = self.context.getProposingGroup()
+        adminRevRole = groupId + '_administrativereviewers'
+        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
+            res = True
             if not self.context.getCategory():
                 return No(translate('required_category_ko',
                                     domain="PloneMeeting",
                                     context=self.context.REQUEST))
-            res = True
+            # MeetingManager must be able to propose to administrative
+            # reviewer.
+            if member.has_role('MeetingManager', self.context):
+                return True
             # Item in creation can only be send to administrative reviewer
-            # by creators and managers.
+            # by creators.
             if item_state == 'itemcreated' and \
-                    not member.has_role('MeetingManager', self.context) and \
                     (member.has_role('MeetingAdminReviewer', self.context) or
                      member.has_role('MeetingInternalReviewer', self.context) or
                      member.has_role('MeetingReviewer', self.context)):
+                res = False
+            # If there is no administrative reviewer, do not show the
+            # transition.
+            if not pg.getGroupById(adminRevRole).getGroupMemberIds():
                 res = False
         return res
 
@@ -1819,27 +1829,78 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         item_state = self.context.queryState()
         membershipTool = getToolByName(self.context, 'portal_membership')
         member = membershipTool.getAuthenticatedMember()
+        groupId = self.context.getProposingGroup()
+        adminRevRole = groupId + '_administrativereviewers'
+        internalRevRole = groupId + '_internalreviewers'
+        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            # Only administrative reviewers may propose to internal reviewer.
-            if item_state == 'itemcreated' and \
-                    not member.has_role('MeetingAdminReviewer', self.context):
+            # MeetingManager must be able to propose to internal reviewer.
+            if member.has_role('MeetingManager', self.context):
+                return True
+            # Only administrative reviewers might propose to internal reviewer,
+            # but creators can do it too if there is no administrative
+            # reviewer.
+            if not member.has_role('MeetingAdminReviewer', self.context):
+                if item_state == 'itemcreated' and\
+                        pg.getGroupById(adminRevRole).getGroupMemberIds():
+                    res = False
+
+            # If there is no internal reviewer or if the current user
+            # is internal reviewer, do not show the transition.
+            if not pg.getGroupById(internalRevRole).getGroupMemberIds() or \
+                    member.has_role('MeetingInternalReviewer', self.context):
                 res = False
+
         return res
 
     security.declarePublic('mayProposeToDirector')
 
     def mayProposeToDirector(self):
+        '''
+        An item can be proposed directly from creation to director
+        by an internal reviewer or a director. Of course, an internal
+        reviewer can still propose to director an item which is
+        proposed to internal reviewer.
+        It's also possible, when there are no administrative and internal
+        reviewers, to send item from creation to direction, even
+        if the user is only a creator.
+        The same shortcut exists from "proposed to administrative reviewer"
+        to "proposed to director" if there is no internal reviewer.
+        '''
         res = False
         item_state = self.context.queryState()
         membershipTool = getToolByName(self.context, 'portal_membership')
         member = membershipTool.getAuthenticatedMember()
+        groupId = self.context.getProposingGroup()
+        adminRevRole = groupId + '_administrativereviewers'
+        internalRevRole = groupId + '_internalreviewers'
+        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            # Only reviewers and internal reviewers may propose to director.
+            # MeetingManager must be able to propose to director.
+            if member.has_role('MeetingManager', self.context):
+                return True
+            # Director and internal reviewer can propose to director an item in
+            # creation.
             if item_state == 'itemcreated' and \
-                    not (member.has_role('MeetingReviewer', self.context) or
-                         member.has_role('MeetingInternalReviewer', self.context)):
+                not (member.has_role('MeetingReviewer', self.context) or
+                     member.has_role('MeetingInternalReviewer', self.context)):
+
+                # An administrative reviewer can propose to director if there
+                # is no internal reviewer and a creator can do it too if there
+                # is neither administrative nor internal reviewers.
+                if (pg.getGroupById(adminRevRole).getGroupMemberIds() or
+                    pg.getGroupById(internalRevRole).getGroupMemberIds()) and \
+                   (pg.getGroupById(internalRevRole).getGroupMemberIds() or
+                        not member.has_role('MeetingAdminReviewer', self.context)):
+                    res = False
+            # Else if the item is proposed to administrative reviewer and
+            # there is no internal reviewer in the group, an administrative
+            # reviewer can also send the item to director.
+            elif item_state == 'proposed_to_administrative_reviewer' and \
+                (not member.has_role('MeetingAdminReviewer', self.context) or
+                    pg.getGroupById(internalRevRole).getGroupMemberIds()):
                 res = False
         return res
 

@@ -1128,10 +1128,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         A reviewer doesn't have to click 3 times to send an item from creation
         to proposedToDirector.
         '''
-        # We give the creator role to the reviewers because they must
-        # have the right to create îtems.
+        pg = self.portal.portal_groups
+        darGroup = pg.getGroupById('developers_administrativereviewers')
+        darMembers = darGroup.getMemberIds()
+        dirGroup = pg.getGroupById('developers_internalreviewers')
+        dirMembers = dirGroup.getMemberIds()
+        # Give the creator role to all reviewers as they have to create items.
         self.changeUser('admin')
-        dcGroup = self.portal.portal_groups.getGroupById('developers_creators')
+        dcGroup = pg.getGroupById('developers_creators')
         dcGroup.addMember('pmAdminReviewer1')
         dcGroup.addMember('pmInternalReviewer1')
         dcGroup.addMember('pmReviewer1')
@@ -1141,11 +1145,46 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
-        # an administrative reviewer can send directly to the internal
-        # reviewer.
+        # if there is no administrative reviewer, a creator can send the item
+        # directly to internal reviewer.
+        self._removeAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToInternalReviewer', ])
+        # if there is neither administrative nor internal reviewer, a creator
+        # can send the item directly to director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        # if there is an administrative reviewer but no internal reviewer, the
+        # creator may only send the item to administative reviewer.
+        self._addAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        self._addAllMembers(dirGroup, dirMembers)
+
+        # an administrative reviewer can send an item in creation directly to
+        # the internal reviewer.
         self.changeUser('pmAdminReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToInternalReviewer', ])
-        # an internal reviewer can propose the item directly to the direction.
+        # if there is no internal reviewer, an administrative reviewer can only
+        # send the item to director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self._addAllMembers(dirGroup, dirMembers)
+        # an item which is proposed to administrative reviewer can be send to
+        # internal reviewer by an administrative reviewer.
+        self.changeUser('pmCreator1')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.changeUser('pmAdminReviewer1')
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToInternalReviewer', ])
+        # if there is no internal reviewer, an administrative reviewer can only
+        # send the item to director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self._addAllMembers(dirGroup, dirMembers)
+        self.do(item, 'backToItemCreated')
+
+        # an internal reviewer can propose an item in creation directly
+        # to the direction.
         self.changeUser('pmInternalReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
         # a director has the same prerogative of an internal reviewer.

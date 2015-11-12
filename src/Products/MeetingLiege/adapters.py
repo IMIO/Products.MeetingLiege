@@ -2050,24 +2050,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                         res = True
                 else:
                     res = True
-            # special case for financial controller that can send an item back to
-            # the internal reviewer if it is in state 'proposed_to_finance' and
-            # item is incomplete
-            elif self.context.queryState() == 'proposed_to_finance':
-                # user must be a member of the finance group the advice is asked to
-                financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
-                memberGroups = getToolByName(self.context, 'portal_membership').getAuthenticatedMember().getGroups()
-                for suffix in FINANCE_GROUP_SUFFIXES:
-                    financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
-                    if financeSubGroupId in memberGroups:
-                        res = True
-                        break
-            # special case when automatically sending back an item to 'itemcreated' or
-            # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
-            elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
-                self.context.queryState() in ['itemcreated_waiting_advices',
-                                              'proposed_to_internal_reviewer_waiting_advices']:
-                return True
         return res
 
     security.declarePublic('mayBackToProposedToDirector')
@@ -2090,19 +2072,96 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayBackToItemCreated(self):
         '''
             A proposedToDirector item may be directly sent back to the
-            'itemCreated' state if the user is reviewer.
+            'itemCreated' state if the user is reviewer and there are no
+            administrative or internal reviewers.
         '''
-        membershipTool = getToolByName(self.context, 'portal_membership')
-        member = membershipTool.getAuthenticatedMember()
         res = False
+        item_state = self.context.queryState()
+        groupId = self.context.getProposingGroup()
+        adminRevRole = groupId + '_administrativereviewers'
+        internalRevRole = groupId + '_internalreviewers'
+        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            # A director can directly send back to creation an item which is
+            # proposed to director if there are neither administrative nor
+            # internal reviewers.
+            if item_state == 'proposed_to_director' and \
+                    (pg.getGroupById(adminRevRole).getGroupMemberIds() or
+                     pg.getGroupById(internalRevRole).getGroupMemberIds()):
+                res = False
+            # An internal reviewer can send back to creation if there is
+            # no administrative reviewer.
+            elif item_state == 'proposed_to_internal_reviewer' and \
+                    pg.getGroupById(adminRevRole).getGroupMemberIds():
+                res = False
         # special case when automatically sending back an item to 'itemcreated' or
         # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
         elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
-            self.context.queryState() in ['itemcreated_waiting_advices',
-                                          'proposed_to_internal_reviewer_waiting_advices']:
+                self.context.queryState() == 'itemcreated_waiting_advices':
             res = True
+        return res
+
+    security.declarePublic('mayBackToProposedToAdministrativeReviewer')
+
+    def mayBackToProposedToAdministrativeReviewer(self):
+        '''
+            An item can be sent back to administrative reviewer if it is
+            proposed to internal reviewer or if it is proposed to director
+            and there is no internal reviewer. The transition is only
+            available if there is an administrative reviewer.
+        '''
+        res = False
+        item_state = self.context.queryState()
+        groupId = self.context.getProposingGroup()
+        adminRevRole = groupId + '_administrativereviewers'
+        internalRevRole = groupId + '_internalreviewers'
+        pg = self.context.portal_groups
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+            # do not show the transition if there is no administrative reviewer
+            # or if the item is proposed to director and there is an internal
+            # reviewer.
+            if (item_state == 'proposed_to_director' and
+                pg.getGroupById(internalRevRole).getGroupMemberIds()) or \
+               not pg.getGroupById(adminRevRole).getGroupMemberIds():
+                res = False
+        return res
+
+    security.declarePublic('mayBackToProposedToInternalReviewer')
+
+    def mayBackToProposedToInternalReviewer(self):
+        '''
+            An item can be sent back to internal reviewer if it is
+            proposed to director. The transition is only available
+            if there is an internal reviewer.
+        '''
+        res = False
+        item_state = self.context.queryState()
+        groupId = self.context.getProposingGroup()
+        internalRevRole = groupId + '_internalreviewers'
+        pg = self.context.portal_groups
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+            if not pg.getGroupById(internalRevRole).getGroupMemberIds():
+                res = False
+        # special case for financial controller that can send an item back to
+        # the internal reviewer if it is in state 'proposed_to_finance' and
+        # item is incomplete
+        elif self.context.queryState() == 'proposed_to_finance':
+            # user must be a member of the finance group the advice is asked to
+            financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
+            memberGroups = getToolByName(self.context, 'portal_membership').getAuthenticatedMember().getGroups()
+            for suffix in FINANCE_GROUP_SUFFIXES:
+                financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
+                if financeSubGroupId in memberGroups:
+                    res = True
+                    break
+        # special case when automatically sending back an item to 'proposed_to_internal_reviewer'
+        # when every advices are given (coming from waiting_advices)
+        elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
+                self.context.queryState() == 'proposed_to_internal_reviewer_waiting_advices':
+            return True
         return res
 
 

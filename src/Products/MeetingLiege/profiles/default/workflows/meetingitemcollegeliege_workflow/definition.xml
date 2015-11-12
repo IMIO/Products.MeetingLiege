@@ -1437,6 +1437,7 @@
   <exit-transition transition_id="validate"/>
   <exit-transition transition_id="proposeToFinance"/>
   <exit-transition transition_id="backToItemCreated"/>
+  <exit-transition transition_id="backToProposedToAdministrativeReviewer"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -2446,7 +2447,7 @@
              i18n:attributes="title">
   <action url="" icon="%(portal_url)s/backToProposedToAdministrativeReviewer.png" category="workflow" i18n:translate="">backToProposedToAdministrativeReviewer</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayBackToProposedToAdministrativeReviewer()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToDirector"
@@ -2470,7 +2471,7 @@
              i18n:attributes="title">
   <action url="" icon="%(portal_url)s/backToProposedToInternalReviewer.png" category="workflow" i18n:translate="">backToProposedToInternalReviewer</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayBackToProposedToInternalReviewer()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToValidated"

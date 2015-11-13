@@ -1249,7 +1249,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
 
-        # An reviewer can ask for advices if an advice is required.
+        # A reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',

@@ -649,6 +649,8 @@
         i18n:attributes="title">
   <exit-transition transition_id="backToItemCreated"/>
   <exit-transition transition_id="proposeToAdministrativeReviewer"/>
+  <exit-transition transition_id="proposeToInternalReviewer"/>
+  <exit-transition transition_id="proposeToDirector"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>

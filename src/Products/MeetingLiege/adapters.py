@@ -1809,9 +1809,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # reviewer.
             if member.has_role('MeetingManager', self.context):
                 return True
-            # Item in creation can only be send to administrative reviewer
-            # by creators.
-            if item_state == 'itemcreated' and \
+            # Item in creation, or in creation waiting for advice can only
+            # be sent to administrative reviewer by creators.
+            if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
                     (member.has_role('MeetingAdminReviewer', self.context) or
                      member.has_role('MeetingInternalReviewer', self.context) or
                      member.has_role('MeetingReviewer', self.context)):
@@ -1842,7 +1842,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # but creators can do it too if there is no administrative
             # reviewer.
             if not member.has_role('MeetingAdminReviewer', self.context):
-                if item_state == 'itemcreated' and\
+                if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and\
                         pg.getGroupById(adminRevRole).getGroupMemberIds():
                     res = False
 
@@ -1851,7 +1851,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if not pg.getGroupById(internalRevRole).getGroupMemberIds() or \
                     member.has_role('MeetingInternalReviewer', self.context):
                 res = False
-
         return res
 
     security.declarePublic('mayProposeToDirector')
@@ -1882,8 +1881,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if member.has_role('MeetingManager', self.context):
                 return True
             # Director and internal reviewer can propose to director an item in
-            # creation.
-            if item_state == 'itemcreated' and \
+            # creation or in creation and waiting for advice.
+            if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
                 not (member.has_role('MeetingReviewer', self.context) or
                      member.has_role('MeetingInternalReviewer', self.context)):
 
@@ -2018,7 +2017,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayAcceptAndReturn')
 
     def mayAcceptAndReturn(self):
-        '''This is a decision only avaialble if item will be sent to council.'''
+        '''This is a decision only available if item will be sent to council.'''
         res = False
         if self.mayDecide() and checkPermission(ReviewPortalContent, self.context) and \
            'meeting-config-council' in self.context.getOtherMeetingConfigsClonableTo():

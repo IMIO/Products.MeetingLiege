@@ -255,6 +255,7 @@ collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.d
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
 collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
                                            'trigger_workflow_transitions_until': '__nothing__'},)
+collegeMeeting.itemAutoSentToOtherMCStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned')
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'

@@ -646,12 +646,6 @@ class CustomMeetingItem(MeetingItem):
         return old_showDuplicateItemAction(self)
     MeetingItem.showDuplicateItemAction = showDuplicateItemAction
 
-    security.declarePublic('itemPositiveDecidedStates')
-
-    def itemPositiveDecidedStates(self):
-        '''See doc in interfaces.py.'''
-        return ('accepted', 'accepted_but_modified', 'accepted_and_returned')
-
     def getExtraFieldsToCopyWhenCloning(self, cloned_to_same_mc):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).

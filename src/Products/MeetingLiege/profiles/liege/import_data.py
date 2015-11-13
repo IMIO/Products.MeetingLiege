@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from DateTime import DateTime
+from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import CategoryDescriptor
 from Products.PloneMeeting.profiles import GroupDescriptor
 from Products.PloneMeeting.profiles import ItemTemplateDescriptor
@@ -11,22 +12,24 @@ from Products.PloneMeeting.profiles import UserDescriptor
 
 today = DateTime().strftime('%Y/%m/%d')
 
-# File types -------------------------------------------------------------------
+# File types for College -------------------------------------------------------------------
 annexe = MeetingFileTypeDescriptor('annexe', 'Annexe',
-                                   'attach.png', '')
+                                   'attach.png', '', isConfidentialDefault=True)
 annexeBudget = MeetingFileTypeDescriptor('annexeBudget', 'Article Budgétaire',
-                                         'budget.png', '')
-annexeCahier = MeetingFileTypeDescriptor('annexeCahier', 'Cahier des Charges',
-                                         'cahier.gif', '')
+                                         'budget.png', '', isConfidentialDefault=True)
+annexeCahier = MeetingFileTypeDescriptor('annexeCahier',
+                                         'Cahier des Charges',
+                                         'cahier.gif',
+                                         '')
 courrierCollege = MeetingFileTypeDescriptor('courrier-a-valider-par-le-college',
-                                            'Courrier à valider par le Collège',
+                                            'Document soumis au Collège',
                                             'courrierCollege.png', '')
 annexeDecision = MeetingFileTypeDescriptor('annexeDecision', 'Annexe à la décision',
-                                           'attach.png', '', 'item_decision')
+                                           'attach.png', '', 'item_decision', isConfidentialDefault=True)
 annexeAvis = MeetingFileTypeDescriptor('annexeAvis', 'Annexe à un avis',
-                                       'attach.png', '', 'advice')
+                                       'attach.png', '', 'advice', isConfidentialDefault=True)
 annexeAvisLegal = MeetingFileTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
-                                            'legalAdvice.png', '', 'advice')
+                                            'legalAdvice.png', '', 'advice', isConfidentialDefault=True)
 
 # Pod templates ----------------------------------------------------------------
 agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')
@@ -229,6 +232,8 @@ collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
+collegeMeeting.enableAnnexConfidentiality = True
+collegeMeeting.annexConfidentialFor = ('restricted_power_observers',)
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'detailedDescription',
@@ -250,6 +255,7 @@ collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.d
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
 collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
                                            'trigger_workflow_transitions_until': '__nothing__'},)
+collegeMeeting.itemAutoSentToOtherMCStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned')
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
@@ -416,6 +422,8 @@ councilMeeting.itemReferenceFormat = \
     "python: 'Ref. ' + (here.hasMeeting() and here.getMeeting().getDate().strftime('%Y%m%d') or '') + '/' + " \
     "str(here.getItemNumber(relativeTo='meeting'))"
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
+councilMeeting.enableAnnexConfidentiality = True
+councilMeeting.annexConfidentialFor = ('restricted_power_observers',)
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',
                                      'observations',
@@ -429,6 +437,7 @@ councilMeeting.usedMeetingAttributes = ['signatures',
 councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 councilMeeting.xhtmlTransformTypes = ('removeBlanks',)
+councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum', 'label': 'Addendum'}, ]
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
 councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'

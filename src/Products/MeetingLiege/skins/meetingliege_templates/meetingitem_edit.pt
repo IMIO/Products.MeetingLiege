@@ -128,6 +128,7 @@
             <legend i18n:translate="">Data that will be used once item will be in the council</legend>
             <metal:field use-macro="python:here.widget('labelForCouncil', mode='edit')"/>
             <metal:field use-macro="python:here.widget('privacyForCouncil', mode='edit')"/>
+            <metal:field use-macro="python:here.widget('emergencyForCouncil', mode='edit')"/>
         </fieldset>
         </td>
       </tr>

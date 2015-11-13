@@ -36,6 +36,10 @@ msgstr "Code destiné à permettre au Service des archives de classer de façon 
 msgid "MeetingLiege_descr_cdldProposingGroup"
 msgstr "Choisir les groupes donneurs d'avis qui seront repris dans la synthèse CDLD (avis DF)"
 
+#. Default: "Check this box if you want this item to be sent to the next Council meeting as an 'emergency item'"
+msgid "MeetingLiege_descr_emergencyForCouncil"
+msgstr "Cochez cette case si le point doit être envoyé vers la prochaine séance du Conseil Communal en tant que 'Point en urgence'"
+
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr "Sélectionnez ici le service DF qui devra émettre un avis de légalité sur le point."
@@ -79,6 +83,10 @@ msgstr "Fin du dispositif"
 #. Default: "Decision (suite)"
 msgid "MeetingLiege_label_decisionSuite"
 msgstr "Suite du dispositif"
+
+#. Default: "Emergency"
+msgid "MeetingLiege_label_emergencyForCouncil"
+msgstr "En urgence"
 
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
@@ -401,9 +409,9 @@ msgstr "L'attribut optionnel 'point avec acte' permet au gestionnaire de séance
 msgid "to_discuss_late_default_descr"
 msgstr "Cochez la case si vous voulez que les points qui sont présentés 'en retard' soient, par défaut, avec acte."
 
-#. Default: "Not to be discussed during the meeting."
+#. Default: "Not to be discussed during the meeting"
 msgid "to_discuss_no"
-msgstr "Point sans acte."
+msgstr "Point sans acte"
 
 #. Default: "Click on the image for asking to discuss this item."
 msgid "to_discuss_no_ask_edit"
@@ -421,9 +429,9 @@ msgstr "Si vous cochez cette case, la valeur du champ 'point avec acte', pour un
 msgid "to_discuss_shown_for_late_items_descr"
 msgstr "Cochez la case si vous voulez afficher la colonne 'Point avec acte' sur les listes de points en retard (coché par défaut). Pour les points en retard, les utilisateurs pourraient ne pas être en droit de choisir la valeur pour ce champ (par exemple, les points en retard pourraient être 'avec acte' d'office)."
 
-#. Default: "To be discussed during the meeting."
+#. Default: "To be discussed during the meeting"
 msgid "to_discuss_yes"
-msgstr "Point avec acte."
+msgstr "Point avec acte"
 
 #. Default: "To be discussed during the meeting. Click on the image for not discussing the item."
 msgid "to_discuss_yes_edit"

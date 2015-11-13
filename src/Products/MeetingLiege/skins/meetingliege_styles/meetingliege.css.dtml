@@ -220,6 +220,16 @@ margin-left: 0.2em;
 body.template-versions_history_form.portaltype-meetingadvice #content-core div.pm_workflowstate {
     display: none;
 }
+
+/* skin addendum on the meeting_view */
+table.listing tr[class][class] td.meeting_item_listType_addendum {
+    background-color: darkgrey;
+}
+/* skin addendum on the meetingitem_view */
+.item_listType_addendum {
+    color: grey;
+}
+
 /* </dtml-with> */
 /* DOCUMENTATION ON PRE-DEFINED PROPERTIES FROM PLONE */
 

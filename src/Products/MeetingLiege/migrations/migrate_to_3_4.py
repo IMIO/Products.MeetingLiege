@@ -27,7 +27,7 @@ class Migrate_To_3_4(Migrator):
                        'not_required_finance': translate('not_required_finance',
                                                          domain='PloneMeeting',
                                                          context=self.portal.REQUEST)
-        }
+                       }
         for brain in brains:
             advice = brain.getObject()
             wfh = advice.workflow_history.copy()
@@ -36,7 +36,11 @@ class Migrate_To_3_4(Migrator):
                     for adviceType in adviceTypes.keys():
                         toFind = '{0}</p>'.format(adviceType)
                         if event['comments'].find(toFind):
-                            event['comments'] = event['comments'].replace(toFind, '{0}</p>'.format(adviceTypes[adviceType].encode('utf-8')))
+                            event['comments'] = \
+                                event['comments'].replace(
+                                    toFind,
+                                    '{0}</p>'.format(
+                                        adviceTypes[adviceType].encode('utf-8')))
                             advice.workflow_history = advice.workflow_history
             advice.workflow_history = wfh
         logger.info('Done.')
@@ -95,11 +99,21 @@ class Migrate_To_3_4(Migrator):
                 delattr(cfg, 'cdldProposingGroup')
         logger.info('Done.')
 
+    def _migrateItemPositiveDecidedStates(self):
+        """Before, the states in which an item was auto sent to
+           selected other meetingConfig was defined in a method
+           'itemPositiveDecidedStates' now it is stored in MeetingConfig.itemAutoSentToOtherMCStates."""
+        logger.info('Defining values for MeetingConfig.itemAutoSentToOtherMCStates...')
+        for cfg in self.tool.objectValues('MeetingConfig'):
+            cfg.setItemAutoSentToOtherMCStates(('accepted', 'accepted_but_modified', 'accepted_and_returned'))
+        logger.info('Done.')
+
     def run(self):
         logger.info('Migrating to MeetingLiege 3.4...')
-        # self._updateHistorizedFinanceAdviceInWFHistory()
-        self._moveHistorizedFinanceAdviceToVersions()
+        #self._updateHistorizedFinanceAdviceInWFHistory()
+        #self._moveHistorizedFinanceAdviceToVersions()
         self._cleanMeetingConfigs()
+        self._migrateItemPositiveDecidedStates()
         self.finish()
 
 
@@ -108,6 +122,9 @@ def migrate(context):
     '''This migration function will:
 
        1) Update historized finance advice advice_type in the advice workflow_history;
+       2) Move historized finance advices to versions;
+       3) clean meetingConfigs regarding CDLD;
+       4) Migrate 'itemPositiveDecidedStates' to MeetingConfig.itemAutoSentToOtherMCStates.
     '''
     Migrate_To_3_4(context).run()
 # ------------------------------------------------------------------------------

@@ -32,4 +32,8 @@
                    zope.container.interfaces.IObjectRemovedEvent"
               handler=".events.onCategoryRemoved"/>
 
+  <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
+                   Products.PloneMeeting.interfaces.IItemListTypeChangedEvent"
+              handler=".events.onItemListTypeChanged"/>
+
 </configure>

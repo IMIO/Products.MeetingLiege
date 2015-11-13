@@ -284,7 +284,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # delete item having reference 'development2'
         # only Manager may delete an item
         self.changeUser('admin')
-        meeting.restrictedTraverse('@@delete_givenuid')(devItem2.UID())
+        self.deleteAsManager(devItem2.UID())
         self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
                         ['development1', 'research1', 'deployment1', 'development2'])
         self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
@@ -707,3 +707,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.closeMeeting(meeting)
         self.assertEquals(item.queryState(), 'accepted')
         self.assertTrue(item.maySignItem())
+
+    def test_ItemSetToAddendum(self):
+        """When an item is set to/from 'addendum', it's itemNumber
+           is automatically adapted accordingly.  An 'addendum' item
+           will use a subnumber."""
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        meeting = self.create('Meeting', date=DateTime())

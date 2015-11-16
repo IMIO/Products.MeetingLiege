@@ -1796,9 +1796,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToAdministrativeReviewer(self):
         res = False
         item_state = self.context.queryState()
-        membershipTool = api.portal.get_tool('portal_membership')
-        member = membershipTool.getAuthenticatedMember()
-        groupId = self.context.getProposingGroup()
+        member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             if not self.context.getCategory():
@@ -1828,8 +1826,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToInternalReviewer(self):
         res = False
         item_state = self.context.queryState()
-        membershipTool = api.portal.get_tool('portal_membership')
-        member = membershipTool.getAuthenticatedMember()
+        member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to internal reviewer.
@@ -1867,8 +1864,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        membershipTool = api.portal.get_tool('portal_membership')
-        member = membershipTool.getAuthenticatedMember()
+        member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to director.

@@ -58,7 +58,6 @@ def postInstall(context):
     # add our own faceted advanced criteria
     #addFacetedCriteria(context, site)
 
-
 ##code-section FOOT
 def logStep(method, context):
     logger.info("Applying '%s' in profile '%s'" % (method, '/'.join(context._profile_path.split(os.sep)[-3:])))

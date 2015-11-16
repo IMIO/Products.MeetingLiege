@@ -67,9 +67,15 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
-        # a MeetingManager is able to validate an item immediatelly, bypassing the entire validation workflow
+        # a MeetingManager is able to validate an item immediatelly, bypassing
+        # the entire validation workflow.
+        # a director who is able to propose to administrative and internal
+        # reviewer can also bypass those 2 transitions and propose the item directly to
+        # the direction.
         self.changeUser('pmManager')
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer',
+                                                   'proposeToDirector',
+                                                   'proposeToInternalReviewer',
                                                    'validate', ])
         # the pmCreator1 send the item to the administrative reviewer
         self.changeUser('pmCreator1')
@@ -103,7 +109,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmReviewer1')
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
-        # he may send the item back to the internal reviewer or validate it
+        # he may send the item back to the internal reviewer, validate it
+        # or send it back to itemCreated.
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
                                                    'validate', ])
         self.do(item, 'validate')
@@ -263,7 +270,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the step 'proposed_to_finances' is required
         self.assertTrue(item.queryState() == 'proposed_to_director')
         # from here, we can not validate the item, it can only be sent
-        # to the finances or back to the internal reviewer
+        # to the finances or back to the internal reviewer.
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
                                                    'proposeToFinance'])
         # if emergency is asked, a director may either propose the item to finance or validate it
@@ -1110,6 +1117,186 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(len(predecessors), 2)
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
+    def test_subproduct_CollegeShortcutProcess(self):
+        '''
+        The items cannot be send anymore to group without at least one user
+        in it. There is also shortcut for the three types of reviewers who
+        don't have to do the whole validation process but can send
+        directly to the role above.
+        '''
+        pg = self.portal.portal_groups
+        darGroup = pg.getGroupById('developers_administrativereviewers')
+        darMembers = darGroup.getMemberIds()
+        dirGroup = pg.getGroupById('developers_internalreviewers')
+        dirMembers = dirGroup.getMemberIds()
+        # Give the creator role to all reviewers as they will have to create items.
+        self.changeUser('admin')
+        dcGroup = pg.getGroupById('developers_creators')
+        dcGroup.addMember('pmAdminReviewer1')
+        dcGroup.addMember('pmInternalReviewer1')
+        dcGroup.addMember('pmReviewer1')
+
+        # pmCreator1 creates an item
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', title='The first item')
+        # pmCreator may only 'proposeToAdministrativeReviewer'
+        self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        # if there is no administrative reviewer, a creator can send the item
+        # directly to internal reviewer.
+        self._removeAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToInternalReviewer', ])
+        # if there is neither administrative nor internal reviewer, a creator
+        # can send the item directly to director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        # if there is an administrative reviewer but no internal reviewer, the
+        # creator may only send the item to administative reviewer.
+        self._addAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        self._addAllMembers(dirGroup, dirMembers)
+
+        # A creator can ask for advices if an advice is required.
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
+                                                   'proposeToAdministrativeReviewer', ])
+        self.do(item, 'askAdvicesByItemCreator')
+        # The user is not forced to give a normal advice and can propose to
+        # administrative reviewer.
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToAdministrativeReviewer', ])
+        # If there is no administrative reviewer, the user can send the item to
+        # internal reviewer.
+        self._removeAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToInternalReviewer', ])
+        # If there are neither administrative nor internal reviewer, allow to
+        # send directly to direction.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self._addAllMembers(darGroup, darMembers)
+        self._addAllMembers(dirGroup, dirMembers)
+        self.do(item, 'backToItemCreated')
+        # Remove the advice for the tests below.
+        item.setOptionalAdvisers(())
+        item.at_post_edit_script()
+
+        # an administrative reviewer can send an item in creation directly to
+        # the internal reviewer.
+        self.changeUser('pmAdminReviewer1')
+        self.assertTrue(self.transitions(item) == ['proposeToInternalReviewer', ])
+        # if there is no internal reviewer, an administrative reviewer can only
+        # send the item to director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self._addAllMembers(dirGroup, dirMembers)
+        # an item which is proposed to administrative reviewer can be send to
+        # internal reviewer by an administrative reviewer.
+        self.changeUser('pmCreator1')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.changeUser('pmAdminReviewer1')
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToInternalReviewer', ])
+        # if there is no internal reviewer, an administrative reviewer can only
+        # send the item to director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self._addAllMembers(dirGroup, dirMembers)
+        self.do(item, 'backToItemCreated')
+
+        # An administrative reviewer can ask for advices if an advice is required.
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
+                                                   'proposeToInternalReviewer', ])
+        self.do(item, 'askAdvicesByItemCreator')
+        # The user is not forced to wait for a normal advice and can propose to
+        # internal reviewer.
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToInternalReviewer', ])
+        # If there is no internal reviewer, the user can send the item to
+        # director.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self._addAllMembers(dirGroup, dirMembers)
+        self.do(item, 'backToItemCreated')
+        # Remove the advice for the tests below.
+        item.setOptionalAdvisers(())
+        item.at_post_edit_script()
+
+        # an internal reviewer can propose an item in creation directly
+        # to the direction.
+        self.changeUser('pmInternalReviewer1')
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+
+        # An internal reviewer can ask for advices if an advice is required.
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
+                                                   'proposeToDirector', ])
+        self.do(item, 'askAdvicesByItemCreator')
+        # The user is not forced to wait for a normal advice and can propose to
+        # director.
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self.do(item, 'backToItemCreated')
+        # Remove the advice for the tests below.
+        item.setOptionalAdvisers(())
+        item.at_post_edit_script()
+
+        # a director has the same prerogative of an internal reviewer.
+        self.changeUser('pmReviewer1')
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+
+        # A reviewer can ask for advices if an advice is required.
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
+                                                   'proposeToDirector', ])
+        self.do(item, 'askAdvicesByItemCreator')
+        # The user is not forced to wait for a normal advice and can propose to
+        # director.
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self.do(item, 'backToItemCreated')
+        # Remove the advice for the tests below.
+        item.setOptionalAdvisers(())
+        item.at_post_edit_script()
+
+        # A director can validate or send the item back to the first state with
+        # user in it. As there is an internal reviewer, the item can be sent
+        # back to him.
+        self.do(item, 'proposeToDirector')
+        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
+                                                   'validate', ])
+        # If there is no internal reviewer, allow to send the item back to
+        # administrative reviewer.
+        self._removeAllMembers(dirGroup, dirMembers)
+        self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
+                                                   'validate', ])
+        # If there is neither internal nor administrative reviewer, allow to
+        # send the item back to creation.
+        self._removeAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'validate', ])
+        self._addAllMembers(darGroup, darMembers)
+        self._addAllMembers(dirGroup, dirMembers)
+        # Send the item back to internal reviewer.
+        self.do(item, 'backToProposedToInternalReviewer')
+        # Internal reviewer is able to propose to director, send the item back
+        # to creator or to administrative reviewer.
+        self.changeUser('pmInternalReviewer1')
+        self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
+                                                   'proposeToDirector', ])
+        # If there is no administrative reviewer, allow the item to be sent
+        # back to creation.
+        self._removeAllMembers(darGroup, darMembers)
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
 
     def test_subproduct_RestrictedPowerObserversMayNotAccessLateItemsInCouncilUntilDecided(self):
         """Finance adviser have still access to items linked to

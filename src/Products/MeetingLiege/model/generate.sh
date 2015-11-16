@@ -1,5 +1,5 @@
 #!/bin/sh
-/srv/archgenxml/agxtrunk/bin/archgenxml --cfg generate.conf MeetingLiege.zargo -o ..
+archgenxml-master --cfg generate.conf MeetingLiege.zargo -o ..
 #we do some manual adaptations
 #do not take generatedsubscribers into account
 echo "Removing 'generatedsubscribers.zcml' include from configure.zcml"

@@ -34,6 +34,7 @@ from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 from zope.i18n import translate
 from plone.memoize import ram
+from plone import api
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
@@ -1801,32 +1802,107 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         self.context = item  # Implements IMeetingItem
         self.sm = getSecurityManager()
 
-    security.declarePublic('mayProposeToAdminstrativeReviewer')
+    security.declarePublic('mayProposeToAdministrativeReviewer')
 
-    def mayProposeToAdminstrativeReviewer(self):
+    def mayProposeToAdministrativeReviewer(self):
         res = False
+        item_state = self.context.queryState()
+        member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
+            res = True
             if not self.context.getCategory():
                 return No(translate('required_category_ko',
                                     domain="PloneMeeting",
                                     context=self.context.REQUEST))
-            res = True
+            # MeetingManager must be able to propose to administrative
+            # reviewer.
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if tool.isManager(self.context):
+                return True
+            # Item in creation, or in creation waiting for advice can only
+            # be sent to administrative reviewer by creators.
+            if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
+                    (member.has_role('MeetingAdminReviewer', self.context) or
+                     member.has_role('MeetingInternalReviewer', self.context) or
+                     member.has_role('MeetingReviewer', self.context)):
+                res = False
+            # If there is no administrative reviewer, do not show the
+            # transition.
+            if not self._groupIsNotEmpty('administrativereviewers'):
+                res = False
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
 
     def mayProposeToInternalReviewer(self):
         res = False
+        item_state = self.context.queryState()
+        member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            # MeetingManager must be able to propose to internal reviewer.
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if tool.isManager(self.context):
+                return True
+            # Only administrative reviewers might propose to internal reviewer,
+            # but creators can do it too if there is no administrative
+            # reviewer.
+            if not member.has_role('MeetingAdminReviewer', self.context):
+                if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and\
+                        self._groupIsNotEmpty('administrativereviewers'):
+                    res = False
+
+            # If there is no internal reviewer or if the current user
+            # is internal reviewer, do not show the transition.
+            if not self._groupIsNotEmpty('internalreviewers') or \
+                    member.has_role('MeetingInternalReviewer', self.context):
+                res = False
         return res
 
     security.declarePublic('mayProposeToDirector')
 
     def mayProposeToDirector(self):
+        '''
+        An item can be proposed directly from creation to director
+        by an internal reviewer or a director. Of course, an internal
+        reviewer can still propose to director an item which is
+        proposed to internal reviewer.
+        It's also possible, when there are no administrative and internal
+        reviewers, to send item from creation to direction, even
+        if the user is only a creator.
+        The same shortcut exists from "proposed to administrative reviewer"
+        to "proposed to director" if there is no internal reviewer.
+        '''
         res = False
+        item_state = self.context.queryState()
+        member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
+            # MeetingManager must be able to propose to director.
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if tool.isManager(self.context):
+                return True
+            # Director and internal reviewer can propose to director an item in
+            # creation or in creation and waiting for advice.
+            if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
+                not (member.has_role('MeetingReviewer', self.context) or
+                     member.has_role('MeetingInternalReviewer', self.context)):
+
+                # An administrative reviewer can propose to director if there
+                # is no internal reviewer and a creator can do it too if there
+                # is neither administrative nor internal reviewers.
+                if (self._groupIsNotEmpty('administrativereviewers') or
+                    self._groupIsNotEmpty('internalreviewers')) and \
+                   (self._groupIsNotEmpty('internalreviewers') or
+                        not member.has_role('MeetingAdminReviewer', self.context)):
+                    res = False
+            # Else if the item is proposed to administrative reviewer and
+            # there is no internal reviewer in the group, an administrative
+            # reviewer can also send the item to director.
+            elif item_state == 'proposed_to_administrative_reviewer' and \
+                (not member.has_role('MeetingAdminReviewer', self.context) or
+                    self._groupIsNotEmpty('internalreviewers')):
+                res = False
         return res
 
     security.declarePublic('mayProposeToFinance')
@@ -1943,7 +2019,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayAcceptAndReturn')
 
     def mayAcceptAndReturn(self):
-        '''This is a decision only avaialble if item will be sent to council.'''
+        '''This is a decision only available if item will be sent to council.'''
         res = False
         if self.mayDecide() and checkPermission(ReviewPortalContent, self.context) and \
            'meeting-config-council' in self.context.getOtherMeetingConfigsClonableTo():
@@ -1975,24 +2051,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                         res = True
                 else:
                     res = True
-            # special case for financial controller that can send an item back to
-            # the internal reviewer if it is in state 'proposed_to_finance' and
-            # item is incomplete
-            elif self.context.queryState() == 'proposed_to_finance':
-                # user must be a member of the finance group the advice is asked to
-                financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
-                memberGroups = getToolByName(self.context, 'portal_membership').getAuthenticatedMember().getGroups()
-                for suffix in FINANCE_GROUP_SUFFIXES:
-                    financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
-                    if financeSubGroupId in memberGroups:
-                        res = True
-                        break
-            # special case when automatically sending back an item to 'itemcreated' or
-            # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
-            elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
-                self.context.queryState() in ['itemcreated_waiting_advices',
-                                              'proposed_to_internal_reviewer_waiting_advices']:
-                return True
         return res
 
     security.declarePublic('mayBackToProposedToDirector')
@@ -2008,6 +2066,92 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
            checkPermission(ReviewPortalContent, self.context):
             res = True
+        return res
+
+    security.declarePublic('mayBackToItemCreated')
+
+    def mayBackToItemCreated(self):
+        '''
+            A proposedToDirector item may be directly sent back to the
+            'itemCreated' state if the user is reviewer and there are no
+            administrative or internal reviewers.
+        '''
+        res = False
+        item_state = self.context.queryState()
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+            # A director can directly send back to creation an item which is
+            # proposed to director if there are neither administrative nor
+            # internal reviewers.
+            if item_state == 'proposed_to_director' and \
+                    (self._groupIsNotEmpty('administrativereviewers') or
+                     self._groupIsNotEmpty('internalreviewers')):
+                res = False
+            # An internal reviewer can send back to creation if there is
+            # no administrative reviewer.
+            elif item_state == 'proposed_to_internal_reviewer' and \
+                    self._groupIsNotEmpty('administrativereviewers'):
+                res = False
+        # special case when automatically sending back an item to 'itemcreated' or
+        # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
+        elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
+                self.context.queryState() == 'itemcreated_waiting_advices':
+            res = True
+        return res
+
+    security.declarePublic('mayBackToProposedToAdministrativeReviewer')
+
+    def mayBackToProposedToAdministrativeReviewer(self):
+        '''
+            An item can be sent back to administrative reviewer if it is
+            proposed to internal reviewer or if it is proposed to director
+            and there is no internal reviewer. The transition is only
+            available if there is an administrative reviewer.
+        '''
+        res = False
+        item_state = self.context.queryState()
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+            # do not show the transition if there is no administrative reviewer
+            # or if the item is proposed to director and there is an internal
+            # reviewer.
+            if (item_state == 'proposed_to_director' and
+                self._groupIsNotEmpty('internalreviewers')) or \
+               not self._groupIsNotEmpty('administrativereviewers'):
+                res = False
+        return res
+
+    security.declarePublic('mayBackToProposedToInternalReviewer')
+
+    def mayBackToProposedToInternalReviewer(self):
+        '''
+            An item can be sent back to internal reviewer if it is
+            proposed to director. The transition is only available
+            if there is an internal reviewer.
+        '''
+        res = False
+        item_state = self.context.queryState()
+        if checkPermission(ReviewPortalContent, self.context):
+            res = True
+            if not self._groupIsNotEmpty('internalreviewers'):
+                res = False
+        # special case for financial controller that can send an item back to
+        # the internal reviewer if it is in state 'proposed_to_finance' and
+        # item is incomplete
+        elif self.context.queryState() == 'proposed_to_finance':
+            # user must be a member of the finance group the advice is asked to
+            financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
+            memberGroups = api.portal.get_tool('portal_membership').getAuthenticatedMember().getGroups()
+            for suffix in FINANCE_GROUP_SUFFIXES:
+                financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
+                if financeSubGroupId in memberGroups:
+                    res = True
+                    break
+        # special case when automatically sending back an item to 'proposed_to_internal_reviewer'
+        # when every advices are given (coming from waiting_advices)
+        elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
+                self.context.queryState() == 'proposed_to_internal_reviewer_waiting_advices':
+            return True
         return res
 
 

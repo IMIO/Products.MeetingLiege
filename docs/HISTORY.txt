@@ -10,3 +10,7 @@ Products.MeetingLiege Changelog
   when the item is decided
 - Added a 'Echevinat' faceted advanced criterion based on groupsOfMatter index
 - Moved historization of signed financial advice to real versions
+- Added listType 'Addendum' for items of Council (added possibility to define 'items
+  without a number' as well)
+- Added possibility to manually send items from College to Council once item is 'itemfrozen'
+- Restricted power observers may not see 'late' council items if not decided

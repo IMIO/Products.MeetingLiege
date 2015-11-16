@@ -34,6 +34,7 @@ from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 from zope.i18n import translate
 from plone.memoize import ram
+from plone import api
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
@@ -1795,11 +1796,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToAdministrativeReviewer(self):
         res = False
         item_state = self.context.queryState()
-        membershipTool = getToolByName(self.context, 'portal_membership')
+        membershipTool = api.portal.get_tool('portal_membership')
         member = membershipTool.getAuthenticatedMember()
         groupId = self.context.getProposingGroup()
-        adminRevRole = groupId + '_administrativereviewers'
-        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             if not self.context.getCategory():
@@ -1808,7 +1807,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                                     context=self.context.REQUEST))
             # MeetingManager must be able to propose to administrative
             # reviewer.
-            if member.has_role('MeetingManager', self.context):
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if tool.isManager(self.context):
                 return True
             # Item in creation, or in creation waiting for advice can only
             # be sent to administrative reviewer by creators.
@@ -1819,7 +1819,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = False
             # If there is no administrative reviewer, do not show the
             # transition.
-            if not pg.getGroupById(adminRevRole).getGroupMemberIds():
+            if not self._groupIsNotEmpty('administrativereviewers'):
                 res = False
         return res
 
@@ -1828,28 +1828,25 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToInternalReviewer(self):
         res = False
         item_state = self.context.queryState()
-        membershipTool = getToolByName(self.context, 'portal_membership')
+        membershipTool = api.portal.get_tool('portal_membership')
         member = membershipTool.getAuthenticatedMember()
-        groupId = self.context.getProposingGroup()
-        adminRevRole = groupId + '_administrativereviewers'
-        internalRevRole = groupId + '_internalreviewers'
-        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to internal reviewer.
-            if member.has_role('MeetingManager', self.context):
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if tool.isManager(self.context):
                 return True
             # Only administrative reviewers might propose to internal reviewer,
             # but creators can do it too if there is no administrative
             # reviewer.
             if not member.has_role('MeetingAdminReviewer', self.context):
                 if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and\
-                        pg.getGroupById(adminRevRole).getGroupMemberIds():
+                        self._groupIsNotEmpty('administrativereviewers'):
                     res = False
 
             # If there is no internal reviewer or if the current user
             # is internal reviewer, do not show the transition.
-            if not pg.getGroupById(internalRevRole).getGroupMemberIds() or \
+            if not self._groupIsNotEmpty('internalreviewers') or \
                     member.has_role('MeetingInternalReviewer', self.context):
                 res = False
         return res
@@ -1870,16 +1867,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        membershipTool = getToolByName(self.context, 'portal_membership')
+        membershipTool = api.portal.get_tool('portal_membership')
         member = membershipTool.getAuthenticatedMember()
-        groupId = self.context.getProposingGroup()
-        adminRevRole = groupId + '_administrativereviewers'
-        internalRevRole = groupId + '_internalreviewers'
-        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to director.
-            if member.has_role('MeetingManager', self.context):
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if tool.isManager(self.context):
                 return True
             # Director and internal reviewer can propose to director an item in
             # creation or in creation and waiting for advice.
@@ -1890,9 +1884,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 # An administrative reviewer can propose to director if there
                 # is no internal reviewer and a creator can do it too if there
                 # is neither administrative nor internal reviewers.
-                if (pg.getGroupById(adminRevRole).getGroupMemberIds() or
-                    pg.getGroupById(internalRevRole).getGroupMemberIds()) and \
-                   (pg.getGroupById(internalRevRole).getGroupMemberIds() or
+                if (self._groupIsNotEmpty('administrativereviewers') or
+                    self._groupIsNotEmpty('internalreviewers')) and \
+                   (self._groupIsNotEmpty('internalreviewers') or
                         not member.has_role('MeetingAdminReviewer', self.context)):
                     res = False
             # Else if the item is proposed to administrative reviewer and
@@ -1900,7 +1894,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # reviewer can also send the item to director.
             elif item_state == 'proposed_to_administrative_reviewer' and \
                 (not member.has_role('MeetingAdminReviewer', self.context) or
-                    pg.getGroupById(internalRevRole).getGroupMemberIds()):
+                    self._groupIsNotEmpty('internalreviewers')):
                 res = False
         return res
 
@@ -2077,23 +2071,19 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        groupId = self.context.getProposingGroup()
-        adminRevRole = groupId + '_administrativereviewers'
-        internalRevRole = groupId + '_internalreviewers'
-        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             # A director can directly send back to creation an item which is
             # proposed to director if there are neither administrative nor
             # internal reviewers.
             if item_state == 'proposed_to_director' and \
-                    (pg.getGroupById(adminRevRole).getGroupMemberIds() or
-                     pg.getGroupById(internalRevRole).getGroupMemberIds()):
+                    (self._groupIsNotEmpty('administrativereviewers') or
+                     self._groupIsNotEmpty('internalreviewers')):
                 res = False
             # An internal reviewer can send back to creation if there is
             # no administrative reviewer.
             elif item_state == 'proposed_to_internal_reviewer' and \
-                    pg.getGroupById(adminRevRole).getGroupMemberIds():
+                    self._groupIsNotEmpty('administrativereviewers'):
                 res = False
         # special case when automatically sending back an item to 'itemcreated' or
         # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
@@ -2113,18 +2103,14 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        groupId = self.context.getProposingGroup()
-        adminRevRole = groupId + '_administrativereviewers'
-        internalRevRole = groupId + '_internalreviewers'
-        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             # do not show the transition if there is no administrative reviewer
             # or if the item is proposed to director and there is an internal
             # reviewer.
             if (item_state == 'proposed_to_director' and
-                pg.getGroupById(internalRevRole).getGroupMemberIds()) or \
-               not pg.getGroupById(adminRevRole).getGroupMemberIds():
+                self._groupIsNotEmpty('internalreviewers')) or \
+               not self._groupIsNotEmpty('administrativereviewers'):
                 res = False
         return res
 
@@ -2138,12 +2124,9 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        groupId = self.context.getProposingGroup()
-        internalRevRole = groupId + '_internalreviewers'
-        pg = self.context.portal_groups
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            if not pg.getGroupById(internalRevRole).getGroupMemberIds():
+            if not self._groupIsNotEmpty('internalreviewers'):
                 res = False
         # special case for financial controller that can send an item back to
         # the internal reviewer if it is in state 'proposed_to_finance' and
@@ -2151,7 +2134,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         elif self.context.queryState() == 'proposed_to_finance':
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
-            memberGroups = getToolByName(self.context, 'portal_membership').getAuthenticatedMember().getGroups()
+            memberGroups = api.portal.get_tool('portal_membership').getAuthenticatedMember().getGroups()
             for suffix in FINANCE_GROUP_SUFFIXES:
                 financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
                 if financeSubGroupId in memberGroups:

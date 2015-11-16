@@ -650,7 +650,7 @@ class CustomMeetingItem(MeetingItem):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
-        res = ['labelForCouncil', 'privacyForCouncil', 'emergencyForCouncil',
+        res = ['labelForCouncil', 'privacyForCouncil',
                'decisionSuite', 'decisionEnd']
         if cloned_to_same_mc:
             res = res + ['financeAdvice', 'archivingRef', 'textCheckList']
@@ -1231,6 +1231,17 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         return ('presented', 'itemfrozen') + item._itemIsSignedStates()
 
+    def _isViewableByPowerObservers(self, restrictedPowerObservers=False):
+        """Restricted power observers may not have access to 'late' items in Council
+           until it is decided."""
+        item = self.getSelf()
+        if restrictedPowerObservers and \
+           item.portal_type == 'MeetingItemCouncil' and \
+           item.getListType() in ('late', ) and \
+           item.queryState() in ('presented', 'itemfrozen', 'returned_to_proposing_group'):
+            return False
+        return True
+
 
 old_listAdviceTypes = MeetingConfig.listAdviceTypes
 
@@ -1437,7 +1448,7 @@ class CustomMeetingConfig(MeetingConfig):
                             'tal_condition': "python: here.portal_plonemeeting.isFinancialUser() or "
                             "here.portal_plonemeeting.isManager(here)",
                             'roles_bypassing_talcondition': ['Manager', ]
-                       }
+                        }
                      ),
                 ]
             )

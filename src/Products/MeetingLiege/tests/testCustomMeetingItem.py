@@ -712,6 +712,31 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         """When an item is set to/from 'addendum', it's itemNumber
            is automatically adapted accordingly.  An 'addendum' item
            will use a subnumber."""
+        self.setMeetingConfig(self.meetingConfig2.getId())
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         meeting = self.create('Meeting', date=DateTime())
+        self.presentItem(item)
+        self.freezeMeeting(meeting)
+
+        # not possible to set item to 'addendum' as it is the only item in the meeting
+        # and subcall to "change item number" breaks and listType is not changed
+        view = item.restrictedTraverse('@@change-item-listtype')
+        view('addendum')
+        self.assertEquals(item.getListType(), 'normal')
+        item2 = self.create('MeetingItem')
+        self.presentItem(item2)
+        # first item of the meeting may not be set to 'addendum'
+        self.assertEquals(item.getItemNumber(), 100)
+        view('addendum')
+        self.assertEquals(item.getListType(), 'normal')
+
+        # set second item to 'addendum'
+        view = item2.restrictedTraverse('@@change-item-listtype')
+        view('addendum')
+        # now it is addendum and itemNumber as been set to a subnumber
+        self.assertEquals(item2.getListType(), 'addendum')
+        self.assertEquals(item2.getItemNumber(), 101)
+        # back to 'normal', itemNumber is set back to an integer
+        view('normal')
+        self.assertEquals(item2.getItemNumber(), 200)

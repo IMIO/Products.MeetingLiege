@@ -302,7 +302,7 @@
                  tal:define="otherMCs context/getOtherMeetingConfigsClonableTo">
                 <span class="item_attribute_label" i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
                 <tal:displayOtherMeetingConfigsClonableTo tal:condition="otherMCs">
-                    <span metal:use-macro="python: here.widget('otherMeetingConfigsClonableTo', mode='view')" />
+                    <span tal:content="context/displayOtherMeetingConfigsClonableTo">Other mc clonable to (Emergency)</span>
                     <img src="show_council_data.png"
                          id="showDataForCouncil"
                          style="cursor: pointer;"
@@ -322,8 +322,6 @@
                         <br />
                         <span class="item_attribute_label" i18n:translate="MeetingLiege_label_privacyForCouncil"></span>:&nbsp;&nbsp;
                         <span metal:use-macro="python: here.widget('privacyForCouncil', mode='view')" />
-                        <span class="item_attribute_label" i18n:translate="MeetingLiege_label_emergencyForCouncil"></span>:&nbsp;&nbsp;
-                        <span metal:use-macro="python: here.widget('emergencyForCouncil', mode='view')" />
                     </fieldset>
                  </tal:displayOtherMeetingConfigsClonableTo>
                  <span tal:condition="not: otherMCs">-</span>

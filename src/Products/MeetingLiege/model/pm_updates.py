@@ -56,21 +56,6 @@ def update_item_schema(baseSchema):
             optional=True,
             vocabulary='listPrivacyValues',
         ),
-        # field for defining if a council item has to be inserted in the next frozen meeting
-        BooleanField(
-            name='emergencyForCouncil',
-            default=False,
-            widget=BooleanField._properties['widget'](
-                condition="python: here.attributeIsUsed('emergencyForCouncil') and "
-                          "here.portal_plonemeeting.isManager(here)",
-                description="EmergencyForCouncil",
-                description_msgid="MeetingLiege_descr_emergencyForCouncil",
-                label='EmergencyfForcouncil',
-                label_msgid='MeetingLiege_label_emergencyForCouncil',
-                i18n_domain='PloneMeeting',
-            ),
-            optional=True,
-        ),
         StringField(
             name='financeAdvice',
             widget=SelectionWidget(

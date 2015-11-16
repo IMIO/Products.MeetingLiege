@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from Products.PloneMeeting.config import MEETINGREVIEWERS
+from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import CategoryDescriptor
 from Products.PloneMeeting.profiles import GroupDescriptor
 from Products.PloneMeeting.profiles import ItemTemplateDescriptor
@@ -222,17 +223,17 @@ collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, Secrétaire communal'
 collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
-                                      'name': u'Vraiment Présent',
-                                      'name': u'Mr Vraiment Présent',
-                                      'function': u'Le Secrétaire communal',
-                                      'date_from': '',
-                                      'date_to': ''},
+                                       'name': u'Vraiment Présent',
+                                       'name': u'Mr Vraiment Présent',
+                                       'function': u'Le Secrétaire communal',
+                                       'date_from': '',
+                                       'date_to': ''},
                                       {'signatureNumber': '2',
-                                      'name': u'Charles Exemple',
-                                      'name': u'Mr Charles Exemple',
-                                      'function': u'Le Bourgmestre',
-                                      'date_from': '',
-                                      'date_to': '',
+                                       'name': u'Charles Exemple',
+                                       'name': u'Mr Charles Exemple',
+                                       'function': u'Le Bourgmestre',
+                                       'date_from': '',
+                                       'date_to': '',
                                        }]
 collegeMeeting.categories = categories
 collegeMeeting.shortName = 'College'
@@ -330,17 +331,17 @@ councilMeeting.meetingManagers = ('pmManager', )
 councilMeeting.assembly = 'Default assembly'
 councilMeeting.signatures = 'Default signatures'
 councilMeeting.certifiedSignatures = [{'signatureNumber': '1',
-                                      'name': u'Vraiment Présent',
-                                      'name': u'Mr Vraiment Présent',
-                                      'function': u'Le Secrétaire communal',
-                                      'date_from': '',
-                                      'date_to': ''},
+                                       'name': u'Vraiment Présent',
+                                       'name': u'Mr Vraiment Présent',
+                                       'function': u'Le Secrétaire communal',
+                                       'date_from': '',
+                                       'date_to': ''},
                                       {'signatureNumber': '2',
-                                      'name': u'Charles Exemple',
-                                      'name': u'Mr Charles Exemple',
-                                      'function': u'Le Bourgmestre',
-                                      'date_from': '',
-                                      'date_to': '',
+                                       'name': u'Charles Exemple',
+                                       'name': u'Mr Charles Exemple',
+                                       'function': u'Le Bourgmestre',
+                                       'date_from': '',
+                                       'date_to': '',
                                        }]
 councilMeeting.categories = categories
 councilMeeting.shortName = 'Council'
@@ -385,13 +386,15 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'}, )
 councilMeeting.useGroupsAsCategories = False
+councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum', 'label': 'Addendum'}, ]
 councilMeeting.useAdvices = False
 councilMeeting.itemAdviceStates = []
 councilMeeting.itemAdviceEditStates = []
 councilMeeting.itemAdviceViewStates = []
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
-councilMeeting.itemPowerObserversStates = ('presented', 'accepted', 'delayed', 'refused')
+councilMeeting.itemPowerObserversStates = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
+councilMeeting.itemRestrictedPowerObserversStates = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
 councilMeeting.meetingPowerObserversStates = collegeMeeting.meetingPowerObserversStates
 councilMeeting.useCopies = True
 councilMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]

@@ -24,6 +24,8 @@
 
 from datetime import datetime
 
+from DateTime import DateTime
+
 from AccessControl import Unauthorized
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
@@ -36,6 +38,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
+from Products.PloneMeeting.config import RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX
 from Products.PloneMeeting.indexes import indexAdvisers
 from Products.PloneMeeting.interfaces import IAnnexable
 from Products.PloneMeeting.utils import getLastEvent
@@ -1107,6 +1110,43 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(len(predecessors), 2)
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
+    def test_subproduct_RestrictedPowerObserversMayNotAccessLateItemsInCouncilUntilDecided(self):
+        """Finance adviser have still access to items linked to
+           an item they give advice on.
+           This is the case for 'returned' items and items sent to Council."""
+        # not 'late' items are viewable by restricted power observers
+        cfg2 = self.meetingConfig2
+        self.setMeetingConfig(cfg2.getId())
+        groupId = "%s_%s" % (cfg2.getId(), RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX)
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item2 = self.create('MeetingItem')
+        meeting = self.create('Meeting', date=DateTime())
+        self.presentItem(item)
+        self.freezeMeeting(meeting)
+        item2.setPreferredMeeting(meeting.UID())
+        item2.at_post_edit_script()
+        self.presentItem(item2)
+        # item is 'normal' and item2 is 'late'
+        self.assertEquals(item.getListType(), 'normal')
+        self.assertEquals(item2.getListType(), 'late')
+        self.assertEquals(item.queryState(), 'itemfrozen')
+        self.assertEquals(item2.queryState(), 'itemfrozen')
+        # so item is viewable by 'restricted power observers' but not item2
+        self.assertTrue(groupId in item.__ac_local_roles__)
+        self.assertFalse(groupId in item2.__ac_local_roles__)
+        # change item to 'late', no more viewable
+        view = item.restrictedTraverse('@@change-item-listtype')
+        view('late')
+        self.assertFalse(groupId in item.__ac_local_roles__)
+
+        # decide items, it will be viewable
+        self.decideMeeting(meeting)
+        self.do(item, 'accept')
+        self.do(item2, 'accept')
+        self.assertTrue(groupId in item.__ac_local_roles__)
+        self.assertTrue(groupId in item2.__ac_local_roles__)
 
 
 def test_suite():

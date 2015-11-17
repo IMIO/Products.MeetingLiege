@@ -981,7 +981,7 @@ class CustomMeetingItem(MeetingItem):
           Returns True if the current user has the right to generate the
           Financial Director Advice template.
         '''
-        adviceHolder = self.getItemWithFinanceAdvice()
+        adviceHolder = self.adapted().getItemWithFinanceAdvice()
 
         if (adviceHolder.getFinanceAdvice() != '_none_' and
             (adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['hidden_during_redaction'] is False or
@@ -1065,11 +1065,18 @@ class CustomMeetingItem(MeetingItem):
         # either we found a valid predecessor, or we return self.context
         return validPredecessor or item
 
+    def getItemCollege(self):
+        """Called on a Council item, will return the linked College item."""
+        predecessor = self.context.getPredecessor()
+        while predecessor and not predecessor.portal_type == 'MeetingItemCollege':
+            predecessor = predecessor.getPredecessor()
+        return predecessor
+
     def getLegalTextForFDAdvice(self, isMeeting=False):
         '''
         Helper method. Return legal text for each advice type.
         '''
-        adviceHolder = self.getItemWithFinanceAdvice()
+        adviceHolder = self.adapted().getItemWithFinanceAdvice()
         financialStuff = adviceHolder.adapted().getFinancialAdviceStuff()
         adviceInd = adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]
         advice = adviceHolder.getAdviceDataFor(adviceHolder, adviceHolder.getFinanceAdvice())
@@ -1735,6 +1742,12 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
                                                        comment=comment)
                 break
 
+    security.declarePrivate('doSendToCouncilEmergency')
+
+    def doSendToCouncilEmergency(self, stateChange):
+        ''' '''
+        pass
+
     security.declarePrivate('doPre_accept')
 
     def doPre_accept(self, stateChange):
@@ -2003,6 +2016,17 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # special case for item being validable when emergency is asked on it
             elif item_state == 'proposed_to_finance' and self.context.getEmergency() == 'no_emergency':
                 res = False
+        return res
+
+    security.declarePublic('maySendToCouncilEmergency')
+
+    def maySendToCouncilEmergency(self):
+        '''Sendable to Council without being in a meeting for MeetingManagers,
+           and if emergency was asked for sending item to Council.'''
+        res = False
+        if checkPermission(ReviewPortalContent, self.context) and \
+           'meeting-config-council' in self.context.getOtherMeetingConfigsClonableToEmergency():
+            res = True
         return res
 
     security.declarePublic('mayDecide')

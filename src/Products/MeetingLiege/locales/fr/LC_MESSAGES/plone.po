@@ -100,6 +100,10 @@ msgstr "Renvoyer au validateur financier"
 msgid "backToProposedToInternalReviewer"
 msgstr "Renvoyer au validateur interne"
 
+#. Default: "Back to validated"
+msgid "backToValidatedFromSentToCouncilEmergency"
+msgstr "Remettre en 'Proposé à la séance'"
+
 #. Default: "Create an item council from an item college"
 msgid "create_to_meeting-config-council_from_meeting-config-college"
 msgstr "Envoyer vers Conseil Communal"
@@ -207,6 +211,14 @@ msgstr "Ajourner avec retour Collège"
 #. Default: "Returned"
 msgid "returned"
 msgstr "Ajourné avec retour Collège"
+
+#. Default: "Send to Council emergency"
+msgid "sendToCouncilEmergency"
+msgstr "Envoyer au Conseil Communal en urgence"
+
+#. Default: "Sent to Council emergency"
+msgid "sent_to_council_emergency"
+msgstr "Envoyé au Conseil Communal en urgence"
 
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"

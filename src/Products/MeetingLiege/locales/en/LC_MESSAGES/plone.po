@@ -99,6 +99,10 @@ msgstr "Back to proposed to financial reviewer"
 msgid "backToProposedToInternalReviewer"
 msgstr "Back to proposed to internal reviewer"
 
+#. Default: "Back to validated"
+msgid "backToValidatedFromSentToCouncilEmergency"
+msgstr ""
+
 #. Default: "Create an item council from an item college"
 msgid "create_to_meeting-config-council_from_meeting-config-college"
 msgstr "Create an item council from an item college"
@@ -206,6 +210,14 @@ msgstr "Return"
 #. Default: "Returned"
 msgid "returned"
 msgstr "Returned"
+
+#. Default: "Send to Council emergency"
+msgid "sendToCouncilEmergency"
+msgstr ""
+
+#. Default: "Sent to Council emergency"
+msgid "sent_to_council_emergency"
+msgstr ""
 
 #. Default: "Sign financial advice"
 msgid "signFinancialAdvice"

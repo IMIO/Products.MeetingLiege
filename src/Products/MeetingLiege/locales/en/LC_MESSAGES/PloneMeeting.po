@@ -248,6 +248,10 @@ msgstr "Advices asked by internal reviewer"
 msgid "icon_help_returned"
 msgstr "Returned"
 
+#. Default: "Sent to Council emergency"
+msgid "icon_help_sent_to_council_emergency"
+msgstr ""
+
 #. Default: "This item is down the workflow from finances"
 msgid "icon_help_wf_down_finances"
 msgstr "This item is down the workflow from finances"

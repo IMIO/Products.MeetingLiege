@@ -68,12 +68,20 @@ msgstr ""
 msgid "proposeToFinance"
 msgstr ""
 
+#. Default: "Send to Council emergency"
+msgid "sendToCouncilEmergency"
+msgstr ""
+
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
 msgstr ""
 
 #. Default: "Proposed to finance"
 msgid "proposed_to_finance"
+msgstr ""
+
+#. Default: "Sent to Council emergency"
+msgid "sent_to_council_emergency"
 msgstr ""
 
 #. Default: "Accept with modifications"
@@ -158,6 +166,10 @@ msgstr ""
 
 #. Default: "Propose to financial controller"
 msgid "proposeToFinancialController"
+msgstr ""
+
+#. Default: "Back to validated"
+msgid "backToValidatedFromSentToCouncilEmergency"
 msgstr ""
 
 #. Default: "Proposed to financial controller"

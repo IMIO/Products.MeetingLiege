@@ -1335,6 +1335,36 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(groupId in item.__ac_local_roles__)
         self.assertTrue(groupId in item2.__ac_local_roles__)
 
+    def test_subproduct_StateSentToCouncilEmergency(self):
+        """When 'emergency' is aksed to send an item to Council,
+           an item may be set to 'sent_to_council_emergency' so
+           it is in a final state and it is sent to council.  It keeps
+           a link to a College item and a Council item even if college item
+           is not in a meeting."""
+        # transition is only available if emergency asked for sending item to council
+        # when set to this state, item is sent to Council and is in a final state (no more editable)
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        self.validateItem(item)
+        item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        item.at_post_edit_script()
+        self.assertNotIn('sendToCouncilEmergency',
+                         self.transitions(item))
+        # ask emergency for sending to Council
+        item.setOtherMeetingConfigsClonableToEmergency((cfg2Id, ))
+        item.at_post_edit_script()
+        self.assertIn('sendToCouncilEmergency',
+                      self.transitions(item))
+        # when it is 'sendToCouncilEmergency', it is cloned to the Council
+        self.assertIsNone(item.getItemClonedToOtherMC(cfg2Id))
+        self.do(item, 'sendToCouncilEmergency')
+        self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
+        # no more editable even for a MeetingManager
+        self.assertFalse(self.transitions(item))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

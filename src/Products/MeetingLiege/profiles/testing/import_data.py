@@ -305,7 +305,8 @@ collegeMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), ve
 collegeMeeting.podTemplates = [agendaTemplate, decisionsTemplate, itemTemplate]
 collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
                                            'trigger_workflow_transitions_until': '__nothing__'},)
-collegeMeeting.itemAutoSentToOtherMCStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned')
+collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency',
+                                              'accepted', 'accepted_but_modified', 'accepted_and_returned',)
 collegeMeeting.recurringItems = [
     RecurringItemDescriptor(
         id='recItem1',

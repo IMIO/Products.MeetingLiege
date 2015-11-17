@@ -14,3 +14,6 @@ Products.MeetingLiege Changelog
   without a number' as well)
 - Added possibility to manually send items from College to Council once item is 'itemfrozen'
 - Restricted power observers may not see 'late' council items if not decided
+- Added state 'sent_to_council_emergency' on a College item to make it possible
+  to keep a link between a College item and a Council item emergency if the original
+  College item was not linked to a meeting

@@ -1,7 +1,18 @@
-from Products.CMFCore.utils import getToolByName
+# -*- coding: utf-8 -*-
+#
+# File: overrides.py
+#
+# Copyright (c) 2015 by Imio.be
+#
+# GNU General Public License (GPL)
+#
+
 from plone.memoize.view import memoize_contextless
-from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
+from plone import api
+
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
+from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
+from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
 
 
 class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
@@ -45,9 +56,57 @@ class MeetingLiegeAdviceDelaysView(AdviceDelaysView):
                 return False
 
             # current advice is still addable/editable, a finance manager may change delay for it
-            member = getToolByName(self.context, 'portal_membership').getAuthenticatedMember()
+            member = api.user.get_current()
             financialManagerGroupId = '%s_financialmanagers' % financeGroupId
             if not financialManagerGroupId in member.getGroups():
                 return False
 
         return True
+
+
+class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
+    """Specific printing methods used for item."""
+
+    def _collegeAdministrativeReviewer(self):
+        """Used on a council item : get the administrative reviewer of the College item."""
+        collegeItem = self.context.adapted().getItemCollege()
+        if collegeItem:
+            event = collegeItem.getLastEvent('proposeToDirector')
+            if event:
+                return api.user.get(event['actor'])
+
+    def printAdministrativeReviewerFullname(self):
+        """Printed on a Council item : print fullname of administrative reviewer of College item."""
+        reviewer = self._collegeAdministrativeReviewer()
+        fullname = '-'
+        if reviewer:
+            fullname = reviewer.getProperty('fullname')
+        return fullname
+
+    def printAdministrativeReviewerTel(self):
+        """Printed on a Council item : print tel of administrative reviewer of College item."""
+        reviewer = self._collegeAdministrativeReviewer()
+        tel = ''
+        if reviewer:
+            tel = reviewer.getProperty('description').split('     ')[0]
+        return tel
+
+    def printAdministrativeReviewerEmail(self):
+        """Printed on a Council item : print email of administrative reviewer of College item."""
+        reviewer = self._collegeAdministrativeReviewer()
+        email = '-'
+        if reviewer:
+            email = reviewer.getProperty('email')
+        return email
+
+    def printCollegeProposalInfos(self):
+        """Printed on a Council item, get the linked College meeting and print the date it was proposed in."""
+        collegeItem = self.context.adapted().getItemCollege()
+        if collegeItem and collegeItem.hasMeeting():
+            tool = api.portal.get_tool('portal_plonemeeting')
+            date = tool.formatMeetingDate(collegeItem.getMeeting(), markAdoptsNextCouncilAgenda=False)
+            sentence = u"Sur proposition du Collège Communal, en sa séance du %s, et " \
+                u"après examen du dossier par la Commission compétente ;" % date
+        else:
+            sentence = u"Sur proposition du Collège Communal, et après examen du dossier par la Commission compétente ;"
+        return sentence

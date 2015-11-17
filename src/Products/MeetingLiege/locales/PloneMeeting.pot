@@ -88,6 +88,10 @@ msgstr ""
 msgid "icon_help_proposed_to_finance"
 msgstr ""
 
+#. Default: "Sent to Council emergency"
+msgid "icon_help_sent_to_council_emergency"
+msgstr ""
+
 #. Default: "Favorable opinion"
 msgid "positive_finance"
 msgstr ""

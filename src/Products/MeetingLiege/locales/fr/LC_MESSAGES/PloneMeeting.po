@@ -248,6 +248,10 @@ msgstr "Avis demandés par le validateur interne"
 msgid "icon_help_returned"
 msgstr "Retour Collège"
 
+#. Default: "Sent to Council emergency"
+msgid "icon_help_sent_to_council_emergency"
+msgstr "Envoyé au Conseil Communal en urgence"
+
 #. Default: "This item is down the workflow from finances"
 msgid "icon_help_wf_down_finances"
 msgstr "Ce point redescend le workflow depuis les finances"

@@ -2154,7 +2154,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if there is an internal reviewer.
         '''
         res = False
-        item_state = self.context.queryState()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
             if not self._groupIsNotEmpty('internalreviewers'):

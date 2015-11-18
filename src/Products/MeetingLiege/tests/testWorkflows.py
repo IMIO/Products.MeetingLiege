@@ -1377,6 +1377,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         cfg2.setUseGroupsAsCategories(True)
         cfg2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups',
                                             'reverse': '0'},))
+        cfg2.setMeetingConfigsToCloneTo(({'meeting_config': cfgId,
+                                          'trigger_workflow_transitions_until': '__nothing__'},))
+        cfg2.setItemAutoSentToOtherMCStates(('delayed', ))
+
         self.changeUser('pmManager')
         # send a college item to council and delay this council item
         # in the college

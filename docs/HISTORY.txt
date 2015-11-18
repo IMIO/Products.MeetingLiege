@@ -17,3 +17,5 @@ Products.MeetingLiege Changelog
 - Added state 'sent_to_council_emergency' on a College item to make it possible
   to keep a link between a College item and a Council item emergency if the original
   College item was not linked to a meeting
+- When a Council item is 'delayed', it is automatically sent back to College in 'itemcreated'
+  state to make full validation process again in College to be sent again in Council

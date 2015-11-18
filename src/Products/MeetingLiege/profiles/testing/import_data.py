@@ -399,6 +399,9 @@ councilMeeting.itemRestrictedPowerObserversStates = ('presented', 'itemfrozen', 
 councilMeeting.meetingPowerObserversStates = collegeMeeting.meetingPowerObserversStates
 councilMeeting.useCopies = True
 councilMeeting.selectableCopyGroups = [developers.getIdSuffixed('reviewers'), vendors.getIdSuffixed('reviewers'), ]
+councilMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-college',
+                                           'trigger_workflow_transitions_until': '__nothing__'},)
+councilMeeting.itemAutoSentToOtherMCStates = ('delayed', )
 councilMeeting.useVotes = True
 councilMeeting.meetingUsers = [muser_voter1, muser_voter2, ]
 councilMeeting.recurringItems = []

@@ -274,6 +274,11 @@ def onItemDuplicated(original, event):
             # update finance group access on newItem
             newItem._updateFinanceAdvisersAccess()
 
+        if original.portal_type == 'MeetingItemCouncil' and newItem.portal_type == 'MeetingItemCollege':
+            # an item Council is sent back to College, enable the 'otherMeetingConfigsClonableTo'
+            newItem.setOtherMeetingConfigsClonableTo(('meeting-config-council', ))
+            newItem.reindexObject(idxs=['sentToInfos'])
+
         # make sure we do not keep decision annexes
         decisionAnnexes = IAnnexable(newItem).getAnnexes(relatedTo='item_decision')
         # if item is sent to Council, user may not delete annexes...

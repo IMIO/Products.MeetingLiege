@@ -227,3 +227,7 @@ msgstr ""
 #. Default: "Create an item council from an item college"
 msgid "create_to_meeting-config-council_from_meeting-config-college"
 msgstr ""
+
+#. Default: "Create an item college from an item council"
+msgid "create_to_meeting-config-college_from_meeting-config-council"
+msgstr ""

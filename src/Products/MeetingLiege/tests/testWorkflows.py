@@ -1365,6 +1365,44 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertFalse(self.transitions(item))
         self.assertFalse(self.hasPermission(ModifyPortalContent, item))
 
+    def test_subproduct_DelayedCouncilItemIsSentToCollege(self):
+        """While an item in the council is set to 'delayed', it is sent
+           in 'itemcreated' state back to the College and ready to process
+           back to the council."""
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        cfg2.setUseGroupsAsCategories(True)
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
+        cfg2.setUseGroupsAsCategories(True)
+        cfg2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups',
+                                            'reverse': '0'},))
+        self.changeUser('pmManager')
+        # send a college item to council and delay this council item
+        # in the college
+        collegeMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        COUNCIL_LABEL = '<p>Label for Council.</p>'
+        COUNCIL_PRIVACY = 'secret'
+        data = {'labelForCouncil': COUNCIL_LABEL,
+                'privacyForCouncil': COUNCIL_PRIVACY,
+                'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
+        collegeItem = self.create('MeetingItem', **data)
+        self.presentItem(collegeItem)
+        self.closeMeeting(collegeMeeting)
+        councilItem = collegeItem.getItemClonedToOtherMC(cfg2Id)
+
+        # in the council
+        # use groups as categories
+        self.setMeetingConfig(cfg2Id)
+        councilMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        self.presentItem(councilItem)
+        self.decideMeeting(councilMeeting)
+        self.do(councilItem, 'delay')
+        backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
+        self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
+        self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)
+        self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

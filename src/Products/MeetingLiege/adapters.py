@@ -2281,8 +2281,11 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doDelay')
 
     def doDelay(self, stateChange):
-        '''When an item is delayed, by default it is duplicated but we do not duplicate it here'''
-        pass
+        '''When an item is delayed, it is sent back to the College, so activate
+           the fact that this item has to be sent to the College.'''
+        # specify that item must be sent to the College, the configuration will do the job
+        # as 'delayed' state is in MeetingConfig.itemAutoSentToOtherMCStates
+        self.context.setOtherMeetingConfigsClonableTo(('meeting-config-college', ))
 
     security.declarePrivate('doMark_not_applicable')
 

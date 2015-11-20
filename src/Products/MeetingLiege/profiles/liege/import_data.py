@@ -438,6 +438,7 @@ councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.d
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 councilMeeting.xhtmlTransformTypes = ('removeBlanks',)
 councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum', 'label': 'Addendum'}, ]
+councilMeeting.itemAutoSentToOtherMCStates = ('delayed', 'returned')
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
 councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'

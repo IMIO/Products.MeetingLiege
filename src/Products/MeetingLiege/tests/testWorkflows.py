@@ -50,6 +50,9 @@ from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingCommunes.tests.testWorkflows import testWorkflows as mctw
 
+COUNCIL_LABEL = '<p>Label for Council.</p>'
+COUNCIL_PRIVACY = 'secret'
+
 
 class testWorkflows(MeetingLiegeTestCase, mctw):
     """Tests the default workflows implemented in MeetingLiege."""
@@ -1365,10 +1368,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertFalse(self.transitions(item))
         self.assertFalse(self.hasPermission(ModifyPortalContent, item))
 
-    def test_subproduct_DelayedCouncilItemIsSentToCollege(self):
-        """While an item in the council is set to 'delayed', it is sent
-           in 'itemcreated' state back to the College and ready to process
-           back to the council."""
+    def _setupCollegeItemSentToCouncil(self):
+        """Send an item from College to Council just before the Council item is decided."""
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         cfg2.setUseGroupsAsCategories(True)
@@ -1379,14 +1380,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                             'reverse': '0'},))
         cfg2.setMeetingConfigsToCloneTo(({'meeting_config': cfgId,
                                           'trigger_workflow_transitions_until': '__nothing__'},))
-        cfg2.setItemAutoSentToOtherMCStates(('delayed', ))
+        cfg2.setItemAutoSentToOtherMCStates(('delayed', 'returned', ))
 
         self.changeUser('pmManager')
         # send a college item to council and delay this council item
         # in the college
         collegeMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
-        COUNCIL_LABEL = '<p>Label for Council.</p>'
-        COUNCIL_PRIVACY = 'secret'
         data = {'labelForCouncil': COUNCIL_LABEL,
                 'privacyForCouncil': COUNCIL_PRIVACY,
                 'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
@@ -1401,7 +1400,29 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         councilMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
         self.presentItem(councilItem)
         self.decideMeeting(councilMeeting)
+        return collegeItem, councilItem, collegeMeeting, councilMeeting
+
+    def test_subproduct_CouncilItemSentToCollegeWhenDelayed(self):
+        """While an item in the council is set to 'delayed', it is sent
+           in 'itemcreated' state back to the College and ready to process
+           back to the council."""
+        cfgId = 'meeting-config-college'
+        cfg2Id = 'meeting-config-council'
+        collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
         self.do(councilItem, 'delay')
+        backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
+        self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
+        self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)
+        self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
+
+    def test_subproduct_CouncilItemSentToCollegeWhenReturned(self):
+        """While an item in the council is set to 'delayed', it is sent
+           in 'itemcreated' state back to the College and ready to process
+           back to the council."""
+        cfgId = 'meeting-config-college'
+        cfg2Id = 'meeting-config-council'
+        collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
+        self.do(councilItem, 'return')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
         self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
         self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)

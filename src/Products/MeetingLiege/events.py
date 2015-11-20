@@ -10,7 +10,7 @@
 __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
-from Products.CMFCore.utils import getToolByName
+from plone import api
 from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting import PloneMeetingError
@@ -82,7 +82,7 @@ def onAdviceTransition(advice, event):
 
     item = advice.getParentNode()
     itemState = item.queryState()
-    tool = getToolByName(item, 'portal_plonemeeting')
+    tool = api.portal.get_tool('portal_plonemeeting')
     cfg = tool.getMeetingConfig(item)
     adviserGroupId = '%s_advisers' % advice.advice_group
     stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',
@@ -111,7 +111,7 @@ def onAdviceTransition(advice, event):
     if not advice.advice_row_id:
         advice._updateAdviceRowId()
 
-    wfTool = getToolByName(advice, 'portal_workflow')
+    wfTool = api.portal.get_tool('portal_workflow')
     oldStateId = event.old_state.id
     newStateId = event.new_state.id
 
@@ -128,7 +128,7 @@ def onAdviceTransition(advice, event):
 
     if newStateId == 'financial_advice_signed':
         # historize given advice into a version
-        pr = getToolByName(advice, 'portal_repository')
+        pr = api.portal.get_tool('portal_repository')
         pr.save(obj=advice, comment=FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # final state of the wf, make sure advice is no more hidden during redaction
@@ -204,7 +204,7 @@ def onAdvicesUpdated(item, event):
             continue
 
         itemState = item.queryState()
-        tool = getToolByName(item, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(item)
         adviserGroupId = '%s_advisers' % groupId
 
@@ -247,7 +247,7 @@ def onAdvicesUpdated(item, event):
            'delay_infos' in event.old_adviceIndex[groupId] and not \
            event.old_adviceIndex[groupId]['delay_infos']['delay_status'] == 'timed_out':
             if item.queryState() == 'proposed_to_finance':
-                wfTool = getToolByName(item, 'portal_workflow')
+                wfTool = api.portal.get_tool('portal_workflow')
                 item.REQUEST.set('mayValidate', True)
                 wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_timed_out')
                 item.REQUEST.set('mayValidate', False)
@@ -297,6 +297,14 @@ def onItemAfterTransition(item, event):
        regarding the matterOfGroups.'''
     item._updateMatterOfGroupsLocalRoles()
     item._updateFinanceAdvisersAccess()
+
+    # if it is an item Council in state 'returned', validate the issued College item
+    if item.portal_type == 'MeetingItemCouncil' and item.queryState() == 'returned':
+        collegeItem = item.getItemClonedToOtherMC('meeting-config-college')
+        wfTool = api.portal.get_tool('portal_workflow')
+        item.REQUEST.set('mayValidate', True)
+        wfTool.doActionFor(collegeItem, 'validate')
+        item.REQUEST.set('mayValidate', False)
 
 
 def onCategoryRemoved(category, event):

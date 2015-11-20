@@ -416,6 +416,7 @@
   <exit-transition transition_id="accept"/>
   <exit-transition transition_id="accept_but_modify"/>
   <exit-transition transition_id="backToPresented"/>
+  <exit-transition transition_id="return"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -1067,6 +1068,11 @@
    <permission-role>Reader</permission-role>
   </permission-map>
  </state>
+ <state state_id="returned"
+        title="returned"
+        i18n:attributes="title">
+  <exit-transition transition_id="backToItemFrozen"/>
+ </state>
  <state state_id="validated"
         title="validated"
         i18n:attributes="title">
@@ -1327,6 +1333,18 @@
              after_script=""
              i18n:attributes="title">
   <action url="" icon="%(portal_url)s/refuse.png" category="workflow" i18n:translate="">refuse</action>
+  <guard>
+    <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
+  </guard>
+ </transition>
+ <transition transition_id="return"
+             title="return"
+             new_state="returned"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title">
+  <action url="" icon="" category="workflow" i18n:translate="">return</action>
   <guard>
     <guard-expression>python:here.wfConditions().mayDecide()</guard-expression>
   </guard>

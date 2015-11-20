@@ -18,4 +18,7 @@ Products.MeetingLiege Changelog
   to keep a link between a College item and a Council item emergency if the original
   College item was not linked to a meeting
 - When a Council item is 'delayed', it is automatically sent back to College in 'itemcreated'
-  state to make full validation process again in College to be sent again in Council
+  state to make full validation process again in College to be sent again in Council, finance
+  advice does not follow
+- When a Council item is 'returned', it is automatically sent back to College in 'validated'
+  state to be immediatelly presentable in a next meeting, finance advice does follow

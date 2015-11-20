@@ -652,9 +652,9 @@ class CustomMeetingItem(MeetingItem):
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
         res = ['labelForCouncil', 'privacyForCouncil',
-               'decisionSuite', 'decisionEnd']
+               'decisionSuite', 'decisionEnd', 'financeAdvice']
         if cloned_to_same_mc:
-            res = res + ['financeAdvice', 'archivingRef', 'textCheckList']
+            res = res + ['archivingRef', 'textCheckList']
         return res
 
     def getCustomAdviceMessageFor(self, advice):
@@ -1004,8 +1004,8 @@ class CustomMeetingItem(MeetingItem):
                 if predecessor.queryState() == 'accepted_and_returned' and \
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
                     # if item was sent to council, check that this item is not 'delayed' or 'marked_not_applicable'
-                    clonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
-                    if clonedItem and not clonedItem.queryState() in ('delayed', 'marked_not_applicable'):
+                    councilClonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
+                    if councilClonedItem and not councilClonedItem.queryState() in ('delayed', 'returned'):
                         return True
                 # break the loop if we encounter an item that was 'Duplicated and keep link'
                 # and it is not an item that is 'accepted_and_returned'
@@ -1042,17 +1042,20 @@ class CustomMeetingItem(MeetingItem):
         # no finance advice, return self.context
         if financeAdvice == '_none_':
             return self.context
-        # finance advice on self and not on a predecessor, return item
+        # finance advice on self
+        # and item was not returned (from college or council), return item
         if (financeAdvice in item.adviceIndex and
             item.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
-           not (getLastEvent(item, 'return') or getLastEvent(item, 'accept_and_return')):
+           not (getLastEvent(item, 'return') or
+                getLastEvent(item, 'accept_and_return') or
+                getLastEvent(item, 'create_to_meeting-config-college_from_meeting-config-council')):
             return item
 
         # we will walk predecessors until we found a finance advice that has been given
         # if we do not find a given advice, we will return the oldest item (last predecessor)
         predecessor = item.getPredecessor()
         validPredecessor = None
-        # consider only if predecessor is in state 'accepted_and_returned' or 'returned'
+        # consider only if predecessor is in state 'accepted_and_returned' or 'returned' (College or Council item)
         # otherwise, the predecessor could have been edited and advice is no longer valid
         while predecessor and predecessor.queryState() in ('accepted_and_returned', 'returned'):
             if predecessor.getFinanceAdvice() and \
@@ -1800,8 +1803,6 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         self.context.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(newItem, 'validate')
         self.context.REQUEST.set('mayValidate', False)
-        # update finance group access on newItem
-        newItem._updateFinanceAdvisersAccess()
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
@@ -2263,11 +2264,6 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
     implements(IMeetingItemCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('doProposeToDirector')
-
-    def doProposeToDirector(self, stateChange):
-        pass
-
     security.declarePrivate('doAccept_pre_accept')
 
     def doAccept_pre_accept(self, stateChange):
@@ -2285,6 +2281,14 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
            the fact that this item has to be sent to the College.'''
         # specify that item must be sent to the College, the configuration will do the job
         # as 'delayed' state is in MeetingConfig.itemAutoSentToOtherMCStates
+        self.context.setOtherMeetingConfigsClonableTo(('meeting-config-college', ))
+
+    def doReturn(self, stateChange):
+        '''
+          When the item is 'returned', it will be automatically
+          sent back to the College in state 'validated'.
+          Activate the fact that it must be sent to the College so it it sent.
+        '''
         self.context.setOtherMeetingConfigsClonableTo(('meeting-config-college', ))
 
     security.declarePrivate('doMark_not_applicable')

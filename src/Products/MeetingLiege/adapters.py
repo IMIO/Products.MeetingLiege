@@ -1022,51 +1022,61 @@ class CustomMeetingItem(MeetingItem):
           the advice itself is left on the original item (that is in state 'returned' or 'accepted_and_returned')
           and no more on the current item.  In this case, get the advice on the predecessor item.
         '''
-        # if we are on a Council item, get the College item and proceed
-        item = self.context
-        if self.context.portal_type == 'MeetingItemCouncil':
-            # we need to work with the MeetingItemCollege
-            predecessor = self.context.getPredecessor()
-            while predecessor and not predecessor.portal_type == 'MeetingItemCollege':
-                predecessor = predecessor.getPredecessor()
-            # if we did not found a College item, we return current item
-            if not predecessor:
-                return self.context
-            item = predecessor
+        def _predecessorIsValid(current, predecessor, financeAdvice):
+            """ """
+            # predecessor is valid only if 'returned' or sent back to council/back to college
+            if not (getLastEvent(current, 'return') or
+                    getLastEvent(current, 'accept_and_return') or
+                    getLastEvent(current, 'create_to_meeting-config-college_from_meeting-config-council') or
+                    getLastEvent(current, 'create_to_meeting-config-council_from_meeting-config-college')):
+                return False
 
+            # council item and predecessor college item is in relevant states
+            if current.portal_type == 'MeetingItemCouncil' and \
+               (predecessor.portal_type == 'MeetingItemCollege' and
+                    predecessor.queryState() in ('accepted', 'accepted_and_returned', 'returned')):
+                return True
+            # college item and predecessor council item in state 'returned'
+            if current.portal_type == 'MeetingItemCollege' and \
+               (predecessor.portal_type == 'MeetingItemCouncil' and
+                    predecessor.queryState() in ('returned', )):
+                return True
+            # college item and predecessor college item in state ('accepted_returned', 'returned')
+            if current.portal_type == 'MeetingItemCollege' and \
+               (predecessor.portal_type == 'MeetingItemCollege' and
+                    predecessor.queryState() in ('returned', 'accepted_and_returned')):
+                return True
+
+        item = self.context
         # check if current self.context does not contain the given advice
         # and if it is an item as result of a return college
-        # in case we use the finance advice of another item, the getFinanceAdvice is not _none_
+        # in case we use the finance advice of another item,
+        # the getFinanceAdvice is not _none_
         # but the financeAdvice is not in adviceIndex
         financeAdvice = item.getFinanceAdvice()
         # no finance advice, return self.context
         if financeAdvice == '_none_':
-            return self.context
+            return item
         # finance advice on self
         # and item was not returned (from college or council), return item
         if (financeAdvice in item.adviceIndex and
-            item.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE) or \
-           not (getLastEvent(item, 'return') or
-                getLastEvent(item, 'accept_and_return') or
-                getLastEvent(item, 'create_to_meeting-config-college_from_meeting-config-council')):
+           item.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE):
             return item
 
         # we will walk predecessors until we found a finance advice that has been given
         # if we do not find a given advice, we will return the oldest item (last predecessor)
         predecessor = item.getPredecessor()
-        validPredecessor = None
+        currentItem = item
         # consider only if predecessor is in state 'accepted_and_returned' or 'returned' (College or Council item)
         # otherwise, the predecessor could have been edited and advice is no longer valid
-        while predecessor and predecessor.queryState() in ('accepted_and_returned', 'returned'):
+        while predecessor and _predecessorIsValid(currentItem, predecessor, financeAdvice):
             if predecessor.getFinanceAdvice() and \
                predecessor.getFinanceAdvice() in predecessor.adviceIndex:
-                    validPredecessor = predecessor
-                    # return immediately the validPredecessor if advice was given on it
-                    if validPredecessor.adviceIndex[financeAdvice]['type'] != NOT_GIVEN_ADVICE_VALUE:
-                        return validPredecessor
+                return predecessor
+            currentItem = predecessor
             predecessor = predecessor.getPredecessor()
         # either we found a valid predecessor, or we return self.context
-        return validPredecessor or item
+        return item
 
     def getItemCollege(self):
         """Called on a Council item, will return the linked College item."""

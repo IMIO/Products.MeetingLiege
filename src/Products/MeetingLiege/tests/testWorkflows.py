@@ -270,7 +270,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # pmManager is member of every sub-groups of 'developers'
         self.proposeItem(item)
         # now the item is 'proposed_to_director' it can not be validated
-        # the step 'proposed_to_finances' is required
+        # the step 'proposed_to_finance' is required
         self.assertTrue(item.queryState() == 'proposed_to_director')
         # from here, we can not validate the item, it can only be sent
         # to the finances or back to the internal reviewer.
@@ -1370,6 +1370,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
 
     def _setupCollegeItemSentToCouncil(self):
         """Send an item from College to Council just before the Council item is decided."""
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         cfg2.setUseGroupsAsCategories(True)
@@ -1390,6 +1398,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                 'privacyForCouncil': COUNCIL_PRIVACY,
                 'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
         collegeItem = self.create('MeetingItem', **data)
+
+        # ask and give finance advice
+        collegeItem.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        self.proposeItem(collegeItem)
+        self.do(collegeItem, 'proposeToFinance')
+        self._giveFinanceAdvice(collegeItem, FINANCE_GROUP_IDS[0])
         self.presentItem(collegeItem)
         self.closeMeeting(collegeMeeting)
         councilItem = collegeItem.getItemClonedToOtherMC(cfg2Id)
@@ -1415,6 +1429,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
 
+        # it is sent back in "itemcreated" state and finance advice does not follow
+        self.assertEquals(backCollegeItem.getFinanceAdvice(), FINANCE_GROUP_IDS[0])
+        self.assertEquals(backCollegeItem.queryState(), 'itemcreated')
+        self.assertEquals(backCollegeItem.adapted().getItemWithFinanceAdvice(), backCollegeItem)
+
     def test_subproduct_CouncilItemSentToCollegeWhenReturned(self):
         """While an item in the council is set to 'delayed', it is sent
            in 'itemcreated' state back to the College and ready to process
@@ -1427,6 +1446,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
         self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
+
+        # it is sent back in "validated" state and finance advice does follow
+        self.assertEquals(backCollegeItem.getFinanceAdvice(), FINANCE_GROUP_IDS[0])
+        self.assertEquals(backCollegeItem.queryState(), 'validated')
+        self.assertEquals(backCollegeItem.adapted().getItemWithFinanceAdvice(), collegeItem)
 
 
 def test_suite():

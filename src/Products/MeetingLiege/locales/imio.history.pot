@@ -15,6 +15,10 @@ msgstr ""
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr ""
 
+#. Default: "Item created from a council item."
+msgid "create_to_meeting-config-college_from_meeting-config-council_comments"
+msgstr ""
+
 #. Default: "The item has been duplicated and the new item is available for a next meeting."
 msgid "return_comments"
 msgstr ""

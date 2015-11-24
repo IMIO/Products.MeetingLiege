@@ -18,6 +18,10 @@ msgstr ""
 msgid "accept_and_return_comments"
 msgstr "Le point a été envoyé au Conseil Communal puis automatiquement dupliqué et le nouveau point est disponible pour une prochaine séance."
 
+#. Default: "Item created from a council item."
+msgid "create_to_meeting-config-college_from_meeting-config-council_comments"
+msgstr "Point créé depuis un point Conseil."
+
 #. Default: "Item created from a college item."
 msgid "create_to_meeting-config-council_from_meeting-config-college_comments"
 msgstr "Point créé depuis un point Collège."

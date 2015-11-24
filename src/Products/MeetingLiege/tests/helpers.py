@@ -21,7 +21,13 @@
 #
 
 from DateTime import DateTime
+
+from plone import api
+from plone.app.textfield.value import RichTextValue
+from plone.dexterity.utils import createContentInContainer
+
 from Products.MeetingCommunes.tests.helpers import MeetingCommunesTestingHelpers
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
 class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
@@ -104,3 +110,38 @@ class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
                                                                         meetingDate=meetingDate)
         setRoles(self.portal, currentMember.getId(), currentMemberRoles)
         return meeting
+
+    def _setupFinanceGroups(self):
+        '''Configure finance groups.'''
+        groupsTool = api.portal.get_tool('portal_groups')
+        # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
+        groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
+        groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])
+
+    def _giveFinanceAdvice(self, item, adviser_group_id):
+        """Given an p_item in state 'proposed_to_finance', give the p_adviser_group_id advice on it."""
+        originalUserId = self.member.getId()
+        self.changeUser('pmFinController')
+        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': adviser_group_id,
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
+                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
+        # as finance reviewer
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'proposeToFinancialManager', comment='My financial reviewer comment')
+        # as finance manager
+        self.changeUser('pmFinManager')
+        self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
+        self.changeUser(originalUserId)
+        return advice

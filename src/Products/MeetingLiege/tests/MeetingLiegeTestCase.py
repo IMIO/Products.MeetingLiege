@@ -20,7 +20,6 @@
 # 02110-1301, USA.
 #
 
-from Products.CMFCore.utils import getToolByName
 from Products.MeetingCommunes.tests.MeetingCommunesTestCase import MeetingCommunesTestCase
 from Products.MeetingLiege.testing import ML_TESTING_PROFILE_FUNCTIONAL
 from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
@@ -29,7 +28,6 @@ from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
 # adapters.py but overrided by Products.MeetingCommunes here in the tests...
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.MeetingLiege.adapters import customWfAdaptations
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 MeetingConfig.wfAdaptations = customWfAdaptations
 
@@ -38,14 +36,3 @@ class MeetingLiegeTestCase(MeetingCommunesTestCase, MeetingLiegeTestingHelpers):
     """Base class for defining MeetingLiege test cases."""
 
     layer = ML_TESTING_PROFILE_FUNCTIONAL
-
-    def _setupFinanceGroups(self):
-        '''Configure finance groups.'''
-        groupsTool = getToolByName(self.portal, 'portal_groups')
-        # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
-        groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
-        groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])

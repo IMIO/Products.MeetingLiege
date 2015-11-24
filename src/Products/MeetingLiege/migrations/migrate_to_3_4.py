@@ -108,12 +108,30 @@ class Migrate_To_3_4(Migrator):
             cfg.setItemAutoSentToOtherMCStates(('accepted', 'accepted_but_modified', 'accepted_and_returned'))
         logger.info('Done.')
 
+    def _updateCouncilItemFinanceAdviceAttribute(self):
+        """When a College item was sent to Council,
+           the 'financeAdvice' attribute was not copied, now it is
+           the case so update existing Council items regarding value
+           defined on the 'predecessor', aka the College item."""
+        logger.info('Updating every Council items \'financeAdvice\' attribute...')
+        brains = self.portal.portal_catalog(portal_type='MeetingItemCouncil')
+        for brain in brains:
+            councilItem = brain.getObject()
+            if councilItem.getFinanceAdvice() == '_none_':
+                collegeItem = councilItem.getPredecessor()
+                if collegeItem and \
+                   collegeItem.portal_type == 'MeetingItemCollege' and \
+                   collegeItem.getFinanceAdvice() != '_none_':
+                    councilItem.setFinanceAdvice(collegeItem.getFinanceAdvice())
+        logger.info('Done.')
+
     def run(self):
         logger.info('Migrating to MeetingLiege 3.4...')
         #self._updateHistorizedFinanceAdviceInWFHistory()
         #self._moveHistorizedFinanceAdviceToVersions()
         self._cleanMeetingConfigs()
         self._migrateItemPositiveDecidedStates()
+        self._updateCouncilItemFinanceAdviceAttribute()
         self.finish()
 
 

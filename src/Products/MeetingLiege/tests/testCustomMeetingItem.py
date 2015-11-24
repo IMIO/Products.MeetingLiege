@@ -484,12 +484,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # accept itemToCouncil1 and check
         self.do(itemToCouncil1, 'accept')
         itemInCouncil1 = itemToCouncil1.getItemClonedToOtherMC('meeting-config-council')
+        self.assertEquals(itemInCouncil1.getFinanceAdvice(), FINANCE_GROUP_IDS[0])
         self.assertTrue(itemInCouncil1.adapted().getItemWithFinanceAdvice() == itemToCouncil1)
         # finance group gets automatically access to the itemInCouncil1
         self.assertTrue(itemInCouncil1.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
         # accept_and_return itemToCouncil2 and check
         self.do(itemToCouncil2, 'accept_and_return')
         itemInCouncil2 = itemToCouncil2.getItemClonedToOtherMC('meeting-config-council')
+        self.assertEquals(itemInCouncil2.getFinanceAdvice(), FINANCE_GROUP_IDS[0])
         self.assertTrue(itemInCouncil2.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
         # when college item was accepted_and_returned, it was cloned, the finance advice
         # is also found for this cloned item
@@ -509,6 +511,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(itemInCouncil2, 'present')
         self.assertTrue(itemInCouncil2.queryState() == 'presented')
         self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+
+        # duplicate and keep link an 'accepted_and_return' college item,
+        # the financeAdvice will not follow
+        duplicatedItemUrl = itemToCouncil2.onDuplicateAndKeepLink()
+        duplicatedItemId = duplicatedItemUrl.split('/')[-1]
+        duplicatedItem2 = getattr(itemToCouncil2.getParentNode(), duplicatedItemId)
+        self.assertEquals(duplicatedItem2.adapted().getItemWithFinanceAdvice(), duplicatedItem2)
 
     def test_getLegalTextForFDAdvice(self):
         self.changeUser('admin')

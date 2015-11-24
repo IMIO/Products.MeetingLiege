@@ -1452,6 +1452,31 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(backCollegeItem.queryState(), 'validated')
         self.assertEquals(backCollegeItem.adapted().getItemWithFinanceAdvice(), collegeItem)
 
+    def test_subproduct_ItemSentToCouncilWhenDuplicatedAndLinkKept(self):
+        """Make sure that an item that is 'duplicateAndKeepLink' is sent to Council
+           no matter state of linked item."""
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        item = self.create('MeetingItem')
+        item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        self.presentItem(item)
+        self.decideMeeting(meeting)
+        self.do(item, 'accept_and_return')
+        # item has been sent
+        self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
+
+        # now check that a duplicatedAndKeepLink item is sent also
+        duplicatedItemURL = item.onDuplicateAndKeepLink()
+        duplicatedItem = getattr(item.getParentNode(),
+                                 duplicatedItemURL.split('/')[-1])
+        self.backToState(meeting, 'created')
+        self.presentItem(duplicatedItem)
+        self.decideMeeting(meeting)
+        self.do(duplicatedItem, 'accept')
+        self.assertTrue(duplicatedItem.getItemClonedToOtherMC(cfg2Id))
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

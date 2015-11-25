@@ -368,6 +368,10 @@ councilMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
 
                                                              {'meeting_transition': 'backToCreated',
                                                               'item_transition': 'backToPresented'},)
+councilMeeting.onTransitionFieldTransforms = (
+    {'transition': 'present',
+     'field_name': 'MeetingItem.decisionEnd',
+     'tal_expression': 'python: here.adapted().adaptCouncilItemDecisionEnd()'},)
 councilMeeting.transitionsToConfirm = []
 councilMeeting.meetingTopicStates = ('created', 'frozen', 'published')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
@@ -387,7 +391,9 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'}, )
 councilMeeting.useGroupsAsCategories = False
-councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum', 'label': 'Addendum'}, ]
+councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
+                                                  'label': 'Addendum',
+                                                  'used_in_inserting_method': ''}, ]
 councilMeeting.useAdvices = False
 councilMeeting.itemAdviceStates = []
 councilMeeting.itemAdviceEditStates = []

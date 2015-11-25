@@ -22,3 +22,5 @@ Products.MeetingLiege Changelog
   advice does not follow
 - When a Council item is 'returned', it is automatically sent back to College in 'validated'
   state to be immediatelly presentable in a next meeting, finance advice does follow
+- When a Council item is presented, automatically add the COUNCILITEM_DECISIONEND_SENTENCE at
+  the end of the item's decisionEnd if not already

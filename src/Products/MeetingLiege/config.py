@@ -94,6 +94,9 @@ FINANCE_ADVICE_LEGAL_TEXT = "<p>Attendu l'avis {0} du Directeur financier "\
 FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN = "<p>Attendu l'absence d'avis du "\
     "Directeur financier rendu dans le délai prescrit à l'article L1124-40 "\
     "du Code de la démocratie locale et de la décentralisation,</p>"
+
+COUNCILITEM_DECISIONEND_SENTENCE = u"<p>La présente décision a recueilli l'unanimité des suffrages.</p>".encode('utf-8')
+
 ##/code-section config-bottom
 
 

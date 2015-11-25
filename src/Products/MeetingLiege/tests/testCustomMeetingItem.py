@@ -27,6 +27,7 @@ from DateTime import DateTime
 from Products.CMFCore.permissions import View
 
 from Products.PloneMeeting.interfaces import IAnnexable
+from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
@@ -749,3 +750,29 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # back to 'normal', itemNumber is set back to an integer
         view('normal')
         self.assertEquals(item2.getItemNumber(), 200)
+
+    def test_subproduct_SentenceAppendedToCouncilItemDecisionEndWhenPresented(self):
+        """When a council item is presented, it's decisionEnd field is adapted,
+           a particular sentence is added at the end of the field."""
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        self.changeUser('pmManager')
+        self.setMeetingConfig(cfg2Id)
+        self.create('Meeting', date=DateTime('2015/11/11'))
+        FIRST_SENTENCE = '<p>A first sentence.</p>'
+        item = self.create('MeetingItem')
+        item.setDecisionEnd(FIRST_SENTENCE)
+        self.assertEquals(item.getDecisionEnd(), FIRST_SENTENCE)
+        # present item, special sentence will be appended
+        self.presentItem(item)
+        self.assertEquals(item.getDecisionEnd(),
+                          FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE)
+        # not appended twice, create an item that already ends with sentence
+        # more over add an extra empty <p></p> at the end
+        item2 = self.create('MeetingItem')
+        item2.setDecisionEnd(FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
+        self.assertEquals(item2.getDecisionEnd(),
+                          FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
+        self.presentItem(item2)
+        self.assertEquals(item2.getDecisionEnd(),
+                          FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')

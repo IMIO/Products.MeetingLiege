@@ -245,6 +245,8 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'privacyForCouncil',
                                      'archivingRef',
                                      'motivation',
+                                     'decisionSuite',
+                                     'decisionEnd',
                                      'textCheckList', ]
 collegeMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
@@ -429,7 +431,9 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'privacy',
                                      'itemAssembly',
-                                     'motivation', ]
+                                     'motivation',
+                                     'decisionSuite',
+                                     'decisionEnd']
 councilMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
                                         'assemblyExcused',
@@ -437,7 +441,9 @@ councilMeeting.usedMeetingAttributes = ['signatures',
 councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 councilMeeting.xhtmlTransformTypes = ('removeBlanks',)
-councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum', 'label': 'Addendum'}, ]
+councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
+                                                  'label': 'Addendum',
+                                                  'used_in_inserting_method': ''}, ]
 councilMeeting.itemAutoSentToOtherMCStates = ('delayed', 'returned')
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
@@ -456,6 +462,10 @@ councilMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
                                                               'item_transition': 'itemfreeze'},
                                                              {'meeting_transition': 'close',
                                                               'item_transition': 'accept'},)
+councilMeeting.onTransitionFieldTransforms = (
+    {'transition': 'present',
+     'field_name': 'MeetingItem.decisionEnd',
+     'tal_expression': 'python: here.adapted().adaptCouncilItemDecisionEnd()'},)
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
 councilMeeting.meetingAppDefaultView = 'searchmyitems'

@@ -65,6 +65,7 @@ from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -1134,6 +1135,22 @@ class CustomMeetingItem(MeetingItem):
         else:
             res = ''
         return res
+
+    security.declarePublic('adaptCouncilItemDecisionEnd')
+
+    def adaptCouncilItemDecisionEnd(self):
+        """When a council item is 'presented', we automatically append a sentence
+           to the 'decisionEnd' field, this is managed by MeetingConfig.onTransitionFieldTransforms
+           that calls this method."""
+        item = self.getSelf()
+        transforms = api.portal.get_tool('portal_transforms')
+        rawDecisionEnd = item.getDecisionEnd(mimetype='text/plain').strip()
+        # COUNCILITEM_DECISIONEND_SENTENCE is HTML
+        rawSentence = transforms.convertTo('text/plain', COUNCILITEM_DECISIONEND_SENTENCE)._data.strip()
+        if rawSentence not in rawDecisionEnd:
+            return item.getDecisionEnd() + COUNCILITEM_DECISIONEND_SENTENCE
+        else:
+            return item.getDecisionEnd()
 
     security.declareProtected('Modify portal content', 'onEdit')
 

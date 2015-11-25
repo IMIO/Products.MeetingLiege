@@ -1480,7 +1480,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
 
     def test_subproduct_ItemSentToCouncilWhenDuplicatedAndLinkKept(self):
         """Make sure that an item that is 'duplicateAndKeepLink' is sent to Council
-           no matter state of linked item."""
+           no matter state of linked item, and no matter linked item has already been sent."""
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         self.changeUser('pmManager')
@@ -1497,6 +1497,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         duplicatedItemURL = item.onDuplicateAndKeepLink()
         duplicatedItem = getattr(item.getParentNode(),
                                  duplicatedItemURL.split('/')[-1])
+        self.assertEquals(duplicatedItem.getPredecessor().queryState(), 'accepted_and_returned')
         self.backToState(meeting, 'created')
         self.presentItem(duplicatedItem)
         self.decideMeeting(meeting)

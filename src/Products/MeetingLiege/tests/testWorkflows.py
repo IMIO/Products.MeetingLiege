@@ -1128,6 +1128,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         don't have to do the whole validation process but can send
         directly to the role above.
         '''
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
         pg = self.portal.portal_groups
         darGroup = pg.getGroupById('developers_administrativereviewers')
         darMembers = darGroup.getMemberIds()
@@ -1145,18 +1147,22 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         # if there is no administrative reviewer, a creator can send the item
         # directly to internal reviewer.
         self._removeAllMembers(darGroup, darMembers)
         self.assertTrue(self.transitions(item) == ['proposeToInternalReviewer', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         # if there is neither administrative nor internal reviewer, a creator
         # can send the item directly to director.
         self._removeAllMembers(dirGroup, dirMembers)
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         # if there is an administrative reviewer but no internal reviewer, the
         # creator may only send the item to administative reviewer.
         self._addAllMembers(darGroup, darMembers)
         self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         self._addAllMembers(dirGroup, dirMembers)
 
         # A creator can ask for advices if an advice is required.
@@ -1164,6 +1170,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToAdministrativeReviewer', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to give a normal advice and can propose to
         # administrative reviewer.
@@ -1190,10 +1197,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the internal reviewer.
         self.changeUser('pmAdminReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToInternalReviewer', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         # if there is no internal reviewer, an administrative reviewer can only
         # send the item to director.
         self._removeAllMembers(dirGroup, dirMembers)
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         self._addAllMembers(dirGroup, dirMembers)
         # an item which is proposed to administrative reviewer can be send to
         # internal reviewer by an administrative reviewer.
@@ -1215,6 +1224,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToInternalReviewer', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # internal reviewer.
@@ -1235,12 +1245,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # to the direction.
         self.changeUser('pmInternalReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
 
         # An internal reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToDirector', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
@@ -1254,12 +1266,14 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # a director has the same prerogative of an internal reviewer.
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
 
         # A reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToDirector', ])
+        self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
@@ -1300,6 +1314,18 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self._removeAllMembers(darGroup, darMembers)
         self.assertTrue(self.transitions(item) == ['backToItemCreated',
                                                    'proposeToDirector', ])
+
+    def _checkItemWithoutCategory(self, item, originalCategory):
+        '''Make sure that an item without category cannot be sent to anybody.'''
+        actions_panel = item.restrictedTraverse('@@actions_panel')
+        rendered_actions_panel = actions_panel()
+        item.setCategory('')
+        item.at_post_edit_script()
+        self.assertTrue(not self.transitions(item))
+        no_category_rendered_actions_panel = actions_panel()
+        self.assertTrue(not no_category_rendered_actions_panel ==
+                        rendered_actions_panel)
+        item.setCategory(originalCategory)
 
     def test_subproduct_RestrictedPowerObserversMayNotAccessLateItemsInCouncilUntilDecided(self):
         """Finance adviser have still access to items linked to

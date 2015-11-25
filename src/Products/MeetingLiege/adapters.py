@@ -1834,10 +1834,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         member = api.user.get_current()
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            if not self.context.getCategory():
-                return No(translate('required_category_ko',
-                                    domain="PloneMeeting",
-                                    context=self.context.REQUEST))
             # MeetingManager must be able to propose to administrative
             # reviewer.
             tool = api.portal.get_tool('portal_plonemeeting')
@@ -1854,6 +1850,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # transition.
             if not self._groupIsNotEmpty('administrativereviewers'):
                 res = False
+            if not self.context.getCategory() and res:
+                return No(translate('required_category_ko',
+                                    domain="PloneMeeting",
+                                    context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
@@ -1881,6 +1881,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if not self._groupIsNotEmpty('internalreviewers') or \
                     member.has_role('MeetingInternalReviewer', self.context):
                 res = False
+            if not self.context.getCategory() and res:
+                return No(translate('required_category_ko',
+                                    domain="PloneMeeting",
+                                    context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayProposeToDirector')
@@ -1927,6 +1931,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 (not member.has_role('MeetingAdminReviewer', self.context) or
                     self._groupIsNotEmpty('internalreviewers')):
                 res = False
+            if not self.context.getCategory() and res:
+                return No(translate('required_category_ko',
+                                    domain="PloneMeeting",
+                                    context=self.context.REQUEST))
         return res
 
     security.declarePublic('mayProposeToFinance')
@@ -1954,6 +1962,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 adviceIdsToBypass[groupId] = False
             if self.context.hasAdvices(toGive=True, adviceIdsToBypass=adviceIdsToBypass):
                 res = True
+                if not self.context.getCategory():
+                    return No(translate('required_category_ko',
+                                        domain="PloneMeeting",
+                                        context=self.context.REQUEST))
             else:
                 # return a 'No' instance explaining that no advice is (still) asked on this item
                 res = No(translate('advice_required_to_ask_advices',

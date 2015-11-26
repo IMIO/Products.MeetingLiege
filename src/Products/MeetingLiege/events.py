@@ -10,6 +10,7 @@
 __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
+from OFS.ObjectManager import BeforeDeleteException
 from plone import api
 from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
@@ -311,6 +312,27 @@ def onCategoryRemoved(category, event):
     '''Called when a MeetingCategory is removed.'''
     # clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
     cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
+
+
+def onGroupWillBeRemoved(group, event):
+    '''Checks if the current meetingGroup can be deleted:
+      - it can not be used in MeetingConfig.archivingRefs;
+      - it can not be used in MeetingCategory.groupsOfMatter.'''
+    if event.object.meta_type == 'Plone Site' or group._at_creation_flag:
+        return
+
+    tool = api.portal.get_tool('portal_plonemeeting')
+    groupId = group.getId()
+    for mc in tool.objectValues('MeetingConfig'):
+        # The meetingGroup can be used in archivingRefs.
+        for archivinfRef in mc.getArchivingRefs():
+            if groupId in archivinfRef['restrict_to_groups']:
+                raise BeforeDeleteException("can_not_delete_meetinggroup_archivingrefs")
+
+        # The meetingGroup can be used in a category.groupsOfMatter.
+        for category in mc.getCategories(onlySelectable=False):
+            if groupId in category.getGroupsOfMatter():
+                raise BeforeDeleteException("can_not_delete_meetinggroup_groupsofmatter")
 
 
 def onItemListTypeChanged(item, event):

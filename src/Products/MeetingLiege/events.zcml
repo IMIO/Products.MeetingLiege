@@ -36,4 +36,8 @@
                    Products.PloneMeeting.interfaces.IItemListTypeChangedEvent"
               handler=".events.onItemListTypeChanged"/>
 
+  <subscriber for="Products.PloneMeeting.interfaces.IMeetingGroup
+                   OFS.interfaces.IObjectWillBeRemovedEvent"
+              handler=".events.onGroupWillBeRemoved"/>
+
 </configure>

@@ -24,3 +24,5 @@ Products.MeetingLiege Changelog
   state to be immediatelly presentable in a next meeting, finance advice does follow
 - When a Council item is presented, automatically add the COUNCILITEM_DECISIONEND_SENTENCE at
   the end of the item's decisionEnd if not already
+- Make sure a MeetingGroup may not be removed if used in MeetingConfig.archivingRefs or
+  MeetingCategory.groupsOfMatter

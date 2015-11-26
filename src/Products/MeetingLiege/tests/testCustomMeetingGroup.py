@@ -22,6 +22,7 @@
 # 02110-1301, USA.
 #
 
+from OFS.ObjectManager import BeforeDeleteException
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
@@ -29,6 +30,54 @@ from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCas
 
 class testCustomMeetingGroup(MeetingLiegeTestCase):
     '''Tests the MeetingGroup adapted methods.'''
+
+    def test_GroupNotRemovableIfUsed(self):
+        """A MeetingGroup may not be removed if used in :
+           - MeetingConfig.archivingRefs;
+           - MeetingCategory.groupsOfMatter."""
+        self.changeUser('siteadmin')
+        cfg = self.meetingConfig
+        # create a new group so it is used nowhere
+        newGroup = self.create('MeetingGroup')
+        newGroupId = newGroup.getId()
+        cfg.setUseGroupsAsCategories(False)
+        cfg.setArchivingRefs((
+            {'active': '1',
+             'restrict_to_groups': [newGroupId, ],
+             'row_id': '1',
+             'code': '1',
+             'label': "1"},
+            {'active': '1',
+             'restrict_to_groups': [],
+             'row_id': '2',
+             'code': '2',
+             'label': '2'},))
+        with self.assertRaises(BeforeDeleteException) as cm:
+            self.tool.manage_delObjects([newGroupId, ])
+        self.assertEquals(cm.exception.message, 'can_not_delete_meetinggroup_archivingrefs')
+        cfg.setArchivingRefs((
+            {'active': '1',
+             'restrict_to_groups': [],
+             'row_id': '1',
+             'code': '1',
+             'label': "1"},
+            {'active': '1',
+             'restrict_to_groups': [],
+             'row_id': '2',
+             'code': '2',
+             'label': '2'},))
+
+        category1 = cfg.getCategories()[1]
+        self.assertEquals(category1.portal_type, 'MeetingCategory')
+        category1.setGroupsOfMatter([newGroupId, ])
+        with self.assertRaises(BeforeDeleteException) as cm:
+            self.tool.manage_delObjects([newGroupId, ])
+        self.assertEquals(cm.exception.message, 'can_not_delete_meetinggroup_groupsofmatter')
+        category1.setGroupsOfMatter([])
+
+        # now it is removable
+        self.tool.manage_delObjects([newGroupId, ])
+        self.failIf(hasattr(self.tool, newGroupId))
 
     def test_CustomGetPloneGroups(self):
         '''

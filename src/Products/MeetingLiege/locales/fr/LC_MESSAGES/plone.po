@@ -32,6 +32,22 @@ msgstr "Point Collège communal"
 msgid "MeetingItemCouncil"
 msgstr "Point Conseil communal"
 
+#. Default: "MeetingItemRecurringCollege"
+msgid "MeetingItemRecurringCollege"
+msgstr "Point récurrent Collège communal"
+
+#. Default: "MeetingItemRecurringCouncil"
+msgid "MeetingItemRecurringCouncil"
+msgstr "Point récurrent Conseil communal"
+
+#. Default: "MeetingItemTemplateCollege"
+msgid "MeetingItemTemplateCollege"
+msgstr "Modèle de point Collège communal"
+
+#. Default: "MeetingItemTemplateCouncil"
+msgid "MeetingItemTemplateCouncil"
+msgstr "Modèle de point Conseil communal"
+
 #. Default: "Accept and return"
 msgid "accept_and_return"
 msgstr "Accepter avec retour Collège"

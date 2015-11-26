@@ -31,6 +31,22 @@ msgstr "Item College"
 msgid "MeetingItemCouncil"
 msgstr "Item Council"
 
+#. Default: "MeetingItemRecurringCollege"
+msgid "MeetingItemRecurringCollege"
+msgstr ""
+
+#. Default: "MeetingItemRecurringCouncil"
+msgid "MeetingItemRecurringCouncil"
+msgstr ""
+
+#. Default: "MeetingItemTemplateCollege"
+msgid "MeetingItemTemplateCollege"
+msgstr ""
+
+#. Default: "MeetingItemTemplateCouncil"
+msgid "MeetingItemTemplateCouncil"
+msgstr ""
+
 #. Default: "Accept and return"
 msgid "accept_and_return"
 msgstr "Accept and return"

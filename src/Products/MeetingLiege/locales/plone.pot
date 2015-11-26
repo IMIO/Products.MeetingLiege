@@ -24,9 +24,25 @@ msgstr ""
 msgid "MeetingItemCollege"
 msgstr ""
 
+#. Default: "MeetingItemRecurringCollege" 
+msgid "MeetingItemRecurringCollege" 
+msgstr "" 
+
+#. Default: "MeetingItemTemplateCollege" 
+msgid "MeetingItemTemplateCollege" 
+msgstr "" 
+
 #. Default: "MeetingItemCouncil"
 msgid "MeetingItemCouncil"
 msgstr ""
+
+#. Default: "MeetingItemRecurringCouncil" 
+msgid "MeetingItemRecurringCouncil" 
+msgstr "" 
+
+#. Default: "MeetingItemTemplateCouncil" 
+msgid "MeetingItemTemplateCouncil" 
+msgstr "" 
 
 #. Default: "Ask advices"
 msgid "askAdvicesByItemCreator"

@@ -2513,6 +2513,9 @@ class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
         # Default PM item icons
         icons = super(MLPrettyLinkAdapter, self)._leadingIcons()
 
+        if self.context.isDefinedInTool():
+            return icons
+
         itemState = self.context.queryState()
         # Add our icons for some review states
         if itemState == 'accepted_and_returned':

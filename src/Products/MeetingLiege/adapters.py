@@ -2025,10 +2025,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # first of all, the use must have the 'Review portal content permission'
         if checkPermission(ReviewPortalContent, self.context):
             res = True
-            if not self.context.getCategory():
-                return No(translate('required_category_ko',
-                                    domain="PloneMeeting",
-                                    context=self.context.REQUEST))
             finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
             if item_state == 'itemcreated' and not isManager:
@@ -2048,6 +2044,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # special case for item being validable when emergency is asked on it
             elif item_state == 'proposed_to_finance' and self.context.getEmergency() == 'no_emergency':
                 res = False
+
+            if res and not self.context.getCategory():
+                return No(translate('required_category_ko',
+                                    domain="PloneMeeting",
+                                    context=self.context.REQUEST))
         return res
 
     security.declarePublic('maySendToCouncilEmergency')

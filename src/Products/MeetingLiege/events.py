@@ -330,7 +330,7 @@ def onGroupWillBeRemoved(group, event):
                 raise BeforeDeleteException("can_not_delete_meetinggroup_archivingrefs")
 
         # The meetingGroup can be used in a category.groupsOfMatter.
-        for category in mc.getCategories(onlySelectable=False):
+        for category in mc.categories.objectValues('MeetingCategory'):
             if groupId in category.getGroupsOfMatter():
                 raise BeforeDeleteException("can_not_delete_meetinggroup_groupsofmatter")
 

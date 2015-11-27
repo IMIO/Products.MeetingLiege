@@ -694,7 +694,7 @@ class CustomMeetingItem(MeetingItem):
 
     def getAdvicesGroupsInfosForUser(self):
         '''Monkeypatch the MeetingItem.getAdvicesGroupsInfosForUser, look for XXX.'''
-        tool = self.portal_plonemeeting
+        tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(self)
         # Advices must be enabled
         if not cfg.getUseAdvices():
@@ -1391,9 +1391,9 @@ class CustomMeetingConfig(MeetingConfig):
                         'sort_on': u'created',
                         'sort_reversed': True,
                         'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+                                         "tool.userIsAmong('financialcontrollers')) "
                                          "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.isFinancialUser())",
+                                         "tool.isFinancialUser())",
                         'roles_bypassing_talcondition': ['Manager', ]
                     }
                  ),
@@ -1410,9 +1410,9 @@ class CustomMeetingConfig(MeetingConfig):
                         'sort_on': u'created',
                         'sort_reversed': True,
                         'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.userIsAmong('financialcontrollers')) "
+                                         "tool.userIsAmong('financialcontrollers')) "
                                          "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.isFinancialUser())",
+                                         "tool.isFinancialUser())",
                         'roles_bypassing_talcondition': ['Manager', ]
                     }
                  ),
@@ -1429,9 +1429,9 @@ class CustomMeetingConfig(MeetingConfig):
                         'sort_on': u'created',
                         'sort_reversed': True,
                         'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.userIsAmong('financialreviewers')) "
+                                         "tool.userIsAmong('financialreviewers')) "
                                          "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.isFinancialUser())",
+                                         "tool.isFinancialUser())",
                         'roles_bypassing_talcondition': ['Manager', ]
                     }
                  ),
@@ -1448,9 +1448,9 @@ class CustomMeetingConfig(MeetingConfig):
                         'sort_on': u'created',
                         'sort_reversed': True,
                         'tal_condition': "python: (here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.userIsAmong('financialmanagers')) "
+                                         "tool.userIsAmong('financialmanagers')) "
                                          "or (not here.REQUEST.get('fromPortletTodo', False) and "
-                                         "here.portal_plonemeeting.isFinancialUser())",
+                                         "tool.isFinancialUser())",
                         'roles_bypassing_talcondition': ['Manager', ]
                     }
                  ),
@@ -1482,8 +1482,7 @@ class CustomMeetingConfig(MeetingConfig):
                             ],
                             'sort_on': u'created',
                             'sort_reversed': True,
-                            'tal_condition': "python: here.portal_plonemeeting.isFinancialUser() or "
-                            "here.portal_plonemeeting.isManager(here)",
+                            'tal_condition': "python: tool.isFinancialUser() or tool.isManager(here)",
                             'roles_bypassing_talcondition': ['Manager', ]
                         }
                      ),

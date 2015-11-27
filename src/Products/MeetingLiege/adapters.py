@@ -23,7 +23,6 @@
 # 02110-1301, USA.
 #
 # ------------------------------------------------------------------------------
-import lxml
 import string
 import unicodedata
 from collections import OrderedDict
@@ -1640,12 +1639,6 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
                     return True
         return False
     ToolPloneMeeting.isFinancialUser = isFinancialUser
-
-    def getHistoryForTemplate(self, realContext):
-        """Return the history view for templates. """
-        historyView = realContext.restrictedTraverse('historyview')()
-        historyViewRendered = lxml.html.fromstring(historyView)
-        return lxml.html.tostring(historyViewRendered.get_element_by_id('content-core'), method='xml')
 
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):

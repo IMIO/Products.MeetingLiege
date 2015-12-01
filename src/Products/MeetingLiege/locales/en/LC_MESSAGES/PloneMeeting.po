@@ -144,7 +144,8 @@ msgstr "Administrative reviewers"
 msgid "adopts_next_council_agenda_descr"
 msgstr ""
 
-#. Default: "No advice to ask (apart from financial advice)"
+#. Default: "No advice to ask"
+#, fuzzy
 msgid "advice_required_to_ask_advices"
 msgstr "No advice to ask (apart from financial advice)"
 

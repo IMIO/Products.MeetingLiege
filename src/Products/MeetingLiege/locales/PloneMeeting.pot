@@ -200,7 +200,7 @@ msgstr ""
 msgid "MeetingLiege_descr_textCheckList"
 msgstr ""
 
-#. Default: "No advice to ask (apart from financial advice)"
+#. Default: "No advice to ask"
 msgid "advice_required_to_ask_advices"
 msgstr ""
 

@@ -1957,26 +1957,40 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 return True
         return res
 
+    def _hasAdvicesToGive(self, destination_state):
+        """ """
+        # check if aksed advices are giveable in state 'proposed_to_internal_reviewer_waiting_advices'
+        tool = api.portal.get_tool('portal_plonemeeting')
+        cfg = tool.getMeetingConfig(self.context)
+        hasAdvicesToGive = False
+        for adviceId, adviceInfo in self.context.adviceIndex.items():
+            # only consider advices to give
+            if adviceInfo['type'] not in (NOT_GIVEN_ADVICE_VALUE, 'asked_again', ):
+                continue
+            mGroup = getattr(tool, adviceId)
+            adviceStates = mGroup.getItemAdviceStates(cfg)
+            if destination_state in adviceStates:
+                hasAdvicesToGive = True
+                break
+        return hasAdvicesToGive
+
     security.declarePublic('mayAskAdvicesByItemCreator')
 
     def mayAskAdvicesByItemCreator(self):
         '''May advices be asked by item creator.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            # if no advice to ask or only advice to ask is financial advice,
-            # we do not let item creator ask advices, non sense...
-            # finance advice are not optional advices
-            adviceIdsToBypass = {}
-            for groupId in FINANCE_GROUP_IDS:
-                adviceIdsToBypass[groupId] = False
-            if self.context.hasAdvices(toGive=True, adviceIdsToBypass=adviceIdsToBypass):
+            # check if asked advices are giveable in state 'itemcreated_waiting_advices'
+            hasAdvicesToGive = self._hasAdvicesToGive('itemcreated_waiting_advices')
+
+            if hasAdvicesToGive:
                 res = True
                 if not self.context.getCategory():
                     return No(translate('required_category_ko',
                                         domain="PloneMeeting",
                                         context=self.context.REQUEST))
             else:
-                # return a 'No' instance explaining that no advice is (still) asked on this item
+                # return a 'No' instance explaining that no askable advice is selected on this item
                 res = No(translate('advice_required_to_ask_advices',
                                    domain='PloneMeeting',
                                    context=self.context.REQUEST))
@@ -1988,14 +2002,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''May advices be asked by internal reviewer.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            # finance advice are not optional advices
-            adviceIdsToBypass = {}
-            for groupId in FINANCE_GROUP_IDS:
-                adviceIdsToBypass[groupId] = False
-            if self.context.hasAdvices(toGive=True, adviceIdsToBypass=adviceIdsToBypass):
+            # check if asked advices are giveable in state 'proposed_to_internal_reviewer_waiting_advices'
+            hasAdvicesToGive = self._hasAdvicesToGive('proposed_to_internal_reviewer_waiting_advices')
+
+            if hasAdvicesToGive:
                 res = True
             else:
-                # return a 'No' instance explaining that no advice is (still) asked on this item
+                # return a 'No' instance explaining that no askable advice is selected on this item
                 res = No(translate('advice_required_to_ask_advices',
                                    domain='PloneMeeting',
                                    context=self.context.REQUEST))

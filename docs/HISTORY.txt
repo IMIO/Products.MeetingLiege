@@ -26,3 +26,6 @@ Products.MeetingLiege Changelog
   the end of the item's decisionEnd if not already
 - Make sure a MeetingGroup may not be removed if used in MeetingConfig.archivingRefs or
   MeetingCategory.groupsOfMatter
+- Do only let ask advices (by item creator or internal reviewer) if some advices will be giveable in
+  the state the item will be (itemcreated_waiting_advices or
+  proposed_to_internal_reviewer_waiting_advices)

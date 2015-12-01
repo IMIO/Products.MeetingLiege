@@ -1129,6 +1129,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         directly to the role above.
         '''
         cfg = self.meetingConfig
+        cfg.itemAdviceStates = ('itemcreated_waiting_advices',
+                                'proposed_to_internal_reviewer_waiting_advices')
         cfg.setUseGroupsAsCategories(False)
         pg = self.portal.portal_groups
         darGroup = pg.getGroupById('developers_administrativereviewers')
@@ -1503,6 +1505,47 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.decideMeeting(meeting)
         self.do(duplicatedItem, 'accept')
         self.assertTrue(duplicatedItem.getItemClonedToOtherMC(cfg2Id))
+
+    def test_subproduct_CreatorMayAskAdviceOnlyIfRelevant(self):
+        """MeetingMember may only set item to 'itemcreated_waiting_advices' if there
+           are actually advices to ask, so if at least one of the asked advices may be
+           given in state 'itemcreated_waiting_advices'."""
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
+        # advices are giveable in states '_waiting_advices'
+        cfg.itemAdviceStates = ('itemcreated_waiting_advices',
+                                'proposed_to_internal_reviewer_waiting_advices')
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        # for now this advice may be asked
+        vendors = self.tool.vendors
+        self.assertFalse(vendors.getItemAdviceStates())
+        self.assertIn('askAdvicesByItemCreator', self.transitions(item))
+        # now restrict 'vendors' itemAdviceStates to 'proposed_to_internal_reviewer_waiting_advices'
+        vendors.setItemAdviceStates(('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, ))
+        self.assertNotIn('askAdvicesByItemCreator', self.transitions(item))
+        # if another advice is asked, then the transition shows up
+        developers = self.tool.developers
+        self.assertFalse(developers.getItemAdviceStates())
+        item.setOptionalAdvisers(('vendors', 'developers'))
+        item.at_post_edit_script()
+        self.assertIn('askAdvicesByItemCreator', self.transitions(item))
+
+        # now test when item is 'proposed_to_internal_reviewer_waiting_advices'
+        self.changeUser('pmReviewer1')
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.changeUser('siteadmin')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.do(item, 'proposeToInternalReviewer')
+        self.changeUser('pmInternalReviewer1')
+        # advice may be asked
+        self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
+        vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
+        # advice may not be asked anymore
+        self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
 
 
 def test_suite():

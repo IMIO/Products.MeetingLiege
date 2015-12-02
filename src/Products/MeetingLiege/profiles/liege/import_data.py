@@ -493,9 +493,7 @@ councilMeeting.useGroupsAsCategories = False
 councilMeeting.recurringItems = []
 councilMeeting.meetingUsers = []
 
-
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(collegeMeeting, councilMeeting),
                                  groups=groups)
-data.unoEnabledPython = '/usr/bin/python'
 # ------------------------------------------------------------------------------

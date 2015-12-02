@@ -27,7 +27,9 @@ import string
 import unicodedata
 from collections import OrderedDict
 from appy.gen import No
-from AccessControl import getSecurityManager, ClassSecurityInfo
+from AccessControl import ClassSecurityInfo
+from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
 from Globals import InitializeClass
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
@@ -37,6 +39,7 @@ from plone import api
 from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
+from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
@@ -1822,6 +1825,18 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         self.context.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(newItem, 'validate')
         self.context.REQUEST.set('mayValidate', False)
+
+    security.declarePrivate('doDelay')
+
+    def doDelay(self, stateChange):
+        '''When a College item is delayed, if it was sent to Council, delete
+           the item in the Council.'''
+        # call original action
+        MeetingItemWorkflowActions.doDelay(self, stateChange)
+        councilItem = self.context.getItemClonedToOtherMC('meeting-config-council')
+        if councilItem:
+            # Make sure item is removed because MeetingManagers may not remove items...
+            unrestrictedRemoveGivenObject(councilItem)
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):

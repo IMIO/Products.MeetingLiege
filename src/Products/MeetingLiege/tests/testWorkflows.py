@@ -1448,8 +1448,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         """While an item in the council is set to 'delayed', it is sent
            in 'itemcreated' state back to the College and ready to process
            back to the council."""
-        cfgId = 'meeting-config-college'
-        cfg2Id = 'meeting-config-council'
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
         collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
         self.do(councilItem, 'delay')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
@@ -1466,8 +1468,10 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         """While an item in the council is set to 'delayed', it is sent
            in 'itemcreated' state back to the College and ready to process
            back to the council."""
-        cfgId = 'meeting-config-college'
-        cfg2Id = 'meeting-config-council'
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
         collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
         self.do(councilItem, 'return')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
@@ -1505,6 +1509,34 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.decideMeeting(meeting)
         self.do(duplicatedItem, 'accept')
         self.assertTrue(duplicatedItem.getItemClonedToOtherMC(cfg2Id))
+
+    def test_subproduct_CouncilItemDeletedIfCollegeItemIsDelayed(self):
+        """As items are sent to Council when 'itemfrozen', if a College item is finally
+           'delayed', delete the Council item that was sent."""
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(True)
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        cfg.setMeetingConfigsToCloneTo(({'meeting_config': cfg2Id,
+                                         'trigger_workflow_transitions_until': '__nothing__'},))
+        cfg.setItemAutoSentToOtherMCStates(('accepted', 'itemfrozen', ))
+
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        meeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        self.presentItem(item)
+        self.freezeMeeting(meeting)
+        # item was sent to Council
+        self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
+
+        # now delay the College item, it will automatically delete the Council item
+        self.decideMeeting(meeting)
+        self.do(item, 'delay')
+        self.assertFalse(item.getItemClonedToOtherMC(cfg2Id))
+        # but original delay action was kept, the item was duplicated in the College
+        backRefs = item.getBRefs('ItemPredecessor')
+        self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item.portal_type)
 
     def test_subproduct_CreatorMayAskAdviceOnlyIfRelevant(self):
         """MeetingMember may only set item to 'itemcreated_waiting_advices' if there

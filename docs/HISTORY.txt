@@ -29,3 +29,5 @@ Products.MeetingLiege Changelog
 - Do only let ask advices (by item creator or internal reviewer) if some advices will be giveable in
   the state the item will be (itemcreated_waiting_advices or
   proposed_to_internal_reviewer_waiting_advices)
+- When a College item was sent to Council (when it was frozen) and the final decision on the College item
+  is "delayed", delete the item that was sent to the Council

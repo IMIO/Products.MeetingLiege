@@ -136,6 +136,10 @@ msgstr "Montrer le champ 'Point avec acte' sur les listes de points en retard"
 msgid "See/hide data used for council item"
 msgstr "Montrer/cacher données utilisées pour le point Conseil"
 
+#. Default: "The item that was sent to Council has been deleted."
+msgid "The item that was sent to Council has been deleted."
+msgstr "Le point qui avait déjà été envoyé au Conseil a été supprimé."
+
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
 msgstr "Validateurs administratifs"

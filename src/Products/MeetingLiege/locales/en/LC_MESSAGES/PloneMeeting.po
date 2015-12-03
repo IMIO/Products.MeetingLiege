@@ -136,6 +136,10 @@ msgstr "Show field 'to discuss' on lists of late items"
 msgid "See/hide data used for council item"
 msgstr "See/hide data used for council item"
 
+#. Default: "The item that was sent to Council has been deleted."
+msgid "The item that was sent to Council has been deleted."
+msgstr ""
+
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
 msgstr "Administrative reviewers"

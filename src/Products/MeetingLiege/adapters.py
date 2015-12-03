@@ -29,7 +29,6 @@ from collections import OrderedDict
 from appy.gen import No
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
-from AccessControl import Unauthorized
 from Globals import InitializeClass
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
@@ -42,6 +41,7 @@ from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
+from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import PMPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
@@ -1837,6 +1837,9 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         if councilItem:
             # Make sure item is removed because MeetingManagers may not remove items...
             unrestrictedRemoveGivenObject(councilItem)
+            plone_utils = api.portal.get_tool('plone_utils')
+            plone_utils.addPortalMessage(_("The item that was sent to Council has been deleted."),
+                                         type='warning')
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):

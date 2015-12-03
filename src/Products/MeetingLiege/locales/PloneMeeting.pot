@@ -449,3 +449,7 @@ msgstr ""
 #. Default: "Synthesis finance advices"
 msgid "searchitemswithfinanceadvice"
 msgstr ""
+
+#. Default: "The item that was sent to Council has been deleted."
+msgid "The item that was sent to Council has been deleted."
+msgstr ""

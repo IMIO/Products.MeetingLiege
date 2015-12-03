@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008-2010 by PloneGov
+# Copyright (c) 2008-2015 by Imio.be
 #
 # GNU General Public License (GPL)
 #

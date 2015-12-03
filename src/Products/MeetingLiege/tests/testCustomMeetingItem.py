@@ -2,7 +2,7 @@
 #
 # File: testCustomMeetingItem.py
 #
-# Copyright (c) 2007-2012 by CommunesPlone.org
+# Copyright (c) 2007-2015 by Imio.be
 #
 # GNU General Public License (GPL)
 #

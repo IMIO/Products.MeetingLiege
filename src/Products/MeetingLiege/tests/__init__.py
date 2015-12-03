@@ -2,9 +2,7 @@
 #
 # File: tests.py
 #
-# Copyright (c) 2007-2012 by CommunesPlone.org
-# Generator: ArchGenXML Version 2.4.1
-#            http://plone.org/products/archgenxml
+# Copyright (c) 2007-2015 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -27,17 +25,3 @@
 __author__ = """Gauthier Bastien <gbastien@imio.be>, Stephan Geulette
 <sgeulette@imio.be>"""
 __docformat__ = 'plaintext'
-
-
-##code-section init-module-header #fill in your manual code here
-##/code-section init-module-header
-
-
-# Subpackages
-# Additional
-
-# Classes
-
-##code-section init-module-footer #fill in your manual code here
-##/code-section init-module-footer
-

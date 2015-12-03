@@ -35,7 +35,8 @@ from zope.interface import implements
 from zope.i18n import translate
 from plone.memoize import ram
 from plone import api
-from Products.CMFCore.permissions import ReviewPortalContent, ModifyPortalContent
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import ReviewPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
@@ -44,30 +45,42 @@ from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import PMPrettyLinkAdapter
-from Products.PloneMeeting.MeetingItem import MeetingItem, MeetingItemWorkflowConditions, MeetingItemWorkflowActions
-from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
+from Products.PloneMeeting.MeetingItem import MeetingItem
+from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
+from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
 from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
+from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
-from Products.PloneMeeting.utils import checkPermission, getLastEvent
-from Products.PloneMeeting.Meeting import MeetingWorkflowActions, MeetingWorkflowConditions, Meeting
+from Products.PloneMeeting.utils import checkPermission
+from Products.PloneMeeting.utils import getLastEvent
+from Products.PloneMeeting.Meeting import Meeting
+from Products.PloneMeeting.Meeting import MeetingWorkflowActions
+from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingGroup import MeetingGroup
 from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
-from Products.PloneMeeting.interfaces import IMeetingCustom, IMeetingItemCustom, \
-    IMeetingConfigCustom, IMeetingGroupCustom, IMeetingCategoryCustom, IToolPloneMeetingCustom
-from Products.MeetingLiege.interfaces import \
-    IMeetingItemCollegeLiegeWorkflowConditions, IMeetingItemCollegeLiegeWorkflowActions,\
-    IMeetingCollegeLiegeWorkflowConditions, IMeetingCollegeLiegeWorkflowActions, \
-    IMeetingItemCouncilLiegeWorkflowConditions, IMeetingItemCouncilLiegeWorkflowActions,\
-    IMeetingCouncilLiegeWorkflowConditions, IMeetingCouncilLiegeWorkflowActions
+from Products.PloneMeeting.interfaces import IMeetingCategoryCustom
+from Products.PloneMeeting.interfaces import IMeetingCustom
+from Products.PloneMeeting.interfaces import IMeetingConfigCustom
+from Products.PloneMeeting.interfaces import IMeetingGroupCustom
+from Products.PloneMeeting.interfaces import IMeetingItemCustom
+from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
+from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowConditions
+from Products.MeetingLiege.interfaces import IMeetingCouncilLiegeWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingCouncilLiegeWorkflowConditions
+from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowConditions
+from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowConditions
+from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
-from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -601,7 +614,7 @@ class CustomMeetingItem(MeetingItem):
                              context=self.REQUEST)
     MeetingItem.validate_archivingRef = validate_archivingRef
 
-    security.declareProtected('Modify portal content', 'setCategory')
+    security.declareProtected(ModifyPortalContent, 'setCategory')
 
     def setCategory(self, value, **kwargs):
         '''Overrides the field 'category' mutator to remove stored
@@ -1154,7 +1167,7 @@ class CustomMeetingItem(MeetingItem):
         else:
             return item.getDecisionEnd()
 
-    security.declareProtected('Modify portal content', 'onEdit')
+    security.declareProtected(ModifyPortalContent, 'onEdit')
 
     def onEdit(self, isCreated):
         '''Update local_roles regarding :

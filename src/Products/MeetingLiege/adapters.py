@@ -53,6 +53,7 @@ from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import checkPermission
 from Products.PloneMeeting.utils import getLastEvent
+from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.Meeting import Meeting
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions
 from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
@@ -85,6 +86,13 @@ from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
 MeetingConfig.wfAdaptations = customWfAdaptations
+
+# use the 'itemcreated' state from college item WF to patch council item WF
+RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = {'meetingitemcollegeliege_workflow':
+                                            'meetingitemcollegeliege_workflow.itemcreated',
+                                            'meetingitemcouncilliege_workflow':
+                                            'meetingitemcollegeliege_workflow.itemcreated', }
+adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
 
 
 class CustomMeeting(Meeting):
@@ -496,6 +504,7 @@ class CustomMeeting(Meeting):
                 if item == item2:
                     res[item.UID()] = item_num
                     break
+
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
         items = self.getItems(listType='late', ordered=True)
         item_num = 1

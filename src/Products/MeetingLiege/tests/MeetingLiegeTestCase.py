@@ -27,9 +27,12 @@ from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
 # monkey patch the MeetingConfig.wfAdaptations again because it is done in
 # adapters.py but overrided by Products.MeetingCommunes here in the tests...
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
+from Products.PloneMeeting.model import adaptations
 from Products.MeetingLiege.adapters import customWfAdaptations
+from Products.MeetingLiege.adapters import RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
 
 MeetingConfig.wfAdaptations = customWfAdaptations
+adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
 
 
 class MeetingLiegeTestCase(MeetingCommunesTestCase, MeetingLiegeTestingHelpers):

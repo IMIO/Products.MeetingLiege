@@ -1917,9 +1917,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                     res = False
 
             # If there is no internal reviewer or if the current user
-            # is internal reviewer, do not show the transition.
+            # is internal reviewer or director, do not show the transition.
             if not self._groupIsNotEmpty('internalreviewers') or \
-                    member.has_role('MeetingInternalReviewer', self.context):
+               member.has_role('MeetingInternalReviewer', self.context) or \
+               member.has_role('MeetingReviewer', self.context):
                 res = False
             if not self.context.getCategory() and res:
                 return No(translate('required_category_ko',
@@ -1931,10 +1932,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayProposeToDirector(self):
         '''
-        An item can be proposed directly from creation to director
-        by an internal reviewer or a director. Of course, an internal
-        reviewer can still propose to director an item which is
-        proposed to internal reviewer.
+        An item can be proposed directly from any state to director
+        by an internal reviewer or a director.
         It's also possible, when there are no administrative and internal
         reviewers, to send item from creation to direction, even
         if the user is only a creator.
@@ -1950,27 +1949,26 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             tool = api.portal.get_tool('portal_plonemeeting')
             if tool.isManager(self.context):
                 return True
-            # Director and internal reviewer can propose to director an item in
-            # creation or in creation and waiting for advice.
-            if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
-                not (member.has_role('MeetingReviewer', self.context) or
-                     member.has_role('MeetingInternalReviewer', self.context)):
-
+            # Director and internal reviewer can propose items to director in
+            # any state.
+            if not (member.has_role('MeetingReviewer', self.context) or
+                    member.has_role('MeetingInternalReviewer', self.context)):
                 # An administrative reviewer can propose to director if there
                 # is no internal reviewer and a creator can do it too if there
                 # is neither administrative nor internal reviewers.
-                if (self._groupIsNotEmpty('administrativereviewers') or
-                    self._groupIsNotEmpty('internalreviewers')) and \
-                   (self._groupIsNotEmpty('internalreviewers') or
-                        not member.has_role('MeetingAdminReviewer', self.context)):
+                if item_state in ['itemcreated', 'itemcreated_waiting_advices']:
+                    if (self._groupIsNotEmpty('administrativereviewers') or
+                        self._groupIsNotEmpty('internalreviewers')) and \
+                    (self._groupIsNotEmpty('internalreviewers') or
+                            not member.has_role('MeetingAdminReviewer', self.context)):
+                        res = False
+                # Else if the item is proposed to administrative reviewer and
+                # there is no internal reviewer in the group, an administrative
+                # reviewer can also send the item to director.
+                elif item_state == 'proposed_to_administrative_reviewer' and \
+                    (not member.has_role('MeetingAdminReviewer', self.context) or
+                     self._groupIsNotEmpty('internalreviewers')):
                     res = False
-            # Else if the item is proposed to administrative reviewer and
-            # there is no internal reviewer in the group, an administrative
-            # reviewer can also send the item to director.
-            elif item_state == 'proposed_to_administrative_reviewer' and \
-                (not member.has_role('MeetingAdminReviewer', self.context) or
-                    self._groupIsNotEmpty('internalreviewers')):
-                res = False
             if not self.context.getCategory() and res:
                 return No(translate('required_category_ko',
                                     domain="PloneMeeting",

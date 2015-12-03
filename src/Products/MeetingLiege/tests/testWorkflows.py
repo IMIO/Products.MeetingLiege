@@ -1265,6 +1265,15 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item.setOptionalAdvisers(())
         item.at_post_edit_script()
 
+        # An internal reviewer can send an item from administrative reviewer to
+        # director.
+        self.changeUser('pmCreator1')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.changeUser('pmInternalReviewer1')
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        self.do(item, 'backToItemCreated')
+
         # a director has the same prerogative of an internal reviewer.
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
@@ -1285,6 +1294,21 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item.at_post_edit_script()
+
+        # A director can send an item from administrative reviewer to director.
+        self.changeUser('pmCreator1')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.changeUser('pmReviewer1')
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToDirector', ])
+        # A director can send an item from internal reviewer to director.
+        self.changeUser('pmAdminReviewer1')
+        self.do(item, 'proposeToInternalReviewer')
+        self.changeUser('pmReviewer1')
+        self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
+                                                   'proposeToDirector', ])
+        self.do(item, 'backToProposedToAdministrativeReviewer')
+        self.do(item, 'backToItemCreated')
 
         # A director can validate or send the item back to the first state with
         # user in it. As there is an internal reviewer, the item can be sent

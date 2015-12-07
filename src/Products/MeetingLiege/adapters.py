@@ -1888,12 +1888,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             tool = api.portal.get_tool('portal_plonemeeting')
             if tool.isManager(self.context):
                 return True
+            isReviewer = member.has_role('MeetingReviewer', self.context)
+            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
+            isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
             # Item in creation, or in creation waiting for advice can only
             # be sent to administrative reviewer by creators.
             if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
-                    (member.has_role('MeetingAdminReviewer', self.context) or
-                     member.has_role('MeetingInternalReviewer', self.context) or
-                     member.has_role('MeetingReviewer', self.context)):
+               (isReviewer or isInternalReviewer or isAdminReviewer):
                 res = False
             # If there is no administrative reviewer, do not show the
             # transition.
@@ -1920,16 +1921,18 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # Only administrative reviewers might propose to internal reviewer,
             # but creators can do it too if there is no administrative
             # reviewer.
-            if not member.has_role('MeetingAdminReviewer', self.context):
+            isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
+            if not isAdminReviewer:
+                aRNotEmpty = self._groupIsNotEmpty('administrativereviewers')
                 if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and\
-                        self._groupIsNotEmpty('administrativereviewers'):
+                   aRNotEmpty:
                     res = False
-
             # If there is no internal reviewer or if the current user
             # is internal reviewer or director, do not show the transition.
-            if not self._groupIsNotEmpty('internalreviewers') or \
-               member.has_role('MeetingInternalReviewer', self.context) or \
-               member.has_role('MeetingReviewer', self.context):
+            isReviewer = member.has_role('MeetingReviewer', self.context)
+            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
+            iRNotEmpty = self._groupIsNotEmpty('internalreviewers')
+            if not iRNotEmpty or isInternalReviewer or isReviewer:
                 res = False
             if not self.context.getCategory() and res:
                 return No(translate('required_category_ko',
@@ -1958,25 +1961,27 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             tool = api.portal.get_tool('portal_plonemeeting')
             if tool.isManager(self.context):
                 return True
+            isReviewer = member.has_role('MeetingReviewer', self.context)
+            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
             # Director and internal reviewer can propose items to director in
             # any state.
-            if not (member.has_role('MeetingReviewer', self.context) or
-                    member.has_role('MeetingInternalReviewer', self.context)):
+            if not (isReviewer or isInternalReviewer):
+                aRNotEmpty = self._groupIsNotEmpty('administrativereviewers')
+                iRNotEmpty = self._groupIsNotEmpty('internalreviewers')
+                isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
+
                 # An administrative reviewer can propose to director if there
                 # is no internal reviewer and a creator can do it too if there
                 # is neither administrative nor internal reviewers.
                 if item_state in ['itemcreated', 'itemcreated_waiting_advices']:
-                    if (self._groupIsNotEmpty('administrativereviewers') or
-                        self._groupIsNotEmpty('internalreviewers')) and \
-                    (self._groupIsNotEmpty('internalreviewers') or
-                            not member.has_role('MeetingAdminReviewer', self.context)):
+                    if (aRNotEmpty or iRNotEmpty) and \
+                       (iRNotEmpty or not isAdminReviewer):
                         res = False
                 # Else if the item is proposed to administrative reviewer and
                 # there is no internal reviewer in the group, an administrative
                 # reviewer can also send the item to director.
                 elif item_state == 'proposed_to_administrative_reviewer' and \
-                    (not member.has_role('MeetingAdminReviewer', self.context) or
-                     self._groupIsNotEmpty('internalreviewers')):
+                   (not isAdminReviewer or iRNotEmpty):
                     res = False
             if not self.context.getCategory() and res:
                 return No(translate('required_category_ko',

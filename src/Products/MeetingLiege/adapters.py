@@ -1056,10 +1056,9 @@ class CustomMeetingItem(MeetingItem):
                     getLastEvent(current, 'create_to_meeting-config-council_from_meeting-config-college')):
                 return False
 
-            # council item and predecessor college item is in relevant states
-            if current.portal_type == 'MeetingItemCouncil' and \
-               (predecessor.portal_type == 'MeetingItemCollege' and
-                    predecessor.queryState() in ('accepted', 'accepted_and_returned', 'returned')):
+            # council item and predecessor is a College item
+            # in any case, the finance advice is kept
+            if current.portal_type == 'MeetingItemCouncil' and predecessor.portal_type == 'MeetingItemCollege':
                 return True
             # college item and predecessor council item in state 'returned'
             if current.portal_type == 'MeetingItemCollege' and \

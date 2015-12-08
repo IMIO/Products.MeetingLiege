@@ -289,8 +289,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         # delay is not started, it only starts when item is complete
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
-        # if we updateAdvices, infos are still ok
-        item.updateAdvices()
+        # if we _updateAdvices, infos are still ok
+        item.updateLocalRoles()
         # the item can be sent back to the internal reviewer by any finance role
         self.changeUser('pmFinController')
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
@@ -649,7 +649,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
-        # sign advice, necessary to test updateAdvices called in updateAdvices...
+        # sign advice, necessary to test _updateAdvices called in _updateAdvices...
         self.do(advice, 'proposeToFinancialReviewer')
         self.changeUser('pmFinReviewer')
         self.do(advice, 'proposeToFinancialManager')
@@ -661,7 +661,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(not 'validate' in self.transitions(item))
         # now does advice timed out
         item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2014, 1, 1)
-        item.updateAdvices()
+        item.updateLocalRoles()
         # advice is timed out
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
         # item has been automatically validated
@@ -676,7 +676,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # now test that a 'timed_out' advice can be set back to editable
         # by finance advice from no more editable, for this, go to 'itemfrozen'
         # this test a corrected bug where 'delay_infos' key was no more present
-        # in the adviceIndex because updateAdvices is called during updateAdvices
+        # in the adviceIndex because _updateAdvices is called during _updateAdvices
         self.do(item, 'validate')
         self.changeUser('pmManager')
         meeting = self.create('Meeting', date='2015/05/05')
@@ -1121,7 +1121,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
 
-        # still works after an updateAdvices
+        # still works after an _updateAdvices
         self.tool._updateAllAdvices()
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])

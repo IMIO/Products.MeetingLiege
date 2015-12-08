@@ -550,9 +550,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item2.setCompleteness('completeness_complete')
         self.do(item3, 'proposeToFinance')
         item3.setCompleteness('completeness_complete')
-        item3.updateAdvices()
+        item3.updateLocalRoles()
         item3.adviceIndex[item3.getFinanceAdvice()]['delay_started_on'] = datetime(2012, 1, 1)
-        item3.updateAdvices()
+        item3.updateLocalRoles()
 
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(item1,

@@ -157,11 +157,11 @@ def onAdviceTransition(advice, event):
                 wfTool.doActionFor(item, 'backToProposedToDirector', comment='item_wf_changed_finance_advice_negative')
                 item.REQUEST.set('mayBackToProposedToDirector', False)
         else:
-            # we need to updateAdvices so change to
+            # we need to _updateAdvices so change to
             # 'advice_hide_during_redaction' is taken into account
-            item.updateAdvices()
+            item.updateLocalRoles()
 
-    # when going to a end state, aka a state where advice can not be edited anymore, we
+    # when going to an end state, aka a state where advice can not be edited anymore, we
     # give the 'MeetingFinanceEditor' to the _advisers finance group
     # so they have read access for the 'advice_substep_number' field, the workflow
     # will not give any permission to this role but we need the finance group to have this
@@ -179,10 +179,10 @@ def onAdviceTransition(advice, event):
     # in some corner case, we could be here and we are actually already updating advices,
     # this is the case if we validate an item and it triggers the fact that advice delay is exceeded
     # this should never be the case as advice delay should have been updated during nightly cron...
-    # but if we are in a 'updateAdvices', do not updateAdvices again...
+    # but if we are in a '_updateAdvices', do not _updateAdvices again...
     if not newStateId in stateToGroupSuffixMappings:
         if not item.REQUEST.get('currentlyUpdatingAdvice', False):
-            item.updateAdvices()
+            item.updateLocalRoles()
         return
 
     # give 'Reader' role to every members of the _advisers and
@@ -199,7 +199,9 @@ def onAdviceTransition(advice, event):
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, ))
 
-    item.updateAdvices()
+    # need to updateLocalRoles, and especially _updateAdvices to finish work :
+    # timed_out advice is no more giveable
+    item.updateLocalRoles()
 
 
 def onAdvicesUpdated(item, event):
@@ -270,10 +272,6 @@ def onAdvicesUpdated(item, event):
             adviceInfo['delay_started_on'] = None
             adviceInfo['advice_addable'] = False
             adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(financeGroupId)
-
-    # need to do this here because '_advisers' local roles are removed by updateAdvices
-    item._updateMatterOfGroupsLocalRoles()
-    item._updateFinanceAdvisersAccess()
 
 
 def onItemDuplicated(original, event):

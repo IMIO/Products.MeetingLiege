@@ -1442,18 +1442,18 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                           'trigger_workflow_transitions_until': '__nothing__'},))
         cfg2.setItemAutoSentToOtherMCStates(('delayed', 'returned', ))
 
-        self.changeUser('pmManager')
+        self.changeUser('pmCreator1')
         # send a college item to council and delay this council item
         # in the college
-        collegeMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
         data = {'labelForCouncil': COUNCIL_LABEL,
                 'privacyForCouncil': COUNCIL_PRIVACY,
                 'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
         collegeItem = self.create('MeetingItem', **data)
-
-        # ask and give finance advice
         collegeItem.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         self.proposeItem(collegeItem)
+
+        self.changeUser('pmManager')
+        collegeMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
         self.do(collegeItem, 'proposeToFinance')
         self._giveFinanceAdvice(collegeItem, FINANCE_GROUP_IDS[0])
         self.presentItem(collegeItem)

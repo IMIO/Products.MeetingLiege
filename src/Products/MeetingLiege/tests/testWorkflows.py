@@ -1121,6 +1121,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
 
+        # still works after an updateAdvices
+        self.tool._updateAllAdvices()
+        self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+        self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
     def test_subproduct_CollegeShortcutProcess(self):
         '''
         The items cannot be send anymore to group without at least one user

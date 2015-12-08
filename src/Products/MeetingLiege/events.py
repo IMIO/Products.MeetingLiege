@@ -58,6 +58,15 @@ def _sendItemBackInWFIfNecessary(item):
             return item.REQUEST.RESPONSE.redirect(redirectTo)
 
 
+def onItemLocalRolesUpdated(item, event):
+    """Called after localRoles have been updated on the item.
+       Update local_roles regarding :
+       - the matterOfGroups;
+       - access of finance advisers."""
+    item._updateMatterOfGroupsLocalRoles()
+    item._updateFinanceAdvisersAccess()
+
+
 def onAdviceAdded(advice, event):
     '''Called when a meetingadvice is added.'''
     item = advice.getParentNode()
@@ -262,42 +271,45 @@ def onAdvicesUpdated(item, event):
             adviceInfo['advice_addable'] = False
             adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(financeGroupId)
 
+    # need to do this here because '_advisers' local roles are removed by updateAdvices
+    item._updateMatterOfGroupsLocalRoles()
+    item._updateFinanceAdvisersAccess()
+
 
 def onItemDuplicated(original, event):
-        '''When an item is sent to the Council, we need to initialize
-           title and privacy from what was defined on the college item.
-           More over we manage here the fact that in some cases, decision
-           annexes are not kept.'''
-        newItem = event.newItem
-        if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
-            # we just sent an item from college to council
-            newItem.setPrivacy(original.getPrivacyForCouncil())
-            # update finance group access on newItem
-            newItem._updateFinanceAdvisersAccess()
+    '''When an item is sent to the Council, we need to initialize
+       title and privacy from what was defined on the college item.
+       More over we manage here the fact that in some cases, decision
+       annexes are not kept.'''
+    newItem = event.newItem
 
-        if original.portal_type == 'MeetingItemCouncil' and newItem.portal_type == 'MeetingItemCollege':
-            # an item Council is sent back to College, enable the 'otherMeetingConfigsClonableTo'
-            newItem.setOtherMeetingConfigsClonableTo(('meeting-config-council', ))
-            newItem.reindexObject(idxs=['sentToInfos'])
+    # need to do this here because ItemLocalRolesUpdated event is called too soon...
+    newItem._updateMatterOfGroupsLocalRoles()
+    newItem._updateFinanceAdvisersAccess()
 
-        # make sure we do not keep decision annexes
-        decisionAnnexes = IAnnexable(newItem).getAnnexes(relatedTo='item_decision')
-        # if item is sent to Council, user may not delete annexes...
-        # in this case, we simply pass because it is supposed not possible to have that
-        # kind of annex on an item that is sent to council, and moreover, the item in the council
-        # is only editable by MeetingManagers
-        if decisionAnnexes and IContentDeletable(newItem).mayDelete():
-            toDelete = [annex.getId() for annex in decisionAnnexes]
-            newItem.manage_delObjects(ids=toDelete)
+    if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
+        # we just sent an item from college to council
+        newItem.setPrivacy(original.getPrivacyForCouncil())
+
+    if original.portal_type == 'MeetingItemCouncil' and newItem.portal_type == 'MeetingItemCollege':
+        # an item Council is sent back to College, enable the 'otherMeetingConfigsClonableTo'
+        newItem.setOtherMeetingConfigsClonableTo(('meeting-config-council', ))
+        newItem.reindexObject(idxs=['sentToInfos'])
+
+    # make sure we do not keep decision annexes
+    decisionAnnexes = IAnnexable(newItem).getAnnexes(relatedTo='item_decision')
+    # if item is sent to Council, user may not delete annexes...
+    # in this case, we simply pass because it is supposed not possible to have that
+    # kind of annex on an item that is sent to council, and moreover, the item in the council
+    # is only editable by MeetingManagers
+    if decisionAnnexes and IContentDeletable(newItem).mayDelete():
+        toDelete = [annex.getId() for annex in decisionAnnexes]
+        newItem.manage_delObjects(ids=toDelete)
 
 
 def onItemAfterTransition(item, event):
     '''Called after the transition event called by default in PloneMeeting.
-       Here, we are sure that code done in the onItemTransition event is finished.
-       We call MeetingItem._updateMatterOfGroupsLocalRoles to update local roles
-       regarding the matterOfGroups.'''
-    item._updateMatterOfGroupsLocalRoles()
-    item._updateFinanceAdvisersAccess()
+       Here, we are sure that code done in the onItemTransition event is finished.'''
 
     # if it is an item Council in state 'returned', validate the issued College item
     if item.portal_type == 'MeetingItemCouncil' and item.queryState() == 'returned':

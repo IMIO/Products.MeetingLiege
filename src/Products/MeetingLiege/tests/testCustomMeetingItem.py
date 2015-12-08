@@ -98,8 +98,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
            responsible of this category (groupsOfMatter) will get 'Reader' access to this item.'''
         # configure so we use categories, and adapt category 'development'
         # so we select a group in it's groupsOfMatter
-        self.meetingConfig.setUseGroupsAsCategories(False)
-        development = self.meetingConfig.categories.development
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
+        development = cfg.categories.development
         development.setGroupsOfMatter(('vendors', ))
         # create an item for the 'developers' group
         self.changeUser('pmCreator1')
@@ -144,11 +145,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
            by every power observers.'''
         # configure so we use categories, and adapt category 'development'
         # so we select a group in it's groupsOfMatter
-        self.meetingConfig.setUseGroupsAsCategories(False)
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
         # confidential annexes are hidden to restricted power observers
-        self.meetingConfig.setAnnexConfidentialFor(('restricted_power_observers', ))
-        self.meetingConfig.setUseGroupsAsCategories(False)
-        development = self.meetingConfig.categories.development
+        cfg.setAnnexConfidentialFor(('restricted_power_observers', ))
+        cfg.setUseGroupsAsCategories(False)
+        development = cfg.categories.development
         development.setGroupsOfMatter(('vendors', ))
         # create an item for the 'developers' group
         self.changeUser('pmCreator1')
@@ -178,20 +180,20 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(not specialReaders in self.member.getGroups())
         self.hasPermission(View, item)
         # no matter the annex is confidential or not, both are not viewable
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                     isPowerObserver=True,
                                                                     isRestrictedPowerObserver=False,
                                                                     annexInfo=annex1.getAnnexInfo()))
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                     isPowerObserver=True,
                                                                     isRestrictedPowerObserver=False,
                                                                     annexInfo=annex2.getAnnexInfo()))
         # an annex using "annexeCahier" or "courrier-a-valider-par-le-college" will be viewable by power observers
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex3.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex4.getAnnexInfo()))
@@ -200,19 +202,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.portal.portal_groups.addPrincipalToGroup('powerobserver1', specialReaders)
         # log again as 'powerobserver1' so getGroups is refreshed
         self.changeUser('powerobserver1')
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex1.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex2.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex3.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=self.meetingConfig,
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex4.getAnnexInfo()))
@@ -220,10 +222,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_ItemReference(self):
         '''Test item reference generation.'''
         # use categories
-        self.meetingConfig.setUseGroupsAsCategories(False)
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
         self.changeUser('pmManager')
         # remove recurring items
-        self._removeConfigObjectsFor(self.meetingConfig)
+        self._removeConfigObjectsFor(cfg)
         # create 5 items using different categories and insert it in a meeting
         depItem1 = self.create('MeetingItem')
         depItem1.setCategory('deployment')
@@ -317,8 +320,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         '''
           Test our custom inserting method 'on_decision_first_word'.
         '''
+        cfg = self.meetingConfig
         self.changeUser('pmManager')
-        self._removeConfigObjectsFor(self.meetingConfig)
+        self._removeConfigObjectsFor(cfg)
         insertingMethods = ({'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
         # no decision, it will get minimum possible index value
         item1 = self.create('MeetingItem')
@@ -372,7 +376,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(item1.getInsertOrder(insertingMethods) > item6.getInsertOrder(insertingMethods))
 
         # now insert items in a meeting and compare
-        self.meetingConfig.setInsertingMethodsOnAddItem(insertingMethods)
+        cfg.setInsertingMethodsOnAddItem(insertingMethods)
         meeting = self.create('Meeting', date='2015/01/01')
         for item in item1, item2, item3, item4, item5, item6, item7:
             self.presentItem(item)

@@ -21,12 +21,16 @@
               handler=".events.onAdvicesUpdated"/>
 
   <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
+                   Products.PloneMeeting.interfaces.IItemAfterTransitionEvent"
+              handler=".events.onItemAfterTransition"/>
+
+  <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
                    Products.PloneMeeting.interfaces.IItemDuplicatedEvent"
               handler=".events.onItemDuplicated"/>
 
   <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
-                   Products.PloneMeeting.interfaces.IItemAfterTransitionEvent"
-              handler=".events.onItemAfterTransition"/>
+                   Products.PloneMeeting.interfaces.IItemLocalRolesUpdatedEvent"
+              handler=".events.onItemLocalRolesUpdated"/>
 
   <subscriber for="Products.PloneMeeting.interfaces.IMeetingCategory
                    zope.container.interfaces.IObjectRemovedEvent"

@@ -1175,16 +1175,6 @@ class CustomMeetingItem(MeetingItem):
         else:
             return item.getDecisionEnd()
 
-    security.declareProtected(ModifyPortalContent, 'onEdit')
-
-    def onEdit(self, isCreated):
-        '''Update local_roles regarding :
-           - the matterOfGroups;
-           - access of finance advisers.'''
-        item = self.getSelf()
-        item._updateMatterOfGroupsLocalRoles()
-        item._updateFinanceAdvisersAccess()
-
     def _updateFinanceAdvisersAccess(self):
         '''
           Make sure finance advisers have still access to items linked to an item for which they

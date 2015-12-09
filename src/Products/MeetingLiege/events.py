@@ -63,8 +63,8 @@ def onItemLocalRolesUpdated(item, event):
        Update local_roles regarding :
        - the matterOfGroups;
        - access of finance advisers."""
-    item._updateMatterOfGroupsLocalRoles()
-    item._updateFinanceAdvisersAccess()
+    item.adapted()._updateMatterOfGroupsLocalRoles()
+    item.adapted().updateFinanceAdvisersAccess()
 
 
 def onAdviceAdded(advice, event):
@@ -282,8 +282,8 @@ def onItemDuplicated(original, event):
     newItem = event.newItem
 
     # need to do this here because ItemLocalRolesUpdated event is called too soon...
-    newItem._updateMatterOfGroupsLocalRoles()
-    newItem._updateFinanceAdvisersAccess()
+    newItem.adapted()._updateMatterOfGroupsLocalRoles()
+    newItem.adapted().updateFinanceAdvisersAccess()
 
     if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
         # we just sent an item from college to council

@@ -1175,7 +1175,61 @@ class CustomMeetingItem(MeetingItem):
         else:
             return item.getDecisionEnd()
 
-    def _updateFinanceAdvisersAccess(self):
+    def updateFinanceAdvisersAccess(self):
+        """ """
+        item = self.getSelf()
+        item.adapted()._updateFinanceAdvisersAccessToManuallyLinkedItems()
+        item.adapted()._updateFinanceAdvisersAccessToAutoLinkedItems()
+
+    def _updateFinanceAdvisersAccessToManuallyLinkedItems(self):
+        '''
+          Make sure finance advisers have access to every items that are manually linked
+          between each other in any case, this have to manage :
+          - current item has finance advice, make sure other items are accessible;
+          - current item does not have a finance advice but we do a link to an item that has
+            a finance advice, current item must be accessible;
+          - when a linked item is removed (link to an item is removed), we need to update it
+            if finance adviser access must be removed.
+        '''
+        item = self.getSelf()
+        # avoid circular calls, avoid updateLocalRoles here under to enter further
+        if item.REQUEST.get('_updateFinanceAdvisersAccessToManuallyLinkedItems', False):
+            return
+        item.REQUEST.set('_updateFinanceAdvisersAccessToManuallyLinkedItems', True)
+
+        linkedItems = item.getManuallyLinkedItems()
+        # first step, walk every items including self to check what finance adviser
+        # should have access to every items
+        finance_accesses = []
+        linkedItems.append(item)
+        for linkedItem in linkedItems:
+            financeAdvice = linkedItem.getFinanceAdvice()
+            if financeAdvice != '_none_' and not financeAdvice in finance_accesses:
+                # only add it if finance advisers have already access to the linkedItem
+                groupId = "{0}_advisers".format(financeAdvice)
+                if groupId in linkedItem.__ac_local_roles__ and \
+                   READER_USECASES['advices'] in linkedItem.__ac_local_roles__[groupId]:
+                    finance_accesses.append(financeAdvice)
+        # every group in finance_accesses will get access to linkedItems
+        for linkedItem in linkedItems:
+            if linkedItem != item:
+                linkedItem.updateLocalRoles()
+            for finance_access in finance_accesses:
+                groupId = "{0}_advisers".format(finance_access)
+                if not groupId in linkedItem.__ac_local_roles__:
+                    linkedItem.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
+                    linkedItem.reindexObjectSecurity()
+
+        # now we need removeUids to be updated too, we will call updateLocalRoles on removeUids
+        catalog = api.portal.get_tool('portal_catalog')
+        removedUids = item.REQUEST.get('manuallyLinkedItems_removedUids', [])
+        for removeUid in removedUids:
+            removedItem = catalog.unrestrictedSearchResults(UID=removeUid)[0]._unrestrictedGetObject()
+            removedItem.updateLocalRoles()
+
+        item.REQUEST.set('_updateFinanceAdvisersAccessToManuallyLinkedItems', False)
+
+    def _updateFinanceAdvisersAccessToAutoLinkedItems(self):
         '''
           Make sure finance advisers have still access to items linked to an item for which they
           give an advice on.  This could be the case :
@@ -1185,15 +1239,17 @@ class CustomMeetingItem(MeetingItem):
           In both cases, the finance advice is not asked anymore
           but we need to give a read access to the corresponding finance advisers.
         '''
-        # do only that if there is an itemWithFinanceAdvice
-        itemWithFinanceAdvice = self.adapted().getItemWithFinanceAdvice()
-        if itemWithFinanceAdvice == self:
+        item = self.getSelf()
+        if item.getFinanceAdvice() == '_none_':
             return
 
-        # ok, we have a predecessor with finance access, give access to current item also
-        groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
-        self.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
-    MeetingItem._updateFinanceAdvisersAccess = _updateFinanceAdvisersAccess
+        # make sure finance advisers have access to an item
+        # that is not the itemWithFinanceAdvice holder
+        itemWithFinanceAdvice = item.adapted().getItemWithFinanceAdvice()
+        if itemWithFinanceAdvice != item:
+            # ok, we have a predecessor with finance access, give access to current item also
+            groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
+            item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
     def _updateMatterOfGroupsLocalRoles(self):
         '''
@@ -1202,13 +1258,14 @@ class CustomMeetingItem(MeetingItem):
           validated.  Read access is given to the _observers Plone group of the selected
           matterOfGroups groups on the category used for the item.
         '''
+        item = self.getSelf()
         # when we are here, MeetingItem.updateLocalRoles already removed every unnecessary
         # local roles given to Plone _subgroups, re-add if necessary
-        if not self.queryState() == 'validated' and not self.hasMeeting():
+        if not item.queryState() == 'validated' and not item.hasMeeting():
             return
 
         # compute _observers groups we will give local roles to
-        category = self.getCategory(theObject=True)
+        category = item.getCategory(theObject=True)
         if not category or not category.meta_type == 'MeetingCategory':
             return
 
@@ -1216,8 +1273,7 @@ class CustomMeetingItem(MeetingItem):
         # and give 'Reader' local role to the item
         for groupOfMatter in category.getGroupsOfMatter():
             groupId = '%s_observers' % groupOfMatter
-            self.manage_addLocalRoles(groupId, ('Reader', ))
-    MeetingItem._updateMatterOfGroupsLocalRoles = _updateMatterOfGroupsLocalRoles
+            item.manage_addLocalRoles(groupId, ('Reader', ))
 
     def _findCustomOneLevelFor(self, insertMethod):
         '''Manage our custom inserting method 'on_decision_first_word'.'''
@@ -1971,7 +2027,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 # there is no internal reviewer in the group, an administrative
                 # reviewer can also send the item to director.
                 elif item_state == 'proposed_to_administrative_reviewer' and \
-                   (not isAdminReviewer or iRNotEmpty):
+                        (not isAdminReviewer or iRNotEmpty):
                     res = False
             if not self.context.getCategory() and res:
                 return No(translate('required_category_ko',

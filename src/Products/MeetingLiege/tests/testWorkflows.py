@@ -1033,10 +1033,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'accepted')
         self.assertFalse(self.hasPermission(DeleteObjects, item))
 
-    def test_subproduct_FinanceAdvisersAccessToLinkedItems(self):
-        """Finance adviser have still access to items linked to
-           an item they give advice on.
-           This is the case for 'returned' items and items sent to Council."""
+    def _setupCollegeItemWithFinanceAdvice(self, ):
+        """Setup, create a College item and give finance advice on it."""
         self.changeUser('admin')
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
@@ -1047,8 +1045,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
 
         # first 'return' an item and test
         self.changeUser('pmManager')
-        item = self.create('MeetingItem', title='An item to return')
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        item = self.create('MeetingItem', title='An item with finance advice')
         # ask finance advice and give it
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item.at_post_edit_script()
@@ -1073,9 +1070,16 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # as finance manager
         self.changeUser('pmFinManager')
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
+        return item, advice
 
+    def test_subproduct_FinanceAdvisersAccessToAutoLinkedItems(self):
+        """Finance adviser have still access to items that were automatically linked to
+           an item they give advice on.
+           This is the case for 'returned' items and items sent to Council."""
+        item, advice = self._setupCollegeItemWithFinanceAdvice()
         # present the item into the meeting
         self.changeUser('pmManager')
+        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         self.presentItem(item)
         self.decideMeeting(meeting)
         self.do(item, 'return')
@@ -1127,6 +1131,97 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmManager')
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
+
+    def test_subproduct_FinanceAdvisersAccessToManuallyLinkedItems(self):
+        """Finance adviser have access to every items that are manually linked
+           to an item they give advice on."""
+        item, advice = self._setupCollegeItemWithFinanceAdvice()
+        # create a new item the finance group has no access to
+        self.changeUser('pmCreator1')
+        item2 = self.create('MeetingItem')
+        # 'pmFinController' may access item but not item2
+        self.changeUser('pmFinController')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(View, item2))
+        # now link item to item2, as finance advice was asked on item, access to item2 is provided
+        item.setManuallyLinkedItems([item2.UID(), ])
+        item.at_post_edit_script()
+        self.assertEquals(self.request.get('manuallyLinkedItems_newUids'), [item2.UID(), ])
+        self.assertEquals(item.getManuallyLinkedItems(), [item2])
+        self.assertEquals(item2.getManuallyLinkedItems(), [item])
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item2))
+
+        # if link to item2 is broken, access also is also removed
+        item.setManuallyLinkedItems([])
+        item.at_post_edit_script()
+        self.assertEquals(item.getManuallyLinkedItems(), [])
+        self.assertEquals(item2.getManuallyLinkedItems(), [])
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(View, item2))
+
+        # access is shared accross linked items only if finance adviser
+        # has really access to an item, aka item was set to proposed_to_finance once at least
+        self.changeUser('pmCreator1')
+        item1FinanceNeverAccessed = self.create('MeetingItem')
+        item1FinanceNeverAccessed.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item1FinanceNeverAccessed.at_post_edit_script()
+        item2FinanceNeverAccessed = self.create('MeetingItem')
+        item2FinanceNeverAccessed.at_post_edit_script()
+        self.changeUser('pmFinController')
+        self.assertFalse(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertFalse(self.hasPermission(View, item2FinanceNeverAccessed))
+        item1FinanceNeverAccessed.setManuallyLinkedItems([item2FinanceNeverAccessed.UID(), ])
+        item1FinanceNeverAccessed.at_post_edit_script()
+        # still not accessible
+        self.assertFalse(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertFalse(self.hasPermission(View, item2FinanceNeverAccessed))
+        # right, now propose it to finance
+        self.changeUser('pmManager')
+        self.proposeItem(item1FinanceNeverAccessed)
+        self.do(item1FinanceNeverAccessed, 'proposeToFinance')
+        # both item are accessible
+        self.changeUser('pmFinController')
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
+
+        # complex case, link a third item and unlink item1FinanceNeverAccessed
+        self.changeUser('pmCreator1')
+        item3 = self.create('MeetingItem')
+        item1FinanceNeverAccessed.setManuallyLinkedItems(
+            [item2FinanceNeverAccessed.UID(), item3.UID()])
+        item1FinanceNeverAccessed.at_post_edit_script()
+        # for now, 3 are accessible
+        self.changeUser('pmFinController')
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item3))
+        # remove item1FinanceNeverAccessed, the only item with finance advice
+        item3.setManuallyLinkedItems([item2FinanceNeverAccessed.UID()])
+        item3.at_post_edit_script()
+        # item1FinanceNeverAccessed alone
+        self.assertEquals(item1FinanceNeverAccessed.getManuallyLinkedItems(), [])
+        self.assertEquals(item2FinanceNeverAccessed.getManuallyLinkedItems(), [item3])
+        self.assertEquals(item3.getManuallyLinkedItems(), [item2FinanceNeverAccessed])
+        # only item1FinanceNeverAccessed remains visible by 'pmFinController'
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertFalse(self.hasPermission(View, item2FinanceNeverAccessed))
+        self.assertFalse(self.hasPermission(View, item3))
+
+        # link all together again and test when removing item3
+        item2FinanceNeverAccessed.setManuallyLinkedItems(
+            [item1FinanceNeverAccessed.UID(), item3.UID()])
+        item2FinanceNeverAccessed.at_post_edit_script()
+        # for now, 3 are accessible
+        self.changeUser('pmFinController')
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item3))
+        item2FinanceNeverAccessed.setManuallyLinkedItems([item1FinanceNeverAccessed.UID()])
+        item2FinanceNeverAccessed.at_post_edit_script()
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
+        self.assertFalse(self.hasPermission(View, item3))
 
     def test_subproduct_CollegeShortcutProcess(self):
         '''

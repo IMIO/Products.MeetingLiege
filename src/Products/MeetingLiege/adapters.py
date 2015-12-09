@@ -1175,13 +1175,13 @@ class CustomMeetingItem(MeetingItem):
         else:
             return item.getDecisionEnd()
 
-    def updateFinanceAdvisersAccess(self):
+    def updateFinanceAdvisersAccess(self, old_local_roles={}):
         """ """
         item = self.getSelf()
-        item.adapted()._updateFinanceAdvisersAccessToManuallyLinkedItems()
         item.adapted()._updateFinanceAdvisersAccessToAutoLinkedItems()
+        item.adapted()._updateFinanceAdvisersAccessToManuallyLinkedItems(old_local_roles)
 
-    def _updateFinanceAdvisersAccessToManuallyLinkedItems(self):
+    def _updateFinanceAdvisersAccessToManuallyLinkedItems(self, old_local_roles):
         '''
           Make sure finance advisers have access to every items that are manually linked
           between each other in any case, this have to manage :
@@ -1192,36 +1192,50 @@ class CustomMeetingItem(MeetingItem):
             if finance adviser access must be removed.
         '''
         item = self.getSelf()
+
         # avoid circular calls, avoid updateLocalRoles here under to enter further
         if item.REQUEST.get('_updateFinanceAdvisersAccessToManuallyLinkedItems', False):
             return
         item.REQUEST.set('_updateFinanceAdvisersAccessToManuallyLinkedItems', True)
 
-        linkedItems = item.getManuallyLinkedItems()
         # first step, walk every items including self to check what finance adviser
         # should have access to every items
+        linkedItems = item.getManuallyLinkedItems()
         finance_accesses = []
-        linkedItems.append(item)
-        for linkedItem in linkedItems:
+        for linkedItem in linkedItems + [item]:
             financeAdvice = linkedItem.getFinanceAdvice()
             if financeAdvice != '_none_' and not financeAdvice in finance_accesses:
                 # only add it if finance advisers have already access to the linkedItem
                 groupId = "{0}_advisers".format(financeAdvice)
                 if groupId in linkedItem.__ac_local_roles__ and \
                    READER_USECASES['advices'] in linkedItem.__ac_local_roles__[groupId]:
-                    finance_accesses.append(financeAdvice)
-        # every group in finance_accesses will get access to linkedItems
-        for linkedItem in linkedItems:
-            if linkedItem != item:
-                linkedItem.updateLocalRoles()
+                    finance_accesses.append(groupId)
+                    # already update self so here under every local_roles for self are computed
+                    item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
+
+        # we finished to compute all local_roles for self, compare to old_local_roles
+        # if it is the same, it means that we do not need to update linked items
+        itemsToUpdate = []
+        catalog = api.portal.get_tool('portal_catalog')
+        if item.__ac_local_roles__ != old_local_roles:
+            # we need to update every linked items
+            itemsToUpdate = linkedItems
+        else:
+            # just need to update newly linked items
+            newLinkedUids = item.REQUEST.get('manuallyLinkedItems_newLinkedUids', [])
+            if newLinkedUids:
+                # newLinkedUids is a set(), it does not work with catalog, cast to list
+                brains = catalog.unrestrictedSearchResults(UID=list(newLinkedUids))
+                itemsToUpdate = [brain._unrestrictedGetObject() for brain in brains]
+
+        for itemToUpdate in itemsToUpdate:
+            itemToUpdate.updateLocalRoles()
             for finance_access in finance_accesses:
-                groupId = "{0}_advisers".format(finance_access)
-                if not groupId in linkedItem.__ac_local_roles__:
-                    linkedItem.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
-                    linkedItem.reindexObjectSecurity()
+                if not finance_access in itemToUpdate.__ac_local_roles__:
+                    itemToUpdate.manage_addLocalRoles(finance_access, (READER_USECASES['advices'], ))
+                    itemToUpdate.reindexObjectSecurity()
 
         # now we need removeUids to be updated too, we will call updateLocalRoles on removeUids
-        catalog = api.portal.get_tool('portal_catalog')
         removedUids = item.REQUEST.get('manuallyLinkedItems_removedUids', [])
         for removeUid in removedUids:
             removedItem = catalog.unrestrictedSearchResults(UID=removeUid)[0]._unrestrictedGetObject()

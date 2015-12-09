@@ -31,3 +31,4 @@ Products.MeetingLiege Changelog
   proposed_to_internal_reviewer_waiting_advices)
 - When a College item was sent to Council (when it was frozen) and the final decision on the College item
   is "delayed", delete the item that was sent to the Council
+- Do every manuallyLinkedItems of an item having finance advice accessible to the finance advisers

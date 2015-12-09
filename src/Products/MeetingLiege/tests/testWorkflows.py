@@ -1223,6 +1223,26 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
         self.assertFalse(self.hasPermission(View, item3))
 
+        # link item4 to item3 then item3 to item1FinanceNeverAccessed
+        # all 4 items should be accessible
+        self.changeUser('pmCreator1')
+        item4 = self.create('MeetingItem')
+        item3.setManuallyLinkedItems(
+            [item4.UID()])
+        item3.at_post_edit_script()
+        self.changeUser('pmFinController')
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
+        self.assertFalse(self.hasPermission(View, item3))
+        self.assertFalse(self.hasPermission(View, item4))
+        item3.setManuallyLinkedItems(
+            [item4.UID(), item1FinanceNeverAccessed.UID()])
+        item3.at_post_edit_script()
+        self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
+        self.assertTrue(self.hasPermission(View, item3))
+        self.assertTrue(self.hasPermission(View, item4))
+
     def test_subproduct_CollegeShortcutProcess(self):
         '''
         The items cannot be send anymore to group without at least one user

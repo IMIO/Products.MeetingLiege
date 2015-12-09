@@ -64,7 +64,8 @@ def onItemLocalRolesUpdated(item, event):
        - the matterOfGroups;
        - access of finance advisers."""
     item.adapted()._updateMatterOfGroupsLocalRoles()
-    item.adapted().updateFinanceAdvisersAccess()
+    # warning, it is necessary that updateFinanceAdvisersAccess is called last!
+    item.adapted().updateFinanceAdvisersAccess(old_local_roles=event.old_local_roles)
 
 
 def onAdviceAdded(advice, event):
@@ -282,6 +283,7 @@ def onItemDuplicated(original, event):
     newItem = event.newItem
 
     # need to do this here because ItemLocalRolesUpdated event is called too soon...
+    # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     newItem.adapted()._updateMatterOfGroupsLocalRoles()
     newItem.adapted().updateFinanceAdvisersAccess()
 

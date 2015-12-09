@@ -1907,21 +1907,22 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             tool = api.portal.get_tool('portal_plonemeeting')
             if tool.isManager(self.context):
                 return True
-            # Only administrative reviewers might propose to internal reviewer,
+            # Only administrative and internal reviewers (because they must be
+            # able to ask for advices) might propose to internal reviewer,
             # but creators can do it too if there is no administrative
             # reviewer.
             isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
-            if not isAdminReviewer:
+            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
+            if not isAdminReviewer and not isInternalReviewer:
                 aRNotEmpty = self._groupIsNotEmpty('administrativereviewers')
                 if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and\
                    aRNotEmpty:
                     res = False
             # If there is no internal reviewer or if the current user
-            # is internal reviewer or director, do not show the transition.
+            # is director, do not show the transition.
             isReviewer = member.has_role('MeetingReviewer', self.context)
-            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
             iRNotEmpty = self._groupIsNotEmpty('internalreviewers')
-            if not iRNotEmpty or isInternalReviewer or isReviewer:
+            if not iRNotEmpty or isReviewer:
                 res = False
             if not self.context.getCategory() and res:
                 return No(translate('required_category_ko',

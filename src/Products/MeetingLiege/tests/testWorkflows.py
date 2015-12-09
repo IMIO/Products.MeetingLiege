@@ -1251,37 +1251,41 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item.at_post_edit_script()
 
         # an internal reviewer can propose an item in creation directly
-        # to the direction.
+        # to the direction, but also to internal reviewer (because he may need
+        # to ask advices).
         self.changeUser('pmInternalReviewer1')
-        self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
+        self.assertTrue(self.transitions(item) == ['proposeToDirector', 'proposeToInternalReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # An internal reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
-                                                   'proposeToDirector', ])
+                                                   'proposeToDirector',
+                                                   'proposeToInternalReviewer', ])
         self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
         self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'proposeToDirector', ])
+                                                   'proposeToDirector',
+                                                   'proposeToInternalReviewer', ])
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item.at_post_edit_script()
 
         # An internal reviewer can send an item from administrative reviewer to
-        # director.
+        # director or internal reviewer (if he needs to ask for advices).
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmInternalReviewer1')
         self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'proposeToDirector', ])
+                                                   'proposeToDirector',
+                                                   'proposeToInternalReviewer', ])
         self.do(item, 'backToItemCreated')
 
-        # a director has the same prerogative of an internal reviewer.
+        # a reviewer can send an item to director.
         self.changeUser('pmReviewer1')
         self.assertTrue(self.transitions(item) == ['proposeToDirector', ])
         self._checkItemWithoutCategory(item, item.getCategory())

@@ -1101,7 +1101,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # first item with given finance advice is 'returned' in a meeting
         # new item is accepted and returned in a second meeting
         # item sent to council should keep advisers access
-        self.changeUser('admin')
+        self.changeUser('siteadmin')
         predecessors[0].getParentNode().manage_delObjects(ids=[predecessors[0].getId(), ])
         predecessors[1].getParentNode().manage_delObjects(ids=[predecessors[1].getId(), ])
         self.changeUser('pmManager')
@@ -1122,7 +1122,9 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
 
         # still works after an _updateAdvices
-        self.tool._updateAllAdvices()
+        self.changeUser('siteadmin')
+        self.tool.updateAllLocalRoles()
+        self.changeUser('pmManager')
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
 

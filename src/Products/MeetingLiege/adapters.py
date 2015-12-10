@@ -725,7 +725,7 @@ class CustomMeetingItem(MeetingItem):
         if not cfg.getUseAdvices():
             return ([], [])
         # Logged user must be an adviser
-        meetingGroups = tool.getGroupsForUser(suffix='advisers')
+        meetingGroups = tool.getGroupsForUser(suffixes=['advisers'])
         if not meetingGroups:
             return ([], [])
         # Produce the lists of groups to which the user belongs and for which,

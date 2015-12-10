@@ -257,8 +257,8 @@ collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.d
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
 collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
                                            'trigger_workflow_transitions_until': '__nothing__'},)
-collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency', 
-                                              'accepted', 'accepted_but_modified', 'accepted_and_returned')
+collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency', 'accepted',
+                                              'accepted_but_modified', 'accepted_and_returned')
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
@@ -280,7 +280,9 @@ collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
                                                               'item_transition': 'itemfreeze'},
                                                              {'meeting_transition': 'close',
                                                               'item_transition': 'accept'},)
-collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed')
+collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed',
+                                    'accepted_and_returned', 'returned', 'marked_not_applicable',
+                                    'sent_to_council_emergency')
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
 # done in setuphandlers._configureCollegeCustomAdvisers
@@ -467,6 +469,8 @@ councilMeeting.onTransitionFieldTransforms = (
     {'transition': 'present',
      'field_name': 'MeetingItem.decisionEnd',
      'tal_expression': 'python: here.adapted().adaptCouncilItemDecisionEnd()'},)
+councilMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
+                                    'delayed', 'returned', 'refused', 'marked_not_applicable')
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
 councilMeeting.meetingAppDefaultView = 'searchmyitems'

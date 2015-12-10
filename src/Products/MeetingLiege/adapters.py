@@ -1213,11 +1213,17 @@ class CustomMeetingItem(MeetingItem):
                     # already update self so here under every local_roles for self are computed
                     item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
-        # we finished to compute all local_roles for self, compare to old_local_roles
-        # if it is the same, it means that we do not need to update linked items
+        # we finished to compute all local_roles for self, compare to finance access
+        # that were given in old local_roles if it is the same,
+        # it means that we do not need to update linked items
+        potentialFinanceAccesses = set(["{0}_advisers".format(finance_advice) for
+                                        finance_advice in FINANCE_GROUP_IDS])
+        financeInOldLocalRoles = potentialFinanceAccesses.intersection(set(old_local_roles.keys()))
+        financeInNewLocalRoles = potentialFinanceAccesses.intersection(set(item.__ac_local_roles__.keys()))
+
         itemsToUpdate = []
         catalog = api.portal.get_tool('portal_catalog')
-        if item.__ac_local_roles__ != old_local_roles:
+        if financeInOldLocalRoles != financeInNewLocalRoles:
             # we need to update every linked items
             itemsToUpdate = linkedItems
         else:
@@ -1241,6 +1247,9 @@ class CustomMeetingItem(MeetingItem):
             removedItem = catalog.unrestrictedSearchResults(UID=removeUid)[0]._unrestrictedGetObject()
             removedItem.updateLocalRoles()
 
+        # cancel manuallyLinkedItems_... values
+        item.REQUEST.set('manuallyLinkedItems_newLinkedUids', [])
+        item.REQUEST.set('manuallyLinkedItems_removedUids', [])
         item.REQUEST.set('_updateFinanceAdvisersAccessToManuallyLinkedItems', False)
 
     def _updateFinanceAdvisersAccessToAutoLinkedItems(self):

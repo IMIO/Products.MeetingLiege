@@ -192,7 +192,7 @@ class CustomMeeting(Meeting):
                                     privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
                                     excludedCategories=[], groupIds=[], firstNumber=1, renumber=False,
                                     includeEmptyCategories=False, includeEmptyGroups=False, withCollege=False,
-                                    forCommission=False):
+                                    forCommission=False, groupByCategory=True):
         '''Returns a list of (late-)items (depending on p_late) ordered by
            category. Items being in a state whose name is in
            p_ignore_review_state will not be included in the result.
@@ -210,7 +210,9 @@ class CustomMeeting(Meeting):
            nevertheless.Some specific categories can be given or some categories to exclude.
            These 2 parameters are exclusive.  If renumber is True, a list of tuple
            will be return with first element the number and second element, the item.
-           In this case, the firstNumber value can be used.'''
+           In this case, the firstNumber value can be used.
+           If p_groupByCategory is False, results are still sorted by categories, but only
+           items are returned.'''
         # The result is a list of lists, where every inner list contains:
         # - at position 0: the category object (MeetingCategory or MeetingGroup)
         # - at position 1 to n: the items in this category
@@ -406,6 +408,13 @@ class CustomMeeting(Meeting):
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
+        #allow to return the list of items only, without the list of categories.
+        if not groupByCategory:
+            alt_res = []
+            for category in res:
+                for item in category[1:]:
+                    alt_res.append(item)
+            res = alt_res
         return res
 
     security.declarePublic('getItemsForAM')

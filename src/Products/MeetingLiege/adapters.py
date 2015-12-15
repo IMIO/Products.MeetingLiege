@@ -501,7 +501,7 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe'] = {}
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
-        items = self.getItems(listType='normal', ordered=True)
+        items = self.getItems(listTypes=['normal'], ordered=True)
         res = {}
         for item in items:
             item_num = 0
@@ -515,7 +515,7 @@ class CustomMeeting(Meeting):
                     break
 
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        items = self.getItems(listType='late', ordered=True)
+        items = self.getItems(listTypes=['late'], ordered=True)
         item_num = 1
         for item in items:
             if item.UID() in res:

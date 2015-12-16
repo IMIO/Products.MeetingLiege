@@ -117,63 +117,6 @@ class CustomMeeting(Meeting):
         return meeting.queryState() in ('in_council', 'decided', 'closed', 'archived')
 
     # Implements here methods that will be used by templates
-    security.declarePublic('getPrintableItems')
-
-    def getPrintableItems(self, itemUids, late=False, ignore_review_states=[],
-                          privacy='*', oralQuestion='both', categories=[],
-                          excludedCategories=[], firstNumber=1, renumber=False):
-        '''Returns a list of items.
-           An extra list of review states to ignore can be defined.
-           A privacy can also be given, and the fact that the item is an
-           oralQuestion or not (or both).
-           Some specific categories can be given or some categories to exchude.
-           These 2 parameters are exclusive.  If renumber is True, a list of tuple
-           will be returned with first element the number and second element, the item.
-           In this case, the firstNumber value can be used.'''
-        # We just filter ignore_review_states here and privacy and call
-        # getItems(uids, ordered=True), passing the correct uids and removing empty
-        # uids.
-        # privacy can be '*' or 'public' or 'secret'
-        # oralQuestion can be 'both' or False or True
-        listType = late and 'late' or 'normal'
-        for elt in itemUids:
-            if elt == '':
-                itemUids.remove(elt)
-        #no filtering, returns the items ordered
-        if not categories and not ignore_review_states and privacy == '*' and oralQuestion == 'both':
-            return self.context.getItems(uids=itemUids, listType=listType, ordered=True)
-        # Either, we will have to filter the state here and check privacy
-        filteredItemUids = []
-        uid_catalog = self.context.uid_catalog
-        for itemUid in itemUids:
-            obj = uid_catalog(UID=itemUid)[0].getObject()
-            if obj.queryState() in ignore_review_states:
-                continue
-            elif not (privacy == '*' or obj.getPrivacy() == privacy):
-                continue
-            elif not (oralQuestion == 'both' or obj.getOralQuestion() == oralQuestion):
-                continue
-            elif categories and not obj.getCategory() in categories:
-                continue
-            elif excludedCategories and obj.getCategory() in excludedCategories:
-                continue
-            filteredItemUids.append(itemUid)
-        #in case we do not have anything, we return an empty list
-        if not filteredItemUids:
-            return []
-        else:
-            items = self.context.getItems(uids=filteredItemUids, listType=listType, ordered=True)
-            if renumber:
-                #returns a list of tuple with first element the number
-                #and second element the item itself
-                i = firstNumber
-                res = []
-                for item in items:
-                    res.append((i, item))
-                    i = i + 1
-                items = res
-            return items
-
     def _insertItemInCategory(self, categoryList, item, byProposingGroup, groupPrefixes, groups):
         '''This method is used by the next one for inserting an item into the
            list of all items of a given category. if p_byProposingGroup is True,
@@ -187,7 +130,7 @@ class CustomMeeting(Meeting):
 
     security.declarePublic('getPrintableItemsByCategory')
 
-    def getPrintableItemsByCategory(self, itemUids=[], late=False,
+    def getPrintableItemsByCategory(self, itemUids=[], listTypes=['normal'],
                                     ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                                     privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
                                     excludedCategories=[], groupIds=[], firstNumber=1, renumber=False,
@@ -239,11 +182,9 @@ class CustomMeeting(Meeting):
         for elt in itemUids:
             if elt == '':
                 itemUids.remove(elt)
-        if late == 'both':
-            items = self.context.getItems(uids=itemUids)
-        else:
-            listType = late and 'late' or 'normal'
-            items = self.context.getItems(uids=itemUids, listType=listType, ordered=True)
+
+        items = self.context.getItems(uids=itemUids, listTypes=listTypes, ordered=True)
+
         if withCollege:
             meetingDate = self.context.getDate()
             tool = getToolByName(self.context, 'portal_plonemeeting')
@@ -419,7 +360,7 @@ class CustomMeeting(Meeting):
 
     security.declarePublic('getItemsForAM')
 
-    def getItemsForAM(self, itemUids=[], late=False,
+    def getItemsForAM(self, itemUids=[], listTypes=['normal'],
                       ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                       privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
                       excludedCategories=[], firstNumber=1, renumber=False,
@@ -436,7 +377,7 @@ class CustomMeeting(Meeting):
         tool = getToolByName(self.context, 'portal_plonemeeting')
         cfg = tool.getMeetingConfig(self.context)
         for category in cfg.getCategories(onlySelectable=False):
-            lst.append(self.getPrintableItemsByCategory(itemUids=itemUids, late=late,
+            lst.append(self.getPrintableItemsByCategory(itemUids=itemUids, listTypes=listTypes,
                                                         ignore_review_states=ignore_review_states,
                                                         by_proposing_group=by_proposing_group,
                                                         group_prefixes=group_prefixes,
@@ -527,11 +468,11 @@ class CustomMeeting(Meeting):
     Meeting.getItemNumsForActe = getItemNumsForActe
 
     def getRepresentative(self, sublst, itemUids, privacy='public',
-                          late=False, oralQuestion='both', by_proposing_group=False,
+                          listTypes=['normal'], oralQuestion='both', by_proposing_group=False,
                           withCollege=False, renumber=False, firstNumber=1):
         '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
         previousCat = ''
-        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, late=late,
+        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, listTypes=listTypes,
                                                         oralQuestion=oralQuestion,
                                                         by_proposing_group=by_proposing_group,
                                                         withCollege=withCollege,

@@ -6,6 +6,7 @@ logger = logging.getLogger('MeetingLiege')
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from Products.CMFPlone.utils import safe_unicode
+from collective.documentgenerator.content.pod_template import IPODTemplate
 from Products.PloneMeeting.migrations import Migrator
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
@@ -125,24 +126,38 @@ class Migrate_To_3_4(Migrator):
                     councilItem.setFinanceAdvice(collegeItem.getFinanceAdvice())
         logger.info('Done.')
 
+    def _initPodTemplatesMailingListsField(self):
+        """PodTemplates have now a mailing_lists field, initialize it."""
+        logger.info('Updating every PodTemplates \'mailing_lists\' attribute...')
+        brains = self.portal.portal_catalog(object_provides={'query': IPODTemplate.__identifier__},)
+        for brain in brains:
+            template = brain.getObject()
+            if hasattr(template, 'mailing_lists'):
+                # already migrated
+                logger.info('Done.')
+                return
+            template.mailing_lists = ''
+        logger.info('Done.')
+
     def run(self):
         logger.info('Migrating to MeetingLiege 3.4...')
         #self._updateHistorizedFinanceAdviceInWFHistory()
         #self._moveHistorizedFinanceAdviceToVersions()
         self._cleanMeetingConfigs()
-        self._migrateItemPositiveDecidedStates()
+        #self._migrateItemPositiveDecidedStates()
         self._updateCouncilItemFinanceAdviceAttribute()
+        self._initPodTemplatesMailingListsField()
         self.finish()
 
 
 # The migration function -------------------------------------------------------
 def migrate(context):
     '''This migration function will:
-
        1) Update historized finance advice advice_type in the advice workflow_history;
        2) Move historized finance advices to versions;
        3) clean meetingConfigs regarding CDLD;
-       4) Migrate 'itemPositiveDecidedStates' to MeetingConfig.itemAutoSentToOtherMCStates.
+       4) Migrate 'itemPositiveDecidedStates' to MeetingConfig.itemAutoSentToOtherMCStates;
+       5) Initialize new field 'mailing_lists' for Pod Templates.
     '''
     Migrate_To_3_4(context).run()
 # ------------------------------------------------------------------------------

@@ -27,7 +27,9 @@ from datetime import datetime
 from DateTime import DateTime
 
 from AccessControl import Unauthorized
+from zope.event import notify
 from zope.i18n import translate
+from zope.lifecycleevent import ObjectModifiedEvent
 from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
 from plone.dexterity.utils import createContentInContainer
@@ -37,6 +39,7 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 
+from Products.PloneMeeting.config import ADVICE_GIVEN_HISTORIZED_COMMENT
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
 from Products.PloneMeeting.config import RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX
 from Products.PloneMeeting.indexes import indexAdvisers
@@ -349,6 +352,12 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # start immediatelly because item completeness is automatically set to 'evaluate again'
         # for now delay is started and advice is editable
         self.do(item, 'backToProposedToInternalReviewer')
+        # advice was historized
+        pr = self.portal.portal_repository
+        self.assertEquals(pr.getHistoryMetadata(advice)._available, [0])
+        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(0)
+        self.assertTrue(retrievedAdvice['metadata']['sys_metadata']['comment'] == ADVICE_GIVEN_HISTORIZED_COMMENT)
+
         # advice delay is no more started and advice is no more editable
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
@@ -395,6 +404,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # is not "negative", if negative, it is the finance manager that will
         # be able to sign the advice
         advice.advice_type = u'negative_finance'
+        notify(ObjectModifiedEvent(advice))
         self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
                                                      'proposeToFinancialManager'])
         # propose to financial manager that will sign the advice
@@ -421,8 +431,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(advice.queryState() == 'advice_given')
         self.assertTrue(not advice.advice_hide_during_redaction)
         # when an advice is signed, it is automatically versioned
-        pr = self.portal.portal_repository
-        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(0)
+        self.assertEquals(pr.getHistoryMetadata(advice)._available, [0, 1])
+        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(1)
         self.assertTrue(retrievedAdvice['metadata']['sys_metadata']['comment'] == FINANCE_ADVICE_HISTORIZE_COMMENTS)
         # as there is a finance advice on the item, finance keep read access to the item
         self.assertTrue(self.hasPermission(View, item))
@@ -455,6 +465,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # and the financial reviewer will sign it
         self.changeUser('pmFinController')
         advice.advice_type = u'positive_finance'
+        notify(ObjectModifiedEvent(advice))
         # advice may only be sent to the financial reviewer
         self.assertTrue(self.transitions(advice) == ['proposeToFinancialReviewer'])
         self.do(advice, 'proposeToFinancialReviewer')
@@ -465,7 +476,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
                                                      'signFinancialAdvice'])
         self.do(advice, 'signFinancialAdvice')
         # each time an advice is signed, it is historized in the advice history
-        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(1)
+        self.assertEquals(pr.getHistoryMetadata(advice)._available, [0, 1, 2])
+        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(2)
         self.assertTrue(retrievedAdvice['metadata']['sys_metadata']['comment'] == FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # this time, the item has been validated automatically

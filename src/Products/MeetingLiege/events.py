@@ -139,8 +139,7 @@ def onAdviceTransition(advice, event):
 
     if newStateId == 'financial_advice_signed':
         # historize given advice into a version
-        pr = api.portal.get_tool('portal_repository')
-        pr.save(obj=advice, comment=FINANCE_ADVICE_HISTORIZE_COMMENTS)
+        advice.versionate_if_relevant(FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # final state of the wf, make sure advice is no more hidden during redaction
         advice.advice_hide_during_redaction = False

@@ -32,3 +32,4 @@ Products.MeetingLiege Changelog
 - When a College item was sent to Council (when it was frozen) and the final decision on the College item
   is "delayed", delete the item that was sent to the Council
 - Do every manuallyLinkedItems of an item having finance advice accessible to the finance advisers
+- Hide some elements for restricted power observers : some fileters, columns and access to element's history

@@ -17,5 +17,10 @@
  <stylesheet title="MeetingLiege CSS styles" cacheable="True" compression="safe"
              cookable="True" enabled="1" media="all" rel="stylesheet"
              rendering="import" expression="" id="meetingliege.css"/>
+ <stylesheet title="MeetingLiege for restricted power observers CSS styles"
+             cacheable="True" compression="safe" cookable="True"
+             enabled="1" media="all" rel="stylesheet" rendering="import"
+             expression="python: 'meeting-config-council_restrictedpowerobservers' in member.getGroups()"
+             id="meetingliege_restrictedpowerobservers.css"/>
  <!-- ##/code-section cssregistry.xml -->
 </object>

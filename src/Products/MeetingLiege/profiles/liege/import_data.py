@@ -424,7 +424,7 @@ categoriesCouncil = [CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'
 councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
 councilMeeting.itemReferenceFormat = \
-    "python: 'Ref. ' + (here.hasMeeting() and here.getMeeting().getDate().strftime('%Y%m%d') or '') + '/' + " \
+    "python: 'Ref. ' + (here.hasMeeting() and here.restrictedTraverse('pm_unrestricted_methods').getLinkedMeetingDate().strftime('%Y%m%d') or '') + '/' + " \
     "str(here.getItemNumber(relativeTo='meeting'))"
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 councilMeeting.enableAnnexConfidentiality = True

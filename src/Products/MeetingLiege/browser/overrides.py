@@ -110,3 +110,39 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         else:
             sentence = u"Sur proposition du Collège Communal, et après examen du dossier par la Commission compétente ;"
         return sentence
+
+    def printActeContentForCollege(self):
+        """Printed on a College item, get the whole body of the acte in one shot."""
+        body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
+        if self.context.adapted().getItemWithFinanceAdvice().getFinanceAdvice()!= '_none_' and \
+           self.context.adapted().mayGenerateFDAdvice():
+            body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
+        representative = self.context.getCategory(theObject=True).Description().split('|')[1]
+        body += "<p>Sur proposition de %s <br/></p>" % representative
+        body += self.context.getDecision() + '<p></p>'
+        body += self.context.getDecisionSuite() and self.context.getDecisionSuite()  + '<p></p>' or ''
+        body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
+        if self.context.getSendToAuthority():
+            body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
+                    "du Code de la démocratie locale et de la décentralisation relatifs "\
+                    "à la Tutelle, la présente décision et ses pièces justificatives sont "\
+                    "transmises aux Autorités de Tutelle.</p>"
+        return body
+
+    def printActeContentForCouncil(self):
+        """Printed on a Council item, get the whole body of the acte in one shot."""
+        body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
+        if self.context.adapted().getItemWithFinanceAdvice().getFinanceAdvice()!= '_none_' and \
+           self.context.adapted().mayGenerateFDAdvice():
+            body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
+        body += self.printCollegeProposalInfos().encode("utf-8")
+        body += self.context.getDecision() + '<p></p>'
+        body += self.context.getDecisionSuite() and self.context.getDecisionSuite()  + '<p></p>' or ''
+        body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
+        if self.context.getSendToAuthority():
+            body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
+                    "du Code de la démocratie locale et de la décentralisation relatifs "\
+                    "à la Tutelle, la présente décision et ses pièces justificatives sont "\
+                    "transmises aux Autorités de Tutelle.<br/></p>"
+        body += self.context.getObservations() and self.context.getObservations() or ''
+        return body

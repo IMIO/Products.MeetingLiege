@@ -1263,8 +1263,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         directly to the role above.
         '''
         cfg = self.meetingConfig
-        cfg.itemAdviceStates = ('itemcreated_waiting_advices',
-                                'proposed_to_internal_reviewer_waiting_advices')
+        cfgId = cfg.getId()
         cfg.setUseGroupsAsCategories(False)
         pg = self.portal.portal_groups
         darGroup = pg.getGroupById('developers_administrativereviewers')
@@ -1302,6 +1301,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self._addAllMembers(dirGroup, dirMembers)
 
         # A creator can ask for advices if an advice is required.
+        vendors = self.tool.vendors
+        vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
@@ -1378,38 +1379,43 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         item.at_post_edit_script()
 
         # an internal reviewer can propose an item in creation directly
-        # to the direction, but also to internal reviewer (because he may need
-        # to ask advices).
+        # to the direction.
         self.changeUser('pmInternalReviewer1')
-        self.assertTrue(self.transitions(item) == ['proposeToDirector', 'proposeToInternalReviewer'])
+        self.assertTrue(self.transitions(item) == ['proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # An internal reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
-                                                   'proposeToDirector',
-                                                   'proposeToInternalReviewer', ])
+                                                   'proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
         self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'proposeToDirector',
-                                                   'proposeToInternalReviewer', ])
+                                                   'proposeToDirector'])
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item.at_post_edit_script()
 
+        # An internal reviewer can ask an advice to internal reviewer when the
+        # item is in creation.
+        developers = self.tool.developers
+        developers.setItemAdviceStates(('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, ))
+        item.setOptionalAdvisers(('developers', ))
+        item.at_post_edit_script()
+        self.changeUser('pmInternalReviewer1')
+        self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
+
         # An internal reviewer can send an item from administrative reviewer to
-        # director or internal reviewer (if he needs to ask for advices).
+        # director.
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmInternalReviewer1')
         self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'proposeToDirector',
-                                                   'proposeToInternalReviewer', ])
+                                                   'proposeToDirector'])
         self.do(item, 'backToItemCreated')
 
         # a reviewer can send an item to director.

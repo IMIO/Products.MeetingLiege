@@ -66,11 +66,11 @@ msgstr "Accepté avec modifications"
 
 #. Default: "Ask advices"
 msgid "askAdvicesByInternalReviewer"
-msgstr "Demander les avis"
+msgstr "Demander les avis (VI)"
 
 #. Default: "Ask advices"
 msgid "askAdvicesByItemCreator"
-msgstr "Demander les avis"
+msgstr "Demander les avis (Créateur)"
 
 #. Default: "Back to created"
 msgid "backToCreated"

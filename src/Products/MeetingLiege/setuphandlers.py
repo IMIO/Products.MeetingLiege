@@ -137,6 +137,9 @@ def setCorrectWorkflowForAdvices(context, site):
     wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
     # update role mappings of existing meetingadvice
     updateRoleMappings(context)
+    # updateLocalRoles on every items again so advices are updated
+    tool = getToolByName(site, 'portal_plonemeeting')
+    tool.updateAllLocalRoles(meta_type=('MeetingItem', ))
 
 
 def addFacetedCriteria(context, site):

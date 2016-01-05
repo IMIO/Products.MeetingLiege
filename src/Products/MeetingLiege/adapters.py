@@ -700,7 +700,7 @@ class CustomMeetingItem(MeetingItem):
                         if not member.has_role('MeetingFinanceEditor', adviceObj):
                             continue
                     # end change by Products.MeetingLiege
-                    toEdit.append(groupId)
+                    toEdit.append((groupId, group.getName()))
             # if not in self.adviceIndex, aka not already given
             # check if group is a power adviser and if he is allowed
             # to add an advice in current item state

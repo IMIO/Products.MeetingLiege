@@ -1682,6 +1682,25 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         return False
     ToolPloneMeeting.isFinancialUser = isFinancialUser
 
+    security.declarePublic('isUrbanismUser')
+    def isUrbanismUser(self):
+        '''
+        Is current user an urbanism user, so in groups 'urba-gestion-administrative',
+        urba-affaires-ga-c-na-c-rales', 'urba-service-de-lurbanisme',
+        'urbanisme-et-ama-c-nagement-du-territoire',
+        'echevinat-de-la-culture-et-de-lurbanisme' or 'urba'
+        '''
+        userGroups = set([gr.getId() for gr in self.context.getGroupsForUser()])
+        allowedGroups = set(['urba-gestion-administrative',
+                             'urba-affaires-ga-c-na-c-rales',
+                             'urba-service-de-lurbanisme',
+                             'urbanisme-et-ama-c-nagement-du-territoire',
+                             'echevinat-de-la-culture-et-de-lurbanisme',
+                             'urba'])
+        if userGroups.intersection(allowedGroups):
+            return True
+        return False
+
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the

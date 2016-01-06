@@ -129,17 +129,14 @@ def setCorrectWorkflowForAdvices(context, site):
     """
        We use a different workflow for advice, make 'meetingadvice' portal_type use it.
     """
-    if isNotMeetingLiegeProfile(context) and not isMeetingLiegeConfigureProfile(context):
-        return
+    # if isNotMeetingLiegeProfile(context) and not isMeetingLiegeConfigureProfile(context):
+    #     return
 
     logStep("setCorrectWorkflowForAdvices", context)
     wfTool = getToolByName(site, 'portal_workflow')
     wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
     # update role mappings of existing meetingadvice
     updateRoleMappings(context)
-    # updateLocalRoles on every items again so advices are updated
-    tool = getToolByName(site, 'portal_plonemeeting')
-    tool.updateAllLocalRoles(meta_type=('MeetingItem', ))
 
 
 def addFacetedCriteria(context, site):

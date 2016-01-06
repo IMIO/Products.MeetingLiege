@@ -7,12 +7,12 @@ from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from Products.CMFPlone.utils import safe_unicode
 from collective.documentgenerator.content.pod_template import IPODTemplate
-from Products.PloneMeeting.migrations import Migrator
+from Products.PloneMeeting.migrations.migrate_to_3_4 import Migrate_To_3_4 as PMMigrate_To_3_4
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
 # The migration class ----------------------------------------------------------
-class Migrate_To_3_4(Migrator):
+class Migrate_To_3_4(PMMigrate_To_3_4):
 
     def _updateHistorizedFinanceAdviceInWFHistory(self):
         '''When finance advice was historized in the workflow_history,
@@ -140,6 +140,11 @@ class Migrate_To_3_4(Migrator):
         logger.info('Done.')
 
     def run(self):
+        # change self.profile_name everything is right before launching steps
+        self.profile_name = u'profile-Products.MeetingLiege:default'
+        # call steps from Products.PloneMeeting
+        PMMigrate_To_3_4.run(self)
+        # now MeetingLiege specific steps
         logger.info('Migrating to MeetingLiege 3.4...')
         #self._updateHistorizedFinanceAdviceInWFHistory()
         #self._moveHistorizedFinanceAdviceToVersions()

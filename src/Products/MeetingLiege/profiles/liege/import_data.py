@@ -8,6 +8,7 @@ from Products.PloneMeeting.profiles import MeetingConfigDescriptor
 from Products.PloneMeeting.profiles import MeetingFileTypeDescriptor
 from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.PloneMeeting.profiles import PloneMeetingConfiguration
+from Products.PloneMeeting.profiles import RecurringItemDescriptor
 from Products.PloneMeeting.profiles import UserDescriptor
 
 today = DateTime().strftime('%Y/%m/%d')
@@ -211,6 +212,20 @@ groups[6].observers.append(agentTrav)
 groups[6].observers.append(echevinTrav)
 groups[6].advisers.append(agentTrav)
 
+groups[7].creators.append(dfin)
+groups[7].reviewers.append(dfin)
+groups[7].observers.append(dfin)
+groups[7].advisers.append(dfin)
+groups[7].administrativereviewers.append(dfin)
+groups[7].internalreviewers.append(dfin)
+
+groups[8].creators.append(dfin)
+groups[8].reviewers.append(dfin)
+groups[8].observers.append(dfin)
+groups[8].advisers.append(dfin)
+groups[8].administrativereviewers.append(dfin)
+groups[8].internalreviewers.append(dfin)
+
 # Meeting configurations -------------------------------------------------------
 # college
 collegeMeeting = MeetingConfigDescriptor(
@@ -222,7 +237,9 @@ collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 collegeMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
-categoriesCollege = [CategoryDescriptor('cat-coll-1', u'Catégorie collège 1'),
+recurring = CategoryDescriptor('recurrents', 'Récurrents')
+categoriesCollege = [recurring,
+                     CategoryDescriptor('cat-coll-1', u'Catégorie collège 1'),
                      CategoryDescriptor('cat-coll-2', u'Catégorie collège 2'),
                      CategoryDescriptor('cat-coll-3', u'Catégorie collège 3'),
                      CategoryDescriptor('cat-coll-4', u'Catégorie collège 4'),
@@ -326,9 +343,29 @@ collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                             {'insertingMethod': 'on_other_mc_to_clone_to',
                                              'reverse': '0'}, )
 collegeMeeting.useGroupsAsCategories = False
-collegeMeeting.recurringItems = []
+collegeMeeting.recurringItems = [
+    RecurringItemDescriptor(
+        id='recurringagenda1',
+        title='Approuve le procès-verbal de la séance antérieure',
+        description='Approuve le procès-verbal de la séance antérieure',
+        category='recurrents',
+        proposingGroup='secretariat',
+        decision='Procès-verbal approuvé'),
+    RecurringItemDescriptor(
+        id='recurringofficialreport1',
+        title='Autorise et signe les bons de commande de la semaine',
+        description='Autorise et signe les bons de commande de la semaine',
+        category='recurrents',
+        proposingGroup='secretariat',
+        decision='Bons de commande signés'),
+    RecurringItemDescriptor(
+        id='recurringofficialreport2',
+        title='Ordonnance et signe les mandats de paiement de la semaine',
+        description='Ordonnance et signe les mandats de paiement de la semaine',
+        category='recurrents',
+        proposingGroup='secretariat',
+        decision='Mandats de paiement de la semaine approuvés'), ]
 collegeMeeting.meetingUsers = []
-collegeMeeting.recurringItems = []
 collegeMeeting.itemTemplates = [
     ItemTemplateDescriptor(
         id='template1',
@@ -415,7 +452,8 @@ councilMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Echevin Un, Echevin Deux, Echevin Trois - Echevins,\n' \
                           'Jacqueline Exemple, Responsable du CPAS'
 councilMeeting.signatures = 'Pierre Dupont, Bourgmestre - Charles Exemple, 1er Echevin'
-categoriesCouncil = [CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'),
+categoriesCouncil = [recurring,
+                     CategoryDescriptor('cat-council-1', u'Catégorie conseil 1'),
                      CategoryDescriptor('cat-council-2', u'Catégorie conseil 2'),
                      CategoryDescriptor('cat-council-3', u'Catégorie conseil 3'),
                      CategoryDescriptor('cat-council-4', u'Catégorie conseil 4'),
@@ -494,8 +532,29 @@ councilMeeting.podTemplates = councilTemplates
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},)
 councilMeeting.useGroupsAsCategories = False
-councilMeeting.recurringItems = []
 councilMeeting.meetingUsers = []
+councilMeeting.recurringItems = [
+    RecurringItemDescriptor(
+        id='recurringagenda1',
+        title='Approuve le procès-verbal de la séance antérieure',
+        description='Approuve le procès-verbal de la séance antérieure',
+        category='recurrents',
+        proposingGroup='secretariat',
+        decision='Procès-verbal approuvé'),
+    RecurringItemDescriptor(
+        id='recurringofficialreport1',
+        title='Autorise et signe les bons de commande de la semaine',
+        description='Autorise et signe les bons de commande de la semaine',
+        category='recurrents',
+        proposingGroup='secretariat',
+        decision='Bons de commande signés'),
+    RecurringItemDescriptor(
+        id='recurringofficialreport2',
+        title='Ordonnance et signe les mandats de paiement de la semaine',
+        description='Ordonnance et signe les mandats de paiement de la semaine',
+        category='recurrents',
+        proposingGroup='secretariat',
+        decision='Mandats de paiement de la semaine approuvés'), ]
 
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(collegeMeeting, councilMeeting),

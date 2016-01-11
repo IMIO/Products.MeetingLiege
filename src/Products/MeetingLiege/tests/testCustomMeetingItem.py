@@ -616,6 +616,60 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice(isMeeting=True) == res5)
         self.assertTrue(item3.adapted().getLegalTextForFDAdvice(isMeeting=True) == res6)
 
+    def test_MayGenerateFDAdvice(self):
+        '''An advice can be generated when:
+            -at least one advice is asked.
+            -the advice is not hidden OR the user is in
+                the right FD group OR the advice is no
+                longer editable
+        '''
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        self.changeUser('pmManager')
+        item1 = self.create('MeetingItem', title='Item with advice')
+        # if no advice is asked, mayGenerate returns False.
+        self.assertFalse(item1.adapted().mayGenerateFDAdvice())
+
+        item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        self.proposeItem(item1)
+        self.do(item1, 'proposeToFinance')
+        item1.setCompleteness('completeness_complete')
+
+        self.changeUser('pmFinManager')
+        advice1 = createContentInContainer(item1,
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                              'advice_type': 'positive_finance',
+                                              'advice_comment': RichTextValue(u'My comment finance')})
+        # if advice is hidden, it can only be seen by advisers of the finance group.
+        advice1.advice_hide_during_redaction = True
+        self.changeUser('pmManager')
+        self.assertFalse(item1.adapted().mayGenerateFDAdvice())
+
+        self.changeUser('pmFinController')
+        self.assertTrue(item1.adapted().mayGenerateFDAdvice())
+        self.do(advice1, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.assertTrue(item1.adapted().mayGenerateFDAdvice())
+        self.do(advice1, 'proposeToFinancialManager')
+
+        self.assertTrue(item1.adapted().mayGenerateFDAdvice())
+
+        self.changeUser('pmCreator1')
+        self.assertFalse(item1.adapted().mayGenerateFDAdvice())
+
+        item1.adviceIndex[item1.getFinanceAdvice()]['delay_started_on'] = datetime(2012, 1, 1)
+        item1.updateLocalRoles()
+
+        self.assertTrue(item1.adapted().mayGenerateFDAdvice())
+
     def test_DecisionAnnexesNotKeptOnDuplicated(self):
         """When an item is duplicated using the 'duplicate and keep link',
            we do not keep the decision annexes."""

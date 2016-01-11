@@ -114,8 +114,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
     def printActeContentForCollege(self):
         """Printed on a College item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
-        if self.context.adapted().getItemWithFinanceAdvice().getFinanceAdvice() != '_none_' and \
-           self.context.adapted().mayGenerateFDAdvice():
+        if self.context.adapted().getLegalTextForFDAdvice():
             body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
         representative = self.context.getCategory(theObject=True).Description().split('|')[1]
         body += "<p>Sur proposition de %s <br/></p>" % representative
@@ -132,8 +131,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
     def printActeContentForCouncil(self):
         """Printed on a Council item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
-        if self.context.adapted().getItemWithFinanceAdvice().getFinanceAdvice() != '_none_' and \
-           self.context.adapted().mayGenerateFDAdvice():
+        if self.context.adapted().getLegalTextForFDAdvice():
             body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
         body += self.printCollegeProposalInfos().encode("utf-8")
         body += self.context.getDecision() + '<p></p>'

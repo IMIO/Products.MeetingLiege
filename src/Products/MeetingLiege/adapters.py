@@ -958,9 +958,10 @@ class CustomMeetingItem(MeetingItem):
         '''
         adviceHolder = self.adapted().getItemWithFinanceAdvice()
 
-        if (adviceHolder.getFinanceAdvice() != '_none_' and
+        if adviceHolder.getFinanceAdvice() != '_none_' and \
             (adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['hidden_during_redaction'] is False or
-             self.isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True)):
+             self.isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True or
+             adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['advice_editable'] is False):
             return True
         return False
 
@@ -1064,6 +1065,9 @@ class CustomMeetingItem(MeetingItem):
         Helper method. Return legal text for each advice type.
         '''
         adviceHolder = self.adapted().getItemWithFinanceAdvice()
+        if not adviceHolder.adapted().mayGenerateFDAdvice():
+            return ''
+
         financialStuff = adviceHolder.adapted().getFinancialAdviceStuff()
         adviceInd = adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]
         advice = adviceHolder.getAdviceDataFor(adviceHolder, adviceHolder.getFinanceAdvice())
@@ -1076,12 +1080,11 @@ class CustomMeetingItem(MeetingItem):
         delayStatus = advice['delay_infos']['delay_status']
         outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
         limitDateLocalized = advice['delay_infos']['limit_date_localized']
+
         if not isMeeting:
             res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOnLocalized)
 
-        if not hidden and \
-           adviceHolder.adapted().mayGenerateFDAdvice() and \
-           adviceGivenOnLocalized and \
+        if adviceGivenOnLocalized and \
            (adviceType == u'positive_finance' or adviceType == u'negative_finance'):
             if adviceType == u'positive_finance':
                 adviceTypeFr = 'favorable'

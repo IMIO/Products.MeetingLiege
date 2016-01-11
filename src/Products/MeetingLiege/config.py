@@ -77,7 +77,8 @@ FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
                           'financialreviewers',
                           'financialmanagers')
 # in those states, finance advice can still be given
-FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen')
+FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen',
+                                  'accepted', 'accepted_and_returned', 'accepted_but_modified')
 
 # comment used when a finance advice has been signed and so historized
 FINANCE_ADVICE_HISTORIZE_COMMENTS = 'financial_advice_signed_historized_comments'

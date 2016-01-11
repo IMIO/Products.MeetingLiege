@@ -14,6 +14,10 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
+#. Default: "Access the College item containing given finance advice."
+msgid "Access the College item containing given finance advice."
+msgstr ""
+
 #. Default: "Data that will be used once item will be in the council"
 msgid "Data that will be used once item will be in the council"
 msgstr ""
@@ -192,14 +196,6 @@ msgstr "Financial managers"
 #. Default: "Financial reviewers"
 msgid "financialreviewers"
 msgstr "Financial reviewers"
-
-#. Default: "Finance advice that was given on ${predecessor} that is in state ${predecessor_state} is still valid for current item."
-msgid "former_finance_advice_still_valid"
-msgstr "Finance advice that was given on ${predecessor} that is in state ${predecessor_state} is still valid for current item."
-
-#. Default: "this linked item"
-msgid "former_finance_advice_still_valid_this_linked_item"
-msgstr "this linked item"
 
 #. Default: "Front page body"
 msgid "front_page_body"

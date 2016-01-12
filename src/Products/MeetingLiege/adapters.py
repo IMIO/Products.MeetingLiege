@@ -1071,7 +1071,6 @@ class CustomMeetingItem(MeetingItem):
         financialStuff = adviceHolder.adapted().getFinancialAdviceStuff()
         adviceInd = adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]
         advice = adviceHolder.getAdviceDataFor(adviceHolder, adviceHolder.getFinanceAdvice())
-        hidden = advice['hidden_during_redaction']
         statusWhenStopped = advice['delay_infos']['delay_status_when_stopped']
         adviceType = adviceInd['type']
         comment = financialStuff['comment']
@@ -1686,6 +1685,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
     ToolPloneMeeting.isFinancialUser = isFinancialUser
 
     security.declarePublic('isUrbanismUser')
+
     def isUrbanismUser(self):
         '''
         Is current user an urbanism user, so in groups 'urba-gestion-administrative',

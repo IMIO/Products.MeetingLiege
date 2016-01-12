@@ -725,7 +725,8 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if item.isDefinedInTool():
             return
-        member = api.user.get_current()
+        membershipTool = getToolByName(item, 'portal_membership')
+        member = membershipTool.getAuthenticatedMember()
         # bypass for Managers
         if member.has_role('Manager'):
             return True
@@ -738,21 +739,9 @@ class CustomMeetingItem(MeetingItem):
             return False
 
         # item must be still in a state where the advice can be given
-        item_state = item.queryState()
-        if item_state not in FINANCE_GIVEABLE_ADVICE_STATES:
+        # and advice must still not have been given
+        if not item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
             return False
-
-        # if item is decided, completeness may only be evaluated one time
-        if item_state in ('accepted', 'accepted_and_returned', 'accepted_but_modified') and \
-           (item.getEmergency() == 'no_emergency' or
-               'meeting-config-council' not in item.getOtherMeetingConfigsClonableTo() or
-               item.getCompleteness() == 'completeness_complete'):
-            return False
-
-        # if advice delay is exceeded, it may not be evaluated anymore
-        if item.getDelayInfosForAdvice(financeGroupId)['delay_status'] == 'timed_out':
-            return False
-
         return True
 
     security.declarePublic('mayAskCompletenessEvalAgain')
@@ -1063,39 +1052,6 @@ class CustomMeetingItem(MeetingItem):
             predecessor = predecessor.getPredecessor()
         # either we found a valid predecessor, or we return self.context
         return item
-
-    def _adviceIsAddable(self, groupId):
-        """Advice is still addable when item is decided only if :
-           - emergency was asked;
-           - it is an item that should be sent to Council."""
-        if not groupId in FINANCE_GROUP_IDS:
-            return True
-
-        item = self.getSelf()
-        item_state = item.queryState()
-        if item_state in ('accepted', 'accepted_and_returned', 'accepted_but_modified') and \
-           (item.getEmergency() == 'no_emergency' or
-                not 'meeting-config-council' in item.getOtherMeetingConfigsClonableTo()):
-            return False
-
-        return True
-
-    def _adviceIsEditable(self, groupId):
-        """Advice is still editable when item is decided only if :
-           - emergency was asked;
-           - it is an item that should be sent to Council."""
-        if not groupId in FINANCE_GROUP_IDS:
-            return True
-
-        item = self.getSelf()
-        item_state = item.queryState()
-        if item_state in ('accepted', 'accepted_and_returned', 'accepted_but_modified'):
-            if item.getEmergency() != 'no_emergency' and \
-               'meeting-config-council' in item.getOtherMeetingConfigsClonableTo():
-                return True
-            else:
-                return False
-        return True
 
     def getItemCollege(self):
         """Called on a Council item, will return the linked College item."""
@@ -1730,7 +1686,6 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
     ToolPloneMeeting.isFinancialUser = isFinancialUser
 
     security.declarePublic('isUrbanismUser')
-
     def isUrbanismUser(self):
         '''
         Is current user an urbanism user, so in groups 'urba-gestion-administrative',

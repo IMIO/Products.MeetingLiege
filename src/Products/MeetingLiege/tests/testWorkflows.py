@@ -627,65 +627,6 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(meeting, 'freeze')
         self.assertTrue(advice.queryState() == 'advice_given')
 
-    def test_subproduct_ItemToSendToCouncilWithEmergencyAdviceStillGiveableWhenItemDecided(self):
-        '''If item College will be sent to Council and emergency is asked by director
-           so item is prenseted without going to the 'proposed_to_finances' state, the finance
-           advice is still giveable even if item is decided until delay is reached.
-           This is only the case for College item :
-           - to send to Council;
-           - when emergency is asked.'''
-        self.changeUser('admin')
-        cfg = self.meetingConfig
-        cfg2 = self.meetingConfig2
-        cfg.setUsedAdviceTypes(('asked_again', ) + cfg.getUsedAdviceTypes())
-        # configure customAdvisers for 'meeting-config-college'
-        _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
-        # define relevant users for finance groups
-        self._setupFinanceGroups()
-        dfGroup = self.tool.get(FINANCE_GROUP_IDS[0])
-        self.assertTrue('meeting-config-college__state__accepted' in dfGroup.getItemAdviceStates())
-        self.assertTrue('meeting-config-college__state__accepted' in dfGroup.getItemAdviceEditStates())
-
-        # create an item and ask emergency so item may be presented without finance advice
-        self.changeUser('pmManager')
-        meeting = self.create('Meeting', date=DateTime('2016/01/05 12:00'))
-        item = self.create('MeetingItem')
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.setEmergency('emergency_asked')
-        item.at_post_edit_script()
-        self.presentItem(item)
-        self.decideMeeting(meeting)
-        self.do(item, 'accept')
-
-        # item is not to send to Council so completeness may not be evaluated
-        self.changeUser('pmFinController')
-        self.assertFalse(item.adapted().mayEvaluateCompleteness())
-        item.setOtherMeetingConfigsClonableTo((cfg2.getId(), ))
-        item.at_post_edit_script()
-        self.assertTrue(item.adapted().mayEvaluateCompleteness())
-
-        # give advice
-        item.setCompleteness('completeness_complete')
-        item.at_post_edit_script()
-        self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
-        # once evaluated to 'complete', completeness may not be evaluated anymore
-        self.assertFalse(item.adapted().mayEvaluateCompleteness())
-
-        # advice may be given
-        advice = createContentInContainer(item,
-                                          'meetingadvice',
-                                          **{'advice_group': FINANCE_GROUP_IDS[0],
-                                             'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
-        self.do(advice, 'proposeToFinancialReviewer')
-        self.changeUser('pmFinReviewer')
-        self.do(advice, 'proposeToFinancialManager')
-        self.changeUser('pmFinManager')
-        self.do(advice, 'signFinancialAdvice')
-
     def test_subproduct_ItemWithTimedOutAdviceIsAutomaticallyValidated(self):
         '''When an item is 'proposed_to_finance', it may be validated
            only by finance group or if emergency is asked.  In case the asked

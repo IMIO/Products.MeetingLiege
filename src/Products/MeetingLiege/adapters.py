@@ -37,7 +37,6 @@ from plone.memoize import ram
 from plone import api
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import ReviewPortalContent
-from Products.CMFCore.utils import getToolByName
 from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
@@ -177,7 +176,7 @@ class CustomMeeting(Meeting):
                 return 0
         res = []
         items = []
-        tool = getToolByName(self.context, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         # Retrieve the list of items
         for elt in itemUids:
             if elt == '':
@@ -187,10 +186,10 @@ class CustomMeeting(Meeting):
 
         if withCollege:
             meetingDate = self.context.getDate()
-            tool = getToolByName(self.context, 'portal_plonemeeting')
+            tool = api.portal.get_tool('portal_plonemeeting')
             cfg = tool.getMeetingConfig(self.context)
             insertMethods = cfg.getInsertingMethodsOnAddItem()
-            catalog = getToolByName(self.context, 'portal_catalog')
+            catalog = api.portal.get_tool('portal_catalog')
             brains = catalog(portal_type='MeetingCollege',
                              getDate={'query': meetingDate - 60,
                                       'range': 'min'}, sort_on='getDate',
@@ -374,7 +373,7 @@ class CustomMeeting(Meeting):
         '''
         res = []
         lst = []
-        tool = getToolByName(self.context, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(self.context)
         for category in cfg.getCategories(onlySelectable=False):
             lst.append(self.getPrintableItemsByCategory(itemUids=itemUids, listTypes=listTypes,
@@ -492,7 +491,7 @@ class CustomMeeting(Meeting):
         '''
         catByRepr = {}
         previousDesc = 'not-an-actual-description'
-        tool = getToolByName(self.context, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         meetingConfig = tool.getMeetingConfig(self.context)
         allCategories = meetingConfig.getCategories(onlySelectable=False)
         # Makes a dictionnary with representative as key and
@@ -523,9 +522,9 @@ class CustomMeeting(Meeting):
 
     def getCategoriesIdByNumber(self, numCateg):
         '''Returns categories filtered by their roman numerals'''
-        tool = getToolByName(self.context, 'portal_plonemeeting')
-        meetingConfig = tool.getMeetingConfig(self.context)
-        allCategories = meetingConfig.getCategories()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        cfg = tool.getMeetingConfig(self.context)
+        allCategories = cfg.getCategories()
         categsId = [item.getId() for item in allCategories
                     if item.Title().split('.')[0] == numCateg]
         return categsId
@@ -561,12 +560,12 @@ class CustomMeetingItem(MeetingItem):
 
     def validate_archivingRef(self, value):
         '''Field is required.'''
-        tool = getToolByName(self, 'portal_plonemeeting')
-        meetingConfig = tool.getMeetingConfig(self)
+        tool = api.portal.get_tool('portal_plonemeeting')
+        cfg = tool.getMeetingConfig(self)
         # Value could be '_none_' if it was displayed as listbox or None if
         # it was displayed as radio buttons...  Use 'flex' format
         if (not self.isDefinedInTool()) and \
-           ('archivingRef' in meetingConfig.getUsedItemAttributes()) and \
+           ('archivingRef' in cfg.getUsedItemAttributes()) and \
            (value == '_none_' or not value):
             return translate('archivingRef_required',
                              domain='PloneMeeting',
@@ -695,7 +694,7 @@ class CustomMeetingItem(MeetingItem):
                     # XXX if we are a finance group, check if current member can edit the advice
                     # begin change by Products.MeetingLiege
                     if groupId in FINANCE_GROUP_IDS:
-                        member = getToolByName(self, 'portal_membership').getAuthenticatedMember()
+                        member = api.user.get_current()
                         adviceObj = getattr(self, self.adviceIndex[groupId]['advice_id'])
                         if not member.has_role('MeetingFinanceEditor', adviceObj):
                             continue
@@ -725,8 +724,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if item.isDefinedInTool():
             return
-        membershipTool = getToolByName(item, 'portal_membership')
-        member = membershipTool.getAuthenticatedMember()
+        member = api.user.get_current()
         # bypass for Managers
         if member.has_role('Manager'):
             return True
@@ -756,9 +754,8 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if item.isDefinedInTool():
             return
-        tool = getToolByName(item, 'portal_plonemeeting')
-        membershipTool = getToolByName(item, 'portal_membership')
-        member = membershipTool.getAuthenticatedMember()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        member = api.user.get_current()
         # user must be able to edit the item and must have 'MeetingInternalReviewer'
         # or 'MeetingReviewer' role
         if not item.getCompleteness() == 'completeness_incomplete' or \
@@ -773,8 +770,7 @@ class CustomMeetingItem(MeetingItem):
     def mayAskEmergency(self):
         '''Only directors may ask emergency.'''
         item = self.getSelf()
-        membershipTool = getToolByName(item, 'portal_membership')
-        member = membershipTool.getAuthenticatedMember()
+        member = api.user.get_current()
         if (item.queryState() == 'proposed_to_director' and member.has_role('MeetingReviewer', item)) or \
            member.has_role('Manager', item):
             return True
@@ -787,9 +783,8 @@ class CustomMeetingItem(MeetingItem):
            Emergency can be accepted only by financial managers.'''
         # by default, only MeetingManagers can accept or refuse emergency
         item = self.getSelf()
-        tool = getToolByName(item, 'portal_plonemeeting')
-        membershipTool = getToolByName(item, 'portal_membership')
-        member = membershipTool.getAuthenticatedMember()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        member = api.user.get_current()
         if tool.isManager(item, realManagers=True) or \
            '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in member.getGroups():
             return True
@@ -806,7 +801,7 @@ class CustomMeetingItem(MeetingItem):
            - add the advice;
            - change transition of already added advice.'''
         item = self.getSelf()
-        wfTool = getToolByName(item, 'portal_workflow')
+        wfTool = api.portal.get_tool('portal_workflow')
         if not item.queryState() == 'proposed_to_finance':
             return bool(wfTool.getTransitionsFor(item))
         else:
@@ -832,7 +827,7 @@ class CustomMeetingItem(MeetingItem):
 
     def listFinanceAdvices(self):
         '''Vocabulary for the 'financeAdvice' field.'''
-        tool = getToolByName(self, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         res = []
         res.append(('_none_', translate('no_financial_impact',
                                         domain='PloneMeeting',
@@ -847,7 +842,7 @@ class CustomMeetingItem(MeetingItem):
     def listArchivingRefs(self):
         '''Vocabulary for the 'archivingRef' field.'''
         res = []
-        tool = getToolByName(self, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(self)
         userGroups = set([group.getId() for group in tool.getGroupsForUser()])
         isManager = tool.isManager(self)
@@ -941,8 +936,7 @@ class CustomMeetingItem(MeetingItem):
         '''
           Returns True if the current user is in the given p_finance_group_id.
         '''
-        membershipTool = getToolByName(self.context, 'portal_membership')
-        user = membershipTool.getAuthenticatedMember()
+        user = api.user.get_current()
         userGroups = user.getGroups()
         suffixedGroups = []
         for suffix in FINANCE_GROUP_SUFFIXES:
@@ -1352,7 +1346,7 @@ class CustomMeetingConfig(MeetingConfig):
     security.declarePrivate('listArchivingReferenceFinanceAdvices')
 
     def listArchivingReferenceFinanceAdvices(self):
-        tool = getToolByName(self, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         res = []
         res.append(("no_finance_advice",
                     translate('no_finance_advice',
@@ -1372,7 +1366,7 @@ class CustomMeetingConfig(MeetingConfig):
           It returns every active MeetingGroups.
         """
         res = []
-        tool = getToolByName(self, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         for mGroup in tool.getMeetingGroups():
             res.append((mGroup.getId(), mGroup.getName()))
         # make sure that if a configuration was defined for a group
@@ -1559,9 +1553,9 @@ class CustomMeetingGroup(MeetingGroup):
         group = self.getSelf()
         if not group.getId() in FINANCE_GROUP_IDS:
             return
+        portal_groups = api.portal.get_tool('portal_groups')
         for groupSuffix in FINANCE_GROUP_SUFFIXES:
             groupId = group.getPloneGroupId(groupSuffix)
-            portal_groups = getToolByName(group, 'portal_groups')
             ploneGroup = portal_groups.getGroupById(groupId)
             if ploneGroup:
                 continue
@@ -1607,7 +1601,7 @@ class CustomMeetingCategory(MeetingCategory):
           It returns every active MeetingGroups.
         """
         res = []
-        tool = getToolByName(self, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         for mGroup in tool.getMeetingGroups():
             res.append((mGroup.getId(), mGroup.getName()))
         # make sure that if a configuration was defined for a group
@@ -1676,7 +1670,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
     def isFinancialUser(self):
         '''Is current user a financial user, so in groups 'financialcontrollers',
            'financialreviewers' or 'financialmanagers'.'''
-        member = getToolByName(self, 'portal_membership').getAuthenticatedMember()
+        member = api.user.get_current()
         for groupId in member.getGroups():
             for suffix in FINANCE_GROUP_SUFFIXES:
                 if groupId.endswith('_%s' % suffix):
@@ -1811,7 +1805,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         # if we found an event 'proposeToFinance' in workflow_history, it means that item is
         # proposed again to the finances and we need to ask completeness evaluation again
         # current transition 'proposeToFinance' is already in workflow_history...
-        wfTool = getToolByName(self.context, 'portal_workflow')
+        wfTool = api.portal.get_tool('portal_workflow')
         # take history but leave last event apart
         history = self.context.workflow_history[wfTool.getWorkflowsFor(self.context)[0].getId()][:-1]
         # if we find 'proposeToFinance' in previous actions, then item is proposed to finance again
@@ -1883,7 +1877,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         # we do not pass p_keepProposingGroup to clone() here above
         # because we need to validate the newItem and if we change the proposingGroup
         # maybe we could not...  So validate then set correct proposingGroup...
-        wfTool = getToolByName(self.context, 'portal_workflow')
+        wfTool = api.portal.get_tool('portal_workflow')
         self.context.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(newItem, 'validate')
         self.context.REQUEST.set('mayValidate', False)
@@ -2123,7 +2117,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # value is found to True in the REQUEST
         if self.context.REQUEST.get('mayValidate', False):
             return True
-        tool = getToolByName(self.context, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         isManager = tool.isManager(self.context)
         item_state = self.context.queryState()
         # first of all, the use must have the 'Review portal content permission'
@@ -2526,7 +2520,7 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
         '''Queries all items for which there is completeness to evaluate, so where completeness
            is not 'completeness_complete'.'''
         groupIds = []
-        membershipTool = getToolByName(self.context, 'portal_membership')
+        membershipTool = api.portal.get_tool('portal_membership')
         userGroups = membershipTool.getAuthenticatedMember().getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
@@ -2550,8 +2544,8 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
            We only return items for which completeness has been evaluated to 'complete'.'''
         groupIds = []
-        membershipTool = getToolByName(self.context, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        member = api.user.get_current()
+        userGroups = member.getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2568,8 +2562,8 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
         groupIds = []
-        membershipTool = getToolByName(self.context, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        member = api.user.get_current()
+        userGroups = member.getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is reviewer for
             if '%s_financialreviewers' % financeGroup in userGroups:
@@ -2584,8 +2578,8 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
         groupIds = []
-        membershipTool = getToolByName(self.context, 'portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        member = api.user.get_current()
+        userGroups = member.getGroups()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is manager for
             if '%s_financialmanagers' % financeGroup in userGroups:
@@ -2666,7 +2660,7 @@ class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
         # services, then it is considered as down the wf from the finances
         # so take into account every states before 'validated/proposed_to_finance'
         if not self.context.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
-            tool = getToolByName(self.context, 'portal_plonemeeting')
+            tool = api.portal.get_tool('portal_plonemeeting')
             cfg = tool.getMeetingConfig(self.context)
             history = self.context.workflow_history[cfg.getItemWorkflow()]
             for event in history:

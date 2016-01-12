@@ -1077,7 +1077,8 @@ class CustomMeetingItem(MeetingItem):
         if not isMeeting:
             res = FINANCE_ADVICE_LEGAL_TEXT_PRE.format(delayStartedOnLocalized)
 
-        if adviceGivenOnLocalized and \
+        if not hidden and \
+           adviceGivenOnLocalized and \
            (adviceType == u'positive_finance' or adviceType == u'negative_finance'):
             if adviceType == u'positive_finance':
                 adviceTypeFr = 'favorable'

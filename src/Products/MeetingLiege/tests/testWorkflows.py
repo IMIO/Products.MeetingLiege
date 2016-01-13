@@ -1678,9 +1678,9 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(duplicatedItem, 'accept')
         self.assertTrue(duplicatedItem.getItemClonedToOtherMC(cfg2Id))
 
-    def test_subproduct_CouncilItemDeletedIfCollegeItemIsDelayed(self):
+    def test_subproduct_CouncilItemDeletedIfCollegeItemIsDelayedOrReturned(self):
         """As items are sent to Council when 'itemfrozen', if a College item is finally
-           'delayed', delete the Council item that was sent."""
+           'delayed' or 'returned', delete the Council item that was sent."""
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(True)
         cfg2 = self.meetingConfig2
@@ -1692,19 +1692,30 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        item2 = self.create('MeetingItem')
+        item2.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         meeting = self.create('Meeting', date=DateTime('2015/11/11'))
         self.presentItem(item)
+        self.presentItem(item2)
         self.freezeMeeting(meeting)
         # item was sent to Council
         self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
+        self.assertTrue(item2.getItemClonedToOtherMC(cfg2Id))
+        self.decideMeeting(meeting)
 
         # now delay the College item, it will automatically delete the Council item
-        self.decideMeeting(meeting)
         self.do(item, 'delay')
         self.assertFalse(item.getItemClonedToOtherMC(cfg2Id))
         # but original delay action was kept, the item was duplicated in the College
         backRefs = item.getBRefs('ItemPredecessor')
         self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item.portal_type)
+
+        # now delay the College item, it will automatically delete the Council item
+        self.do(item2, 'return')
+        self.assertFalse(item2.getItemClonedToOtherMC(cfg2Id))
+        # but original delay action was kept, the item was duplicated in the College
+        backRefs = item2.getBRefs('ItemPredecessor')
+        self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item2.portal_type)
 
     def test_subproduct_CreatorMayAskAdviceOnlyIfRelevant(self):
         """MeetingMember may only set item to 'itemcreated_waiting_advices' if there

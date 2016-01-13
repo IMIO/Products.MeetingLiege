@@ -973,7 +973,7 @@ class CustomMeetingItem(MeetingItem):
             while predecessor:
                 if predecessor.queryState() == 'accepted_and_returned' and \
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
-                    # if item was sent to council, check that this item is not 'delayed' or 'marked_not_applicable'
+                    # if item was sent to council, check that this item is not 'delayed' or 'returned'
                     councilClonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
                     if councilClonedItem and not councilClonedItem.queryState() in ('delayed', 'returned'):
                         return True
@@ -1870,6 +1870,8 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
           Manage 'return college', item is duplicated
           then validated for a next meeting.
         '''
+        self._deleteLinkedCouncilItem()
+
         newItem = self.context.clone(cloneEventAction=cloneEventAction,
                                      keepProposingGroup=True,
                                      setCurrentAsPredecessor=True)
@@ -1884,13 +1886,9 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         wfTool.doActionFor(newItem, 'validate')
         self.context.REQUEST.set('mayValidate', False)
 
-    security.declarePrivate('doDelay')
-
-    def doDelay(self, stateChange):
-        '''When a College item is delayed, if it was sent to Council, delete
-           the item in the Council.'''
-        # call original action
-        MeetingItemWorkflowActions.doDelay(self, stateChange)
+    def _deleteLinkedCouncilItem(self):
+        """When a College item is delayed or returned, we need
+           to delete the Council item that was already sent to Council."""
         councilItem = self.context.getItemClonedToOtherMC('meeting-config-council')
         if councilItem:
             # Make sure item is removed because MeetingManagers may not remove items...
@@ -1898,6 +1896,15 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
             plone_utils = api.portal.get_tool('plone_utils')
             plone_utils.addPortalMessage(_("The item that was sent to Council has been deleted."),
                                          type='warning')
+
+    security.declarePrivate('doDelay')
+
+    def doDelay(self, stateChange):
+        '''When a College item is delayed, if it was sent to Council, delete
+           the item in the Council.'''
+        # call original action
+        MeetingItemWorkflowActions.doDelay(self, stateChange)
+        self._deleteLinkedCouncilItem()
 
 
 class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):

@@ -249,7 +249,9 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
     def test_subproduct_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
         self.changeUser('admin')
-        self.meetingConfig.setUsedAdviceTypes(('asked_again', ) + self.meetingConfig.getUsedAdviceTypes())
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
+        cfg.setUsedAdviceTypes(('asked_again', ) + self.meetingConfig.getUsedAdviceTypes())
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
         # add finance groups
@@ -352,6 +354,11 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # start immediatelly because item completeness is automatically set to 'evaluate again'
         # for now delay is started and advice is editable
         self.do(item, 'backToProposedToInternalReviewer')
+        # finance access is kept when item is sent back to internal reviewer no matter itemAdviceXXXStates
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse('proposed_to_internal_reviewer' in cfg.getItemAdviceStates())
+        self.assertFalse('proposed_to_internal_reviewer' in cfg.getItemAdviceEditStates())
+        self.assertFalse('proposed_to_internal_reviewer' in cfg.getItemAdviceViewStates())
         # advice was historized
         pr = self.portal.portal_repository
         self.assertEquals(pr.getHistoryMetadata(advice)._available, [0])
@@ -488,8 +495,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # the advice is not 'advice_given' but in a state 'financial_advice_signed'
         # where nobody can change anything neither...
         financeGrp = getattr(self.tool, FINANCE_GROUP_IDS[0])
-        self.assertTrue('%s__state__validated' % self.meetingConfig.getId() in financeGrp.getItemAdviceStates())
-        self.assertTrue('%s__state__validated' % self.meetingConfig.getId() in financeGrp.getItemAdviceEditStates())
+        self.assertTrue('%s__state__validated' % cfgId in financeGrp.getItemAdviceStates())
+        self.assertTrue('%s__state__validated' % cfgId in financeGrp.getItemAdviceEditStates())
         self.assertTrue(advice.queryState() == 'financial_advice_signed')
         # item.adviceIndex is coherent also, the 'addable'/'editable' data is correct
         self.assertTrue(not item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])

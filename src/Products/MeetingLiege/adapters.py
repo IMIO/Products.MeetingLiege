@@ -1723,18 +1723,6 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     implements(IMeetingCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    security.declarePublic('mayFreeze')
-
-    def mayFreeze(self):
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
-            if not self.context.getRawItems():
-                res = No(translate('item_required_to_publish',
-                                   domain='PloneMeeting',
-                                   context=self.context.REQUEST))
-        return res
-
     security.declarePublic('mayClose')
 
     def mayClose(self):
@@ -2339,18 +2327,6 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
 
     implements(IMeetingCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
-
-    security.declarePublic('mayFreeze')
-
-    def mayFreeze(self):
-        res = False
-        if checkPermission(ReviewPortalContent, self.context):
-            res = True  # At least at present
-            if not self.context.getRawItems():
-                res = No(translate('item_required_to_publish',
-                                   domain='PloneMeeting',
-                                   context=self.context.REQUEST))
-        return res
 
     security.declarePublic('mayClose')
 

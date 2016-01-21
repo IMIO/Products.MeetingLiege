@@ -1771,8 +1771,8 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
     def test_subproduct_AdviceGroupVocabulary(self):
         """'Products.PloneMeeting.content.advice.advice_type_vocabulary' was overrided
            to manage values of finance advice."""
-        self.changeUser('pmManager')
         item, finance_advice = self._setupCollegeItemWithFinanceAdvice()
+        self.changeUser('pmManager')
         vocab = queryUtility(IVocabularyFactory,
                              "Products.PloneMeeting.content.advice.advice_type_vocabulary")
         # ask 'vendors' advice on item

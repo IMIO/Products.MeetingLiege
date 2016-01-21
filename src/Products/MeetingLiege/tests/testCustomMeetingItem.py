@@ -536,16 +536,21 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item1 = self.create('MeetingItem', title='Item with positive advice')
         item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item1a = self.create('MeetingItem', title='Item with positive with remarks advice')
+        item1a.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item2 = self.create('MeetingItem', title='Item with negative advice')
         item2.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item3 = self.create('MeetingItem', title='Item with no advice')
         item3.setFinanceAdvice(FINANCE_GROUP_IDS[0])
 
         self.proposeItem(item1)
+        self.proposeItem(item1a)
         self.proposeItem(item2)
         self.proposeItem(item3)
         self.do(item1, 'proposeToFinance')
         item1.setCompleteness('completeness_complete')
+        self.do(item1a, 'proposeToFinance')
+        item1a.setCompleteness('completeness_complete')
         self.do(item2, 'proposeToFinance')
         item2.setCompleteness('completeness_complete')
         self.do(item3, 'proposeToFinance')
@@ -555,31 +560,43 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item3.updateLocalRoles()
 
         self.changeUser('pmFinManager')
-        advice1 = createContentInContainer(item1,
-                                           'meetingadvice',
-                                           **{'advice_group': FINANCE_GROUP_IDS[0],
-                                              'advice_type': 'positive_finance',
-                                              'advice_comment': RichTextValue(u'My good comment finance')})
-        advice2 = createContentInContainer(item2,
-                                           'meetingadvice',
-                                           **{'advice_group': FINANCE_GROUP_IDS[0],
-                                              'advice_type': 'negative_finance',
-                                              'advice_comment': RichTextValue(u'My bad comment finance')})
+        advice1 = createContentInContainer(
+            item1,
+            'meetingadvice',
+            **{'advice_group': FINANCE_GROUP_IDS[0],
+               'advice_type': 'positive_finance',
+               'advice_comment': RichTextValue(u'My good comment finance')})
+        advice1a = createContentInContainer(
+            item1a,
+            'meetingadvice',
+            **{'advice_group': FINANCE_GROUP_IDS[0],
+               'advice_type': 'positive_with_remarks_finance',
+               'advice_comment': RichTextValue(u'My good with remarks comment finance')})
+        advice2 = createContentInContainer(
+            item2,
+            'meetingadvice',
+            **{'advice_group': FINANCE_GROUP_IDS[0],
+               'advice_type': 'negative_finance',
+               'advice_comment': RichTextValue(u'My bad comment finance')})
 
         # send to financial reviewer
         self.changeUser('pmFinController')
         self.do(advice1, 'proposeToFinancialReviewer')
+        self.do(advice1a, 'proposeToFinancialReviewer')
         self.do(advice2, 'proposeToFinancialReviewer')
         # send to finance manager
         self.do(advice1, 'proposeToFinancialManager')
+        self.do(advice1a, 'proposeToFinancialManager')
         self.do(advice2, 'proposeToFinancialManager')
         # sign the advice
         self.do(advice1, 'signFinancialAdvice')
+        self.do(advice1a, 'signFinancialAdvice')
         self.do(advice2, 'signFinancialAdvice')
 
         financialStuff1 = item1.adapted().getFinancialAdviceStuff()
         financialStuff2 = item2.adapted().getFinancialAdviceStuff()
         advice1 = item1.getAdviceDataFor(item1, item1.getFinanceAdvice())
+        advice1a = item1a.getAdviceDataFor(item1a, item1a.getFinanceAdvice())
         advice2 = item2.getAdviceDataFor(item2, item2.getFinanceAdvice())
         advice3 = item3.getAdviceDataFor(item3, item3.getFinanceAdvice())
         delayStartedOn1 = advice1['delay_infos']['delay_started_on_localized']
@@ -609,10 +626,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         res6 = "<p>Avis du Directeur financier expiré le {0}</p>".format(limitDateLocalized3)
 
         self.assertTrue(item1.adapted().getLegalTextForFDAdvice() == res1)
+        self.assertTrue(item1a.adapted().getLegalTextForFDAdvice() == res1)
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice() == res2)
         self.assertTrue(item3.adapted().getLegalTextForFDAdvice() == res3)
 
         self.assertTrue(item1.adapted().getLegalTextForFDAdvice(isMeeting=True) == res4)
+        self.assertTrue(item1a.adapted().getLegalTextForFDAdvice(isMeeting=True) == res4)
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice(isMeeting=True) == res5)
         self.assertTrue(item3.adapted().getLegalTextForFDAdvice(isMeeting=True) == res6)
 

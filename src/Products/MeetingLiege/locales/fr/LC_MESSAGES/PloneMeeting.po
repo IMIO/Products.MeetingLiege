@@ -344,6 +344,10 @@ msgstr "Transmission du point à divers services en vue de demander leur avis su
 msgid "positive_finance"
 msgstr "Avis finances favorable"
 
+#. Default: "Favorable opinion with remarks"
+msgid "positive_with_remarks_finance"
+msgstr "Avis finances favorable avec remarques"
+
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
 msgstr "Collège"

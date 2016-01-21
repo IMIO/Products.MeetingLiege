@@ -147,7 +147,7 @@ def onAdviceTransition(advice, event):
         # and a specific message is added to the wf history regarding this
         # validate or send the item back to director depending on advice_type
         if itemState == 'proposed_to_finance':
-            if advice.advice_type in ('positive_finance', 'not_required_finance'):
+            if advice.advice_type in ('positive_finance', 'positive_with_remarks_finance', 'not_required_finance'):
                 item.REQUEST.set('mayValidate', True)
                 wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_positive')
                 item.REQUEST.set('mayValidate', False)

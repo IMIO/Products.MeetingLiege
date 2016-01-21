@@ -27,9 +27,12 @@ from datetime import datetime
 from DateTime import DateTime
 
 from AccessControl import Unauthorized
+from zope.component import queryUtility
 from zope.event import notify
 from zope.i18n import translate
 from zope.lifecycleevent import ObjectModifiedEvent
+from zope.schema.interfaces import IVocabularyFactory
+
 from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
 from plone.dexterity.utils import createContentInContainer
@@ -251,7 +254,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('admin')
         cfg = self.meetingConfig
         cfgId = cfg.getId()
-        cfg.setUsedAdviceTypes(('asked_again', ) + self.meetingConfig.getUsedAdviceTypes())
+        cfg.setUsedAdviceTypes(('asked_again', ) + cfg.getUsedAdviceTypes())
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
         # add finance groups
@@ -337,7 +340,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         advice = createContentInContainer(item,
                                           'meetingadvice',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
-                                             'advice_type': u'positive_finance',
+                                             'advice_type': u'positive_with_remarks_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
                                              'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
         # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
@@ -899,7 +902,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # advice is available to the financial controller
         self.changeUser('pmFinController')
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
-        advice.advice_type = u'positive_finance'
+        advice.advice_type = u'positive_with_remarks_finance'
         self.do(advice, 'proposeToFinancialReviewer')
         self.assertTrue(advice.queryState() == 'proposed_to_financial_reviewer')
         self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
@@ -1764,6 +1767,34 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
         # advice may not be asked anymore
         self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
+
+    def test_subproduct_AdviceGroupVocabulary(self):
+        """'Products.PloneMeeting.content.advice.advice_type_vocabulary' was overrided
+           to manage values of finance advice."""
+        self.changeUser('pmManager')
+        item, finance_advice = self._setupCollegeItemWithFinanceAdvice()
+        vocab = queryUtility(IVocabularyFactory,
+                             "Products.PloneMeeting.content.advice.advice_type_vocabulary")
+        # ask 'vendors' advice on item
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.do(item, 'backToProposedToDirector')
+        vendors_advice = createContentInContainer(
+            item,
+            'meetingadvice',
+            **{'advice_group': 'vendors',
+               'advice_type': u'negative',
+               'advice_comment': RichTextValue(u'<p>My comment vendors</p>'),
+               'advice_observations': RichTextValue(u'<p>My observation vendors</p>')})
+        finance_keys = vocab(finance_advice).by_value.keys()
+        finance_keys.sort()
+        self.assertEquals(finance_keys,
+                          ['negative_finance', 'not_required_finance',
+                           'positive_finance', 'positive_with_remarks_finance'])
+        vendors_keys = vocab(vendors_advice).by_value.keys()
+        vendors_keys.sort()
+        self.assertEquals(vendors_keys,
+                          ['negative', 'nil', 'positive', 'positive_with_remarks'])
 
 
 def test_suite():

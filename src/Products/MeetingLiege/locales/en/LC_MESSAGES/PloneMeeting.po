@@ -345,6 +345,10 @@ msgstr ""
 msgid "positive_finance"
 msgstr "Favorable opinion"
 
+#. Default: "Favorable opinion with remarks"
+msgid "positive_with_remarks_finance"
+msgstr ""
+
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
 msgstr "Item College"

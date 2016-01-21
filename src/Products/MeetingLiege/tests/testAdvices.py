@@ -24,6 +24,7 @@
 
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
+
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 

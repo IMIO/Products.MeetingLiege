@@ -124,6 +124,19 @@ class MatterAwareAnnexableAdapter(AnnexableAdapter):
                                                                                  isPowerObserver,
                                                                                  isRestrictedPowerObserver,
                                                                                  annexInfo)
+        # not confidential, viewable
+        # restricted power observers respect classic behavior
+        if not annexInfo['isConfidential'] or isRestrictedPowerObserver:
+            return res
+
+        # every decision annexes are viewable by power observers
+        if annexInfo['relatedTo'] == 'item_decision' and isPowerObserver:
+            return res
+
+        # not (restricted) power observers may access annexes
+        if not isPowerObserver and not isRestrictedPowerObserver:
+            return res
+
         # if user may see and isPowerObserver, double check
         # power observer may only access annexes of items using the categories
         # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'

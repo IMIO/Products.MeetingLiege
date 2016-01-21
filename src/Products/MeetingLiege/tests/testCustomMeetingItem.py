@@ -142,12 +142,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_AnnexesConfidentialityDependingOnMatter(self):
         '''Power observers may only access annexes of items they are in charge of.
            A single exception is made for annex type 'annexeCahier' that is viewable
-           by every power observers.'''
+           by every power observers.
+           Decision annexes are visible by power observers no matter... matter nor confidentiality.'''
         # configure so we use categories, and adapt category 'development'
         # so we select a group in it's groupsOfMatter
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(False)
         # confidential annexes are hidden to restricted power observers
+        cfg.setEnableAnnexConfidentiality(True)
         cfg.setAnnexConfidentialFor(('restricted_power_observers', ))
         cfg.setUseGroupsAsCategories(False)
         development = cfg.categories.development
@@ -155,20 +157,26 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # create an item for the 'developers' group
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
+        # not confidential annex
         annex1 = self.addAnnex(item)
+        self.assertFalse(annex1.getIsConfidential())
         annex2 = self.addAnnex(item)
         # annex using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
         # are viewable by every power observers
         annex3 = self.addAnnex(item, annexType='annexeCahier')
         annex4 = self.addAnnex(item, annexType='courrier-a-valider-par-le-college')
+        annex_decision1 = self.addAnnex(item, relatedTo='item_decision')
+        self.assertFalse(annex_decision1.getIsConfidential())
+        annex_decision2 = self.addAnnex(item, relatedTo='item_decision')
+        annex2.setIsConfidential(True)
         annex2.setIsConfidential(True)
         annex3.setIsConfidential(True)
         annex4.setIsConfidential(True)
+        annex_decision2.setIsConfidential(True)
         # select the right category
         item.setCategory(development.getId())
         item.at_post_edit_script()
         self.validateItem(item)
-        specialReaders = 'vendors_observers'
 
         # power observers may access items when it is 'presented'
         self.changeUser('pmManager')
@@ -177,13 +185,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('powerobserver1')
         # powerobservers1 is not member of 'vendors_observers' so he
         # will not be able to access the annexes of the item
+        specialReaders = 'vendors_observers'
         self.assertTrue(not specialReaders in self.member.getGroups())
         self.hasPermission(View, item)
-        # no matter the annex is confidential or not, both are not viewable
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                    isPowerObserver=True,
-                                                                    isRestrictedPowerObserver=False,
-                                                                    annexInfo=annex1.getAnnexInfo()))
+        # not confidential annex is viewable, but not annexes that are confidential
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex1.getAnnexInfo()))
         self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
                                                                     isPowerObserver=True,
                                                                     isRestrictedPowerObserver=False,
@@ -197,6 +206,15 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex4.getAnnexInfo()))
+        # every decision annexes are viewable by power observers
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex_decision1.getAnnexInfo()))
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex_decision2.getAnnexInfo()))
         # if we assign 'powerobserver1' to the 'vendors_observers' group
         # he will be able to view the annexes of item as he is in charge of
         self.portal.portal_groups.addPrincipalToGroup('powerobserver1', specialReaders)
@@ -218,6 +236,43 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                                                    isPowerObserver=True,
                                                                    isRestrictedPowerObserver=False,
                                                                    annexInfo=annex4.getAnnexInfo()))
+        # every decision annexes are viewable by power observers
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex_decision1.getAnnexInfo()))
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=True,
+                                                                   isRestrictedPowerObserver=False,
+                                                                   annexInfo=annex_decision2.getAnnexInfo()))
+
+        # restricted power observers may only access not confidential annexes
+        self.changeUser('restrictedpowerobserver1')
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=False,
+                                                                   isRestrictedPowerObserver=True,
+                                                                   annexInfo=annex1.getAnnexInfo()))
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                    isPowerObserver=False,
+                                                                    isRestrictedPowerObserver=True,
+                                                                    annexInfo=annex2.getAnnexInfo()))
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                    isPowerObserver=False,
+                                                                    isRestrictedPowerObserver=True,
+                                                                    annexInfo=annex3.getAnnexInfo()))
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                    isPowerObserver=False,
+                                                                    isRestrictedPowerObserver=True,
+                                                                    annexInfo=annex4.getAnnexInfo()))
+        # only not confidential decision annexes are viewable by restricted power observers
+        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=False,
+                                                                   isRestrictedPowerObserver=True,
+                                                                   annexInfo=annex_decision1.getAnnexInfo()))
+        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
+                                                                   isPowerObserver=False,
+                                                                   isRestrictedPowerObserver=True,
+                                                                   annexInfo=annex_decision2.getAnnexInfo()))
 
     def test_ItemReference(self):
         '''Test item reference generation.'''

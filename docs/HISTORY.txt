@@ -36,3 +36,4 @@ Products.MeetingLiege Changelog
 - Added 'positive_with_remarks_finance' to the list of advice_type selectable by finance advisers,
   this behaves exactly like 'positive_finance' in every cases, except the icon that shows to the user
   that a comment has been added to the advice
+- Power observers (not restricted) may access every decision annexes

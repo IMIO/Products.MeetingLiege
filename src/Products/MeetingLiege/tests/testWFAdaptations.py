@@ -29,18 +29,18 @@ from Products.MeetingCommunes.tests.testWFAdaptations import testWFAdaptations a
 class testWFAdaptations(MeetingLiegeTestCase, mctwfa):
     '''Tests various aspects of votes management.'''
 
-    def test_subproduct_call_WFA_availableWFAdaptations(self):
+    def test_pm_WFA_availableWFAdaptations(self):
         '''Most of wfAdaptations makes no sense, just make sure most are disabled.'''
         self.assertEquals(set(self.meetingConfig.listWorkflowAdaptations()),
                           set(('return_to_proposing_group', )))
 
-    def test_subproduct_call_WFA_return_to_proposing_group(self):
+    def test_pm_WFA_return_to_proposing_group(self):
         '''See doc in PloneMeeting/tests/testWFAdaptations.py'''
-        mctwfa.test_pm_WFA_return_to_proposing_group(self)
+        super(mctwfa, self).test_pm_WFA_return_to_proposing_group()
 
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testWFAdaptations, prefix='test_subproduct_'))
+    suite.addTest(makeSuite(testWFAdaptations, prefix='test_pm_'))
     return suite

@@ -41,7 +41,7 @@ class testAdvices(MeetingLiegeTestCase, mcta):
     '''Tests various aspects of advices management.
        Advices are enabled for PloneGov Assembly, not for PloneMeeting Assembly.'''
 
-    def test_subproduct_FinancialManagerMayChangeAdviceDelayWhenAddableOrEditable(self):
+    def test_pm_FinancialManagerMayChangeAdviceDelayWhenAddableOrEditable(self):
         '''Check that a financial manager may still change advice asked to his financial
            group while the advice is still addable or editable.'''
         self.changeUser('admin')
@@ -100,7 +100,7 @@ class testAdvices(MeetingLiegeTestCase, mcta):
         self.do(advice, 'signFinancialAdvice')
         self.assertTrue(not delayView._mayEditDelays(isAutomatic=isAutomatic))
 
-    def test_subproduct_ItemSentBackToAskerWhenEveryAdvicesGiven(self):
+    def test_pm_ItemSentBackToAskerWhenEveryAdvicesGiven(self):
         '''Check that, when every advices are given, the item is automatically sent back to 'itemcreated'
            of 'proposed_to_internal_reviewer' depending on which 'waiting advices' state it is.'''
         self.changeUser('admin')
@@ -212,5 +212,5 @@ class testAdvices(MeetingLiegeTestCase, mcta):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testAdvices, prefix='test_subproduct_'))
+    suite.addTest(makeSuite(testAdvices, prefix='test_pm_'))
     return suite

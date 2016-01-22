@@ -33,5 +33,5 @@ class testVotes(MeetingLiegeTestCase, mctv):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testVotes, prefix='test_subproduct_'))
+    suite.addTest(makeSuite(testVotes, prefix='test_pm_'))
     return suite

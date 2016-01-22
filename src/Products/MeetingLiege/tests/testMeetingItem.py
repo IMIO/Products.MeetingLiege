@@ -31,15 +31,15 @@ class testMeetingItem(MeetingLiegeTestCase, mctmi):
         Tests the MeetingItem class methods.
     """
 
-    def test_subproduct_call_Completeness(self):
+    def test_pm_Completeness(self):
         '''Already tested in testWorkflows.'''
         pass
 
-    def test_subproduct_call_Emergency(self):
+    def test_pm_Emergency(self):
         '''Already tested in testWorkflows.'''
         pass
 
-    def test_subproduct_call_ItemIsSigned(self):
+    def test_pm_ItemIsSigned(self):
         '''Bypass as we changed states in which itemIsSigned may
            be changed, tested in testCustomMeetingItem.test_ItemSignableSooner.'''
         pass
@@ -48,6 +48,5 @@ class testMeetingItem(MeetingLiegeTestCase, mctmi):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    # launch only tests prefixed by 'test_mc_' to avoid launching the tests coming from pmtmi
-    suite.addTest(makeSuite(testMeetingItem, prefix='test_subproduct_'))
+    suite.addTest(makeSuite(testMeetingItem, prefix='test_pm_'))
     return suite

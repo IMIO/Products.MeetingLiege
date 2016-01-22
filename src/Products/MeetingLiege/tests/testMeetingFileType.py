@@ -33,5 +33,5 @@ class testMeetingFileType(MeetingLiegeTestCase, mctmft):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testMeetingFileType, prefix='test_subproduct_'))
+    suite.addTest(makeSuite(testMeetingFileType, prefix='test_pm_'))
     return suite

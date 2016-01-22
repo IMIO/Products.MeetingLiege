@@ -59,7 +59,7 @@ template1 = ItemTemplateDescriptor(id='template1',
                                    title='Tutelle CPAS',
                                    description='Tutelle CPAS',
                                    category='',
-                                   proposingGroup='developers',
+                                   proposingGroup='',
                                    templateUsingGroups=['developers', 'vendors'],
                                    decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
 <p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>

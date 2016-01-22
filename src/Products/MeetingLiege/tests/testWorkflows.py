@@ -63,11 +63,11 @@ COUNCIL_PRIVACY = 'secret'
 class testWorkflows(MeetingLiegeTestCase, mctw):
     """Tests the default workflows implemented in MeetingLiege."""
 
-    def test_subproduct_call_WholeDecisionProcess(self):
+    def test_pm_WholeDecisionProcess(self):
         """This test is bypassed, we use several tests here under."""
         pass
 
-    def test_subproduct_CollegeProcessWithoutAdvices(self):
+    def test_pm_CollegeProcessWithoutAdvices(self):
         '''This test covers the whole decision workflow. It begins with the
            creation of some items, and ends by closing a meeting.
            The usecase here is to test the workflow without normal and finances advice.'''
@@ -172,7 +172,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(meeting, 'close')
         self.assertTrue(not self.transitions(item))
 
-    def test_subproduct_CollegeProcessWithNormalAdvices(self):
+    def test_pm_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
@@ -249,7 +249,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.changeUser('pmInternalReviewer1')
         self.do(item, 'proposeToDirector')
 
-    def test_subproduct_CollegeProcessWithFinancesAdvices(self):
+    def test_pm_CollegeProcessWithFinancesAdvices(self):
         '''How does the process behave when some 'finances' advices is asked.'''
         self.changeUser('admin')
         cfg = self.meetingConfig
@@ -556,7 +556,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(item.queryState() == 'itemfrozen')
         self.assertEquals(item.__ac_local_roles__[adviserGroupId], ['Reader', ])
 
-    def test_subproduct_CollegeProcessWithFinancesAdvicesWithEmergency(self):
+    def test_pm_CollegeProcessWithFinancesAdvicesWithEmergency(self):
         '''If emergency is asked for an item by director, the item can be sent
            to the meeting (validated) without finance advice, finance advice is still giveable...
            Make sure a MeetingManager is able to present such an item or send back to the director.'''
@@ -637,7 +637,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(meeting, 'freeze')
         self.assertTrue(advice.queryState() == 'advice_given')
 
-    def test_subproduct_ItemWithTimedOutAdviceIsAutomaticallyValidated(self):
+    def test_pm_ItemWithTimedOutAdviceIsAutomaticallyValidated(self):
         '''When an item is 'proposed_to_finance', it may be validated
            only by finance group or if emergency is asked.  In case the asked
            advice is timed out, it will be automatically validated.'''
@@ -719,7 +719,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertFalse(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_infos']['delay_status'] == 'timed_out')
 
-    def test_subproduct_ReturnCollege(self):
+    def test_pm_ReturnCollege(self):
         '''Test behaviour of the 'return' decision transition.
            This will duplicate the item and the new item will be automatically
            validated so it is available for the next meetings.'''
@@ -743,7 +743,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(predecessor.queryState() == 'validated')
         self.assertTrue(predecessor.portal_type == item.portal_type)
 
-    def test_subproduct_AcceptAndReturnCollege(self):
+    def test_pm_AcceptAndReturnCollege(self):
         '''Test behaviour of the 'accept_and_return' decision transition.
            This will send the item to the council then duplicate the original item (college)
            and automatically validate it so it is available for the next meetings.'''
@@ -841,7 +841,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(dupLinkedItem, 'accept')
         self.assertTrue(dupLinkedItem.getItemClonedToOtherMC(cfg2Id))
 
-    def test_subproduct_IndexAdvisersIsCorrectAfterAdviceTransition(self):
+    def test_pm_IndexAdvisersIsCorrectAfterAdviceTransition(self):
         '''Test that when a transition is triggered on a meetingadvice
            using finance workflow, the indexAdvisers index is always correct.'''
         self.changeUser('admin')
@@ -913,19 +913,17 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(advice.queryState() == 'financial_advice_signed')
         self.assertTrue(indexAdvisers(item)() == catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
 
-    def test_subproduct_call_RemoveObjects(self):
-        """
-            Tests objects removal (items, meetings, annexes...).
-        """
+    def test_pm_RemoveObjects(self):
+        '''Run the test_pm_RemoveObjects from PloneMeeting.'''
         # we do the test for the college config
         self.meetingConfig = getattr(self.tool, 'meeting-config-college')
-        self.test_pm_RemoveObjects()
+        super(mctw, self).test_pm_RemoveObjects()
         # items are validated by default for the council config
         # so are not removable by item creators/reviewers
         #self.meetingConfig = getattr(self.tool, 'meeting-config-council')
-        #self.test_pm_RemoveObjects()
+        #super(testWorkflows, self).test_pm_RemoveObjects()
 
-    def test_subproduct_ItemCommentViewability(self):
+    def test_pm_ItemCommentViewability(self):
         '''Test that even when comments are only shown to the proposing group,
            some specific comments are shown to the group the financial advice is asked to.'''
         self.changeUser('admin')
@@ -976,7 +974,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
             else:
                 self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
 
-    def test_subproduct_AdviceCommentViewability(self):
+    def test_pm_AdviceCommentViewability(self):
         '''Test that advice comments are only viewable to finance group members and MeetingManagers.
            Except the FINANCE_ADVICE_HISTORIZE_EVENT that is viewable by everyone who may access the advice.'''
         self.changeUser('admin')
@@ -1032,7 +1030,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         for event in history:
             self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
 
-    def test_subproduct_MeetingManagersMayNotDeleteItems(self):
+    def test_pm_MeetingManagersMayNotDeleteItems(self):
         '''
           MeetingManagers are not able to Delete an item.
         '''
@@ -1094,7 +1092,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         return item, advice
 
-    def test_subproduct_FinanceAdvisersAccessToAutoLinkedItems(self):
+    def test_pm_FinanceAdvisersAccessToAutoLinkedItems(self):
         """Finance adviser have still access to items that were automatically linked to
            an item they give advice on.
            This is the case for 'returned' items and items sent to Council."""
@@ -1154,7 +1152,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(predecessors[0].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
         self.assertTrue(predecessors[1].__ac_local_roles__['{0}_advisers'.format(FINANCE_GROUP_IDS[0])] == ['Reader', ])
 
-    def test_subproduct_FinanceAdvisersAccessToManuallyLinkedItems(self):
+    def test_pm_FinanceAdvisersAccessToManuallyLinkedItems(self):
         """Finance adviser have access to every items that are manually linked
            to an item they give advice on."""
         item, advice = self._setupCollegeItemWithFinanceAdvice()
@@ -1265,7 +1263,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(self.hasPermission(View, item3))
         self.assertTrue(self.hasPermission(View, item4))
 
-    def test_subproduct_CollegeShortcutProcess(self):
+    def test_pm_CollegeShortcutProcess(self):
         '''
         The items cannot be send anymore to group without at least one user
         in it. There is also shortcut for the three types of reviewers who
@@ -1544,7 +1542,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertTrue(groupId in item.__ac_local_roles__)
         self.assertTrue(groupId in item2.__ac_local_roles__)
 
-    def test_subproduct_StateSentToCouncilEmergency(self):
+    def test_pm_StateSentToCouncilEmergency(self):
         """When 'emergency' is aksed to send an item to Council,
            an item may be set to 'sent_to_council_emergency' so
            it is in a final state and it is sent to council.  It keeps
@@ -1622,7 +1620,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.decideMeeting(councilMeeting)
         return collegeItem, councilItem, collegeMeeting, councilMeeting
 
-    def test_subproduct_CouncilItemSentToCollegeWhenDelayed(self):
+    def test_pm_CouncilItemSentToCollegeWhenDelayed(self):
         """While an item in the council is set to 'delayed', it is sent
            in 'itemcreated' state back to the College and ready to process
            back to the council."""
@@ -1642,7 +1640,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(backCollegeItem.queryState(), 'itemcreated')
         self.assertEquals(backCollegeItem.adapted().getItemWithFinanceAdvice(), backCollegeItem)
 
-    def test_subproduct_CouncilItemSentToCollegeWhenReturned(self):
+    def test_pm_CouncilItemSentToCollegeWhenReturned(self):
         """While an item in the council is set to 'delayed', it is sent
            in 'itemcreated' state back to the College and ready to process
            back to the council."""
@@ -1662,7 +1660,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.assertEquals(backCollegeItem.queryState(), 'validated')
         self.assertEquals(backCollegeItem.adapted().getItemWithFinanceAdvice(), collegeItem)
 
-    def test_subproduct_ItemSentToCouncilWhenDuplicatedAndLinkKept(self):
+    def test_pm_ItemSentToCouncilWhenDuplicatedAndLinkKept(self):
         """Make sure that an item that is 'duplicateAndKeepLink' is sent to Council
            no matter state of linked item, and no matter linked item has already been sent."""
         cfg2 = self.meetingConfig2
@@ -1688,7 +1686,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         self.do(duplicatedItem, 'accept')
         self.assertTrue(duplicatedItem.getItemClonedToOtherMC(cfg2Id))
 
-    def test_subproduct_CouncilItemDeletedIfCollegeItemIsDelayedOrReturned(self):
+    def test_pm_CouncilItemDeletedIfCollegeItemIsDelayedOrReturned(self):
         """As items are sent to Council when 'itemfrozen', if a College item is finally
            'delayed' or 'returned', delete the Council item that was sent."""
         cfg = self.meetingConfig
@@ -1727,7 +1725,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         backRefs = item2.getBRefs('ItemPredecessor')
         self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item2.portal_type)
 
-    def test_subproduct_CreatorMayAskAdviceOnlyIfRelevant(self):
+    def test_pm_CreatorMayAskAdviceOnlyIfRelevant(self):
         """MeetingMember may only set item to 'itemcreated_waiting_advices' if there
            are actually advices to ask, so if at least one of the asked advices may be
            given in state 'itemcreated_waiting_advices'."""
@@ -1768,7 +1766,7 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
         # advice may not be asked anymore
         self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
 
-    def test_subproduct_AdviceGroupVocabulary(self):
+    def test_pm_AdviceGroupVocabulary(self):
         """'Products.PloneMeeting.content.advice.advice_type_vocabulary' was overrided
            to manage values of finance advice."""
         item, finance_advice = self._setupCollegeItemWithFinanceAdvice()
@@ -1800,5 +1798,5 @@ class testWorkflows(MeetingLiegeTestCase, mctw):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testWorkflows, prefix='test_subproduct_'))
+    suite.addTest(makeSuite(testWorkflows, prefix='test_pm_'))
     return suite

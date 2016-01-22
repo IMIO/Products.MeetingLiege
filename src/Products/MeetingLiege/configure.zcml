@@ -12,6 +12,7 @@
   <i18n:registerTranslations directory="locales" />
   <include package="Products.CMFPlacefulWorkflow"/>
   <include package="Products.PloneMeeting"/>
+  <includeOverrides file="overrides.zcml" />
 
   <!-- WF actions and conditions for Meeting and MeetingItem for College -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"

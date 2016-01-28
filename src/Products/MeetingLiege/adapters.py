@@ -1282,16 +1282,16 @@ class CustomMeetingItem(MeetingItem):
         returned multiple times.
         '''
         # If we have the name of the office manager, we just return it.
-        if self.context.getLastEvent('proposeToDirector'):
-            offMan = self.context.getLastEvent('proposeToDirector')['actor']
+        if getLastEvent(self.context, 'proposeToDirector'):
+            offMan = getLastEvent(self.context, 'proposeToDirector')['actor']
         # Else we look for a predecessor which can have the intel.
         elif self.context.getPredecessor():
             offMan = ''
             predecessor = self.context.getPredecessor()
             # loops while the item has no office manager
             while predecessor and not offMan:
-                if predecessor.getLastEvent('proposeToDirector'):
-                    offMan = predecessor.getLastEvent('proposeToDirector')['actor']
+                if getLastEvent(predecessor, 'proposeToDirector'):
+                    offMan = getLastEvent(predecessor, 'proposeToDirector')['actor']
                 predecessor = predecessor.getPredecessor()
         else:
             return ''
@@ -2650,9 +2650,9 @@ class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
         # services, then it is considered as down the wf from the finances
         # so take into account every states before 'validated/proposed_to_finance'
         if not self.context.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
-            tool = api.portal.get_tool('portal_plonemeeting')
-            cfg = tool.getMeetingConfig(self.context)
-            history = self.context.workflow_history[cfg.getItemWorkflow()]
+            wfTool = api.portal.get_tool('portal_workflow')
+            itemWF = wfTool.getWorkflowsFor(self.context)[0]
+            history = self.context.workflow_history[itemWF.getId()]
             for event in history:
                 if event['action'] == 'proposeToFinance':
                     icons.append(('wf_down_finances.png',

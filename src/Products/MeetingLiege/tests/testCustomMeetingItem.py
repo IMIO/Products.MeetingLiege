@@ -270,9 +270,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                                                    isRestrictedPowerObserver=True,
                                                                    annexInfo=annex_decision1.getAnnexInfo()))
         self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=False,
-                                                                   isRestrictedPowerObserver=True,
-                                                                   annexInfo=annex_decision2.getAnnexInfo()))
+                                                                    isPowerObserver=False,
+                                                                    isRestrictedPowerObserver=True,
+                                                                    annexInfo=annex_decision2.getAnnexInfo()))
 
     def test_ItemReference(self):
         '''Test item reference generation.'''
@@ -579,7 +579,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         duplicatedItem2 = getattr(itemToCouncil2.getParentNode(), duplicatedItemId)
         self.assertEquals(duplicatedItem2.adapted().getItemWithFinanceAdvice(), duplicatedItem2)
 
-    def test_getLegalTextForFDAdvice(self):
+    def test_GetLegalTextForFDAdvice(self):
         self.changeUser('admin')
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
@@ -762,7 +762,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(IAnnexable(clonedItem).getAnnexes(relatedTo='item'))
         self.assertFalse(IAnnexable(clonedItem).getAnnexes(relatedTo='item_decision'))
 
-    def test_getOfficeManager(self):
+    def test_GetOfficeManager(self):
         self.changeUser('pmManager')
 
         # simple item following the workflow until it is validated.
@@ -883,7 +883,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         view('normal')
         self.assertEquals(item2.getItemNumber(), 200)
 
-    def test_subproduct_SentenceAppendedToCouncilItemDecisionEndWhenPresented(self):
+    def test_SentenceAppendedToCouncilItemDecisionEndWhenPresented(self):
         """When a council item is presented, it's decisionEnd field is adapted,
            a particular sentence is added at the end of the field."""
         cfg2 = self.meetingConfig2

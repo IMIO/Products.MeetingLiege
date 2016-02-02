@@ -37,3 +37,4 @@ Products.MeetingLiege Changelog
   this behaves exactly like 'positive_finance' in every cases, except the icon that shows to the user
   that a comment has been added to the advice
 - Power observers (not restricted) may access every decision annexes
+- When an item is 'returned', keep original creator for duplicated items

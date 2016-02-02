@@ -718,8 +718,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         '''Test behaviour of the 'return' decision transition.
            This will duplicate the item and the new item will be automatically
            validated so it is available for the next meetings.'''
-        self.changeUser('pmManager')
+        self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='An item to return')
+        self.changeUser('pmManager')
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         # present the item into the meeting
         self.presentItem(item)
@@ -729,66 +730,77 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # no duplicated for now
         self.assertTrue(not item.getBRefs('ItemPredecessor'))
         self.do(item, 'return')
-        self.assertTrue(item.queryState() == 'returned')
+        self.assertEquals(item.queryState(), 'returned')
         # now that the item is 'returned', it has been duplicated
         # and the new item has been validated
-        predecessor = item.getBRefs('ItemPredecessor')
-        self.assertTrue(len(predecessor) == 1)
-        predecessor = predecessor[0]
-        self.assertTrue(predecessor.queryState() == 'validated')
-        self.assertTrue(predecessor.portal_type == item.portal_type)
+        returned = item.getBRefs('ItemPredecessor')
+        self.assertTrue(len(returned) == 1)
+        returned = returned[0]
+        self.assertEquals(returned.queryState(), 'validated')
+        self.assertEquals(returned.portal_type, item.portal_type)
+        # original creator was kept
+        self.assertEquals(item.Creator(), 'pmCreator1')
+        self.assertEquals(returned.Creator(), item.Creator())
 
     def test_AcceptAndReturnCollege(self):
         '''Test behaviour of the 'accept_and_return' decision transition.
            This will send the item to the council then duplicate the original item (college)
            and automatically validate it so it is available for the next meetings.'''
+        cfg2 = self.meetingConfig2
         cfg2Id = self.meetingConfig2.getId()
-        self.changeUser('pmManager')
+        self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='An item to return')
+        # create meetingFolder in cfg2 for pmCreator1
+        self.getMeetingFolder(cfg2)
+        self.changeUser('pmManager')
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         # present the item into the meeting
         self.presentItem(item)
         self.decideMeeting(meeting)
         # as item is not to send to council, the 'accept_and_return' transition is not available
         self.assertTrue(not 'accept_and_return' in self.transitions(item))
-        # make it to send to council
+        # mark it to send to council
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         # now the transition 'accept_and_return' is available
         self.assertTrue('accept_and_return' in self.transitions(item))
         # accept_and_return, the item is send to the meetingConfig2
         # and is duplicated in current config and set to 'validated'
         self.do(item, 'accept_and_return')
-        predecessors = item.getBRefs('ItemPredecessor')
-        self.assertTrue(len(predecessors) == 2)
-        duplicated1, duplicated2 = predecessors
+        returned = item.getBRefs('ItemPredecessor')
+        self.assertTrue(len(returned) == 2)
+        duplicated1, duplicated2 = returned
+        # original creator was kept
+        self.assertEquals(item.Creator(), 'pmCreator1')
+        self.assertEquals(duplicated1.Creator(), item.Creator())
+        self.assertEquals(duplicated2.Creator(), item.Creator())
         # predecessors are not sorted, so one of both is duplicated to another
         # meetingConfig and the other is duplicated locally...
         # sent to the council
-        if duplicated1.portal_type == self.meetingConfig2.getItemTypeName():
+        if duplicated1.portal_type == cfg2.getItemTypeName():
             duplicatedToCfg2 = duplicated1
             duplicatedLocally = duplicated2
         else:
             duplicatedToCfg2 = duplicated2
             duplicatedLocally = duplicated1
-        self.assertTrue(duplicatedToCfg2.portal_type == self.meetingConfig2.getItemTypeName())
+        self.assertTrue(duplicatedToCfg2.portal_type == cfg2.getItemTypeName())
         self.assertTrue(duplicatedToCfg2.UID() == item.getItemClonedToOtherMC(cfg2Id).UID())
         # duplicated locally...
         self.assertTrue(duplicatedLocally.portal_type == item.portal_type)
         #... and validated
         self.assertTrue(duplicatedLocally.queryState() == 'validated')
         # informations about "needs to be sent to other mc" is kept
-        self.assertTrue(duplicatedLocally.getOtherMeetingConfigsClonableTo() == (self.meetingConfig2.getId(), ))
+        self.assertTrue(duplicatedLocally.getOtherMeetingConfigsClonableTo() == (cfg2.getId(), ))
         # now if duplicated item is accepted again, it will not be sent again the council
         meeting2 = self.create('Meeting', date='2014/02/02 09:00:00')
         # present the item into the meeting
         self.presentItem(duplicatedLocally)
         self.decideMeeting(meeting2)
         # it already being considered as sent to the other mc
-        self.assertTrue(duplicatedLocally._checkAlreadyClonedToOtherMC(self.meetingConfig2.getId()))
+        self.assertTrue(duplicatedLocally._checkAlreadyClonedToOtherMC(cfg2.getId()))
         # it will not be considered as sent to the other mc if item
         # that was sent in the council is 'delayed' or 'marked_not_applicable'
         # so insert duplicatedToCfg2 in a meeting and 'delay' it
-        councilMeeting = self.create('Meeting', date='2015/01/15 09:00:00', meetingConfig=self.meetingConfig2)
+        councilMeeting = self.create('Meeting', date='2015/01/15 09:00:00', meetingConfig=cfg2)
         # meetingConfig2 is using categories
         duplicatedToCfg2.setCategory('deployment')
         self.presentItem(duplicatedToCfg2)
@@ -804,9 +816,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # now, make sure an already duplicated item
         # with an item on the council that is not 'delayed' or 'marked_not_applicable' is
         # not sent again
-        predecessors = duplicatedLocally.getBRefs('ItemPredecessor')
-        newduplicated1, newduplicated2 = predecessors
-        if newduplicated1.portal_type == self.meetingConfig2.getItemTypeName():
+        returned = duplicatedLocally.getBRefs('ItemPredecessor')
+        newduplicated1, newduplicated2 = returned
+        # original creator was kept
+        self.assertEquals(newduplicated1.Creator(), item.Creator())
+        self.assertEquals(newduplicated2.Creator(), item.Creator())
+        if newduplicated1.portal_type == cfg2.getItemTypeName():
             newDuplicatedLocally = newduplicated2
         else:
             newDuplicatedLocally = newduplicated1
@@ -823,8 +838,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # make sure an item that is 'Duplicated and keep link' with an item
         # that was 'accepted_and_returned' is sendable to another mc
         self.assertEquals(duplicatedLocally.queryState(), 'accepted_and_returned')
-        dupLinkedItemURL = duplicatedLocally.onDuplicateAndKeepLink()
-        dupLinkedItem = duplicatedLocally.getParentNode().restrictedTraverse(dupLinkedItemURL.split('/')[-1])
+        # publish 'Members' so 'pmManager' can traverse to duplicated item url
+        self.changeUser('siteadmin')
+        self.do(self.portal.Members, 'publish')
+
+        self.changeUser('pmManager')
+        # onDuplicateAndKeepLink returns the URL of the duplicated item
+        dupLinkedItemURL = duplicatedLocally.onDuplicateAndKeepLink().replace('http://nohost', '')
+        dupLinkedItem = self.portal.restrictedTraverse(dupLinkedItemURL)
         self.assertEquals(dupLinkedItem.getPredecessor(), duplicatedLocally)
         self.assertTrue(getLastEvent(dupLinkedItem, 'Duplicate and keep link'))
         self.assertEquals(dupLinkedItem.getOtherMeetingConfigsClonableTo(),

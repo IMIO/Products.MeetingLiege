@@ -1865,7 +1865,9 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         '''
         self._deleteLinkedCouncilItem()
 
-        newItem = self.context.clone(cloneEventAction=cloneEventAction,
+        newOwnerId = self.context.Creator()
+        newItem = self.context.clone(newOwnerId=newOwnerId,
+                                     cloneEventAction=cloneEventAction,
                                      keepProposingGroup=True,
                                      setCurrentAsPredecessor=True)
         # now that the item is cloned, we need to validate it

@@ -2134,8 +2134,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # special case for item having finance advice that was still under redaction when delay timed out
             # a MeetingManager mut be able to validate it
             elif item_state in ['proposed_to_finance', 'proposed_to_director', ] and \
-                    finance_advice and \
-                    self.context.adviceIndex[finance_advice]['delay_infos']['delay_status'] == 'timed_out':
+                    finance_advice and self.context._adviceDelayIsTimedOut(finance_advice):
                 res = True
             # director may validate an item if no finance advice
             # or finance advice and emergency is asked

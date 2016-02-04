@@ -1039,8 +1039,12 @@ class CustomMeetingItem(MeetingItem):
         # consider only if predecessor is in state 'accepted_and_returned' or 'returned' (College or Council item)
         # otherwise, the predecessor could have been edited and advice is no longer valid
         while predecessor and _predecessorIsValid(currentItem, predecessor, financeAdvice):
-            if predecessor.getFinanceAdvice() and \
-               predecessor.getFinanceAdvice() in predecessor.adviceIndex:
+            current_finance_advice = predecessor.getFinanceAdvice()
+            # check if finance_advice is selected if if it is not an optional one
+            # indeed it may occur that the optional finance advice is asked
+            if current_finance_advice and \
+               current_finance_advice in predecessor.adviceIndex and \
+               not predecessor.adviceIndex[current_finance_advice]['optional']:
                 return predecessor
             currentItem = predecessor
             predecessor = predecessor.getPredecessor()

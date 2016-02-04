@@ -448,6 +448,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
            gets automatically red access to the new item.
         '''
         self.changeUser('admin')
+        cfg = self.meetingConfig
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        cfg.setItemAutoSentToOtherMCStates(cfg.getItemAutoSentToOtherMCStates() + ('itemfrozen', ))
+
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
         # add finance groups
@@ -522,6 +527,24 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(not FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
         # finance group gets automatically access to the clonedReturnedItem
         self.assertTrue(clonedReturnedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+
+        # send the clonedReturnedItem to Council and check with the council item
+        clonedReturnedItem.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        self.presentItem(clonedReturnedItem)
+        self.assertEquals(clonedReturnedItem.queryState(), 'itemfrozen')
+        # still right, including sent item
+        self.assertEquals(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
+        self.assertEquals(
+            clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
+            item)
+        # now test if setting an optional finance advice does not break getItemWithFinanceAdvice
+        clonedReturnedItem.setOptionalAdvisers((FINANCE_GROUP_IDS[0], ))
+        clonedReturnedItem.updateLocalRoles()
+        self.assertTrue(FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
+        self.assertEquals(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
+        self.assertEquals(
+            clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
+            item)
 
         # now test when the item is in the council
         # the right college item should be found too

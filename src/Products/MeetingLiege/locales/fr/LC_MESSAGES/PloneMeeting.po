@@ -36,10 +36,6 @@ msgstr "Conseil communal"
 msgid "MeetingLiege_descr_archivingRef"
 msgstr "Code destiné à permettre au Service des archives de classer de façon informatique le dossier"
 
-#. Default: "Choose proposing group for cdld advice"
-msgid "MeetingLiege_descr_cdldProposingGroup"
-msgstr "Choisir les groupes donneurs d'avis qui seront repris dans la synthèse CDLD (avis DF)"
-
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr "Sélectionnez ici le service DF qui devra émettre un avis de légalité sur le point."
@@ -71,10 +67,6 @@ msgstr "Code archivage"
 #. Default: "Archiving references"
 msgid "MeetingLiege_label_archivingRefs"
 msgstr "Codes archivage"
-
-#. Default: "Proposing group to keep for CDLD synthesis"
-msgid "MeetingLiege_label_cdldProposingGroup"
-msgstr "Groupes proposants à garder pour la synthèse des avis pour le CDLD (avis DF)"
 
 #. Default: "Decision (end)"
 msgid "MeetingLiege_label_decisionEnd"
@@ -371,11 +363,6 @@ msgstr "Avis proposés au directeur financier"
 #. Default: "Advices proposed to financial reviewer"
 msgid "searchadviceproposedtoreviewer"
 msgstr "Avis proposés aux validateurs financiers"
-
-# searches
-#. Default: "cdld synthesis"
-msgid "searchcdlditems"
-msgstr "Synthèse Avis DF"
 
 #. Default: "Items to control completeness of"
 msgid "searchitemstocontrolcompletenessof"

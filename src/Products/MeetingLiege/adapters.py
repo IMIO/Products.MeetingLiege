@@ -899,8 +899,14 @@ class CustomMeetingItem(MeetingItem):
         res['out_of_financial_dpt'] = 'time' in signature_event and signature_event['time'] or ''
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\
             and res['out_of_financial_dpt'].strftime('%d/%m/%Y') or ''
-        res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % \
-                             (adviceData['type_translated'].encode('utf-8'))
+        # "positive_with_remarks_finance" will be printed "positive_finance"
+        if adviceData['type'] == 'positive_with_remarks_finance':
+            type_translated = translate('positive_finance',
+                                        domain='PloneMeeting',
+                                        context=item.REQUEST).encode('utf-8')
+        else:
+            type_translated = adviceData['type_translated'].encode('utf-8')
+        res['advice_type'] = '<p><u>Type d\'avis:</u>  %s</p>' % type_translated
         res['delay_started_on_localized'] = 'delay_started_on_localized' in adviceData['delay_infos']\
             and adviceData['delay_infos']['delay_started_on_localized'] or ''
         res['delay_started_on'] = 'delay_started_on' in adviceData\

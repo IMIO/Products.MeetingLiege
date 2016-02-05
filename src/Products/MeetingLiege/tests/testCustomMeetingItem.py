@@ -672,6 +672,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(advice2, 'signFinancialAdvice')
 
         financialStuff1 = item1.adapted().getFinancialAdviceStuff()
+        financialStuff1a = item1a.adapted().getFinancialAdviceStuff()
+        # positive_with_remarks 'advice_type' is printed like 'positive'
+        self.assertEquals(financialStuff1['advice_type'], financialStuff1a['advice_type'])
         financialStuff2 = item2.adapted().getFinancialAdviceStuff()
         advice1 = item1.getAdviceDataFor(item1, item1.getFinanceAdvice())
         advice1a = item1a.getAdviceDataFor(item1a, item1a.getFinanceAdvice())

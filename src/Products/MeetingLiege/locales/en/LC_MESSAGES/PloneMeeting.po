@@ -16,11 +16,11 @@ msgstr ""
 
 #. Default: "Access the College item containing given finance advice."
 msgid "Access the College item containing given finance advice."
-msgstr ""
+msgstr "Access the College item containing given finance advice."
 
 #. Default: "Data that will be used once item will be in the council"
 msgid "Data that will be used once item will be in the council"
-msgstr ""
+msgstr "Data that will be used once item will be in the council"
 
 # portal_tabs
 #. Default: "College"
@@ -33,11 +33,7 @@ msgstr "Council"
 
 #. Default: " "
 msgid "MeetingLiege_descr_archivingRef"
-msgstr ""
-
-#. Default: "Choose proposing group for cdld advice"
-msgid "MeetingLiege_descr_cdldProposingGroup"
-msgstr ""
+msgstr " "
 
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
@@ -45,7 +41,7 @@ msgstr "If necessary, select the financial service that will have to give the le
 
 #. Default: " "
 msgid "MeetingLiege_descr_labelForCouncil"
-msgstr ""
+msgstr " "
 
 #. Default: "Enter elements that are necessary for this kind of item to be considered as 'complete'."
 msgid "MeetingLiege_descr_textCheckList"
@@ -70,10 +66,6 @@ msgstr "Archiving reference"
 #. Default: "Archiving references"
 msgid "MeetingLiege_label_archivingRefs"
 msgstr "Archiving references"
-
-#. Default: "Proposing group to keep for CDLD synthesis"
-msgid "MeetingLiege_label_cdldProposingGroup"
-msgstr ""
 
 #. Default: "Decision (end)"
 msgid "MeetingLiege_label_decisionEnd"
@@ -142,7 +134,7 @@ msgstr "See/hide data used for council item"
 
 #. Default: "The item that was sent to Council has been deleted."
 msgid "The item that was sent to Council has been deleted."
-msgstr ""
+msgstr "The item that was sent to Council has been deleted."
 
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
@@ -150,12 +142,11 @@ msgstr "Administrative reviewers"
 
 #. Default: " "
 msgid "adopts_next_council_agenda_descr"
-msgstr ""
+msgstr " "
 
 #. Default: "No advice to ask"
-#, fuzzy
 msgid "advice_required_to_ask_advices"
-msgstr "No advice to ask (apart from financial advice)"
+msgstr "No advice to ask"
 
 #. Default: ", complete purpose"
 msgid "and_description"
@@ -163,7 +154,7 @@ msgstr ", complete purpose"
 
 #. Default: "Please select an archiving reference."
 msgid "archivingRef_required"
-msgstr ""
+msgstr "Please select an archiving reference."
 
 #. Default: "Enter archiving references that will be useable on items of this meeting config."
 msgid "archiving_refs_descr"
@@ -175,7 +166,7 @@ msgstr "The completeness has been asked again by the application when the item h
 
 #. Default: " "
 msgid "copy_groups_item_descr"
-msgstr ""
+msgstr " "
 
 #. Default: "This advice can not be given because the item is still not considered complete by the finance group."
 msgid "finance_advice_not_giveable_because_item_not_complete"
@@ -251,7 +242,7 @@ msgstr "Returned"
 
 #. Default: "Sent to Council emergency"
 msgid "icon_help_sent_to_council_emergency"
-msgstr ""
+msgstr "Sent to Council emergency"
 
 #. Default: "This item is down the workflow from finances"
 msgid "icon_help_wf_down_finances"
@@ -267,43 +258,43 @@ msgstr "Internal reviewers"
 
 #. Default: " "
 msgid "item_category_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_decision_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_decision_end_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_decision_suite_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_description_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_detailed_description_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_motivation_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_observations_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_proposing_group_descr"
-msgstr ""
+msgstr " "
 
 #. Default: " "
 msgid "item_title_descr"
-msgstr ""
+msgstr " "
 
 #. Default: "Summary of the purpose"
 msgid "listingheader_item_title"
@@ -339,7 +330,7 @@ msgstr "Follow to discuss (to discuss then not to discuss)"
 
 #. Default: " "
 msgid "optional_advisers_item_descr"
-msgstr ""
+msgstr " "
 
 #. Default: "Favorable opinion"
 msgid "positive_finance"
@@ -347,7 +338,7 @@ msgstr "Favorable opinion"
 
 #. Default: "Favorable opinion with remarks"
 msgid "positive_with_remarks_finance"
-msgstr ""
+msgstr "Favorable opinion with remarks"
 
 #. Default: "MeetingItemCollege"
 msgid "predecessor_MeetingItemCollege"
@@ -373,18 +364,13 @@ msgstr "Advices proposed to financial manager"
 msgid "searchadviceproposedtoreviewer"
 msgstr "Advices proposed to financial reviewer"
 
-# searches
-#. Default: "cdld synthesis"
-msgid "searchcdlditems"
-msgstr ""
-
 #. Default: "Items to control completeness of"
 msgid "searchitemstocontrolcompletenessof"
 msgstr "Items to control completeness of"
 
 #. Default: "Synthesis finance advices"
 msgid "searchitemswithfinanceadvice"
-msgstr ""
+msgstr "Synthesis finance advices"
 
 #. Default: "The item has been successfully transfered to the college."
 msgid "sendto_meeting-config-college_success"

@@ -430,18 +430,6 @@ msgid "Access the College item containing given finance advice."
 msgstr ""
 
 #searches
-#. Default: "cdld synthesis"
-msgid "searchcdlditems"
-msgstr ""
-
-#. Default: "Proposing group to keep for CDLD synthesis"
-msgid "MeetingLiege_label_cdldProposingGroup"
-msgstr ""
-
-#. Default: "Choose proposing group for cdld advice"
-msgid "MeetingLiege_descr_cdldProposingGroup"
-msgstr ""
-
 #. Default: "Please select an archiving reference."
 msgid "archivingRef_required"
 msgstr ""

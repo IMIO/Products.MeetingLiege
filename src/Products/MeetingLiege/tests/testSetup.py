@@ -23,9 +23,10 @@
 #
 
 from Products.PloneMeeting.tests.testSetup import testSetup as pm_ts
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
-class testSetup(pm_ts):
+class testSetup(MeetingLiegeTestCase, pm_ts):
     '''Tests the setup, especially registered profiles.'''
 
 

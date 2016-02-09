@@ -22,6 +22,9 @@
 # 02110-1301, USA.
 #
 
+from zope.event import notify
+from zope.lifecycleevent import ObjectModifiedEvent
+
 from DateTime import DateTime
 
 from Products.CMFCore.permissions import View
@@ -38,6 +41,7 @@ from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCas
 
 from datetime import datetime
 
+from plone import api
 from plone.app.textfield.value import RichTextValue
 
 from plone.dexterity.utils import createContentInContainer
@@ -934,3 +938,201 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(item2)
         self.assertEquals(item2.getDecisionEnd(),
                           FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
+
+    def test_PrintFDStats(self):
+
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # Create item 1 with an advice asked to df-contrale.
+        self.changeUser('pmManager')
+        item1 = self.create('MeetingItem', title='Item1 with advice')
+
+        item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        self.proposeItem(item1)
+        self.do(item1, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # Set completeness to complete.
+        changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Add a negative advice.
+        self.changeUser('pmFinManager')
+        advice1 = createContentInContainer(item1,
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                              'advice_type': 'negative_finance',
+                                              'advice_comment': RichTextValue(u'My bad comment finance')})
+        self.changeUser('pmFinController')
+        self.do(advice1, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.do(advice1, 'proposeToFinancialManager')
+
+        # Sign the advice which is sent back to director.
+        self.changeUser('pmFinManager')
+        self.do(advice1, 'signFinancialAdvice')
+
+        # Propose to finance for the second time
+        self.changeUser('pmManager')
+        self.do(item1, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # Set the completeness to incomplete with a comment.
+        changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_incomplete')
+        self.request['comment'] = 'You are not complete'
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Send the item back to internal reviewer due to his incompleteness.
+        self.changeUser('pmManager')
+        self.do(item1,
+                'backToProposedToInternalReviewer',
+                comment="Go back to the abyss"
+                )
+        self.do(item1, 'proposeToDirector')
+        self.do(item1, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # Let assume that the item is no complete. So set the completeness.
+        changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Give a positive advice
+        advice1.advice_type = 'positive_finance'
+        advice1.advice_comment = RichTextValue(u'My good comment finance')
+        notify(ObjectModifiedEvent(advice1))
+
+        self.changeUser('pmFinManager')
+        self.changeUser('pmFinController')
+        self.do(advice1, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.do(advice1, 'proposeToFinancialManager')
+
+        # Sign the advice so the item is validated.
+        self.changeUser('pmFinManager')
+        self.do(advice1, 'signFinancialAdvice')
+
+        # Setup needed because we will now try with an advice from
+        # df-comptabilita-c-et-audit-financier. Since the finance users don't
+        # have basically the right to handle that sort of advice, we give them
+        # the right here.
+        groupsTool = api.portal.get_tool('portal_groups')
+        # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
+        groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[1])
+        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[1])
+        groupsTool.addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[1])
+        groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[1])
+        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[1])
+        groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[1])
+
+        # Create the second item with advice.
+        self.changeUser('pmManager')
+        item2 = self.create('MeetingItem', title='Item2 with advice')
+        item2.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        self.proposeItem(item2)
+        self.do(item2, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # The item is complete.
+        changeCompleteness = item2.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Give positive advice.
+        self.changeUser('pmFinManager')
+        advice2 = createContentInContainer(item2,
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[1],
+                                              'advice_type': 'positive_finance',
+                                              'advice_comment': RichTextValue(u'My good comment finance 2')})
+
+        self.changeUser('pmFinController')
+        self.do(advice2, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.do(advice2, 'proposeToFinancialManager')
+
+        # Sign the advice, item is now validated.
+        self.changeUser('pmFinManager')
+        self.do(advice2, 'signFinancialAdvice')
+
+        # Present this item to a meeting.
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting', date='2019/09/19')
+        self.deleteAsManager(meeting.getItems()[0].UID())
+        self.deleteAsManager(meeting.getItems()[0].UID())
+        self.presentItem(item2)
+
+        # Needed to make believe that the finance advice are checked in the
+        # dashboard.
+        self.changeUser('pmCreator1')
+        item1.REQUEST.set('facetedQuery',
+                          '{"c7":["delay_real_group_id__unique_id_002",\
+                                  "delay_real_group_id__unique_id_003",\
+                                  "delay_real_group_id__unique_id_004",\
+                                  "delay_real_group_id__unique_id_005",\
+                                  "delay_real_group_id__unique_id_006",\
+                                  "delay_real_group_id__unique_id_007"]}')
+        # Get a folder which is needed to call the view on it.
+        folder = self.tool.getPloneMeetingFolder('meeting-config-college', 'pmCreator1').searches_items
+        view = folder.restrictedTraverse('document_generation_helper_view')
+        catalog = api.portal.get_tool('portal_catalog')
+        results = view.printFDStats(catalog(portal_type='MeetingItemCollege', sort_on='id'))
+
+        self.assertEquals(results[0]['title'], "Item1 with advice")
+        self.assertEquals(results[0]['meeting_date'], "")
+        self.assertEquals(results[0]['group'], "developers")
+        self.assertEquals(results[0]['end_advice'], "OUI")
+        self.assertEquals(results[0]['comments'], "My good comment finance")
+        self.assertEquals(results[0]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[0]['advice_type'], "Avis finance favorable")
+
+        self.assertEquals(results[1]['title'], "Item1 with advice")
+        self.assertEquals(results[1]['meeting_date'], "")
+        self.assertEquals(results[1]['group'], "developers")
+        self.assertEquals(results[1]['end_advice'], "")
+        self.assertEquals(results[1]['comments'], "Go back to the abyssYou are not complete")
+        self.assertEquals(results[1]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[1]['advice_type'], 'Renvoy\xc3\xa9 au validateur interne pour incompl\xc3\xa9tude')
+
+        self.assertEquals(results[2]['title'], "Item1 with advice")
+        self.assertEquals(results[2]['meeting_date'], "")
+        self.assertEquals(results[2]['group'], "developers")
+        self.assertEquals(results[2]['end_advice'], "NON")
+        self.assertEquals(results[2]['comments'], "My bad comment finance")
+        self.assertEquals(results[2]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[2]['advice_type'], 'Avis finance d\xc3\xa9favorable')
+
+        self.assertEquals(results[3]['title'], "Item1 with advice")
+        self.assertEquals(results[3]['meeting_date'], "")
+        self.assertEquals(results[3]['group'], "developers")
+        self.assertEquals(results[3]['end_advice'], "")
+        self.assertEquals(results[3]['comments'], "")
+        self.assertEquals(results[3]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[3]['advice_type'], 'Compl\xc3\xa9tude')
+
+        self.assertEquals(results[4]['title'], "Item2 with advice")
+        self.assertEquals(results[4]['meeting_date'], "19/09/2019")
+        self.assertEquals(results[4]['group'], "developers")
+        self.assertEquals(results[4]['end_advice'], "OUI")
+        self.assertEquals(results[4]['comments'], "My good comment finance 2")
+        self.assertEquals(results[4]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[4]['advice_type'], "Avis finance favorable")
+
+        self.assertEquals(results[5]['title'], "Item2 with advice")
+        self.assertEquals(results[5]['meeting_date'], "19/09/2019")
+        self.assertEquals(results[5]['group'], "developers")
+        self.assertEquals(results[5]['end_advice'], "")
+        self.assertEquals(results[5]['comments'], "")
+        self.assertEquals(results[5]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[5]['advice_type'], 'Compl\xc3\xa9tude')

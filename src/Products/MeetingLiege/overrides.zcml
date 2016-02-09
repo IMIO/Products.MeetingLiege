@@ -34,6 +34,14 @@
         name="document_generation_helper_view"
      />
 
+    <!-- collective.documentgenerator helper view for Folder -->
+    <browser:page
+        for="Products.ATContentTypes.interfaces.folder.IATBTreeFolder"
+        class=".browser.overrides.MLFolderDocumentGenerationHelperView"
+        permission="zope2.View"
+        name="document_generation_helper_view"
+     />
+
     <!-- Override HistoryCommentViewable adapter for meetingadvice -->
     <adapter for="Products.PloneMeeting.content.advice.IMeetingAdvice"
              factory=".overrides.AdviceWfHistoryAdapter"

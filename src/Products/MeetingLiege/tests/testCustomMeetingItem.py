@@ -1053,8 +1053,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         advice2 = createContentInContainer(item2,
                                            'meetingadvice',
                                            **{'advice_group': FINANCE_GROUP_IDS[1],
-                                              'advice_type': 'positive_finance',
-                                              'advice_comment': RichTextValue(u'My good comment finance 2')})
+                                              'advice_type': 'positive_finance'})
 
         self.changeUser('pmFinController')
         self.do(advice2, 'proposeToFinancialReviewer')
@@ -1125,7 +1124,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[4]['meeting_date'], "19/09/2019")
         self.assertEquals(results[4]['group'], "developers")
         self.assertEquals(results[4]['end_advice'], "OUI")
-        self.assertEquals(results[4]['comments'], "My good comment finance 2")
+        self.assertEquals(results[4]['comments'], "")
         self.assertEquals(results[4]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
         self.assertEquals(results[4]['advice_type'], "Avis finance favorable")
 

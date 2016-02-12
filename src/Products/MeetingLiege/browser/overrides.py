@@ -238,10 +238,17 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 for state in kept_states:
                     for revision in advice_revisions:
                         if DateTime(revision['time']) < state['time']:
-                            html_comment = pr.retrieve(advice, revision['version_id']).object.advice_comment.output
-                            str_comment = pt.convert('html_to_text', html_comment).getData().strip()
-                            res['comments'] = str_comment
-                            break
+                            advice_comment = pr.retrieve(advice, revision['version_id']).object.advice_comment
+                            # Must check if a comment was added. If not, there
+                            # is no advice_comment object.
+                            if advice_comment:
+                                html_comment = advice_comment.output
+                                str_comment = pt.convert('html_to_text', html_comment).getData().strip()
+                                res['comments'] = str_comment
+                                break
+                            else:
+                                res['comments'] = ''
+                                break
 
                     res['advice_date'] = state['time'].strftime('%d/%m/%Y')
                     if state['action'] == 'validate':

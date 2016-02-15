@@ -236,8 +236,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 advice_revisions = [revision for revision in getAdapter(advice, IImioHistory, 'revision').getHistory()]
                 end_advice = 'OUI'
                 for state in kept_states:
+                    res['comments'] = ''
                     for revision in advice_revisions:
-                        res['comments'] = ''
                         if DateTime(revision['time']) < state['time']:
                             advice_comment = pr.retrieve(advice, revision['version_id']).object.advice_comment
                             # Must check if a comment was added. If not, there

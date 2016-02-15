@@ -223,7 +223,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         for item, kept_states, finance_proposals, advice_id in kept_history:
             res = {}
             res['title'] = item.Title()
-            res['group'] = item.getProposingGroup()
+            res['group'] = item.getProposingGroup(theObject=True).Title()
             if item.getMeeting():
                 res['meeting_date'] = item.getMeeting().getDate().strftime('%d/%m/%Y')
             else:

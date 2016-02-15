@@ -1090,7 +1090,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.assertEquals(results[0]['title'], "Item1 with advice")
         self.assertEquals(results[0]['meeting_date'], "")
-        self.assertEquals(results[0]['group'], "developers")
+        self.assertEquals(results[0]['group'], "Developers")
         self.assertEquals(results[0]['end_advice'], "OUI")
         self.assertEquals(results[0]['comments'], "My good comment finance")
         self.assertEquals(results[0]['adviser'], u'DF - Contr\xf4le')
@@ -1098,7 +1098,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.assertEquals(results[1]['title'], "Item1 with advice")
         self.assertEquals(results[1]['meeting_date'], "")
-        self.assertEquals(results[1]['group'], "developers")
+        self.assertEquals(results[1]['group'], "Developers")
         self.assertEquals(results[1]['end_advice'], "")
         self.assertEquals(results[1]['comments'], "Go back to the abyssYou are not complete")
         self.assertEquals(results[1]['adviser'], u'DF - Contr\xf4le')
@@ -1106,7 +1106,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.assertEquals(results[2]['title'], "Item1 with advice")
         self.assertEquals(results[2]['meeting_date'], "")
-        self.assertEquals(results[2]['group'], "developers")
+        self.assertEquals(results[2]['group'], "Developers")
         self.assertEquals(results[2]['end_advice'], "NON")
         self.assertEquals(results[2]['comments'], "My bad comment finance")
         self.assertEquals(results[2]['adviser'], u'DF - Contr\xf4le')
@@ -1114,7 +1114,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.assertEquals(results[3]['title'], "Item1 with advice")
         self.assertEquals(results[3]['meeting_date'], "")
-        self.assertEquals(results[3]['group'], "developers")
+        self.assertEquals(results[3]['group'], "Developers")
         self.assertEquals(results[3]['end_advice'], "")
         self.assertEquals(results[3]['comments'], "")
         self.assertEquals(results[3]['adviser'], u'DF - Contr\xf4le')
@@ -1122,7 +1122,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.assertEquals(results[4]['title'], "Item2 with advice")
         self.assertEquals(results[4]['meeting_date'], "19/09/2019")
-        self.assertEquals(results[4]['group'], "developers")
+        self.assertEquals(results[4]['group'], "Developers")
         self.assertEquals(results[4]['end_advice'], "OUI")
         self.assertEquals(results[4]['comments'], "")
         self.assertEquals(results[4]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
@@ -1130,7 +1130,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.assertEquals(results[5]['title'], "Item2 with advice")
         self.assertEquals(results[5]['meeting_date'], "19/09/2019")
-        self.assertEquals(results[5]['group'], "developers")
+        self.assertEquals(results[5]['group'], "Developers")
         self.assertEquals(results[5]['end_advice'], "")
         self.assertEquals(results[5]['comments'], "")
         self.assertEquals(results[5]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')

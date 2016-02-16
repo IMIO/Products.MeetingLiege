@@ -189,11 +189,13 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             finance_proposals = []
             first_time_complete = True
             for state in full_history:
-                # keep the history when  advice is positive or negative.
+                # keep the history when  advice is positive, negative or timed
+                # out.
                 if (state['action'] == 'backToProposedToDirector' and
                     state['comments'] == 'item_wf_changed_finance_advice_negative') or\
                    (state['action'] == 'validate' and
-                    state['comments'] == 'item_wf_changed_finance_advice_positive'):
+                    (state['comments'] == 'item_wf_changed_finance_advice_positive' or
+                     state['comments'] == 'item_wf_changed_finance_advice_timed_out')):
                     kept_states.append(state)
                 # When item is send back to internal reviewer because of incompleteness,
                 # keep the history and add the comment eventually given when set to
@@ -247,14 +249,17 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                                 str_comment = pt.convert('html_to_text', html_comment).getData().strip()
                                 res['comments'] = str_comment
                                 break
-
                     res['advice_date'] = state['time'].strftime('%d/%m/%Y')
-                    if state['action'] == 'validate':
+                    if state['comments'] == 'item_wf_changed_finance_advice_timed_out':
+                        res['end_advice'] = end_advice
+                        res['advice_type'] = 'Avis finance expiré'
+                        if end_advice == 'OUI':
+                            end_advice = 'NON'
+                    elif state['comments'] == 'item_wf_changed_finance_advice_positive':
                         res['end_advice'] = end_advice
                         res['advice_type'] = 'Avis finance favorable'
                         if end_advice == 'OUI':
                             end_advice = 'NON'
-
                     elif state['action'] == 'backToProposedToDirector':
                         res['end_advice'] = end_advice
                         res['advice_type'] = 'Avis finance défavorable'
@@ -277,15 +282,31 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             # yet.
             else:
                 for state in kept_states:
+                    res['comments'] = ''
                     res['advice_date'] = state['time'].strftime('%d/%m/%Y')
                     if state['action'] == 'completeness_complete':
                         res['end_advice'] = ''
                         res['advice_type'] = 'Complétude'
-                        res['comments'] = ''
                     elif state['action'] == 'backToProposedToInternalReviewer':
                         res['end_advice'] = ''
                         res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
                         res['comments'] = state['comments']
+                    elif state['comments'] == 'item_wf_changed_finance_advice_timed_out':
+                        res['end_advice'] = ''
+                        res['advice_type'] = 'Avis finance expiré'
+                    # Some items had their advice deleted. So they still have
+                    # the backtoproposedtodirector state in history, even if
+                    # there is no more advice given.
+                    elif state['action'] == 'backToProposedToDirector':
+                        res['end_advice'] = ''
+                        res['advice_type'] = 'Avis finance défavorable'
+                    # Yeah, you would not expect to find a positive advice in
+                    # the history if no advice is given. An admin should however, in
+                    # some unusual cases, have deleted an advice that has been
+                    # given.
+                    elif state['comments'] == 'item_wf_changed_finance_advice_positive':
+                        res['end_advice'] = ''
+                        res['advice_type'] = 'Avis finance expiré'
                     for fp in finance_proposals:
                         if fp['time'] < state['time']:
                             res['reception_date'] = fp['time'].strftime('%d/%m/%y à %H:%M')

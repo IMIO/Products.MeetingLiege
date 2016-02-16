@@ -1000,7 +1000,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(item1, 'proposeToDirector')
         self.do(item1, 'proposeToFinance')
         self.changeUser('pmFinController')
-        # Let assume that the item is no complete. So set the completeness.
+        # Let assume that the item is now complete. So set the completeness.
         changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
         self.request.set('new_completeness_value', 'completeness_complete')
         self.request.form['form.submitted'] = True
@@ -1011,7 +1011,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         advice1.advice_comment = RichTextValue(u'My good comment finance')
         notify(ObjectModifiedEvent(advice1))
 
-        self.changeUser('pmFinManager')
         self.changeUser('pmFinController')
         self.do(advice1, 'proposeToFinancialReviewer')
 
@@ -1068,9 +1067,71 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Present this item to a meeting.
         self.changeUser('pmManager')
         meeting = self.create('Meeting', date='2019/09/19')
+        # Delete recurring items.
         self.deleteAsManager(meeting.getItems()[0].UID())
         self.deleteAsManager(meeting.getItems()[0].UID())
         self.presentItem(item2)
+
+        # Create the third item with advice which gonna be timed out..
+        self.changeUser('pmManager')
+        item3 = self.create('MeetingItem', title='Item3 with advice timed out')
+        item3.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        self.proposeItem(item3)
+        self.do(item3, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # The item is complete.
+        changeCompleteness = item3.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Give negative advice.
+        self.changeUser('pmFinManager')
+        advice3 = createContentInContainer(item3,
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[1],
+                                              'advice_type': 'negative_finance'})
+
+        self.changeUser('pmFinController')
+        self.do(advice3, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.do(advice3, 'proposeToFinancialManager')
+
+        # Sign the advice so the item is returned to director.
+        self.changeUser('pmFinManager')
+        self.do(advice3, 'signFinancialAdvice')
+
+        # Propose to finance a second time.
+        self.changeUser('pmManager')
+        self.do(item3, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # Item is still complete.
+        changeCompleteness = item3.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Now, finance will forget this item and make it expire.
+        item3.adviceIndex[FINANCE_GROUP_IDS[1]]['delay_started_on'] = datetime(2016, 1, 1)
+        item3.updateLocalRoles()
+
+        # Create the fourth item without advice, but timed out too.
+        self.changeUser('pmManager')
+        item4 = self.create('MeetingItem', title='Item4 timed out without advice')
+        item4.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        self.proposeItem(item4)
+        self.do(item4, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # The item is complete.
+        changeCompleteness = item4.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Now, finance will forget this item and make it expire.
+        item4.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2016, 1, 1)
+        item4.updateLocalRoles()
 
         # Needed to make believe that the finance advice are checked in the
         # dashboard.
@@ -1135,3 +1196,43 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[5]['comments'], "")
         self.assertEquals(results[5]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
         self.assertEquals(results[5]['advice_type'], 'Compl\xc3\xa9tude')
+
+        self.assertEquals(results[6]['title'], "Item3 with advice timed out")
+        self.assertEquals(results[6]['meeting_date'], "")
+        self.assertEquals(results[6]['group'], "Developers")
+        self.assertEquals(results[6]['end_advice'], "OUI")
+        self.assertEquals(results[6]['comments'], "")
+        self.assertEquals(results[6]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[6]['advice_type'], 'Avis finance expir\xc3\xa9')
+
+        self.assertEquals(results[7]['title'], "Item3 with advice timed out")
+        self.assertEquals(results[7]['meeting_date'], "")
+        self.assertEquals(results[7]['group'], "Developers")
+        self.assertEquals(results[7]['end_advice'], "NON")
+        self.assertEquals(results[7]['comments'], "")
+        self.assertEquals(results[7]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[7]['advice_type'], 'Avis finance d\xc3\xa9favorable')
+
+        self.assertEquals(results[8]['title'], "Item3 with advice timed out")
+        self.assertEquals(results[8]['meeting_date'], "")
+        self.assertEquals(results[8]['group'], "Developers")
+        self.assertEquals(results[8]['end_advice'], "")
+        self.assertEquals(results[8]['comments'], "")
+        self.assertEquals(results[8]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[8]['advice_type'], 'Compl\xc3\xa9tude')
+
+        self.assertEquals(results[9]['title'], "Item4 timed out without advice")
+        self.assertEquals(results[9]['meeting_date'], "")
+        self.assertEquals(results[9]['group'], "Developers")
+        self.assertEquals(results[9]['end_advice'], "")
+        self.assertEquals(results[9]['comments'], "")
+        self.assertEquals(results[9]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[9]['advice_type'], 'Avis finance expir\xc3\xa9')
+
+        self.assertEquals(results[10]['title'], "Item4 timed out without advice")
+        self.assertEquals(results[10]['meeting_date'], "")
+        self.assertEquals(results[10]['group'], "Developers")
+        self.assertEquals(results[10]['end_advice'], "")
+        self.assertEquals(results[10]['comments'], "")
+        self.assertEquals(results[10]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[10]['advice_type'], 'Compl\xc3\xa9tude')

@@ -23,25 +23,23 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testWorkflows import testWorkflows as mctw
+from Products.PloneMeeting.tests.testWorkflows import testWorkflows as pmtw
 
 
-class testWorkflows(MeetingLiegeTestCase, mctw):
+class testWorkflows(MeetingLiegeTestCase, pmtw):
     """Tests the default workflows implemented in MeetingLiege."""
 
     def test_pm_WholeDecisionProcess(self):
-        """This test is bypassed, we use several tests here under."""
+        """Bypass this test..."""
         pass
 
-    def test_pm_RemoveObjects(self):
-        '''Run the test_pm_RemoveObjects from PloneMeeting.'''
-        # we do the test for the college config
-        self.meetingConfig = getattr(self.tool, 'meeting-config-college')
-        super(mctw, self).test_pm_RemoveObjects()
-        # items are validated by default for the council config
-        # so are not removable by item creators/reviewers
-        #self.meetingConfig = getattr(self.tool, 'meeting-config-council')
-        #super(testWorkflows, self).test_pm_RemoveObjects()
+    def test_pm_WorkflowPermissions(self):
+        """Bypass this test..."""
+        pass
+
+    def test_pm_RecurringItems(self):
+        """Bypass this test..."""
+        pass
 
 
 def test_suite():

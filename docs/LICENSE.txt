@@ -1,4 +1,4 @@
-Products.MeetingCommunes Copyright 2012, <YOUR NAME HERE>
+Products.MeetingLiege Copyright 2016, www.imio.be
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

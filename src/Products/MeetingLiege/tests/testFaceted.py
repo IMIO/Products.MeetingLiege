@@ -24,10 +24,10 @@
 
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testFaceted import testFaceted as mctf
+from Products.PloneMeeting.tests.testFaceted import testFaceted as pmtf
 
 
-class testFaceted(MeetingLiegeTestCase, mctf):
+class testFaceted(MeetingLiegeTestCase, pmtf):
     '''Tests the faceted navigation.'''
 
 

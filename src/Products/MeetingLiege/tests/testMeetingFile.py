@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testMeetingFile import testMeetingFile as mctmf
+from Products.PloneMeeting.tests.testMeetingFile import testMeetingFile as pmtmf
 
 
-class testMeetingFile(MeetingLiegeTestCase, mctmf):
+class testMeetingFile(MeetingLiegeTestCase, pmtmf):
     '''Tests the MeetingFile class methods.'''
 
 

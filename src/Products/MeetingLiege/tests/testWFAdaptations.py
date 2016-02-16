@@ -23,20 +23,16 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testWFAdaptations import testWFAdaptations as mctwfa
+from Products.PloneMeeting.tests.testWFAdaptations import testWFAdaptations as pmtwfa
 
 
-class testWFAdaptations(MeetingLiegeTestCase, mctwfa):
+class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
     '''Tests various aspects of votes management.'''
 
     def test_pm_WFA_availableWFAdaptations(self):
         '''Most of wfAdaptations makes no sense, just make sure most are disabled.'''
         self.assertEquals(set(self.meetingConfig.listWorkflowAdaptations()),
                           set(('return_to_proposing_group', )))
-
-    def test_pm_WFA_return_to_proposing_group(self):
-        '''See doc in PloneMeeting/tests/testWFAdaptations.py'''
-        super(mctwfa, self).test_pm_WFA_return_to_proposing_group()
 
 
 def test_suite():

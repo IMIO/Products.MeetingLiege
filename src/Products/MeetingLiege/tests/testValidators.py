@@ -27,9 +27,7 @@ from Products.PloneMeeting.tests.testValidators import testValidators as pmtv
 
 
 class testValidators(MeetingLiegeTestCase, pmtv):
-    """
-        Tests the validators.
-    """
+    """Tests the validators."""
 
 
 def test_suite():

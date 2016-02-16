@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testSearches import testSearches as mcts
+from Products.PloneMeeting.tests.testSearches import testSearches as pmts
 
 
-class testSearches(MeetingLiegeTestCase, mcts):
+class testSearches(MeetingLiegeTestCase, pmts):
     """Test searches."""
 
 

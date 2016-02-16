@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testMeetingCategory import testMeetingCategory as mctmc
+from Products.PloneMeeting.tests.testMeetingCategory import testMeetingCategory as pmtmc
 
 
-class testMeetingCategory(MeetingLiegeTestCase, mctmc):
+class testMeetingCategory(MeetingLiegeTestCase, pmtmc):
     '''Tests the MeetingCategory class methods.'''
 
 

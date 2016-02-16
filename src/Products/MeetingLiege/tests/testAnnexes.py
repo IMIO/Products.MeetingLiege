@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testAnnexes import testAnnexes as mcta
+from Products.PloneMeeting.tests.testAnnexes import testAnnexes as pmta
 
 
-class testAnnexes(MeetingLiegeTestCase, mcta):
+class testAnnexes(MeetingLiegeTestCase, pmta):
     ''' '''
 
 

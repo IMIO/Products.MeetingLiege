@@ -20,7 +20,7 @@
 # 02110-1301, USA.
 #
 
-from Products.MeetingCommunes.tests.MeetingCommunesTestCase import MeetingCommunesTestCase
+from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
 from Products.MeetingLiege.testing import ML_TESTING_PROFILE_FUNCTIONAL
 from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
 
@@ -35,7 +35,23 @@ MeetingConfig.wfAdaptations = customWfAdaptations
 adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
 
 
-class MeetingLiegeTestCase(MeetingCommunesTestCase, MeetingLiegeTestingHelpers):
+class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
     """Base class for defining MeetingLiege test cases."""
 
+    # Some default content
+    descriptionText = '<p>Some description</p>'
+    decisionText = '<p>Some decision.</p>'
+    # by default, PloneMeeting's test file testPerformances.py and
+    # testConversionWithDocumentViewer.py' are ignored, override the subproductIgnoredTestFiles
+    # attribute to take these files into account
+    #subproductIgnoredTestFiles = ['testPerformances.py', ]
+
     layer = ML_TESTING_PROFILE_FUNCTIONAL
+
+    def setUp(self):
+        PloneMeetingTestCase.setUp(self)
+        self.meetingConfig = getattr(self.tool, 'meeting-config-college')
+        self.meetingConfig2 = getattr(self.tool, 'meeting-config-council')
+        # Set the default file type for adding annexes
+        self.annexFileType = 'annexeBudget'
+        self.annexFileTypeDecision = 'annexeDecision'

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from plone.testing import z2, zca
-from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import PloneWithPackageLayer
 import Products.MeetingLiege

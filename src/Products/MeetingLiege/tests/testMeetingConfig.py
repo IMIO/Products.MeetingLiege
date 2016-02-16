@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testMeetingConfig import testMeetingConfig as mctmc
+from Products.PloneMeeting.tests.testMeetingConfig import testMeetingConfig as pmtmc
 
 
-class testMeetingConfig(MeetingLiegeTestCase, mctmc):
+class testMeetingConfig(MeetingLiegeTestCase, pmtmc):
     '''Call testMeetingConfig tests.'''
 
 

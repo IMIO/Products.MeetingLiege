@@ -23,12 +23,17 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testVotes import testVotes as mctv
+from Products.PloneMeeting.tests.testVotes import testVotes as pmtv
 
 
-class testVotes(MeetingLiegeTestCase, mctv):
+class testVotes(MeetingLiegeTestCase, pmtv):
     '''Tests various aspects of votes management.'''
 
+    def setUp(self):
+        """ """
+        super(testVotes, self).setUp()
+        # use meetingConfig2
+        self.setMeetingConfig(self.meetingConfig2.getId())
 
 def test_suite():
     from unittest import TestSuite, makeSuite

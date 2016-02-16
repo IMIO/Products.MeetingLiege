@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testPortlets import testPortlets as mctp
+from Products.PloneMeeting.tests.testPortlets import testPortlets as pmtp
 
 
-class testPortlets(MeetingLiegeTestCase, mctp):
+class testPortlets(MeetingLiegeTestCase, pmtp):
     '''Tests the portlets methods.'''
 
 

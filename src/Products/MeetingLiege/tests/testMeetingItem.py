@@ -23,10 +23,10 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.MeetingCommunes.tests.testMeetingItem import testMeetingItem as mctmi
+from Products.PloneMeeting.tests.testMeetingItem import testMeetingItem as pmtmi
 
 
-class testMeetingItem(MeetingLiegeTestCase, mctmi):
+class testMeetingItem(MeetingLiegeTestCase, pmtmi):
     """
         Tests the MeetingItem class methods.
     """

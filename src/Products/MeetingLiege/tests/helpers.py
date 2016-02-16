@@ -20,17 +20,15 @@
 # 02110-1301, USA.
 #
 
-from DateTime import DateTime
-
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 
-from Products.MeetingCommunes.tests.helpers import MeetingCommunesTestingHelpers
+from Products.PloneMeeting.tests.helpers import PloneMeetingTestingHelpers
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
-class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
+class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
     '''Override some values of PloneMeetingTestingHelpers.'''
 
     TRANSITIONS_FOR_PROPOSING_ITEM_1 = ('proposeToAdministrativeReviewer',
@@ -54,9 +52,11 @@ class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
     TRANSITIONS_FOR_PRESENTING_ITEM_2 = ('proposeToDirector',
                                          'validate',
                                          'present', )
-    TRANSITIONS_FOR_ACCEPTING_ITEMS_1 = ('freeze', 'decide', )
-    TRANSITIONS_FOR_ACCEPTING_ITEMS_2 = ('freeze', 'decide', )
+    TRANSITIONS_FOR_ACCEPTING_ITEMS_MEETING_1 = ('freeze', 'decide', )
+    TRANSITIONS_FOR_ACCEPTING_ITEMS_MEETING_2 = ('freeze', 'decide', )
 
+    TRANSITIONS_FOR_PUBLISHING_MEETING_1 = TRANSITIONS_FOR_PUBLISHING_MEETING_2 = ('freeze', 'publish', )
+    TRANSITIONS_FOR_FREEZING_MEETING_1 = TRANSITIONS_FOR_FREEZING_MEETING_2 = ('freeze', )
     TRANSITIONS_FOR_DECIDING_MEETING_1 = ('freeze', 'decide', )
     TRANSITIONS_FOR_DECIDING_MEETING_2 = ('freeze', 'decide', )
     TRANSITIONS_FOR_CLOSING_MEETING_1 = ('freeze', 'decide', 'close', )
@@ -97,19 +97,9 @@ class MeetingLiegeTestingHelpers(MeetingCommunesTestingHelpers):
                               'validated': 'validated',
                               'presented': 'presented', }
 
-    def _createMeetingWithItems(self, withItems=True, meetingDate=DateTime()):
-        '''Create a meeting with a bunch of items.
-           Overrided to do it as 'Manager' to be able
-           to add recurring items.'''
-        from plone.app.testing.helpers import setRoles
-        currentMember = self.portal.portal_membership.getAuthenticatedMember()
-        currentMemberRoles = currentMember.getRoles()
-        setRoles(self.portal, currentMember.getId(), currentMemberRoles + ['Manager', ])
-        meeting = MeetingCommunesTestingHelpers._createMeetingWithItems(self,
-                                                                        withItems=withItems,
-                                                                        meetingDate=meetingDate)
-        setRoles(self.portal, currentMember.getId(), currentMemberRoles)
-        return meeting
+    # in which state an item must be after an particular meeting transition?
+    ITEM_WF_STATE_AFTER_MEETING_TRANSITION = {'publish_decisions': 'accepted',
+                                              'close': 'accepted'}
 
     def _setupFinanceGroups(self):
         '''Configure finance groups.'''

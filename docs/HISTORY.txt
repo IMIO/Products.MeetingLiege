@@ -38,3 +38,5 @@ Products.MeetingLiege Changelog
   that a comment has been added to the advice
 - Power observers (not restricted) may access every decision annexes
 - When an item is 'returned', keep original creator for duplicated items
+- Do not rely on Products.MeetingCommunes for the testing part as we do not
+  override every PM tests in MC, we just heritate from PM test file

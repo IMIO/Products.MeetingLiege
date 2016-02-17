@@ -157,24 +157,23 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
 
     def printFDStats(self, brains):
         """
-        Printed on a list of all the items where a finance advice has been asked.
+        Printed on a list of all the items with a finance advice asked on it.
         Join informations from completeness, workflow and revision histories and
         return them in a list generated in a xls file.
         """
-        startTime1 = time.time()
-        items_and_advices = self.selected_indexAdvisers_data(brains)
         pr = api.portal.get_tool('portal_repository')
         pt = api.portal.get_tool('portal_transforms')
         pw = api.portal.get_tool('portal_workflow')
-        seconds = time.time() - startTime1
-        logger.info('PrintFDStats: Got the items and advices in %.2f seconds(s).' % (seconds))
+        results = []
         kept_history = []
-        startTime2 = time.time()
-        for item_and_advice in items_and_advices:
-            item = item_and_advice['item']
-            advice_id = item_and_advice['advices'][0]['id']
+        startTime1 = time.time()
+        for brain in brains:
+            item = brain.getObject()
+            advice_id = item.getFinanceAdvice()
             full_history = []
-            advice = item.getAdviceDataFor(item)[advice_id]['given_advice']
+            advice_infos = item.getAdviceDataFor(item)[advice_id]
+            advice = advice_infos['given_advice']
+            advice_revisions = []
             if advice:
                 advice_revisions = [revision for revision in getAdapter(advice, IImioHistory, 'revision').getHistory()]
                 # Browse the advice versions and keep their history.
@@ -195,7 +194,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             finance_proposals = []
             first_time_complete = True
             for state in full_history:
-                # keep the history when  advice is positive, negative or timed
+                # keep the history when advice is positive, negative or timed
                 # out.
                 if (state['action'] == 'backToProposedToDirector' and
                     state['comments'] == 'item_wf_changed_finance_advice_negative') or\
@@ -225,105 +224,111 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             kept_states.sort(key=lambda x: x["time"], reverse=True)
             # Do the same on the list containing the proposals to finances.
             finance_proposals.sort(key=lambda x: x["time"], reverse=True)
-            kept_history.append([item, kept_states, finance_proposals, advice_id])
+            res = self._preparePrintableDatas(item,
+                                              kept_states,
+                                              finance_proposals,
+                                              advice_infos,
+                                              advice_revisions)
+            # Because we don't want a list of list of dict, we append each
+            # element of res in results.
+            for re in res:
+                results.append(re)
 
-        seconds = time.time() - startTime2
+        seconds = time.time() - startTime1
         logger.info('PrintFDStats: First part done in %.2f seconds(s).' % (seconds))
 
-        startTime3 = time.time()
+        return results
+
+    def _preparePrintableDatas(self, item, kept_states, finance_proposals, advice_infos, advice_revisions):
+        """ Prepare datas needed by the FD synthesis. """
+        pr = api.portal.get_tool('portal_repository')
+        pt = api.portal.get_tool('portal_transforms')
         results = []
-        for item, kept_states, finance_proposals, advice_id in kept_history:
-            res = {}
-            res['title'] = item.Title()
-            res['group'] = item.getProposingGroup(theObject=True).Title()
-            if item.getMeeting():
-                res['meeting_date'] = item.getMeeting().getDate().strftime('%d/%m/%Y')
-            else:
-                res['meeting_date'] = ''
-            adviceInfos = item.getAdviceDataFor(item)[advice_id]
-            advice = adviceInfos['given_advice']
-            res['adviser'] = adviceInfos['name']
-            # If the advice has been created.
-            if advice:
-                advice_revisions = [revision for revision in getAdapter(advice, IImioHistory, 'revision').getHistory()]
-                end_advice = 'OUI'
-                for state in kept_states:
-                    res['comments'] = ''
-                    for revision in advice_revisions:
-                        if DateTime(revision['time']) < state['time']:
-                            advice_comment = pr.retrieve(advice, revision['version_id']).object.advice_comment
-                            # Must check if a comment was added. If not, there
-                            # is no advice_comment object.
-                            if advice_comment:
-                                html_comment = advice_comment.output
-                                str_comment = pt.convert('html_to_text', html_comment).getData().strip()
-                                res['comments'] = str_comment
-                                break
-                    res['advice_date'] = state['time'].strftime('%d/%m/%Y')
-                    if state['comments'] == 'item_wf_changed_finance_advice_timed_out':
-                        res['end_advice'] = end_advice
-                        res['advice_type'] = 'Avis finance expiré'
-                        if end_advice == 'OUI':
-                            end_advice = 'NON'
-                    elif state['comments'] == 'item_wf_changed_finance_advice_positive':
-                        res['end_advice'] = end_advice
-                        res['advice_type'] = 'Avis finance favorable'
-                        if end_advice == 'OUI':
-                            end_advice = 'NON'
-                    elif state['action'] == 'backToProposedToDirector':
-                        res['end_advice'] = end_advice
-                        res['advice_type'] = 'Avis finance défavorable'
-                        if end_advice == 'OUI':
-                            end_advice = 'NON'
-                    elif state['action'] == 'completeness_complete':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Complétude'
-                        res['comments'] = ''
-                    elif state['action'] == 'backToProposedToInternalReviewer':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
-                        res['comments'] = state['comments']
-                    for fp in finance_proposals:
-                        if fp['time'] < state['time']:
-                            res['reception_date'] = fp['time'].strftime('%d/%m/%y à %H:%M')
+        res = {}
+        res['title'] = item.Title()
+        res['group'] = item.getProposingGroup(theObject=True).Title()
+        if item.getMeeting():
+            res['meeting_date'] = item.getMeeting().getDate().strftime('%d/%m/%Y')
+        else:
+            res['meeting_date'] = ''
+        advice = advice_infos['given_advice']
+        res['adviser'] = advice_infos['name']
+        # If the advice has been created.
+        if advice:
+            end_advice = 'OUI'
+            for state in kept_states:
+                res['comments'] = ''
+                for revision in advice_revisions:
+                    if DateTime(revision['time']) < state['time']:
+                        advice_comment = pr.retrieve(advice, revision['version_id']).object.advice_comment
+                        # Must check if a comment was added. If not, there
+                        # is no advice_comment object.
+                        if advice_comment:
+                            html_comment = advice_comment.output
+                            str_comment = pt.convert('html_to_text', html_comment).getData().strip()
+                            res['comments'] = str_comment
                             break
-                    results.append(res.copy())
-            # else if the advice is just asked but no advice has been created
-            # yet.
-            else:
-                for state in kept_states:
+                res['advice_date'] = state['time'].strftime('%d/%m/%Y')
+                if state['comments'] == 'item_wf_changed_finance_advice_timed_out':
+                    res['end_advice'] = end_advice
+                    res['advice_type'] = 'Avis finance expiré'
+                    if end_advice == 'OUI':
+                        end_advice = 'NON'
+                elif state['comments'] == 'item_wf_changed_finance_advice_positive':
+                    res['end_advice'] = end_advice
+                    res['advice_type'] = 'Avis finance favorable'
+                    if end_advice == 'OUI':
+                        end_advice = 'NON'
+                elif state['action'] == 'backToProposedToDirector':
+                    res['end_advice'] = end_advice
+                    res['advice_type'] = 'Avis finance défavorable'
+                    if end_advice == 'OUI':
+                        end_advice = 'NON'
+                elif state['action'] == 'completeness_complete':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Complétude'
                     res['comments'] = ''
-                    res['advice_date'] = state['time'].strftime('%d/%m/%Y')
-                    if state['action'] == 'completeness_complete':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Complétude'
-                    elif state['action'] == 'backToProposedToInternalReviewer':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
-                        res['comments'] = state['comments']
-                    elif state['comments'] == 'item_wf_changed_finance_advice_timed_out':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Avis finance expiré'
-                    # Some items had their advice deleted. So they still have
-                    # the backtoproposedtodirector state in history, even if
-                    # there is no more advice given.
-                    elif state['action'] == 'backToProposedToDirector':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Avis finance défavorable'
-                    # Yeah, you would not expect to find a positive advice in
-                    # the history if no advice is given. An admin should however, in
-                    # some unusual cases, have deleted an advice that has been
-                    # given.
-                    elif state['comments'] == 'item_wf_changed_finance_advice_positive':
-                        res['end_advice'] = ''
-                        res['advice_type'] = 'Avis finance expiré'
-                    for fp in finance_proposals:
-                        if fp['time'] < state['time']:
-                            res['reception_date'] = fp['time'].strftime('%d/%m/%y à %H:%M')
-                            break
-                    results.append(res.copy())
-
-        seconds = time.time() - startTime3
-        logger.info('PrintFDstats: Second part done in %.2f seconds(s).' % (seconds))
-
+                elif state['action'] == 'backToProposedToInternalReviewer':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
+                    res['comments'] = state['comments']
+                for fp in finance_proposals:
+                    if fp['time'] < state['time']:
+                        res['reception_date'] = fp['time'].strftime('%d/%m/%y à %H:%M')
+                        break
+                results.append(res.copy())
+        # else if the advice is just asked but no advice has been created
+        # yet.
+        else:
+            for state in kept_states:
+                res['comments'] = ''
+                res['advice_date'] = state['time'].strftime('%d/%m/%Y')
+                if state['action'] == 'completeness_complete':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Complétude'
+                elif state['action'] == 'backToProposedToInternalReviewer':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
+                    res['comments'] = state['comments']
+                elif state['comments'] == 'item_wf_changed_finance_advice_timed_out':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Avis finance expiré'
+                # Some items had their advice deleted. So they still have
+                # the backtoproposedtodirector state in history, even if
+                # there is no more advice given.
+                elif state['action'] == 'backToProposedToDirector':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Avis finance défavorable'
+                # Yeah, you would not expect to find a positive advice in
+                # the history if no advice is given. An admin should however, in
+                # some unusual cases, have deleted an advice that has been
+                # given.
+                elif state['comments'] == 'item_wf_changed_finance_advice_positive':
+                    res['end_advice'] = ''
+                    res['advice_type'] = 'Avis finance expiré'
+                for fp in finance_proposals:
+                    if fp['time'] < state['time']:
+                        res['reception_date'] = fp['time'].strftime('%d/%m/%y à %H:%M')
+                        break
+                results.append(res.copy())
         return results

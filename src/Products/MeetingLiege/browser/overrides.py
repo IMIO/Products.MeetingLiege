@@ -17,7 +17,9 @@ from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
 from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
 from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
+from Products.MeetingLiege import logger
 
+import time
 
 class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
     """
@@ -159,11 +161,15 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         Join informations from completeness, workflow and revision histories and
         return them in a list generated in a xls file.
         """
+        startTime1 = time.time()
         items_and_advices = self.selected_indexAdvisers_data(brains)
         pr = api.portal.get_tool('portal_repository')
         pt = api.portal.get_tool('portal_transforms')
         pw = api.portal.get_tool('portal_workflow')
+        seconds = time.time() - startTime1
+        logger.info('PrintFDStats: Got the items and advices in %.2f seconds(s).' % (seconds))
         kept_history = []
+        startTime2 = time.time()
         for item_and_advice in items_and_advices:
             item = item_and_advice['item']
             advice_id = item_and_advice['advices'][0]['id']
@@ -221,6 +227,10 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             finance_proposals.sort(key=lambda x: x["time"], reverse=True)
             kept_history.append([item, kept_states, finance_proposals, advice_id])
 
+        seconds = time.time() - startTime2
+        logger.info('PrintFDStats: First part done in %.2f seconds(s).' % (seconds))
+
+        startTime3 = time.time()
         results = []
         for item, kept_states, finance_proposals, advice_id in kept_history:
             res = {}
@@ -312,5 +322,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                             res['reception_date'] = fp['time'].strftime('%d/%m/%y à %H:%M')
                             break
                     results.append(res.copy())
+
+        seconds = time.time() - startTime3
+        logger.info('PrintFDstats: Second part done in %.2f seconds(s).' % (seconds))
 
         return results

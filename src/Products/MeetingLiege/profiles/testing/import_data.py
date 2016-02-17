@@ -293,7 +293,7 @@ collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
 collegeMeeting.itemAdviceViewStates = ('presented', 'itemfrozen', 'refused', 'delayed',
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
-collegeMeeting.transitionReinitializingDelays = 'backToItemCreated'
+collegeMeeting.transitionsReinitializingDelays = ('backToItemCreated',)
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.itemPowerObserversStates = ('itemcreated', 'presented', 'accepted', 'delayed', 'refused')
 collegeMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']

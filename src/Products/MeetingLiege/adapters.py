@@ -659,9 +659,11 @@ class CustomMeetingItem(MeetingItem):
         '''Return the finance group ids the advice is asked
            on current item.  It only returns automatically asked advices.'''
         item = self.getSelf()
-        for advice_id, advice_info in item.adviceIndex.items():
-            if advice_id in FINANCE_GROUP_IDS and not advice_info['optional']:
-                return advice_id
+        finance_advice = item.getFinanceAdvice()
+        if finance_advice != '_none_' and \
+           finance_advice in item.adviceIndex and \
+           not item.adviceIndex[finance_advice]['optional']:
+            return finance_advice
         return None
 
     security.declarePublic('getAdvicesGroupsInfosForUser')

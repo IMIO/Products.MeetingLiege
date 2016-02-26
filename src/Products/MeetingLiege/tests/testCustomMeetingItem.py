@@ -1008,7 +1008,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Give a positive advice
         advice1.advice_type = 'positive_finance'
-        advice1.advice_comment = RichTextValue(u'My good comment finance')
+        # Erase the comment
+        advice1.advice_comment = RichTextValue('')
         notify(ObjectModifiedEvent(advice1))
 
         self.changeUser('pmFinController')
@@ -1133,6 +1134,40 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item4.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2016, 1, 1)
         item4.updateLocalRoles()
 
+        # Create the fifth item with a bad advice and then remove financial impact.
+        self.changeUser('pmManager')
+        item5 = self.create('MeetingItem', title='Item5 with advice')
+
+        item5.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        self.proposeItem(item5)
+        self.do(item5, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # Set completeness to complete.
+        changeCompleteness = item5.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Add a negative advice.
+        self.changeUser('pmFinManager')
+        advice5 = createContentInContainer(item5,
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                              'advice_type': 'negative_finance',
+                                              'advice_comment': RichTextValue(u'Bad comment finance')})
+        self.changeUser('pmFinController')
+        self.do(advice5, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.do(advice5, 'proposeToFinancialManager')
+
+        # Sign the advice which is sent back to director.
+        self.changeUser('pmFinManager')
+        self.do(advice5, 'signFinancialAdvice')
+
+        # Remove the financial impact.
+        item5.setFinanceAdvice('_none_')
+
         # Needed to make believe that the finance advice are checked in the
         # dashboard.
         self.changeUser('pmCreator1')
@@ -1153,7 +1188,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[0]['meeting_date'], "")
         self.assertEquals(results[0]['group'], "Developers")
         self.assertEquals(results[0]['end_advice'], "OUI")
-        self.assertEquals(results[0]['comments'], "My good comment finance")
+        self.assertEquals(results[0]['comments'], "")
         self.assertEquals(results[0]['adviser'], u'DF - Contr\xf4le')
         self.assertEquals(results[0]['advice_type'], "Avis finance favorable")
 
@@ -1236,3 +1271,20 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[10]['comments'], "")
         self.assertEquals(results[10]['adviser'], u'DF - Contr\xf4le')
         self.assertEquals(results[10]['advice_type'], 'Compl\xc3\xa9tude')
+
+        self.assertEquals(results[11]['title'], "Item5 with advice")
+        self.assertEquals(results[11]['meeting_date'], "")
+        self.assertEquals(results[11]['group'], "Developers")
+        self.assertEquals(results[11]['end_advice'], "OUI")
+        self.assertEquals(results[11]['comments'], "Bad comment finance")
+        self.assertEquals(results[11]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[11]['advice_type'], 'Avis finance d\xc3\xa9favorable')
+
+        self.assertEquals(results[12]['title'], "Item5 with advice")
+        self.assertEquals(results[12]['meeting_date'], "")
+        self.assertEquals(results[12]['group'], "Developers")
+        self.assertEquals(results[12]['end_advice'], "")
+        self.assertEquals(results[12]['comments'], "")
+        self.assertEquals(results[12]['adviser'], u'DF - Contr\xf4le')
+        self.assertEquals(results[12]['advice_type'], 'Compl\xc3\xa9tude')
+

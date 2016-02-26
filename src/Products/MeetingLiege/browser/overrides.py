@@ -18,6 +18,7 @@ from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
 from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
 from Products.MeetingLiege import logger
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 import time
 
@@ -169,7 +170,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         startTime1 = time.time()
         for brain in brains:
             item = brain.getObject()
-            advice_id = item.getFinanceAdvice()
+            advice_id = item.adapted().getFinanceGroupIdsForItem(checkAdviceIndex=True)
             full_history = []
             advice_infos = item.getAdviceDataFor(item)[advice_id]
             advice = advice_infos['given_advice']
@@ -267,6 +268,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                             html_comment = advice_comment.output
                             str_comment = pt.convert('html_to_text', html_comment).getData().strip()
                             res['comments'] = str_comment
+                            break
+                        else:
                             break
                 res['advice_date'] = state['time'].strftime('%d/%m/%Y')
                 if state['comments'] == 'item_wf_changed_finance_advice_timed_out':

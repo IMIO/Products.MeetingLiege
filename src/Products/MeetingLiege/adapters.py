@@ -655,15 +655,23 @@ class CustomMeetingItem(MeetingItem):
         return {'displayDefaultComplementaryMessage': True,
                 'customAdviceMessage': None}
 
-    def getFinanceGroupIdsForItem(self):
+    def getFinanceGroupIdsForItem(self, checkAdviceIndex=False):
         '''Return the finance group ids the advice is asked
-           on current item.  It only returns automatically asked advices.'''
+           on current item.  It only returns automatically asked advices.
+           If p_checkAdviceIndex is True, it will try to get a finance advice
+           from the adviceIndex in case financeAdvice is '_none_', it means
+           that advice was asked and given at at certain time and financeAdvice
+           was set back to '_none_' after.'''
         item = self.getSelf()
         finance_advice = item.getFinanceAdvice()
         if finance_advice != '_none_' and \
            finance_advice in item.adviceIndex and \
            not item.adviceIndex[finance_advice]['optional']:
             return finance_advice
+        if checkAdviceIndex:
+            for advice_id, advice_info in item.adviceIndex.items():
+                if advice_id in FINANCE_GROUP_IDS and not advice_info['optional']:
+                    return advice_id
         return None
 
     security.declarePublic('getAdvicesGroupsInfosForUser')

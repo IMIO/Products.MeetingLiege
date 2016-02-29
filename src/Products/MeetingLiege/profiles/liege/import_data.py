@@ -83,10 +83,17 @@ dfAdviceTemplate.pod_portal_types = ['Folder']
 dfAdviceTemplate.dashboard_collections_ids = ['searchitemswithfinanceadvice']
 dfAdviceTemplate.tal_condition = ''
 
+statsDFAdvice = PodTemplateDescriptor('stats-finance-advice', 'Statistiques Avis DF', dashboard=True)
+statsDFAdvice.odt_file = 'stats_DF_advice.ods'
+statsDFAdvice.pod_portal_types = ['Folder']
+statsDFAdvice.dashboard_collections_ids = ['searchitemswithfinanceadvice']
+statsDFAdvice.tal_condition = ''
+
 collegeTemplates = [agendaTemplate, agendaTemplatePDF,
                     decisionsTemplate, decisionsTemplatePDF,
                     itemProjectTemplate, itemProjectTemplatePDF,
-                    itemTemplate, itemTemplatePDF, dfAdviceTemplate]
+                    itemTemplate, itemTemplatePDF, dfAdviceTemplate,
+                    statsDFAdvice]
 
 councilTemplates = [agendaTemplate, agendaTemplatePDF,
                     decisionsTemplate, decisionsTemplatePDF,

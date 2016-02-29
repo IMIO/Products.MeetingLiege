@@ -107,10 +107,6 @@
            provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
            name="items-with-advice-proposed-to-financial-manager" />
 
-  <!-- IPrettyLink for MeetingItem -->
-  <adapter for="Products.PloneMeeting.MeetingItem.MeetingItem"
-           factory=".adapters.MLPrettyLinkAdapter"
-           provides="imio.prettylink.interfaces.IPrettyLink" />
 
   <!-- Indexes -->
   <adapter name="groupsOfMatter" factory=".indexes.groupsOfMatter" />

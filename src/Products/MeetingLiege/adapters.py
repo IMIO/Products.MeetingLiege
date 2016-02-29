@@ -43,7 +43,7 @@ from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
-from Products.PloneMeeting.adapters import PMPrettyLinkAdapter
+from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
@@ -2599,7 +2599,7 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
                 'indexAdvisers': {'query': groupIds}}
 
 
-class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
+class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
     """
       Override to take into account MeetingLiege use cases...
     """
@@ -2613,7 +2613,7 @@ class MLPrettyLinkAdapter(PMPrettyLinkAdapter):
             return res
 
         # Default PM item icons
-        icons = super(MLPrettyLinkAdapter, self)._leadingIcons()
+        icons = super(MLItemPrettyLinkAdapter, self)._leadingIcons()
 
         if self.context.isDefinedInTool():
             return icons

@@ -60,4 +60,9 @@
       name="Products.PloneMeeting.content.advice.advice_type_vocabulary"
     />
 
+    <!-- IPrettyLink for MeetingItem -->
+    <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
+             factory=".adapters.MLItemPrettyLinkAdapter"
+             provides="imio.prettylink.interfaces.IPrettyLink" />
+
 </configure>

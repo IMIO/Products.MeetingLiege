@@ -2103,19 +2103,26 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''May advices be asked by internal reviewer.'''
         res = False
         if checkPermission(ReviewPortalContent, self.context):
+            # MeetingManager must be able to ask advice by internal reviewer,
+            # but only if there is actually at least one advice to give.
+            tool = api.portal.get_tool('portal_plonemeeting')
+            hasAdvicesToGive = self._hasAdvicesToGive('proposed_to_internal_reviewer_waiting_advices')
+            if tool.isManager(self.context) and hasAdvicesToGive:
+                return True
             res = True
             item_state = self.context.queryState()
             member = api.user.get_current()
             isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
-            # In creation, an user can only ask an advice from internal reviewer
-            # if he is internal reviewer.
-            if item_state == 'itemcreated' and not isInternalReviewer:
+            # The item's state doesn't matter since this transition is
+            # available from creation, proposed to administrative reviewer and
+            # proposed to internal reviewer. Just check that the current user is
+            # internal reviewer.
+            if not isInternalReviewer:
                 res = False
 
             # only certain types of advice can trigger the ask advice to
             # internal reviewers. If there is no advices of those types, do not
             # show the transition.
-            hasAdvicesToGive = self._hasAdvicesToGive('proposed_to_internal_reviewer_waiting_advices')
             if res and not hasAdvicesToGive:
                 # return a 'No' instance explaining that no askable advice is selected on this item
                 res = No(translate('advice_required_to_ask_advices',

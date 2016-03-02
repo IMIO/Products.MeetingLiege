@@ -1424,11 +1424,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
 
         # An internal reviewer can send an item from administrative reviewer to
-        # director.
+        # director but can also ask an advice to internal reviewer.
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmInternalReviewer1')
-        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+        self.assertTrue(self.transitions(item) == ['askAdvicesByInternalReviewer',
+                                                   'backToItemCreated',
                                                    'proposeToDirector'])
         self.do(item, 'backToItemCreated')
 

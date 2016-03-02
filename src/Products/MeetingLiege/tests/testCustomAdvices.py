@@ -133,11 +133,34 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                                               askAdvicesTr='askAdvicesByItemCreator',
                                                               availableBackTr='backToItemCreated',
                                                               returnState='itemcreated')
-        # now check for 'proposed_to_internal_reviewer_waiting_advices'
+        # Give to pmInternalReviewer1 the creator role to grant him access to
+        # items in creation.
         self.changeUser('admin')
-        item.restrictedTraverse('@@delete_givenuid')(item.meetingadvice.UID())
-        self.do(item, 'proposeToAdministrativeReviewer')
-        self.do(item, 'proposeToInternalReviewer')
+        pg = self.portal.portal_groups
+        dcGroup = pg.getGroupById('developers_creators')
+        dcGroup.addMember('pmInternalReviewer1')
+
+        # now check for 'proposed_to_internal_reviewer_waiting_advices'
+        # From item created.
+        self.deleteAsManager(item.meetingadvice.UID())
+        self.changeUser('pmInternalReviewer1')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
+                                                              askAdvicesTr='askAdvicesByInternalReviewer',
+                                                              availableBackTr='backToProposedToInternalReviewer',
+                                                              returnState='proposed_to_internal_reviewer')
+
+        # From proposed to administrative reviewer.
+        self.deleteAsManager(item.meetingadvice.UID())
+        self.changeUser('pmManager')
+        self.do(item, 'backToProposedToAdministrativeReviewer')
+        self.changeUser('pmInternalReviewer1')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
+                                                              askAdvicesTr='askAdvicesByInternalReviewer',
+                                                              availableBackTr='backToProposedToInternalReviewer',
+                                                              returnState='proposed_to_internal_reviewer')
+
+        # From proposed to internal reviewer.
+        self.deleteAsManager(item.meetingadvice.UID())
         self.changeUser('pmInternalReviewer1')
         self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
                                                               askAdvicesTr='askAdvicesByInternalReviewer',

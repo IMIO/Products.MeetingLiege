@@ -1294,6 +1294,7 @@
   <exit-transition transition_id="backToItemCreated"/>
   <exit-transition transition_id="proposeToInternalReviewer"/>
   <exit-transition transition_id="proposeToDirector"/>
+  <exit-transition transition_id="askAdvicesByInternalReviewer"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>

@@ -261,7 +261,9 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 res['comments'] = ''
                 for revision in advice_revisions:
                     if DateTime(revision['time']) < state['time']:
-                        advice_comment = pr.retrieve(advice, revision['version_id']).object.advice_comment
+                        advice_object = pr.retrieve(advice, revision['version_id']).object
+                        advice_comment = advice_object.advice_comment
+                        advice_type = advice_object.advice_type
                         # Must check if a comment was added. If not, there
                         # is no advice_comment object.
                         if advice_comment:
@@ -278,8 +280,11 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     if end_advice == 'OUI':
                         end_advice = 'NON'
                 elif state['comments'] == 'item_wf_changed_finance_advice_positive':
+                    if advice_type == 'positive_with_remarks_finance':
+                        res['advice_type'] = 'Avis finance favorable avec remarques'
+                    else:
+                        res['advice_type'] = 'Avis finance favorable'
                     res['end_advice'] = end_advice
-                    res['advice_type'] = 'Avis finance favorable'
                     if end_advice == 'OUI':
                         end_advice = 'NON'
                 elif state['action'] == 'backToProposedToDirector':

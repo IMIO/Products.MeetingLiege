@@ -1168,6 +1168,37 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Remove the financial impact.
         item5.setFinanceAdvice('_none_')
 
+        # Create the sixth item with positive advice with remarks.
+        self.changeUser('pmManager')
+        item6 = self.create('MeetingItem', title='Item6 with positive advice with remarks')
+        item6.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        self.proposeItem(item6)
+        self.do(item6, 'proposeToFinance')
+        self.changeUser('pmFinController')
+        # The item is complete.
+        changeCompleteness = item6.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+
+        # Give positive advice.
+        self.changeUser('pmFinManager')
+        advice6 = createContentInContainer(item6,
+                                           'meetingadvice',
+                                           **{'advice_group': FINANCE_GROUP_IDS[1],
+                                              'advice_type': 'positive_with_remarks_finance',
+                                              'advice_comment': RichTextValue(u'A remark')})
+
+        self.changeUser('pmFinController')
+        self.do(advice6, 'proposeToFinancialReviewer')
+
+        self.changeUser('pmFinReviewer')
+        self.do(advice6, 'proposeToFinancialManager')
+
+        # Sign the advice, item is now validated.
+        self.changeUser('pmFinManager')
+        self.do(advice6, 'signFinancialAdvice')
+
         # Needed to make believe that the finance advice are checked in the
         # dashboard.
         self.changeUser('pmCreator1')
@@ -1287,4 +1318,20 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[12]['comments'], "")
         self.assertEquals(results[12]['adviser'], u'DF - Contr\xf4le')
         self.assertEquals(results[12]['advice_type'], 'Compl\xc3\xa9tude')
+
+        self.assertEquals(results[13]['title'], "Item6 with positive advice with remarks")
+        self.assertEquals(results[13]['meeting_date'], "")
+        self.assertEquals(results[13]['group'], "Developers")
+        self.assertEquals(results[13]['end_advice'], "OUI")
+        self.assertEquals(results[13]['comments'], "A remark")
+        self.assertEquals(results[13]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[13]['advice_type'], 'Avis finance favorable avec remarques')
+
+        self.assertEquals(results[14]['title'], "Item6 with positive advice with remarks")
+        self.assertEquals(results[14]['meeting_date'], "")
+        self.assertEquals(results[14]['group'], "Developers")
+        self.assertEquals(results[14]['end_advice'], "")
+        self.assertEquals(results[14]['comments'], "")
+        self.assertEquals(results[14]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEquals(results[14]['advice_type'], 'Compl\xc3\xa9tude')
 

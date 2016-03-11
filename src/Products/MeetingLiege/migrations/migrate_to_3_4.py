@@ -1,13 +1,17 @@
+# -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 import lxml.html
 import logging
 logger = logging.getLogger('MeetingLiege')
+import os
 
+from collections import OrderedDict
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from Products.CMFPlone.utils import safe_unicode
 from collective.documentgenerator.content.pod_template import IPODTemplate
 from Products.PloneMeeting.migrations.migrate_to_3_4 import Migrate_To_3_4 as PMMigrate_To_3_4
+from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
@@ -139,6 +143,28 @@ class Migrate_To_3_4(PMMigrate_To_3_4):
             template.mailing_lists = ''
         logger.info('Done.')
 
+    def _addSearchFinanceAdviceDashboardAndTemplate(self):
+        """FD synthesis needs a special dashboard and an ods template. Add them."""
+        logger.info('Adding dashboard \'searchitemswithfinanceadvice\'...')
+        cfg = getattr(self.tool, 'meeting-config-college')
+        if not hasattr(cfg.searches.searches_items, 'searchitemswithfinanceadvice'):
+            cfg.createSearches(cfg._searchesInfo())
+            logger.info('Done.')
+            logger.info('Adding dashboard template to \'searchitemswithfinanceadvice\'...')
+            if not hasattr(cfg.podtemplates, 'stats-df-advice'):
+                dfStatsTemplate = PodTemplateDescriptor('stats-df-advice', 'Synthèse Avis DF', dashboard=True)
+                dfStatsTemplate.odt_file = 'stats_DF_advice.ods'
+                dfStatsTemplate.pod_portal_types = ['Folder']
+                dfStatsTemplate.dashboard_collections_ids = ['searchitemswithfinanceadvice']
+                dfStatsTemplate.tal_condition = ''
+                os.chdir('src/Products.MeetingLiege/src/Products/MeetingLiege/profiles/liege')
+                cfg.addPodTemplate(dfStatsTemplate, os.getcwd())
+                logger.info('Done.')
+            else:
+                logger.info('stats-df-advice file already exists ... skipped.')
+        else:
+            logger.info('Dashboard \'searchitemswithfinanceadvice\' already exists ... skipped.')
+
     def run(self):
         # change self.profile_name everything is right before launching steps
         self.profile_name = u'profile-Products.MeetingLiege:default'
@@ -152,6 +178,7 @@ class Migrate_To_3_4(PMMigrate_To_3_4):
         #self._migrateItemPositiveDecidedStates()
         self._updateCouncilItemFinanceAdviceAttribute()
         self._initPodTemplatesMailingListsField()
+        self._addSearchFinanceAdviceDashboardAndTemplate()
         self.finish()
 
 
@@ -163,6 +190,7 @@ def migrate(context):
        3) clean meetingConfigs regarding CDLD;
        4) Migrate 'itemPositiveDecidedStates' to MeetingConfig.itemAutoSentToOtherMCStates;
        5) Initialize new field 'mailing_lists' for Pod Templates.
+       6) Add the searchitemswithfinanceadvice dashboard and FD synthesis template.
     '''
     Migrate_To_3_4(context).run()
 # ------------------------------------------------------------------------------

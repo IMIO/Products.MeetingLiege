@@ -1536,15 +1536,15 @@ class CustomMeetingConfig(MeetingConfig):
                             [
                                 {'i': 'portal_type',
                                  'o': 'plone.app.querystring.operation.selection.is',
-                                 'v': [itemType, ]},
+                                 'v': ['MeetingItemCollege']},
                                 {'i': 'indexAdvisers',
                                  'o': 'plone.app.querystring.operation.selection.is',
-                                 'v': ['delay_real_group_id__unique_id_002',
-                                       'delay_real_group_id__unique_id_003',
-                                       'delay_real_group_id__unique_id_004',
-                                       'delay_real_group_id__unique_id_005',
-                                       'delay_real_group_id__unique_id_006',
-                                       'delay_real_group_id__unique_id_007']}
+                                 'v': ['delay_real_group_id__2014-06-05.5584062390',
+                                       'delay_real_group_id__2014-06-05.5584062584',
+                                       'delay_real_group_id__2014-06-05.5584070070',
+                                       'delay_real_group_id__2014-06-05.5584074805',
+                                       'delay_real_group_id__2014-06-05.5584079907',
+                                       'delay_real_group_id__2014-06-05.5584080681']}
                             ],
                             'sort_on': u'created',
                             'sort_reversed': True,

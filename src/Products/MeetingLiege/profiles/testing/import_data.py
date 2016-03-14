@@ -211,6 +211,17 @@ muser_voter1 = MeetingUserDescriptor('voter1', duty='Voter1',
 muser_voter2 = MeetingUserDescriptor('voter2', duty='Voter2',
                                      usages=['assemblyMember', 'voter', ])
 
+# budget impact editors 
+budgetimpacteditor = UserDescriptor('budgetimpacteditor', 
+                                    [], 
+                                    email="budgetimpacteditor@plonemeeting.org", 
+                                    fullname='M. Budget Impact Editor') 
+college_budgetimpacteditors = PloneGroupDescriptor('meeting-config-college_budgetimpacteditors', 
+                                                   'meeting-config-college_budgetimpacteditors', 
+                                                   []) 
+budgetimpacteditor.ploneGroups = [college_budgetimpacteditors, 
+                                  college_powerobservers] 
+
 # Meeting configurations -------------------------------------------------------
 # college
 collegeMeeting = MeetingConfigDescriptor(
@@ -420,5 +431,5 @@ data = PloneMeetingConfiguration(
     groups=(developers, vendors, endUsers))
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
                            restrictedpowerobserver1, restrictedpowerobserver2,
-                           pmFinController, pmFinReviewer, pmFinManager]
+                           pmFinController, pmFinReviewer, pmFinManager, budgetimpacteditor]
 # ------------------------------------------------------------------------------

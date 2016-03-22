@@ -340,3 +340,26 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                         break
                 results.append(res.copy())
         return results
+
+
+class MLMeetingDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
+    """Specific printing methods used for meeting."""
+
+    def printItemActeContentForCollege(self, item):
+        """
+	Printed on a College Item in a College Meeting, get the whole body 
+	of the acte in one shot.
+	"""
+	view = item.restrictedTraverse("@@document-generation")
+	helper = view.get_generation_context_helper()
+	return helper.printActeContentForCollege()
+
+    def printItemActeContentForCouncil(self, item):
+        """
+	Printed on a Council Item in a Council Meeting, get the whole body 
+	of the acte in one shot.
+	"""
+	view = item.restrictedTraverse("@@document-generation")
+	helper = view.get_generation_context_helper()
+	return helper.printActeContentForCouncil()
+

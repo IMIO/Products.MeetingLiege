@@ -429,6 +429,8 @@ data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting),
     groups=(developers, vendors, endUsers))
+# necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData 
+data.restrictUsers = False 
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
                            restrictedpowerobserver1, restrictedpowerobserver2,
                            pmFinController, pmFinReviewer, pmFinManager, budgetimpacteditor]

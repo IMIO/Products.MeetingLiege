@@ -463,6 +463,8 @@ class CustomMeeting(Meeting):
             res[item.UID()] = item_num
             item_num = item_num + 1
         ann['MeetingLiege-getItemNumsForActe']['nums'] = res.copy()
+        import ipdb; ipdb.set_trace()
+        ann._p_changed = True
         return res
     Meeting.getItemNumsForActe = getItemNumsForActe
 

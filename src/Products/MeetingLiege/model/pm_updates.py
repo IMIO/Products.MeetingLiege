@@ -54,7 +54,7 @@ def update_item_schema(baseSchema):
                 i18n_domain='PloneMeeting',
             ),
             optional=True,
-            vocabulary='listPrivacyValues',
+            vocabulary_factory='Products.PloneMeeting.vocabularies.privaciesvocabulary'
         ),
         StringField(
             name='financeAdvice',

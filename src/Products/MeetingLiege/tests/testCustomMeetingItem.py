@@ -279,10 +279,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                                                     annexInfo=annex_decision2.getAnnexInfo()))
 
     def test_ItemReference(self):
-        '''Test item reference generation.'''
+        '''Test item reference generation. It uses CustomMeeting.getItemNumsForActe.'''
         # use categories
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(False)
+        cfg.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_categories',
+                                           'reverse': '0'}, ))
         self.changeUser('pmManager')
         # remove recurring items
         self._removeConfigObjectsFor(cfg)
@@ -291,7 +293,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         depItem1.setCategory('deployment')
         depItem2 = self.create('MeetingItem')
         depItem2.setCategory('deployment')
-        devItem1 = self.create('MeetingItem')
+        # use proposingGroup 'vendors' so it is not viewable by 'pmCreator1'
+        devItem1 = self.create('MeetingItem', proposingGroup='vendors')
         devItem1.setCategory('development')
         devItem2 = self.create('MeetingItem')
         devItem2.setCategory('development')
@@ -305,75 +308,99 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(resItem1)
         self.freezeMeeting(meeting)
         # check that item references are correct
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['deployment1', 'deployment2', 'development1', 'development2', 'research1'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o1', 'o2', 'o3', 'o4', 'o5'])
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['deployment1', 'deployment2', 'development1', 'development2', 'research1'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o1', 'o2', 'o3', 'o4', 'o5'])
         # change position of items 1 and 2, itemReference is changed too
         changeOrder = depItem1.restrictedTraverse('@@change-item-order')
         changeOrder(moveType='down')
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['deployment1', 'deployment2', 'development1', 'development2', 'research1'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o2', 'o1', 'o3', 'o4', 'o5'])
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['deployment1', 'deployment2', 'development1', 'development2', 'research1'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o2', 'o1', 'o3', 'o4', 'o5'])
         # move depItem2 to last position
         changeOrder = depItem2.restrictedTraverse('@@change-item-order')
         changeOrder('number', '5')
         # now depItem1 reference is back to 'deployment1' and depItem2 in last position
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['deployment1', 'development1', 'development2', 'research1', 'deployment2'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o1', 'o3', 'o4', 'o5', 'o2'])
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['deployment1', 'development1', 'development2', 'research1', 'deployment2'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o1', 'o3', 'o4', 'o5', 'o2'])
 
         # if we insert a new item, references are updated
         newItem = self.create('MeetingItem')
         newItem.setCategory('development')
         self.presentItem(newItem)
         # item is inserted at the end
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['deployment1', 'development1', 'development2', 'research1', 'deployment2', 'development3'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o1', 'o3', 'o4', 'o5', 'o2', 'o7'])
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['deployment1', 'development1', 'development2', 'development3', 'research1', 'deployment2'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o1', 'o3', 'o4', 'o7', 'o5', 'o2'])
 
         # now if we remove an item from the meeting, reference are still correct
         # remove item with ref 'deployment1', the first item, the item that had 'deployment2' will get 'deployment1'
-        self.do(depItem1, 'backToPresented')
-        self.do(depItem1, 'backToValidated')
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['development1', 'development2', 'research1', 'deployment1', 'development3'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o3', 'o4', 'o5', 'o2', 'o7'])
+        self.backToState(depItem1, 'validated')
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['development1', 'development2', 'development3', 'research1', 'deployment1'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o3', 'o4', 'o7', 'o5', 'o2'])
 
         # delete item having reference 'development2'
         # only Manager may delete an item
         self.changeUser('admin')
         self.deleteAsManager(devItem2.UID())
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['development1', 'research1', 'deployment1', 'development2'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o3', 'o5', 'o2', 'o7'])
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['development1', 'development2', 'research1', 'deployment1'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o3', 'o7', 'o5', 'o2'])
 
         # if we change the category used for an item, reference are updated accordingly
         # change category for resItem1 from 'research' to 'development'
         resItem1.setCategory('development')
         resItem1.notifyModified()
-        self.assertTrue([item.getItemReference() for item in meeting.getItems(ordered=True)] ==
-                        ['development1', 'development2', 'deployment1', 'development3'])
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        ['o3', 'o5', 'o2', 'o7'])
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['development1', 'development2', 'development3', 'deployment1'])
+        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
+                          ['o3', 'o7', 'o5', 'o2'])
 
         # test late items, reference is HOJ.1, HOJ.2, ...
         self.changeUser('pmManager')
         lateItem1 = self.create('MeetingItem')
-        lateItem1.setCategory('development')
+        lateItem1.setCategory('deployment')
         lateItem1.setPreferredMeeting(meeting.UID())
         lateItem2 = self.create('MeetingItem')
-        lateItem2.setCategory('deployment')
+        lateItem2.setCategory('development')
         lateItem2.setPreferredMeeting(meeting.UID())
         self.presentItem(lateItem1)
         self.presentItem(lateItem2)
         self.assertEquals(lateItem1.getItemReference(), 'HOJ.1')
         self.assertEquals(lateItem2.getItemReference(), 'HOJ.2')
+
+        # right now test if the getItemNumsForActe has to be generated by a user
+        # that only have access to some items of the meeting.  Indeed, let's say
+        # a MeetingManager is on an item and removes it from the meeting, getItemNumsForActe
+        # is not recomputed as not called on the item view, if another user access an
+        # item or the meeting, this time it will be recomputed
+        self.assertEquals(lateItem1.getItemReference(), 'HOJ.1')
+        self.assertEquals(newItem.getItemReference(), 'development2')
+        self.backToState(lateItem1, 'validated')
+        self.backToState(newItem, 'validated')
+        self.changeUser('pmCreator1')
+        # no more reference for lateItem1 and depItem2
+        self.assertEquals(lateItem1.getItemReference(), '')
+        self.assertEquals(newItem.getItemReference(), '')
+        # pmCreator1 is not able to access every items of the meeting
+        self.assertFalse(self.hasPermission(View, devItem1))
+        # if we get the reference of other items, it is correct,
+        # getItemNumsForActe have been recomputed
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True,
+                                                                                unrestricted=True)],
+                          ['development1', 'development2', 'deployment1', 'HOJ.1'])
+        self.assertEquals(devItem1.getItemReference(), 'development1')
+        self.assertEquals(resItem1.getItemReference(), 'development2')
+        self.assertEquals(depItem2.getItemReference(), 'deployment1')
+        self.assertEquals(lateItem2.getItemReference(), 'HOJ.1')
 
     def test_InsertingMethodOnDecisionFirstWord(self):
         '''

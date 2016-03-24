@@ -441,7 +441,7 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe'] = {}
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
-        items = self.getItems(listTypes=['normal'], ordered=True)
+        items = self.getItems(listTypes=['normal'], ordered=True, unrestricted=True)
         res = {}
         for item in items:
             item_num = 0
@@ -455,7 +455,7 @@ class CustomMeeting(Meeting):
                     break
 
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        items = self.getItems(listTypes=['late'], ordered=True)
+        items = self.getItems(listTypes=['late'], ordered=True, unrestricted=True)
         item_num = 1
         for item in items:
             if item.UID() in res:
@@ -1441,7 +1441,6 @@ class CustomMeetingConfig(MeetingConfig):
     def _extraSearchesInfo(self, infos):
         """Add some specific searches."""
         cfg = self.getSelf()
-        itemType = cfg.getItemTypeName()
         extra_infos = OrderedDict(
             [
                 # Items in state 'proposed_to_finance' for which
@@ -2111,7 +2110,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if tool.isManager(self.context) and hasAdvicesToGive:
                 return True
             res = True
-            item_state = self.context.queryState()
             member = api.user.get_current()
             isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
             # The item's state doesn't matter since this transition is

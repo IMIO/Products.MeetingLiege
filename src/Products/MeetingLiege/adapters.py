@@ -44,6 +44,7 @@ from imio.helpers.cache import cleanVocabularyCacheFor
 from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
+from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
@@ -1654,9 +1655,6 @@ class CustomMeetingCategory(MeetingCategory):
         cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
 
 
-old_formatMeetingDate = ToolPloneMeeting.formatMeetingDate
-
-
 class CustomToolPloneMeeting(ToolPloneMeeting):
     '''Adapter that adapts portal_plonemeeting.'''
 
@@ -1665,27 +1663,6 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
 
     def __init__(self, item):
         self.context = item
-
-    security.declarePublic('formatMeetingDate')
-
-    def formatMeetingDate(self, meeting, lang=None,
-                          short=False, withHour=False, prefixed=None,
-                          markAdoptsNextCouncilAgenda=True):
-        '''
-          Suffix date with '*' if given p_aDate is a Meeting brain.
-        '''
-        formatted_date = old_formatMeetingDate(self, meeting, lang, short, withHour, prefixed)
-        adoptsNextCouncilAgenda = False
-        if meeting.__class__.__name__ in ['mybrains', 'CatalogContentListingObject']:
-            if meeting.getAdoptsNextCouncilAgenda:
-                adoptsNextCouncilAgenda = True
-        else:
-            if meeting.getAdoptsNextCouncilAgenda():
-                adoptsNextCouncilAgenda = True
-        if adoptsNextCouncilAgenda and markAdoptsNextCouncilAgenda:
-            formatted_date += '*'
-        return formatted_date
-    ToolPloneMeeting.formatMeetingDate = formatMeetingDate
 
     def isFinancialUser_cachekey(method, self, brain=False):
         '''cachekey method for self.isFinancialUser.'''
@@ -2687,4 +2664,27 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
                                             domain="PloneMeeting",
                                             context=self.request)))
                     break
+        return icons
+
+
+class MLMeetingPrettyLinkAdapter(MeetingPrettyLinkAdapter):
+    """
+      Override to take into account MeetingLiege use cases...
+    """
+
+    def _leadingIcons(self):
+        """
+          Manage icons to display before the icons managed by PrettyLink._icons.
+        """
+        # Default PM item icons
+        icons = super(MLMeetingPrettyLinkAdapter, self)._leadingIcons()
+
+        if not self.context.portal_type == 'MeetingCollege':
+            return icons
+
+        if self.context.getAdoptsNextCouncilAgenda():
+            icons.append(('adopts_next_council_agenda.png',
+                          translate('icon_help_adopts_next_council_agenda',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
         return icons

@@ -72,5 +72,9 @@
     <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
              factory=".adapters.MLItemPrettyLinkAdapter"
              provides="imio.prettylink.interfaces.IPrettyLink" />
+    <!-- IPrettyLink for Meeting -->
+    <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+             factory=".adapters.MLMeetingPrettyLinkAdapter"
+             provides="imio.prettylink.interfaces.IPrettyLink" />
 
 </configure>

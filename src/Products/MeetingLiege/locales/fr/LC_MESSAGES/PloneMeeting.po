@@ -204,6 +204,10 @@ msgstr "Accepté avec retour Collège"
 msgid "icon_help_accepted_but_modified"
 msgstr "Accepté avec modifications"
 
+#. Default: "Adopts next Council agenda"
+msgid "icon_help_adopts_next_council_agenda"
+msgstr "Arrête l'ordre du jour du prochain Conseil communal"
+
 #. Default: "Advices asked by creator"
 msgid "icon_help_itemcreated_waiting_advices"
 msgstr "Avis demandés par le créateur"

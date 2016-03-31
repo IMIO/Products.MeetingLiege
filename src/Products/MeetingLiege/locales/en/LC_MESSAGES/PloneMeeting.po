@@ -204,6 +204,10 @@ msgstr "Accepted and returned"
 msgid "icon_help_accepted_but_modified"
 msgstr "Accepted with modifications"
 
+#. Default: "Adopts next Council agenda"
+msgid "icon_help_adopts_next_council_agenda"
+msgstr ""
+
 #. Default: "Advices asked by creator"
 msgid "icon_help_itemcreated_waiting_advices"
 msgstr "Advices asked by creator"

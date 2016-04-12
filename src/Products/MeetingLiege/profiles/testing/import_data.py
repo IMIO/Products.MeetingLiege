@@ -297,6 +297,7 @@ collegeMeeting.maxDaysDecisions = 60
 collegeMeeting.itemDocFormats = ('odt', 'pdf')
 collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
+collegeMeeting.selectableAdvisers = ('developers', 'vendors')
 collegeMeeting.usedAdviceTypes = ('positive_finance', 'positive_with_remarks_finance',
                                   'negative_finance', 'not_required_finance',
                                   'positive', 'positive_with_remarks', 'negative', 'nil')
@@ -407,6 +408,7 @@ councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'label': 'Addendum',
                                                   'used_in_inserting_method': ''}, ]
 councilMeeting.useAdvices = False
+councilMeeting.selectableAdvisers = []
 councilMeeting.itemAdviceStates = []
 councilMeeting.itemAdviceEditStates = []
 councilMeeting.itemAdviceViewStates = []

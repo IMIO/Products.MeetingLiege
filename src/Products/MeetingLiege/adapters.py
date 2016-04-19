@@ -3,7 +3,7 @@
 #
 # File: adapters.py
 #
-# Copyright (c) 2014 by Imio.be
+# Copyright (c) 2016 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -1839,7 +1839,16 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doMark_not_applicable')
 
     def doMark_not_applicable(self, stateChange):
-        pass
+        """ """
+        self._deleteLinkedCouncilItem()
+
+    security.declarePrivate('doRefuse')
+
+    def doRefuse(self, stateChange):
+        """ """
+        # call original action
+        MeetingItemWorkflowActions.doRefuse(self, stateChange)
+        self._deleteLinkedCouncilItem()
 
     security.declarePrivate('doAccept_and_return')
 
@@ -1860,7 +1869,8 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
           Manage 'return college', item is duplicated
           then validated for a next meeting.
         '''
-        self._deleteLinkedCouncilItem()
+        if cloneEventAction == 'return':
+            self._deleteLinkedCouncilItem()
 
         newOwnerId = self.context.Creator()
         newItem = self.context.clone(newOwnerId=newOwnerId,

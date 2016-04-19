@@ -1693,44 +1693,78 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(duplicatedItem, 'accept')
         self.assertTrue(duplicatedItem.getItemClonedToOtherMC(cfg2Id))
 
-    def test_CouncilItemDeletedIfCollegeItemIsDelayedOrReturned(self):
+    def test_CouncilItemDeletedIfCollegeItemIsNotAccepted(self):
         """As items are sent to Council when 'itemfrozen', if a College item is finally
-           'delayed' or 'returned', delete the Council item that was sent."""
+           not accepted, accepted_but_modified or accepted_and_returned,
+           delete the Council item that was sent."""
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(True)
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         cfg.setMeetingConfigsToCloneTo(({'meeting_config': cfg2Id,
                                          'trigger_workflow_transitions_until': '__nothing__'},))
-        cfg.setItemAutoSentToOtherMCStates(('accepted', 'itemfrozen', ))
+        cfg.setItemAutoSentToOtherMCStates(('accepted', 'accepted_and_returned',
+                                            'accepted_but_modified', 'itemfrozen', ))
+        cfg.setItemDecidedStates(('accepted', 'accepted_but_modified', 'accepted_and_returned',
+                                  'delayed', 'marked_not_applicable', 'refused', 'returned'))
 
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         item2 = self.create('MeetingItem')
         item2.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        item3 = self.create('MeetingItem')
+        item3.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        item4 = self.create('MeetingItem')
+        item4.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+        item5 = self.create('MeetingItem')
+        item5.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         meeting = self.create('Meeting', date=DateTime('2015/11/11'))
         self.presentItem(item)
         self.presentItem(item2)
+        self.presentItem(item3)
+        self.presentItem(item4)
+        self.presentItem(item5)
         self.freezeMeeting(meeting)
         # item was sent to Council
         self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
         self.assertTrue(item2.getItemClonedToOtherMC(cfg2Id))
         self.decideMeeting(meeting)
 
-        # now delay the College item, it will automatically delete the Council item
-        self.do(item, 'delay')
-        self.assertFalse(item.getItemClonedToOtherMC(cfg2Id))
-        # but original delay action was kept, the item was duplicated in the College
-        backRefs = item.getBRefs('ItemPredecessor')
-        self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item.portal_type)
+        # now in order of cfg.itemDecidedStates
+        # test transitions that will NOt delete the item in the Council
+        for tr in ('accept', 'accept_but_modify', 'accept_and_return'):
+            self.do(item, tr)
+            # still left in the Council
+            self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
+            # back to 'itemfrozen'
+            self.do(item, 'backToItemFrozen')
 
-        # now delay the College item, it will automatically delete the Council item
-        self.do(item2, 'return')
+        # delay the College item, it will automatically delete the Council item
+        self.do(item2, 'delay')
         self.assertFalse(item2.getItemClonedToOtherMC(cfg2Id))
         # but original delay action was kept, the item was duplicated in the College
         backRefs = item2.getBRefs('ItemPredecessor')
         self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item2.portal_type)
+
+        # mark_not_applicable the College item, it will automatically delete the Council item
+        self.do(item3, 'mark_not_applicable')
+        self.assertFalse(item3.getItemClonedToOtherMC(cfg2Id))
+        # no more backRefs
+        self.assertFalse(item3.getBRefs('ItemPredecessor'))
+
+        # refuse the College item, it will automatically delete the Council item
+        self.do(item4, 'refuse')
+        self.assertFalse(item4.getItemClonedToOtherMC(cfg2Id))
+        # no more backRefs
+        self.assertFalse(item4.getBRefs('ItemPredecessor'))
+
+        # return the College item, it will automatically delete the Council item
+        self.do(item5, 'return')
+        self.assertFalse(item5.getItemClonedToOtherMC(cfg2Id))
+        # but original delay action was kept, the item was duplicated in the College
+        backRefs = item5.getBRefs('ItemPredecessor')
+        self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item5.portal_type)
 
     def test_CreatorMayAskAdviceOnlyIfRelevant(self):
         """MeetingMember may only set item to 'itemcreated_waiting_advices' if there

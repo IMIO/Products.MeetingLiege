@@ -268,7 +268,7 @@
         <tal:comment replace="nothing">Information for the pre-meeting</tal:comment>
         <fieldset tal:condition="python: 'preMeetingDate' in usedAttrs and not context.isTemporary()">
           <legend i18n:translate="pre_meeting" i18n:domain="PloneMeeting"></legend>
-          <table cellpadding="0" cellspacing="0" class="no-style-table">
+          <table cellpadding="0" cellspacing="0" class="no-style-table meeting-premeeting-fields">
             <tr>
               <td><metal:field use-macro="python:here.widget('preMeetingDate', mode='edit')"/></td>
               <td tal:condition="python: 'preMeetingPlace' in usedAttrs">
@@ -277,25 +277,27 @@
             </tr>
           </table>
         </fieldset>
-        <tal:field define="fieldName python: 'inAndOutMoves'">
+        <tal:field define="fieldName python: 'inAndOutMoves'"
+                   condition="python: context.showMeetingManagerReservedField('inAndOutMoves')">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'notes'">
+        <tal:field define="fieldName python: 'notes'"
+                   condition="python: context.showMeetingManagerReservedField('notes')">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
         <tal:field define="fieldName python: 'observations'"
-                   condition="python: context.showObs('observations')">
+                   condition="python: context.showMeetingManagerReservedField('observations')">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
         <tal:field define="fieldName python: 'preObservations'"
-                   condition="python: context.showObs('preObservations')">
+                   condition="python: context.showMeetingManagerReservedField('preObservations')">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
 
         <tal:comment replace="nothing">For the admin only</tal:comment>
         <fieldset tal:condition="python: member.has_role('Manager')">
           <legend i18n:translate="" i18n:domain="PloneMeeting">for_admin_only</legend>
-          <table cellpadding="0" cellspacing="0" width="100%">
+          <table cellpadding="0" cellspacing="0" width="100%" class="meeting-manager-fields">
             <tr valign="top">
               <td width="33%"><metal:field use-macro="python:here.widget('meetingNumber', mode='edit')"/></td>
               <td width="34%"><metal:field use-macro="python:here.widget('firstItemNumber', mode='edit')"/></td>

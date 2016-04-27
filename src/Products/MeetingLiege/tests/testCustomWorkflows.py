@@ -204,7 +204,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmReviewer2 is adviser for vendors
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': 'vendors',
                                              'advice_type': u'positive',
                                              'advice_comment': RichTextValue(u'My comment vendors')})
@@ -235,7 +235,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmAdviser1 is adviser for developers
         self.changeUser('pmAdviser1')
         createContentInContainer(item,
-                                 'meetingadvice',
+                                 'meetingadvicefinances',
                                  **{'advice_group': 'developers',
                                     'advice_type': u'positive',
                                     'advice_comment': RichTextValue(u'My comment developers')})
@@ -333,7 +333,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
         # give the advice
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_with_remarks_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
@@ -591,7 +591,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         changeCompleteness()
         # give the advice
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
@@ -662,7 +662,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setCompleteness('completeness_complete')
         item.at_post_edit_script()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
@@ -883,7 +883,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # give the advice
         self.changeUser('pmFinController')
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
@@ -1005,11 +1005,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.request.form['form.submitted'] = True
         changeCompleteness()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
                                              'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.assertEquals(advice.queryState(), 'proposed_to_financial_controller')
         self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
         # as finance reviewer
         self.changeUser('pmFinReviewer')
@@ -1084,7 +1085,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.request.form['form.submitted'] = True
         changeCompleteness()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
@@ -1820,7 +1821,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToProposedToDirector')
         vendors_advice = createContentInContainer(
             item,
-            'meetingadvice',
+            'meetingadvicefinances',
             **{'advice_group': 'vendors',
                'advice_type': u'negative',
                'advice_comment': RichTextValue(u'<p>My comment vendors</p>'),

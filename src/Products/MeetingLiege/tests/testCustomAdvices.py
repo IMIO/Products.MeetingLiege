@@ -96,6 +96,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # if manager sign the advice, so advice is no more editable
         # even the finance manager may no more edit advice delay
         self.do(advice, 'signFinancialAdvice')
+        self.assertFalse(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
         self.assertTrue(not delayView._mayEditDelays(isAutomatic=isAutomatic))
 
     def test_ItemSentBackToAskerWhenEveryAdvicesGiven(self):

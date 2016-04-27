@@ -126,17 +126,6 @@ def onAdviceTransition(advice, event):
     oldStateId = event.old_state.id
     newStateId = event.new_state.id
 
-    # initial_state or going back from 'advice_given', we set automatically the state
-    # to 'proposed_to_financial_controller', advice can never be in 'advice_under_edit'
-    if not event.transition or \
-       newStateId == 'advice_under_edit' and oldStateId == 'advice_given':
-        # activate transition, check guard_expr
-        advice.REQUEST.set('mayProposeToFinancialController', True)
-        wfTool.doActionFor(advice, 'proposeToFinancialController')
-        # hide the advice
-        advice.advice_hide_during_redaction = True
-        advice.REQUEST.set('mayProposeToFinancialController', False)
-
     if newStateId == 'financial_advice_signed':
         # historize given advice into a version
         advice.versionate_if_relevant(FINANCE_ADVICE_HISTORIZE_COMMENTS)
@@ -189,12 +178,12 @@ def onAdviceTransition(advice, event):
     # give 'MeetingFinanceEditor' role to the relevant finance sub-group depending on new advice state
     # we use a specific 'MeetingFinanceEditor' role because the 'Editor' role is given to entire
     # _advisers group by default in PloneMeeting and it is used for non finance advices
-    # finally remove 'MeetingFinanceEditor' given in previous state
     advice.manage_delLocalRoles((adviserGroupId, ))
     advice.manage_addLocalRoles(adviserGroupId, ('Reader', ))
     advice.manage_addLocalRoles('%s_%s' % (advice.advice_group, stateToGroupSuffixMappings[newStateId]),
                                 ('MeetingFinanceEditor', ))
-    if oldStateId in stateToGroupSuffixMappings:
+    # finally remove 'MeetingFinanceEditor' given in previous state except if it is initial_state
+    if oldStateId in stateToGroupSuffixMappings and not oldStateId == newStateId:
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, ))

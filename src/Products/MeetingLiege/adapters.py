@@ -720,6 +720,15 @@ class CustomMeetingItem(MeetingItem):
         return (toAdd, toEdit)
     MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
 
+    def _adviceTypeForAdviser(self, groupId):
+        """Return the meetingadvice portal_type that will be added for given p_groupId.
+           By default we always use meetingadvice but this makes it possible to have several
+           portal_types for meetingadvice."""
+        if groupId in FINANCE_GROUP_IDS:
+            return "meetingadvicefinances"
+        else:
+            return "meetingadvice"
+
     def _sendAdviceToGiveToGroup(self, groupId):
         """Do not send an email to FINANCE_GROUP_IDS."""
         if groupId in FINANCE_GROUP_IDS:

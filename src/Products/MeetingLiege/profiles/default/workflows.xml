@@ -26,7 +26,7 @@
   <type type_id="MeetingItemCouncil">
      <bound-workflow workflow_id="meetingitemcouncilliege_workflow" />
   </type>
-  <type type_id="meetingadvice">
+  <type type_id="meetingadvicefinances">
      <bound-workflow workflow_id="meetingadviceliege_workflow" />
   </type>
 <!-- ##code-section workflowbindings -->

@@ -449,3 +449,7 @@ msgstr ""
 #. Default: "Add a finances advice"
 msgid "add_new_meetingadvicefinances"
 msgstr ""
+
+#. Default: "Finances advice"
+msgid "MeetingAdviceFinances"
+msgstr ""

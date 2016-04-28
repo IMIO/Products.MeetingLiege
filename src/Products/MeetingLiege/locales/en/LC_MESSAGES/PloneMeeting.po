@@ -31,6 +31,10 @@ msgstr "College"
 msgid "Meeting config Council"
 msgstr "Council"
 
+#. Default: "Finances advice"
+msgid "MeetingAdviceFinances"
+msgstr ""
+
 #. Default: " "
 msgid "MeetingLiege_descr_archivingRef"
 msgstr " "

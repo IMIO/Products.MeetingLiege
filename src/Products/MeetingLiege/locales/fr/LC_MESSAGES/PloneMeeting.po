@@ -32,6 +32,10 @@ msgstr "Collège communal"
 msgid "Meeting config Council"
 msgstr "Conseil communal"
 
+#. Default: "Finances advice"
+msgid "MeetingAdviceFinances"
+msgstr "Avis finances"
+
 #. Default: " "
 msgid "MeetingLiege_descr_archivingRef"
 msgstr "Code destiné à permettre au Service des archives de classer de façon informatique le dossier"

@@ -6,6 +6,8 @@
 #
 # GNU General Public License (GPL)
 #
+
+import time
 from zope.component import getAdapter
 
 from plone.memoize.view import memoize_contextless
@@ -18,9 +20,7 @@ from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
 from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
 from Products.MeetingLiege import logger
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
-import time
 
 class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
     """
@@ -163,10 +163,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         return them in a list generated in a xls file.
         """
         pr = api.portal.get_tool('portal_repository')
-        pt = api.portal.get_tool('portal_transforms')
         pw = api.portal.get_tool('portal_workflow')
         results = []
-        kept_history = []
         startTime1 = time.time()
         for brain in brains:
             item = brain.getObject()
@@ -347,19 +345,18 @@ class MLMeetingDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
 
     def printItemActeContentForCollege(self, item):
         """
-	Printed on a College Item in a College Meeting, get the whole body 
-	of the acte in one shot.
-	"""
-	view = item.restrictedTraverse("@@document-generation")
-	helper = view.get_generation_context_helper()
-	return helper.printActeContentForCollege()
+        Printed on a College Item in a College Meeting, get the whole body
+        of the acte in one shot.
+        """
+        view = item.restrictedTraverse("@@document-generation")
+        helper = view.get_generation_context_helper()
+        return helper.printActeContentForCollege()
 
     def printItemActeContentForCouncil(self, item):
         """
-	Printed on a Council Item in a Council Meeting, get the whole body 
-	of the acte in one shot.
-	"""
-	view = item.restrictedTraverse("@@document-generation")
-	helper = view.get_generation_context_helper()
-	return helper.printActeContentForCouncil()
-
+        Printed on a Council Item in a Council Meeting, get the whole body
+        of the acte in one shot.
+        """
+        view = item.restrictedTraverse("@@document-generation")
+        helper = view.get_generation_context_helper()
+        return helper.printActeContentForCouncil()

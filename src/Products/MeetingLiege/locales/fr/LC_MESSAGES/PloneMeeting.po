@@ -136,6 +136,10 @@ msgstr "Montrer/cacher données utilisées pour le point Conseil"
 msgid "The item that was sent to Council has been deleted."
 msgstr "Le point qui avait déjà été envoyé au Conseil a été supprimé."
 
+#. Default: "Add a finances advice"
+msgid "add_new_meetingadvicefinances"
+msgstr "Ajouter un avis finances"
+
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
 msgstr "Validateurs administratifs"

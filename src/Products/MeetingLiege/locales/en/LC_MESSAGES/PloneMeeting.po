@@ -136,6 +136,10 @@ msgstr "See/hide data used for council item"
 msgid "The item that was sent to Council has been deleted."
 msgstr "The item that was sent to Council has been deleted."
 
+#. Default: "Add a finances advice"
+msgid "add_new_meetingadvicefinances"
+msgstr ""
+
 #. Default: "Administrative reviewers"
 msgid "administrativereviewers"
 msgstr "Administrative reviewers"

@@ -445,3 +445,7 @@ msgstr ""
 #. Default: "The item that was sent to Council has been deleted."
 msgid "The item that was sent to Council has been deleted."
 msgstr ""
+
+#. Default: "Add a finances advice"
+msgid "add_new_meetingadvicefinances"
+msgstr ""

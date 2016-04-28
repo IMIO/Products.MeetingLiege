@@ -71,7 +71,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.assertTrue(delayView._mayEditDelays(isAutomatic=isAutomatic))
         # add the advice, delay still changeable as advice is editable
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})

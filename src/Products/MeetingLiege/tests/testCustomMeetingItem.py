@@ -504,7 +504,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setCompleteness('completeness_complete')
         item.setEmergency('emergency_accepted')
         createContentInContainer(item,
-                                 'meetingadvice',
+                                 'meetingadvicefinances',
                                  **{'advice_group': FINANCE_GROUP_IDS[0],
                                     'advice_type': 'positive_finance',
                                     'advice_comment': RichTextValue(u'My positive comment finance')})
@@ -671,19 +671,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(
             item1,
-            'meetingadvice',
+            'meetingadvicefinances',
             **{'advice_group': FINANCE_GROUP_IDS[0],
                'advice_type': 'positive_finance',
                'advice_comment': RichTextValue(u'My good comment finance')})
         advice1a = createContentInContainer(
             item1a,
-            'meetingadvice',
+            'meetingadvicefinances',
             **{'advice_group': FINANCE_GROUP_IDS[0],
                'advice_type': 'positive_with_remarks_finance',
                'advice_comment': RichTextValue(u'My good with remarks comment finance')})
         advice2 = createContentInContainer(
             item2,
-            'meetingadvice',
+            'meetingadvicefinances',
             **{'advice_group': FINANCE_GROUP_IDS[0],
                'advice_type': 'negative_finance',
                'advice_comment': RichTextValue(u'My bad comment finance')})
@@ -774,7 +774,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(item1,
-                                           'meetingadvice',
+                                           'meetingadvicefinances',
                                            **{'advice_group': FINANCE_GROUP_IDS[0],
                                               'advice_type': 'positive_finance',
                                               'advice_comment': RichTextValue(u'My comment finance')})
@@ -993,7 +993,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Add a negative advice.
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(item1,
-                                           'meetingadvice',
+                                           'meetingadvicefinances',
                                            **{'advice_group': FINANCE_GROUP_IDS[0],
                                               'advice_type': 'negative_finance',
                                               'advice_comment': RichTextValue(u'My bad comment finance')})
@@ -1078,7 +1078,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Give positive advice.
         self.changeUser('pmFinManager')
         advice2 = createContentInContainer(item2,
-                                           'meetingadvice',
+                                           'meetingadvicefinances',
                                            **{'advice_group': FINANCE_GROUP_IDS[1],
                                               'advice_type': 'positive_finance'})
 
@@ -1116,7 +1116,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Give negative advice.
         self.changeUser('pmFinManager')
         advice3 = createContentInContainer(item3,
-                                           'meetingadvice',
+                                           'meetingadvicefinances',
                                            **{'advice_group': FINANCE_GROUP_IDS[1],
                                               'advice_type': 'negative_finance'})
 
@@ -1178,7 +1178,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Add a negative advice.
         self.changeUser('pmFinManager')
         advice5 = createContentInContainer(item5,
-                                           'meetingadvice',
+                                           'meetingadvicefinances',
                                            **{'advice_group': FINANCE_GROUP_IDS[0],
                                               'advice_type': 'negative_finance',
                                               'advice_comment': RichTextValue(u'Bad comment finance')})
@@ -1211,7 +1211,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Give positive advice.
         self.changeUser('pmFinManager')
         advice6 = createContentInContainer(item6,
-                                           'meetingadvice',
+                                           'meetingadvicefinances',
                                            **{'advice_group': FINANCE_GROUP_IDS[1],
                                               'advice_type': 'positive_with_remarks_finance',
                                               'advice_comment': RichTextValue(u'A remark')})
@@ -1361,4 +1361,3 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[14]['comments'], "")
         self.assertEquals(results[14]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
         self.assertEquals(results[14]['advice_type'], 'Compl\xc3\xa9tude')
-

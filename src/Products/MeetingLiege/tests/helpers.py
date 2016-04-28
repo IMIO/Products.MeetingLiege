@@ -121,7 +121,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.request.form['form.submitted'] = True
         changeCompleteness()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': adviser_group_id,
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),

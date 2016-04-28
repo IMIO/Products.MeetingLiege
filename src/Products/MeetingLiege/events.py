@@ -130,12 +130,7 @@ def onAdviceTransition(advice, event):
     # advice_hide_during_redaction to True
     if not event.transition or \
        newStateId == 'proposed_to_financial_controller' and oldStateId == 'advice_given':
-        # activate transition, check guard_expr
-        advice.REQUEST.set('mayProposeToFinancialController', True)
-        wfTool.doActionFor(advice, 'proposeToFinancialController')
-        # hide the advice
         advice.advice_hide_during_redaction = True
-        advice.REQUEST.set('mayProposeToFinancialController', False)
 
     if newStateId == 'financial_advice_signed':
         # historize given advice into a version
@@ -194,7 +189,7 @@ def onAdviceTransition(advice, event):
     advice.manage_addLocalRoles('%s_%s' % (advice.advice_group, stateToGroupSuffixMappings[newStateId]),
                                 ('MeetingFinanceEditor', ))
     # finally remove 'MeetingFinanceEditor' given in previous state except if it is initial_state
-    if oldStateId in stateToGroupSuffixMappings and not event.transition:
+    if oldStateId in stateToGroupSuffixMappings and event.transition:
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, ))

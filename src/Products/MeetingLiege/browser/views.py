@@ -3,7 +3,6 @@ from App.class_init import InitializeClass
 from Products.Five import BrowserView
 from Products.CMFCore.permissions import ReviewPortalContent
 from Products.PloneMeeting.utils import checkPermission
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
 class AdviceWFConditionsView(BrowserView):
@@ -12,16 +11,6 @@ class AdviceWFConditionsView(BrowserView):
       It is called by the guard_expr of meetingadvice workflow transitions.
     """
     security = ClassSecurityInfo()
-
-    security.declarePublic('mayProposeToFinancialController')
-
-    def mayProposeToFinancialController(self):
-        '''Only relevant for finance groups.'''
-        res = False
-        if self.request.get('mayProposeToFinancialController', False) or \
-           (checkPermission(ReviewPortalContent, self.context) and self.context.advice_group in FINANCE_GROUP_IDS):
-                res = True
-        return res
 
     security.declarePublic('mayBackToProposedToFinancialController')
 

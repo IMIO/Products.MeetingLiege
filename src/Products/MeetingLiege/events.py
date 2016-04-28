@@ -102,8 +102,7 @@ def onAdviceTransition(advice, event):
 
     # when the finance advice state change, we have to reinitialize
     # item.takenOverBy to nothing if advice is not at the finance controller state
-    if not event.new_state.id in ['advice_under_edit',
-                                  'proposed_to_financial_controller']:
+    if not event.new_state.id in ['proposed_to_financial_controller']:
         # we do not use the mutator setTakenOverBy because it
         # clean takenOverByInfos and we need it to be kept if
         # advice come back to controler
@@ -162,8 +161,8 @@ def onAdviceTransition(advice, event):
     # will not give any permission to this role but we need the finance group to have this
     # role on the advice
     # nevertheless, we remove roles given to the localRoledGroupId
-    if newStateId in ('advice_given', 'advice_under_edit', 'financial_advice_signed', ) and \
-       not oldStateId in ('advice_given', 'advice_under_edit', 'financial_advice_signed', ):
+    if newStateId in ('advice_given', 'financial_advice_signed', ) and \
+       not oldStateId in ('advice_given', 'financial_advice_signed', ):
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, adviserGroupId))

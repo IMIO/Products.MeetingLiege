@@ -62,12 +62,6 @@
              name="workflow"
              provides="imio.history.interfaces.IImioWfHistory" />
 
-    <utility
-      provides="zope.schema.interfaces.IVocabularyFactory"
-      factory=".overrides.AdviceTypeVocabulary"
-      name="Products.PloneMeeting.content.advice.advice_type_vocabulary"
-    />
-
     <!-- IPrettyLink for MeetingItem -->
     <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
              factory=".adapters.MLItemPrettyLinkAdapter"

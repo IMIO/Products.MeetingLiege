@@ -22,8 +22,10 @@
 # 02110-1301, USA.
 #
 
+from zope.component import queryUtility
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
+from zope.schema.interfaces import IVocabularyFactory
 
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
@@ -229,3 +231,31 @@ class testCustomAdvices(MeetingLiegeTestCase):
         notify(ObjectModifiedEvent(advice))
         self.assertTrue(item.queryState() == returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
+
+    def test_AdviceTypeVocabulary(self):
+        """'Products.PloneMeeting.content.advice.advice_type_vocabulary' was overrided
+           to manage values of finance advice."""
+        item, finance_advice = self._setupCollegeItemWithFinanceAdvice()
+        self.changeUser('pmManager')
+        vocab = queryUtility(IVocabularyFactory,
+                             "Products.PloneMeeting.content.advice.advice_type_vocabulary")
+        # ask 'vendors' advice on item
+        item.setOptionalAdvisers(('vendors', ))
+        item.at_post_edit_script()
+        self.do(item, 'backToProposedToDirector')
+        vendors_advice = createContentInContainer(
+            item,
+            'meetingadvice',
+            **{'advice_group': 'vendors',
+               'advice_type': u'negative',
+               'advice_comment': RichTextValue(u'<p>My comment vendors</p>'),
+               'advice_observations': RichTextValue(u'<p>My observation vendors</p>')})
+        finance_keys = vocab(finance_advice).by_value.keys()
+        finance_keys.sort()
+        self.assertEquals(finance_keys,
+                          ['negative_finance', 'not_required_finance',
+                           'positive_finance', 'positive_with_remarks_finance'])
+        vendors_keys = vocab(vendors_advice).by_value.keys()
+        vendors_keys.sort()
+        self.assertEquals(vendors_keys,
+                          ['negative', 'nil', 'positive', 'positive_with_remarks'])

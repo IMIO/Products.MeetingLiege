@@ -4,7 +4,6 @@
            xmlns:i18n="http://namespaces.zope.org/i18n"
            i18n_domain="MeetingLiege">
 
-  <!-- ##code-section configure.zcml.header -->
   <include file="events.zcml" />
   <include package=".browser" />
   <!-- registerTranslations before including package Products.PloneMeeting
@@ -107,7 +106,6 @@
            provides="collective.compoundcriterion.interfaces.ICompoundCriterionFilter"
            name="items-with-advice-proposed-to-financial-manager" />
 
-
   <!-- Indexes -->
   <adapter name="groupsOfMatter" factory=".indexes.groupsOfMatter" />
 
@@ -115,19 +113,8 @@
   <utility component=".vocabularies.GroupsOfMatterVocabularyFactory"
            name="Products.MeetingLiege.vocabularies.groupsofmattervocabulary" />
 
-  <!-- ##/code-section configure.zcml.header -->
-
   <i18n:registerTranslations directory="locales" />
 
   <include file="profiles.zcml" />
-
-
-
-  <!-- ##code-section configure.zcml.core -->
-  <permission
-    id="MeetingLiege.access_advice_substep_number"
-    title="MeetingLiege : access advice_substep_number field"
-  />
-  <!-- ##/code-section configure.zcml.core -->
 
 </configure>

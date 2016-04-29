@@ -34,13 +34,12 @@ class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
         """
           Override, every transitions of the finance workflow will have to be confirmed (commentable).
         """
-        toConfirm = ['meetingadvice.proposeToFinancialController',
-                     'meetingadvice.proposeToFinancialReviewer',
-                     'meetingadvice.proposeToFinancialManager',
-                     'meetingadvice.signAdvice',
-                     'meetingadvice.backToProposedToFinancialController',
-                     'meetingadvice.backToProposedToFinancialReviewer',
-                     'meetingadvice.backToProposedToFinancialManager', ]
+        toConfirm = ['meetingadvicefinances.proposeToFinancialReviewer',
+                     'meetingadvicefinances.proposeToFinancialManager',
+                     'meetingadvicefinances.signFinancialAdvice',
+                     'meetingadvicefinances.backToProposedToFinancialController',
+                     'meetingadvicefinances.backToProposedToFinancialReviewer',
+                     'meetingadvicefinances.backToProposedToFinancialManager', ]
         return toConfirm
 
 

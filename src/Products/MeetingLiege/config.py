@@ -2,7 +2,7 @@
 #
 # File: config.py
 #
-# Copyright (c) 2015 by Imio.be
+# Copyright (c) 2016 by Imio.be
 # Generator: ArchGenXML Version 2.7
 #            http://plone.org/products/archgenxml
 #
@@ -22,10 +22,8 @@ __docformat__ = 'plaintext'
 # AppConfig.py in your product's root directory. The items in there
 # will be included (by importing) in this file if found.
 
-from Products.CMFCore.permissions import setDefaultRoles
-##code-section config-head #fill in your manual code here
 from collections import OrderedDict
-##/code-section config-head
+from Products.CMFCore.permissions import setDefaultRoles
 
 
 PROJECTNAME = "MeetingLiege"
@@ -44,7 +42,6 @@ DEPENDENCIES = []
 # override in custom configuration
 PRODUCT_DEPENDENCIES = []
 
-##code-section config-bottom #fill in your manual code here
 from Products.PloneMeeting import config as PMconfig
 LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
@@ -76,6 +73,12 @@ FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
                           'financialreviewers',
                           'financialmanagers')
+
+LIEGE_EXTRA_ADVICE_SUFFIXES = {}
+for fin_group_id in FINANCE_GROUP_IDS:
+    LIEGE_EXTRA_ADVICE_SUFFIXES.update({fin_group_id: list(FINANCE_GROUP_SUFFIXES)})
+PMconfig.EXTRA_ADVICE_SUFFIXES = LIEGE_EXTRA_ADVICE_SUFFIXES
+
 # in those states, finance advice can still be given
 FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen')
 
@@ -95,12 +98,3 @@ FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN = "<p>Attendu l'absence d'avis du "\
     "du Code de la démocratie locale et de la décentralisation,</p>"
 
 COUNCILITEM_DECISIONEND_SENTENCE = u"<p>La présente décision a recueilli l'unanimité des suffrages.</p>".encode('utf-8')
-
-##/code-section config-bottom
-
-
-# Load custom configuration not managed by archgenxml
-try:
-    from Products.MeetingLiege.AppConfig import *
-except ImportError:
-    pass

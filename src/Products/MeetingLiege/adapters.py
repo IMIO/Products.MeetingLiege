@@ -48,7 +48,6 @@ from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
-from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import checkPermission
@@ -59,12 +58,10 @@ from Products.PloneMeeting.Meeting import MeetingWorkflowActions
 from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
-from Products.PloneMeeting.MeetingGroup import MeetingGroup
 from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
 from Products.PloneMeeting.interfaces import IMeetingCategoryCustom
 from Products.PloneMeeting.interfaces import IMeetingCustom
 from Products.PloneMeeting.interfaces import IMeetingConfigCustom
-from Products.PloneMeeting.interfaces import IMeetingGroupCustom
 from Products.PloneMeeting.interfaces import IMeetingItemCustom
 from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
 from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowActions
@@ -643,14 +640,16 @@ class CustomMeetingItem(MeetingItem):
             # item in state giveable but item not complete
             if item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
                 return {'displayDefaultComplementaryMessage': False,
-                        'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
-                                                         domain="PloneMeeting",
-                                                         context=item.REQUEST)}
-            elif getLastEvent(item, 'proposeToFinance') and item.queryState() in ('itemcreated',
-                                                                                  'itemcreated_waiting_advices',
-                                                                                  'proposed_to_internal_reviewer',
-                                                                                  'proposed_to_internal_reviewer_waiting_advices',
-                                                                                  'proposed_to_director',):
+                        'customAdviceMessage':
+                        translate('finance_advice_not_giveable_because_item_not_complete',
+                                  domain="PloneMeeting",
+                                  context=item.REQUEST)}
+            elif getLastEvent(item, 'proposeToFinance') and \
+                item.queryState() in ('itemcreated',
+                                      'itemcreated_waiting_advices',
+                                      'proposed_to_internal_reviewer',
+                                      'proposed_to_internal_reviewer_waiting_advices',
+                                      'proposed_to_director',):
                 # advice was already given but item was returned back to the service
                 return {'displayDefaultComplementaryMessage': False,
                         'customAdviceMessage': translate(
@@ -1583,58 +1582,6 @@ class CustomMeetingConfig(MeetingConfig):
         return infos
 
 
-class CustomMeetingGroup(MeetingGroup):
-    '''Adapter that adapts a meetingGroup implementing IMeetingGroup to the
-       interface IMeetingGroupCustom.'''
-
-    implements(IMeetingGroupCustom)
-    security = ClassSecurityInfo()
-
-    def __init__(self, item):
-        self.context = item
-
-    security.declareProtected('Modify portal content', 'onEdit')
-
-    def onEdit(self, isCreated):
-        '''
-          When a MeetingGroup is created/edited, if it is a finance group
-          (it's id is in FINANCE_GROUP_IDS), we create relevant finance Plone groups.
-          We do this on creation and on edit so it is checked every times the MeetingGroup
-          is edited, so removed elements from config and so on are back to normal...
-        '''
-        group = self.getSelf()
-        if not group.getId() in FINANCE_GROUP_IDS:
-            return
-        portal_groups = api.portal.get_tool('portal_groups')
-        for groupSuffix in FINANCE_GROUP_SUFFIXES:
-            groupId = group.getPloneGroupId(groupSuffix)
-            ploneGroup = portal_groups.getGroupById(groupId)
-            if ploneGroup:
-                continue
-            group._createOrUpdatePloneGroup(groupSuffix)
-
-    def getPloneGroups(self, idsOnly=False, acl=False):
-        '''Returns the list of Plone groups tied to this MeetingGroup. If
-           p_acl is True, it returns True PAS groups. Else, it returns Plone
-           wrappers from portal_groups.'''
-        res = []
-        suffixes = tuple(MEETING_GROUP_SUFFIXES)
-        if self.getId() in FINANCE_GROUP_IDS:
-            suffixes = suffixes + FINANCE_GROUP_SUFFIXES
-        for suffix in suffixes:
-            groupId = self.getPloneGroupId(suffix)
-            if idsOnly:
-                res.append(groupId)
-            else:
-                if acl:
-                    group = self.acl_users.getGroupByName(groupId)
-                else:
-                    group = self.portal_groups.getGroupById(groupId)
-                res.append(group)
-        return res
-    MeetingGroup.getPloneGroups = getPloneGroups
-
-
 class CustomMeetingCategory(MeetingCategory):
     '''Adapter that adapts a meetingCategory implementing IMeetingCategory to the
        interface IMeetingCategoryCustom.'''
@@ -2527,7 +2474,6 @@ MeetingAdvice.get_advice_given_on = get_advice_given_on
 InitializeClass(CustomMeeting)
 InitializeClass(CustomMeetingCategory)
 InitializeClass(CustomMeetingConfig)
-InitializeClass(CustomMeetingGroup)
 InitializeClass(CustomMeetingItem)
 InitializeClass(CustomToolPloneMeeting)
 InitializeClass(MeetingCollegeLiegeWorkflowActions)

@@ -329,6 +329,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(item.getCompleteness() == 'completeness_evaluation_not_required')
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_addable'])
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
+        # now advice may be given
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(toAdd and not toEdit)
         # give the advice
         advice = createContentInContainer(item,
                                           'meetingadvicefinances',
@@ -336,6 +339,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                              'advice_type': u'positive_with_remarks_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
                                              'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        # once given, still editable
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(not toAdd and toEdit)
         # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
         # when a financial advice is added, advice_hide_during_redaction
@@ -393,12 +399,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # can no more edit, but still view
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # no more addable/editable
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(not toAdd and not toEdit)
         # log as finance reviewer
         self.changeUser('pmFinReviewer')
         # may view and edit
         self.assertTrue(advice.queryState() == 'proposed_to_financial_reviewer')
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(self.hasPermission(ModifyPortalContent, advice))
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(not toAdd and toEdit)
         # may return to finance controller, send to finance manager or sign the advice
         self.assertTrue(self.transitions(advice) == ['backToProposedToFinancialController',
                                                      'proposeToFinancialManager',
@@ -414,6 +425,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(advice, 'proposeToFinancialManager')
         self.assertTrue(self.hasPermission(View, advice))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        # no more addable/editable
+        toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
+        self.assertTrue(not toAdd and not toEdit)
         # log as finance manager
         self.changeUser('pmFinManager')
         # may view and edit

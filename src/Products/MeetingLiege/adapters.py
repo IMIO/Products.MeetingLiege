@@ -665,49 +665,16 @@ class CustomMeetingItem(MeetingItem):
                     return advice_id
         return None
 
-    security.declarePublic('getAdvicesGroupsInfosForUser')
-
-    def getAdvicesGroupsInfosForUser(self):
-        '''Monkeypatch the MeetingItem.getAdvicesGroupsInfosForUser, look for XXX.'''
-        tool = api.portal.get_tool('portal_plonemeeting')
-        cfg = tool.getMeetingConfig(self)
-        # Advices must be enabled
-        if not cfg.getUseAdvices():
-            return ([], [])
-        # Logged user must be an adviser
-        meetingGroups = tool.getGroupsForUser(suffixes=['advisers'])
-        if not meetingGroups:
-            return ([], [])
-        # Produce the lists of groups to which the user belongs and for which,
-        # - no advice has been given yet (list of advices to add)
-        # - an advice has already been given (list of advices to edit/delete).
-        toAdd = []
-        toEdit = []
-        powerAdvisers = cfg.getPowerAdvisersGroups()
-        itemState = self.queryState()
-        for group in meetingGroups:
-            groupId = group.getId()
-            if groupId in self.adviceIndex:
-                advice = self.adviceIndex[groupId]
-                if advice['type'] == NOT_GIVEN_ADVICE_VALUE and advice['advice_addable']:
-                    toAdd.append((groupId, group.getName()))
-                if advice['type'] != NOT_GIVEN_ADVICE_VALUE and advice['advice_editable']:
-                    # XXX if we are a finance group, check if current member can edit the advice
-                    # begin change by Products.MeetingLiege
-                    if groupId in FINANCE_GROUP_IDS:
-                        member = api.user.get_current()
-                        adviceObj = getattr(self, self.adviceIndex[groupId]['advice_id'])
-                        if not member.has_role('MeetingFinanceEditor', adviceObj):
-                            continue
-                    # end change by Products.MeetingLiege
-                    toEdit.append((groupId, group.getName()))
-            # if not in self.adviceIndex, aka not already given
-            # check if group is a power adviser and if he is allowed
-            # to add an advice in current item state
-            elif groupId in powerAdvisers and itemState in group.getItemAdviceStates(cfg):
-                toAdd.append((groupId, group.getName()))
-        return (toAdd, toEdit)
-    MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
+    def _adviceIsEditableByCurrentUser(self, groupId):
+        '''Depending on advice WF state, it is only editable by relevant level.
+           This is used by MeetingItem.getAdvicesGroupsInfosForUser.'''
+        item = self.getSelf()
+        if groupId in FINANCE_GROUP_IDS:
+            member = api.user.get_current()
+            adviceObj = getattr(item, item.adviceIndex[groupId]['advice_id'])
+            if not member.has_role('MeetingFinanceEditor', adviceObj):
+                return False
+        return True
 
     def _advicePortalTypeForAdviser(self, groupId):
         """Return the meetingadvice portal_type that will be added for given p_groupId.

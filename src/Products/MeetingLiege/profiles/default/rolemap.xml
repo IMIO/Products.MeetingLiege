@@ -10,11 +10,7 @@
     <role name="MeetingObserverGlobal"/>
     <role name="MeetingObserverLocal"/>
     <role name="MeetingReviewer"/>
-<!-- ##code-section roles -->
-<!-- ##/code-section roles -->
   </roles>
   <permissions>
-<!-- ##code-section permissions -->
-<!-- ##/code-section permissions -->
   </permissions>
 </rolemap>

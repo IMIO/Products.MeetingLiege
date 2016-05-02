@@ -1,48 +1,9 @@
-from zope.component import queryUtility
-from zope.interface import implements
-from zope.schema.interfaces import IVocabularyFactory
-from zope.schema.vocabulary import SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
 from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
 from Products.PloneMeeting.adapters import AnnexableAdapter
 from Products.PloneMeeting.adapters import PMWfHistoryAdapter
-from Products.PloneMeeting.content.advice import AdviceTypeVocabulary as PMAdviceTypeVocabulary
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
-
-
-class AdviceTypeVocabulary(object):
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        """"""
-        terms = []
-        tool = getToolByName(context, 'portal_plonemeeting')
-        cfg = tool.getMeetingConfig(context)
-        if not cfg:
-            return SimpleVocabulary(terms)
-
-        # call original vocabulary method in PM that does different checks
-        # and remove relevant values depending on fact that it is a finance group or not
-        original_res = PMAdviceTypeVocabulary()(context)
-
-        # if finance group in group vocabulary, we use special _finance advice types
-        factory = queryUtility(IVocabularyFactory, u'Products.PloneMeeting.content.advice.advice_group_vocabulary')
-        groupVocab = factory(context)
-        groupIds = set([group.value for group in groupVocab._terms])
-        if set(FINANCE_GROUP_IDS).intersection(groupIds):
-            # we are on a finance group, only keep _finance advice types
-            terms = []
-            for term in original_res:
-                if term.token.endswith('_finance'):
-                    terms.append(term)
-        else:
-            # not a finance group, remove specific _finance types
-            terms = []
-            for term in original_res:
-                if not term.token.endswith('_finance'):
-                    terms.append(term)
-        return SimpleVocabulary(terms)
 
 
 class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):

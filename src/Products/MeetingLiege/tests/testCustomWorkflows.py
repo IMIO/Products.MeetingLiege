@@ -27,11 +27,9 @@ from datetime import datetime
 from DateTime import DateTime
 
 from AccessControl import Unauthorized
-from zope.component import queryUtility
 from zope.event import notify
 from zope.i18n import translate
 from zope.lifecycleevent import ObjectModifiedEvent
-from zope.schema.interfaces import IVocabularyFactory
 
 from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
@@ -204,7 +202,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmReviewer2 is adviser for vendors
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': 'vendors',
                                              'advice_type': u'positive',
                                              'advice_comment': RichTextValue(u'My comment vendors')})
@@ -235,7 +233,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmAdviser1 is adviser for developers
         self.changeUser('pmAdviser1')
         createContentInContainer(item,
-                                 'meetingadvice',
+                                 'meetingadvicefinances',
                                  **{'advice_group': 'developers',
                                     'advice_type': u'positive',
                                     'advice_comment': RichTextValue(u'My comment developers')})
@@ -333,7 +331,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'])
         # give the advice
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_with_remarks_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
@@ -591,7 +589,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         changeCompleteness()
         # give the advice
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
@@ -662,7 +660,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setCompleteness('completeness_complete')
         item.at_post_edit_script()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
@@ -883,7 +881,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # give the advice
         self.changeUser('pmFinController')
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
@@ -1005,11 +1003,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.request.form['form.submitted'] = True
         changeCompleteness()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
                                              'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.assertEquals(advice.queryState(), 'proposed_to_financial_controller')
         self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
         # as finance reviewer
         self.changeUser('pmFinReviewer')
@@ -1058,45 +1057,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.closeMeeting(meeting)
         self.assertTrue(item.queryState() == 'accepted')
         self.assertFalse(self.hasPermission(DeleteObjects, item))
-
-    def _setupCollegeItemWithFinanceAdvice(self, ):
-        """Setup, create a College item and give finance advice on it."""
-        self.changeUser('admin')
-        # configure customAdvisers for 'meeting-config-college'
-        _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
-        # define relevant users for finance groups
-        self._setupFinanceGroups()
-
-        # first 'return' an item and test
-        self.changeUser('pmManager')
-        item = self.create('MeetingItem', title='An item with finance advice')
-        # ask finance advice and give it
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
-        self.proposeItem(item)
-        self.do(item, 'proposeToFinance')
-        # make item completeness complete and add advice
-        self.changeUser('pmFinController')
-        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
-        self.request.set('new_completeness_value', 'completeness_complete')
-        self.request.form['form.submitted'] = True
-        changeCompleteness()
-        advice = createContentInContainer(item,
-                                          'meetingadvice',
-                                          **{'advice_group': FINANCE_GROUP_IDS[0],
-                                             'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
-        self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
-        # as finance reviewer
-        self.changeUser('pmFinReviewer')
-        self.do(advice, 'proposeToFinancialManager', comment='My financial reviewer comment')
-        # as finance manager
-        self.changeUser('pmFinManager')
-        self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
-        return item, advice
 
     def test_FinanceAdvisersAccessToAutoLinkedItems(self):
         """Finance adviser have still access to items that were automatically linked to
@@ -1806,31 +1766,3 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
         # advice may not be asked anymore
         self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
-
-    def test_AdviceGroupVocabulary(self):
-        """'Products.PloneMeeting.content.advice.advice_type_vocabulary' was overrided
-           to manage values of finance advice."""
-        item, finance_advice = self._setupCollegeItemWithFinanceAdvice()
-        self.changeUser('pmManager')
-        vocab = queryUtility(IVocabularyFactory,
-                             "Products.PloneMeeting.content.advice.advice_type_vocabulary")
-        # ask 'vendors' advice on item
-        item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
-        self.do(item, 'backToProposedToDirector')
-        vendors_advice = createContentInContainer(
-            item,
-            'meetingadvice',
-            **{'advice_group': 'vendors',
-               'advice_type': u'negative',
-               'advice_comment': RichTextValue(u'<p>My comment vendors</p>'),
-               'advice_observations': RichTextValue(u'<p>My observation vendors</p>')})
-        finance_keys = vocab(finance_advice).by_value.keys()
-        finance_keys.sort()
-        self.assertEquals(finance_keys,
-                          ['negative_finance', 'not_required_finance',
-                           'positive_finance', 'positive_with_remarks_finance'])
-        vendors_keys = vocab(vendors_advice).by_value.keys()
-        vendors_keys.sort()
-        self.assertEquals(vendors_keys,
-                          ['negative', 'nil', 'positive', 'positive_with_remarks'])

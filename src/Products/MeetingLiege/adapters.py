@@ -646,8 +646,11 @@ class CustomMeetingItem(MeetingItem):
                         'customAdviceMessage': translate('finance_advice_not_giveable_because_item_not_complete',
                                                          domain="PloneMeeting",
                                                          context=item.REQUEST)}
-            elif getLastEvent(item, 'proposeToFinance') and item.queryState() in ('proposed_to_director',
-                                                                                  'proposed_to_internal_reviewer'):
+            elif getLastEvent(item, 'proposeToFinance') and item.queryState() in ('itemcreated',
+                                                                                  'itemcreated_waiting_advices',
+                                                                                  'proposed_to_internal_reviewer',
+                                                                                  'proposed_to_internal_reviewer_waiting_advices',
+                                                                                  'proposed_to_director',):
                 # advice was already given but item was returned back to the service
                 return {'displayDefaultComplementaryMessage': False,
                         'customAdviceMessage': translate(
@@ -719,6 +722,27 @@ class CustomMeetingItem(MeetingItem):
                 toAdd.append((groupId, group.getName()))
         return (toAdd, toEdit)
     MeetingItem.getAdvicesGroupsInfosForUser = getAdvicesGroupsInfosForUser
+
+    def _advicePortalTypeForAdviser(self, groupId):
+        """Return the meetingadvice portal_type that will be added for given p_groupId.
+           By default we always use meetingadvice but this makes it possible to have several
+           portal_types for meetingadvice."""
+        if groupId in FINANCE_GROUP_IDS:
+            return "meetingadvicefinances"
+        else:
+            return "meetingadvice"
+
+    def _adviceTypesForAdviser(self, meeting_advice_portal_type):
+        """Return the advice types (positive, negative, ...) for given p_meeting_advice_portal_type.
+           By default we always use every MeetingConfig.usedAdviceTypes but this is useful
+           when using several portal_types for meetingadvice and some may use particular advice types."""
+        item = self.getSelf()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        cfg = tool.getMeetingConfig(item)
+        if meeting_advice_portal_type == 'meetingadvice':
+            return [t for t in cfg.getUsedAdviceTypes() if not t.endswith('_finance')]
+        else:
+            return [t for t in cfg.getUsedAdviceTypes() if t.endswith('_finance')]
 
     def _sendAdviceToGiveToGroup(self, groupId):
         """Do not send an email to FINANCE_GROUP_IDS."""

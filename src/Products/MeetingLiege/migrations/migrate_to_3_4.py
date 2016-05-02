@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger('MeetingLiege')
 import os
 
-from collections import OrderedDict
+from Acquisition import aq_base
 from zope.i18n import translate
 from plone.app.textfield.value import RichTextValue
 from Products.CMFPlone.utils import safe_unicode
@@ -165,6 +165,21 @@ class Migrate_To_3_4(PMMigrate_To_3_4):
         else:
             logger.info('Dashboard \'searchitemswithfinanceadvice\' already exists ... skipped.')
 
+    def _moveToMeetingAdviceFinances(self):
+        '''Previously, we used 'meetingadvice' for every given advices, now we have a specific
+           'meetingadvicefinances' portal_type to manage advices given by finances groups.'''
+        logger.info('Moving to \'meetingadvicefinances\'...')
+        brains = self.portal.portal_catalog(portal_type='meetingadvice')
+        for brain in brains:
+            advice = brain.getObject()
+            if not advice.advice_group in FINANCE_GROUP_IDS:
+                # remove the 'advice_substep_number'
+                if hasattr(aq_base(advice), 'advice_substep_number'):
+                    delattr(advice, 'advice_substep_number')
+            advice.portal_type = 'meetingadvicefinances'
+            advice.reindexObject()
+        logger.info('Done.')
+
     def run(self):
         # change self.profile_name everything is right before launching steps
         self.profile_name = u'profile-Products.MeetingLiege:default'
@@ -179,6 +194,7 @@ class Migrate_To_3_4(PMMigrate_To_3_4):
         self._updateCouncilItemFinanceAdviceAttribute()
         self._initPodTemplatesMailingListsField()
         self._addSearchFinanceAdviceDashboardAndTemplate()
+        self._moveToMeetingAdviceFinances()
         self.finish()
 
 
@@ -189,8 +205,9 @@ def migrate(context):
        2) Move historized finance advices to versions;
        3) clean meetingConfigs regarding CDLD;
        4) Migrate 'itemPositiveDecidedStates' to MeetingConfig.itemAutoSentToOtherMCStates;
-       5) Initialize new field 'mailing_lists' for Pod Templates.
-       6) Add the searchitemswithfinanceadvice dashboard and FD synthesis template.
+       5) Initialize new field 'mailing_lists' for Pod Templates;
+       6) Add the searchitemswithfinanceadvice dashboard and FD synthesis template;
+       7) Move finances advices to 'meetingadvicefinances'.
     '''
     Migrate_To_3_4(context).run()
 # ------------------------------------------------------------------------------

@@ -49,8 +49,6 @@ def postInstall(context):
     reinstallPloneMeeting(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
-    # set correct wf for meetingadvice
-    setCorrectWorkflowForAdvices(context, site)
     # add getAdoptsNextCouncilAgenda metadata
     addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', ))
     # add the groupsOfMatter index
@@ -123,20 +121,6 @@ def reorderSkinsLayers(context, site):
         # if the Products.plonemeetingskin profile is not available
         # (not using plonemeetingskin or in testing?) we pass...
         pass
-
-
-def setCorrectWorkflowForAdvices(context, site):
-    """
-       We use a different workflow for advice, make 'meetingadvice' portal_type use it.
-    """
-    # if isNotMeetingLiegeProfile(context) and not isMeetingLiegeConfigureProfile(context):
-    #     return
-
-    logStep("setCorrectWorkflowForAdvices", context)
-    wfTool = getToolByName(site, 'portal_workflow')
-    wfTool.setChainForPortalTypes(['meetingadvice'], ['meetingadviceliege_workflow'])
-    # update role mappings of existing meetingadvice
-    updateRoleMappings(context)
 
 
 def addFacetedCriteria(context, site):
@@ -273,8 +257,6 @@ def finalizeInstance(context):
     createArchivingReferences(context, site)
     reorderSkinsLayers(context, site)
     reorderCss(context)
-    # make sure we use the correct workflow for meetingadvice
-    setCorrectWorkflowForAdvices(context, site)
     # create finance groups but not for the testing profile
     # or it mess tests computing available groups and so on
     # this method is called manually by relevant tests

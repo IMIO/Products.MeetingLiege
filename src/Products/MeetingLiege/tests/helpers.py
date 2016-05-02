@@ -26,6 +26,8 @@ from plone.dexterity.utils import createContentInContainer
 
 from Products.PloneMeeting.tests.helpers import PloneMeetingTestingHelpers
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
+from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 
 
 class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
@@ -121,7 +123,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.request.form['form.submitted'] = True
         changeCompleteness()
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          'meetingadvicefinances',
                                           **{'advice_group': adviser_group_id,
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
@@ -135,3 +137,42 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         self.changeUser(originalUserId)
         return advice
+
+    def _setupCollegeItemWithFinanceAdvice(self, ):
+        """Setup, create a College item and give finance advice on it."""
+        self.changeUser('admin')
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # first 'return' an item and test
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem', title='An item with finance advice')
+        # ask finance advice and give it
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item.at_post_edit_script()
+        self.proposeItem(item)
+        self.do(item, 'proposeToFinance')
+        # make item completeness complete and add advice
+        self.changeUser('pmFinController')
+        changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
+        self.request.set('new_completeness_value', 'completeness_complete')
+        self.request.form['form.submitted'] = True
+        changeCompleteness()
+        advice = createContentInContainer(item,
+                                          'meetingadvicefinances',
+                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                             'advice_type': u'positive_finance',
+                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
+                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
+        # as finance reviewer
+        self.changeUser('pmFinReviewer')
+        self.do(advice, 'proposeToFinancialManager', comment='My financial reviewer comment')
+        # as finance manager
+        self.changeUser('pmFinManager')
+        self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
+        return item, advice

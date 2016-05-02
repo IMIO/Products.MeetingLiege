@@ -1329,8 +1329,9 @@ class CustomMeetingItem(MeetingItem):
             return ''
 
         user = {}
-        user['fullname'] = self.context.portal_membership.getMemberInfo(str(offMan))['fullname']
-        memberInfos = self.context.portal_membership.getMemberById(offMan)
+        membershipTool = api.portal.get_tool('portal_membership')
+        user['fullname'] = membershipTool.getMemberInfo(str(offMan))['fullname']
+        memberInfos = membershipTool.getMemberById(offMan)
         user['phone'] = memberInfos.getProperty('description').split("     ")[0]
         user['email'] = memberInfos.getProperty('email')
         return user
@@ -1668,13 +1669,6 @@ class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     implements(IMeetingCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('doBackToCreated')
-
-    def doBackToCreated(self, stateChange):
-        '''When a meeting go back to the "created" state, for example the
-           meeting manager wants to add an item, we do not do anything.'''
-        pass
-
 
 class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -1683,31 +1677,11 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     implements(IMeetingCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    security.declarePublic('mayClose')
-
-    def mayClose(self):
-        res = False
-        # The user just needs the "Review portal content" permission on the
-        # object to close it.
-        if checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
     security.declarePublic('mayDecide')
 
     def mayDecide(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayChangeItemsOrder')
-
-    def mayChangeItemsOrder(self):
-        '''We can change the order if the meeting is not closed'''
-        res = False
-        if checkPermission(ModifyPortalContent, self.context) and \
-           self.context.queryState() not in ('closed'):
             res = True
         return res
 
@@ -1787,11 +1761,6 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doAccept_but_modify')
 
     def doAccept_but_modify(self, stateChange):
-        pass
-
-    security.declarePrivate('doAccept')
-
-    def doAccept(self, stateChange):
         pass
 
     security.declarePrivate('doMark_not_applicable')
@@ -2290,13 +2259,6 @@ class MeetingCouncilLiegeWorkflowActions(MeetingWorkflowActions):
     implements(IMeetingCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('doBackToCreated')
-
-    def doBackToCreated(self, stateChange):
-        '''When a meeting go back to the "created" state, for example the
-           meeting manager wants to add an item, we do not do anything.'''
-        pass
-
 
 class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -2305,31 +2267,11 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     implements(IMeetingCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    security.declarePublic('mayClose')
-
-    def mayClose(self):
-        res = False
-        # The user just needs the "Review portal content" permission on the
-        # object to close it.
-        if checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
     security.declarePublic('mayDecide')
 
     def mayDecide(self):
         res = False
         if checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayChangeItemsOrder')
-
-    def mayChangeItemsOrder(self):
-        '''We can change the order if the meeting is not closed'''
-        res = False
-        if checkPermission(ModifyPortalContent, self.context) and \
-           self.context.queryState() not in ('closed'):
             res = True
         return res
 

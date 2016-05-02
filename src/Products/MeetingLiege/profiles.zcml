@@ -26,11 +26,11 @@
    for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
   <genericsetup:upgradeStep
-      title="Go to MeetingLiege 3.4"
+      title="Go to MeetingLiege 4.0"
       description=""
       source="3.3"
-      destination="3.4"
-      handler="Products.MeetingLiege.migrations.migrate_to_3_4.migrate"
+      destination="4.0"
+      handler="Products.MeetingLiege.migrations.migrate_to_4_0.migrate"
       profile="Products.MeetingLiege:default" />
 
   <!-- ##/code-section profiles.zcml-bottom -->

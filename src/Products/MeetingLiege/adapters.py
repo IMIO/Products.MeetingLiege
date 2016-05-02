@@ -588,19 +588,6 @@ class CustomMeetingItem(MeetingItem):
         self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
 
-    security.declareProtected('View', 'getFinanceAdvice')
-
-    def getFinanceAdvice(self, checkPredecessors=False, **kwargs):
-        '''Overrides the field 'financeAdvice' accessor to be able to pass
-           a p_checkPredecessors parameter that will also query predecessor if it is
-           in state 'return_college'.  Indeed, a finance advice is still valid if
-           predecessor was 'return_college', the advice is not asked again.'''
-        res = self.getField('financeAdvice').get(self)
-        if checkPredecessors:
-            pass
-        return res
-    MeetingItem.getFinanceAdvice = getFinanceAdvice
-
     def showDuplicateItemAction_cachekey(method, self, brain=False):
         '''cachekey method for self.showDuplicateItemAction.'''
         return (self, str(self.REQUEST._debug))

@@ -1334,22 +1334,6 @@ class CustomMeetingConfig(MeetingConfig):
     def __init__(self, item):
         self.context = item
 
-    def listAdviceTypes(self):
-        d = "PloneMeeting"
-        adviceTypes = old_listAdviceTypes(self)
-        financeAdviceTypes = DisplayList((
-            ("positive_finance",
-             translate('positive_finance', domain=d, context=self.REQUEST)),
-            ("positive_with_remarks_finance",
-             translate('positive_with_remarks_finance', domain=d, context=self.REQUEST)),
-            ("negative_finance",
-             translate('negative_finance', domain=d, context=self.REQUEST)),
-            ("not_required_finance",
-             translate('not_required_finance', domain=d, context=self.REQUEST)),
-        ))
-        return financeAdviceTypes + adviceTypes
-    MeetingConfig.listAdviceTypes = listAdviceTypes
-
     security.declarePrivate('listArchivingReferenceFinanceAdvices')
 
     def listArchivingReferenceFinanceAdvices(self):

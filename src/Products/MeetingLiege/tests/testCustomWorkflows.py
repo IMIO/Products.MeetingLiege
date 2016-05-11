@@ -202,7 +202,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmReviewer2 is adviser for vendors
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
+                                          'meetingadvice',
                                           **{'advice_group': 'vendors',
                                              'advice_type': u'positive',
                                              'advice_comment': RichTextValue(u'My comment vendors')})
@@ -233,7 +233,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmAdviser1 is adviser for developers
         self.changeUser('pmAdviser1')
         createContentInContainer(item,
-                                 'meetingadvicefinances',
+                                 'meetingadvice',
                                  **{'advice_group': 'developers',
                                     'advice_type': u'positive',
                                     'advice_comment': RichTextValue(u'My comment developers')})

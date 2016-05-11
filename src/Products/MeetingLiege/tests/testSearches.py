@@ -29,6 +29,13 @@ from Products.PloneMeeting.tests.testSearches import testSearches as pmts
 class testSearches(MeetingLiegeTestCase, pmts):
     """Test searches."""
 
+    def runSearchItemsToValidateOfEveryReviewerLevelsAndLowerLevelsTest(self):
+        '''
+          Helper method for activating the test_pm_SearchItemsToValidateOfEveryReviewerLevelsAndLowerLevels
+          test when called from a subplugin.
+        '''
+        return True
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

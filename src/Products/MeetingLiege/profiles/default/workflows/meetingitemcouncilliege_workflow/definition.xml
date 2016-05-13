@@ -1361,7 +1361,7 @@
              i18n:attributes="title">
   <action url="" icon="%(portal_url)s/backToItemFrozen.png" category="workflow" i18n:translate="">backToItemFrozen</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('itemfrozen')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToPresented"
@@ -1373,7 +1373,7 @@
              i18n:attributes="title">
   <action url="" icon="%(portal_url)s/backToPresented.png" category="workflow" i18n:translate="">backToPresented</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('presented')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToValidated"
@@ -1385,7 +1385,7 @@
              i18n:attributes="title">
   <action url="" icon="%(portal_url)s/backToValidated.png" category="workflow" i18n:translate="">backToValidated</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayCorrect()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('validated')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="delay"

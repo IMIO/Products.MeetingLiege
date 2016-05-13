@@ -176,6 +176,7 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
                 # remove the 'advice_substep_number'
                 if hasattr(aq_base(advice), 'advice_substep_number'):
                     delattr(advice, 'advice_substep_number')
+                continue
             advice.portal_type = 'meetingadvicefinances'
             advice.reindexObject()
         logger.info('Done.')

@@ -2077,12 +2077,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     security.declarePublic('mayCorrect')
 
-    def mayCorrect(self):
+    def mayCorrect(self, destinationState=None):
+        '''See docstring in interfaces.py'''
         # Check with the default PloneMeeting method and our test if res is
         # False. The diffence here is when we correct an item from itemfrozen to
         # presented, we have to check if the Meeting is in the "created" state
         # and not "published".
-        res = MeetingItemWorkflowConditions.mayCorrect(self)
+        res = MeetingItemWorkflowConditions.mayCorrect(self, destinationState)
         # Manage our own behaviour now when the item is linked to a meeting,
         # a MeetingManager can correct anything except if the meeting is closed
         if res is not True:
@@ -2228,11 +2229,12 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
 
     security.declarePublic('mayCorrect')
 
-    def mayCorrect(self):
-        '''Take the default behaviour except if the meeting is frozen
-           we still have the permission to correct it.'''
+    def mayCorrect(self, destinationState=None):
+        '''See docstring in interfaces.py'''
+        # Take the default behaviour except if the meeting is frozen
+        # we still have the permission to correct it.
         from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
-        res = MeetingWorkflowConditions.mayCorrect(self)
+        res = MeetingWorkflowConditions.mayCorrect(self, destinationState)
         currentState = self.context.queryState()
         if res is not True and currentState == "frozen":
             # Change the behaviour for being able to correct a frozen meeting
@@ -2296,12 +2298,13 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     security.declarePublic('mayCorrect')
 
-    def mayCorrect(self):
+    def mayCorrect(self, destinationState=None):
+        '''See docstring in interfaces.py'''
         # Check with the default PloneMeeting method and our test if res is
         # False. The diffence here is when we correct an item from itemfrozen to
         # presented, we have to check if the Meeting is in the "created" state
         # and not "published".
-        res = MeetingItemWorkflowConditions.mayCorrect(self)
+        res = MeetingItemWorkflowConditions.mayCorrect(self, destinationState)
         # Manage our own behaviour now when the item is linked to a meeting,
         # a MeetingManager can correct anything except if the meeting is closed
         if res is not True:

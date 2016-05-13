@@ -42,3 +42,4 @@ Products.MeetingLiege Changelog
   override every PM tests in MC, we just heritate from PM test file
 - Get rid of ToolPloneMeeting.formatMeetingDate override that displayed a '*' for meetings where
   adoptsNextCouncilAgenda=True, we use imio.prettylink _leadingIcons now
+- Moved finances specific advices to their own portal_type 'meetingadvicefinances'

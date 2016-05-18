@@ -79,11 +79,6 @@ for fin_group_id in FINANCE_GROUP_IDS:
     LIEGE_EXTRA_ADVICE_SUFFIXES.update({fin_group_id: list(FINANCE_GROUP_SUFFIXES)})
 PMconfig.EXTRA_ADVICE_SUFFIXES = LIEGE_EXTRA_ADVICE_SUFFIXES
 
-# advice types used for finances
-LIEGE_EXTRA_ADVICE_TYPES = ("positive_finance", "positive_with_remarks_finance",
-                            "negative_finance", "not_required_finance")
-PMconfig.EXTRA_ADVICE_TYPES = LIEGE_EXTRA_ADVICE_TYPES
-
 # in those states, finance advice can still be given
 FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen')
 

@@ -1520,6 +1520,11 @@ class CustomMeetingConfig(MeetingConfig):
             infos.update(finance_infos)
         return infos
 
+    def extraAdviceTypes(self):
+        '''See doc in interfaces.py.'''
+        return ("positive_finance", "positive_with_remarks_finance",
+                "negative_finance", "not_required_finance")
+
 
 class CustomMeetingCategory(MeetingCategory):
     '''Adapter that adapts a meetingCategory implementing IMeetingCategory to the

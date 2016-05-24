@@ -1525,6 +1525,10 @@ class CustomMeetingConfig(MeetingConfig):
         return ("positive_finance", "positive_with_remarks_finance",
                 "negative_finance", "not_required_finance")
 
+    def extraInsertingMethods(self):
+        '''See doc in interfaces.py.'''
+        return ['on_decision_first_word']
+
 
 class CustomMeetingCategory(MeetingCategory):
     '''Adapter that adapts a meetingCategory implementing IMeetingCategory to the

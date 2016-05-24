@@ -64,9 +64,6 @@ LIEGE_ADVICE_STATES_ENDED = ('advice_given', )
 PMconfig.ADVICE_STATES_ALIVE = LIEGE_ADVICE_STATES_ALIVE
 PMconfig.ADVICE_STATES_ENDED = LIEGE_ADVICE_STATES_ENDED
 
-# add our custom inserting method
-PMconfig.ITEM_INSERT_METHODS = PMconfig.ITEM_INSERT_METHODS + ('on_decision_first_word', )
-
 # finance groups ids
 FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 

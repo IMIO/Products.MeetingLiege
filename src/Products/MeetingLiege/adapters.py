@@ -79,6 +79,7 @@ from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+from Products.MeetingLiege.config import TREASURY_GROUP_ID
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -807,9 +808,17 @@ class CustomMeetingItem(MeetingItem):
     security.declarePublic('mayAskAdviceAgain')
 
     def mayAskAdviceAgain(self, advice):
-        '''Do not let advice 'asked_again' for finance groups.'''
+        '''Do not let advice 'asked_again' for FINANCE_GROUP_IDS.
+           TREASURY_GROUP_ID advice may be asked again by proposing group
+           if it is accepted/accepted_but_modified.
+           '''
         if advice.advice_group in FINANCE_GROUP_IDS:
             return False
+        if advice.advice_group == TREASURY_GROUP_ID and \
+           self.context.queryState() in ('accepted', 'accepted_but_modified'):
+            mGroup = self.context.getProposingGroup(theObject=True)
+            if mGroup.userPloneGroups(suffixes=['internalreviewers', 'reviewers']):
+                return True
         return self.context.mayAskAdviceAgain(advice)
 
     security.declarePrivate('listFinanceAdvices')

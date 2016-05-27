@@ -67,6 +67,8 @@ PMconfig.ADVICE_STATES_ENDED = LIEGE_ADVICE_STATES_ENDED
 # finance groups ids
 FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 
+TREASURY_GROUP_ID = 'df-controle-tresorerie'
+
 FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
                           'financialreviewers',
                           'financialmanagers')

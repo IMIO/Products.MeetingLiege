@@ -24,9 +24,10 @@ __author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 # ------------------------------------------------------------------------------
-from Products.PloneMeeting.interfaces import \
-    IMeetingItemWorkflowConditions, IMeetingItemWorkflowActions, \
-    IMeetingWorkflowActions, IMeetingWorkflowConditions
+from Products.PloneMeeting.interfaces import IMeetingItemWorkflowActions
+from Products.PloneMeeting.interfaces import IMeetingItemWorkflowConditions
+from Products.PloneMeeting.interfaces import IMeetingWorkflowActions
+from Products.PloneMeeting.interfaces import IMeetingWorkflowConditions
 
 
 # ------------------------------------------------------------------------------

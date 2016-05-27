@@ -49,6 +49,7 @@ from Products.PloneMeeting.utils import getLastEvent
 
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
@@ -1780,3 +1781,59 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
         # advice may not be asked anymore
         self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
+
+    def test_TreasuryPowerAdviserMayBeAskedAgain(self):
+        """TREASURY_GROUP_ID is power observer and may give advice when the
+           item is accepted/accepted_but_modified.  Internal reviewer and directors
+           of the proposing group may ask this advice again."""
+        self.changeUser('siteadmin')
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
+        self.create('MeetingGroup',
+                    id=TREASURY_GROUP_ID,
+                    itemAdviceStates=('{0}__state__accepted'.format(cfgId),
+                                      '{0}__state__accepted_but_modified'.format(cfgId),),
+                    itemAdviceEditStates=('{0}__state__accepted'.format(cfgId),
+                                          '{0}__state__accepted_but_modified'.format(cfgId),))
+        # add pmCreator2 to the TREASURY_GROUP_ID_advisers group
+        group = self.portal.portal_groups.getGroupById('{0}_advisers'.format(TREASURY_GROUP_ID))
+        group.addMember('pmCreator2')
+        # make TREASURY_GROUP_ID a power adviser group
+        self.meetingConfig.setPowerAdvisersGroups((TREASURY_GROUP_ID, ))
+
+        # create an item and make it 'accepted'
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting', date=DateTime())
+        self.presentItem(item)
+        self.closeMeeting(meeting)
+        self.assertEquals(item.queryState(), 'accepted')
+        self.changeUser('pmCreator2')
+        advice = createContentInContainer(item,
+                                          'meetingadvice',
+                                          **{'advice_group': TREASURY_GROUP_ID,
+                                             'advice_type': u'negative',
+                                             'advice_comment': RichTextValue(u'My negative comment')})
+        # ask advice again
+        self.changeUser('pmCreator1')
+        # not able as not internalreviewer/reviewer
+        self.assertFalse(item.adapted().mayAskAdviceAgain(advice))
+        self.changeUser('pmInternalReviewer1')
+        self.assertTrue(item.adapted().mayAskAdviceAgain(advice))
+        self.changeUser('pmReviewer1')
+        self.assertTrue(item.adapted().mayAskAdviceAgain(advice))
+
+        # and advice may be actually asked again
+        changeView = advice.restrictedTraverse('@@change-advice-asked-again')
+        changeView()
+        self.assertEqual(advice.advice_type, 'asked_again')
+
+        # advice may be given again
+        self.changeUser('pmCreator2')
+        self.assertEqual(item.getAdvicesGroupsInfosForUser(),
+                         ([], [(TREASURY_GROUP_ID, '')]))
+        advice.advice_type = 'positive'
+        advice.advice_comment = RichTextValue(u'My positive comment')
+        notify(ObjectModifiedEvent(advice))
+        self.assertEqual(item.adviceIndex[TREASURY_GROUP_ID]['type'], 'positive')

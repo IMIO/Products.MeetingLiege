@@ -858,7 +858,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # onDuplicateAndKeepLink returns the URL of the duplicated item
         dupLinkedItemURL = duplicatedLocally.onDuplicateAndKeepLink().replace('http://nohost', '')
         dupLinkedItem = self.portal.restrictedTraverse(dupLinkedItemURL)
-        self.assertEquals(dupLinkedItem.getPredecessor(), duplicatedLocally)
+        self.assertEquals(dupLinkedItem.getRawManuallyLinkedItems(), [duplicatedLocally.UID()])
         self.assertTrue(getLastEvent(dupLinkedItem, 'Duplicate and keep link'))
         self.assertEquals(dupLinkedItem.getOtherMeetingConfigsClonableTo(),
                           (cfg2Id,))
@@ -1662,7 +1662,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         duplicatedItemURL = item.onDuplicateAndKeepLink()
         duplicatedItem = getattr(item.getParentNode(),
                                  duplicatedItemURL.split('/')[-1])
-        self.assertEquals(duplicatedItem.getPredecessor().queryState(), 'accepted_and_returned')
+        linkedItems = duplicatedItem.getManuallyLinkedItems()
+        self.assertEquals(len(linkedItems), 1)
+        self.assertEquals(linkedItems[0].queryState(), 'accepted_and_returned')
         self.backToState(meeting, 'created')
         self.presentItem(duplicatedItem)
         self.decideMeeting(meeting)

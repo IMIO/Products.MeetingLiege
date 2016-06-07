@@ -523,8 +523,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # the finance advice is asked on the duplicatedItem
         self.assertTrue(duplicatedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in duplicatedItem.adviceIndex)
-        # finance group did not get automatically access to the duplicatedItem
-        self.assertTrue(financeGroupAdvisersId not in duplicatedItem.__ac_local_roles__)
+        # finance group get automatically access to the duplicatedItem as it is linked manually
+        self.assertTrue(duplicatedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
 
         # delaying an item will not make original item the item holder
         # the finance advice is asked on the delayed item too
@@ -540,7 +540,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(clonedDelayedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in clonedDelayedItem.adviceIndex)
         # finance group did not get automatically access to the clonedDelayedItem
-        self.assertTrue(financeGroupAdvisersId not in duplicatedItem.__ac_local_roles__)
+        self.assertTrue(financeGroupAdvisersId not in clonedDelayedItem.__ac_local_roles__)
 
         # now correct item and 'accept and return' it
         # this time, the original item is considered the finance advice holder

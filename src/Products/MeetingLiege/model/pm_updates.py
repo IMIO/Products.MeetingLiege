@@ -43,19 +43,6 @@ def update_item_schema(baseSchema):
             default_output_type="text/x-html-safe",
             optional=True,
         ),
-        # field for defining privacy that will be used for item created in the Council
-        StringField(
-            name='privacyForCouncil',
-            default='public',
-            widget=SelectionWidget(
-                condition="python: here.attributeIsUsed('privacyForCouncil')",
-                label='PrivacyForCouncil',
-                label_msgid='MeetingLiege_label_privacyForCouncil',
-                i18n_domain='PloneMeeting',
-            ),
-            optional=True,
-            vocabulary_factory='Products.PloneMeeting.vocabularies.privaciesvocabulary'
-        ),
         StringField(
             name='financeAdvice',
             widget=SelectionWidget(

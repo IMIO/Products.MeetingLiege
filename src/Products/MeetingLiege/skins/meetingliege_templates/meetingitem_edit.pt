@@ -108,23 +108,28 @@
         </tr>
         <tr>
             <td colspan="5"
-                tal:define="showOtherMeetingConfigsClonableToEmergency context/showOtherMeetingConfigsClonableToEmergency"
-                tal:attributes="style python: showOtherMeetingConfigsClonableToEmergency and 'border: 1px solid lightgrey;; min-width: 600px;;' or ''">
+                tal:define="showOtherMeetingConfigsClonableToSpecialFields python: context.showOtherMeetingConfigsClonableToEmergency() or 'otherMeetingConfigsClonableToPrivacy' in usedAttrs"
+                tal:attributes="style python: showOtherMeetingConfigsClonableToSpecialFields and 'border: 1px solid lightgrey;; min-width: 600px;;' or ''">
                 <metal:field use-macro="python:here.widget('otherMeetingConfigsClonableTo', mode='edit')"/>
+                <metal:field use-macro="python:here.widget('otherMeetingConfigsClonableToPrivacy', mode='edit')"/>
                 <metal:field use-macro="python:here.widget('otherMeetingConfigsClonableToEmergency', mode='edit', label=0)"/>
-                <tal:scriptForOtherMeetingConfigsClonableToEmergency condition="showOtherMeetingConfigsClonableToEmergency">
+                <tal:scriptForOtherMeetingConfigsClonableToSpecificFields condition="showOtherMeetingConfigsClonableToSpecialFields">
                 <script type="text/javascript">
                     $("input[id^='otherMeetingConfigsClonableTo_']").each(function()
                         {
                          $(this).bind("click", function() {
                             number = this.id.split('_')[1]
                             otherMCEmergencyField = $('#otherMeetingConfigsClonableToEmergency_' + number);
+                            otherMCPrivacyField = $('#otherMeetingConfigsClonableToPrivacy_' + number);
                             if (this.checked) {
                                 otherMCEmergencyField.attr('disabled', false);
+                                otherMCPrivacyField.attr('disabled', false);
                             }
                             else {
                                 otherMCEmergencyField.attr('checked', false);
                                 otherMCEmergencyField.attr('disabled', true);
+                                otherMCPrivacyField.attr('checked', false);
+                                otherMCPrivacyField.attr('disabled', true);
                             };
                             });
                         });
@@ -137,11 +142,14 @@
                             otherMCEmergencyField = $('#otherMeetingConfigsClonableToEmergency_' + number);
                             otherMCEmergencyField.attr('checked', false);
                             otherMCEmergencyField.attr('disabled', true);
+                            otherMCPrivacyField = $('#otherMeetingConfigsClonableToPrivacy_' + number);
+                            otherMCPrivacyField.attr('checked', false);
+                            otherMCPrivacyField.attr('disabled', true);
                             };
                         });
                     });
                 </script>
-                </tal:scriptForOtherMeetingConfigsClonableToEmergency>
+                </tal:scriptForOtherMeetingConfigsClonableToSpecificFields>
             </td>
         </tr>
       <tal:comment replace="nothing">XXX begin change by MeetingLiege, management of title/privacy fields for council.</tal:comment>
@@ -164,7 +172,6 @@
              tal:attributes="style python: 'meeting-config-council' in context.getOtherMeetingConfigsClonableTo() and 'display: block' or 'display: none';">
             <legend i18n:translate="">Data that will be used once item will be in the council</legend>
             <metal:field use-macro="python:here.widget('labelForCouncil', mode='edit')"/>
-            <metal:field use-macro="python:here.widget('privacyForCouncil', mode='edit')"/>
         </fieldset>
         </td>
       </tr>

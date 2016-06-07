@@ -55,7 +55,6 @@ from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 COUNCIL_LABEL = '<p>Label for Council.</p>'
-COUNCIL_PRIVACY = 'secret'
 
 
 class testCustomWorkflows(MeetingLiegeTestCase):
@@ -1580,7 +1579,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # send a college item to council and delay this council item
         # in the college
         data = {'labelForCouncil': COUNCIL_LABEL,
-                'privacyForCouncil': COUNCIL_PRIVACY,
+                'otherMeetingConfigsClonableToPrivacy': ('meeting-config-council', ),
                 'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
         collegeItem = self.create('MeetingItem', **data)
         collegeItem.setFinanceAdvice(FINANCE_GROUP_IDS[0])
@@ -1614,7 +1613,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(councilItem, 'delay')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
         self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
-        self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)
+        self.assertEquals(backCollegeItem.getOtherMeetingConfigsClonableTo(),
+                          ('meeting-config-council', ))
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
 
         # it is sent back in "itemcreated" state and finance advice does not follow
@@ -1634,7 +1634,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(councilItem, 'return')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
         self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
-        self.assertEquals(backCollegeItem.getPrivacyForCouncil(), COUNCIL_PRIVACY)
+        self.assertEquals(backCollegeItem.getOtherMeetingConfigsClonableTo(),
+                          ('meeting-config-council', ))
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
 
         # it is sent back in "validated" state and finance advice does follow

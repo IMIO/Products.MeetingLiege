@@ -88,10 +88,6 @@ msgstr "Avis du Directeur Financier"
 msgid "MeetingLiege_label_labelForCouncil"
 msgstr "Libellé dans le Conseil"
 
-#. Default: "Privacy"
-msgid "MeetingLiege_label_privacyForCouncil"
-msgstr "Niveau de confidentialité"
-
 #. Default: "Checklist"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"

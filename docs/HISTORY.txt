@@ -43,3 +43,5 @@ Products.MeetingLiege Changelog
 - Get rid of ToolPloneMeeting.formatMeetingDate override that displayed a '*' for meetings where
   adoptsNextCouncilAgenda=True, we use imio.prettylink _leadingIcons now
 - Moved finances specific advices to their own portal_type 'meetingadvicefinances'
+- Removed field 'MeetingItem.privacyForCouncil', instead we will use new builtin PM functionnality 
+  'MeetingItem.otherMeetingConfigsClonableToPrivacy' that does the same

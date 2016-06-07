@@ -102,12 +102,12 @@
             </div>
 
             <tal:comment replace="nothing">Copy groups for this item</tal:comment>
-            <div class="discreet" tal:condition="python: context.isCopiesEnabled()"
+            <div class="discreet" tal:condition="context/isCopiesEnabled"
                                   tal:define="copyGroups context/getCopyGroups;">
                 <span class="item_attribute_label"
                       i18n:translate="PloneMeeting_label_copyGroups"></span>:&nbsp;&nbsp;
                 <tal:displayCopyGroups condition="copyGroups">
-                    <span metal:use-macro="python: here.widget('copyGroups', mode='view')" />
+                    <span tal:replace="structure context/displayCopyGroups">Copy groups</span>
                 </tal:displayCopyGroups>
                 <span tal:condition="not: copyGroups">-</span>
             </div>
@@ -302,7 +302,7 @@
                  tal:define="otherMCs context/getOtherMeetingConfigsClonableTo">
                 <span class="item_attribute_label" i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
                 <tal:displayOtherMeetingConfigsClonableTo tal:condition="otherMCs">
-                    <span tal:content="context/displayOtherMeetingConfigsClonableTo">Other mc clonable to (Emergency)</span>
+                    <span tal:replace="structure context/displayOtherMeetingConfigsClonableTo">Other mc clonable to (Emergency, privacy)</span>
                     <tal:to_clone_to_council_data condition="python: 'meeting-config-council' in otherMCs">
                         <img src="show_council_data.png"
                              id="showDataForCouncil"
@@ -320,9 +320,6 @@
                             <legend i18n:translate="">Data that will be used once item will be in the council</legend>
                             <span class="item_attribute_label" i18n:translate="MeetingLiege_label_labelForCouncil"></span>:&nbsp;&nbsp;
                             <span metal:use-macro="python: here.widget('labelForCouncil', mode='view')" />
-                            <br />
-                            <span class="item_attribute_label" i18n:translate="MeetingLiege_label_privacyForCouncil"></span>:&nbsp;&nbsp;
-                            <span metal:use-macro="python: here.widget('privacyForCouncil', mode='view')" />
                         </fieldset>
                     </tal:to_clone_to_council_data>
                  </tal:displayOtherMeetingConfigsClonableTo>
@@ -500,6 +497,11 @@
 
     <tal:comment replace="nothing">Notes</tal:comment>
     <tal:field define="fieldName python: 'notes'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Internal notes</tal:comment>
+    <tal:field define="fieldName python: 'internalNotes'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 

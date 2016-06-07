@@ -280,13 +280,13 @@ def onItemDuplicated(original, event):
     newItem.adapted()._updateMatterOfGroupsLocalRoles()
     newItem.adapted().updateFinanceAdvisersAccess()
 
-    if original.portal_type == 'MeetingItemCollege' and newItem.portal_type == 'MeetingItemCouncil':
-        # we just sent an item from college to council
-        newItem.setPrivacy(original.getPrivacyForCouncil())
-
-    if original.portal_type == 'MeetingItemCouncil' and newItem.portal_type == 'MeetingItemCollege':
+    if original.portal_type == 'MeetingItemCouncil' and \
+       newItem.portal_type == 'MeetingItemCollege':
         # an item Council is sent back to College, enable the 'otherMeetingConfigsClonableTo'
         newItem.setOtherMeetingConfigsClonableTo(('meeting-config-council', ))
+        # keep same privacy
+        if original.getPrivacy() == 'secret':
+            newItem.setOtherMeetingConfigsClonableToPrivacy(('meeting-config-council', ))
         newItem.reindexObject(idxs=['sentToInfos'])
 
     # make sure we do not keep decision annexes

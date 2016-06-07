@@ -181,6 +181,36 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
             advice.reindexObject()
         logger.info('Done.')
 
+    def _moveToPrivacyForCouncilFromPM(self):
+        '''Field MeetingItem.privacyForCouncil was used to init privacy
+           of item sent to Council, now we use the functionnality from PloneMeeting
+           with field MeetingItem.otherMeetingConfigsClonableToPrivacy.'''
+        logger.info('Moving to \'MeetingItem.otherMeetingConfigsClonableToPrivacy\'...')
+        # enable 'otherMeetingConfigsClonableToPrivacy' for 'meeting-config-college'
+        configCollege = self.tool.get('meeting-config-college')
+        if not 'otherMeetingConfigsClonableToPrivacy' in configCollege.getUsedItemAttributes():
+            usedAttrs = list(configCollege.getUsedItemAttributes())
+            usedAttrs.append('otherMeetingConfigsClonableToPrivacy')
+            configCollege.setUsedItemAttributes(tuple(usedAttrs))
+
+        # walk every brains, init field 'otherMeetingConfigsClonableToPrivacy'
+        # remove attribute 'privacyForCouncil'
+        brains = self.portal.portal_catalog(meta_type='MeetingItem')
+        already_migrated = False
+        for brain in brains:
+            if already_migrated:
+                break
+            item = brain.getObject()
+            if not hasattr(item, 'privacyForCouncil'):
+                # already migrated
+                already_migrated = True
+                continue
+            if item.portal_type == 'MeetingItemCollege' and \
+               item.privacyForCouncil == 'secret':
+                item.setOtherMeetingConfigsClonableToPrivacy('meeting-config-council')
+            delattr(item, 'privacyForCouncil')
+        logger.info('Done.')
+
     def run(self):
         # change self.profile_name everything is right before launching steps
         self.profile_name = u'profile-Products.MeetingLiege:default'
@@ -196,6 +226,7 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
         self._initPodTemplatesMailingListsField()
         self._addSearchFinanceAdviceDashboardAndTemplate()
         self._moveToMeetingAdviceFinances()
+        self._moveToPrivacyForCouncilFromPM()
         self.finish()
 
 

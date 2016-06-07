@@ -59,8 +59,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item.setLabelForCouncil('<p>My label for council</p>')
-        # default privacy is 'public', set 'secret' so we see that it is actually applied
-        item.setPrivacyForCouncil('secret')
+        # before we used field 'privacyForCouncil' to init privacy on Council item
+        # now use the field MeetingItem.otherMeetingConfigsClonableToPrivacy
+        item.setOtherMeetingConfigsClonableToPrivacy((self.meetingConfig2.getId(), ))
         # make item sendable to council
         item.setOtherMeetingConfigsClonableTo('meeting-config-council')
         # send the item to the council

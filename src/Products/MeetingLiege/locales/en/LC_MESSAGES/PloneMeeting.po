@@ -87,10 +87,6 @@ msgstr "Financial advice"
 msgid "MeetingLiege_label_labelForCouncil"
 msgstr "Label to use for item in Council"
 
-#. Default: "Privacy"
-msgid "MeetingLiege_label_privacyForCouncil"
-msgstr "Privacy"
-
 #. Default: "Checklist"
 msgid "MeetingLiege_label_textCheckList"
 msgstr "Checklist"

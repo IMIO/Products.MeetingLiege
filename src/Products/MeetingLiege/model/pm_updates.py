@@ -137,6 +137,9 @@ def update_item_schema(baseSchema):
     completeItemSchema['motivation'].widget.description_msgid = 'item_motivation_descr'
     completeItemSchema['decision'].widget.description_msgid = 'item_decision_descr'
     completeItemSchema['observations'].widget.description_msgid = 'item_observations_descr'
+    # use a specific condition to show field 'otherMeetingConfigsClonableToEmergency'
+    completeItemSchema['otherMeetingConfigsClonableToEmergency'].widget.condition = \
+        'python: here.adapted().showOtherMeetingConfigsClonableToEmergency()'
 
     return completeItemSchema
 MeetingItem.schema = update_item_schema(MeetingItem.schema)

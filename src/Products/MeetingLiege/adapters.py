@@ -45,11 +45,11 @@ from Products.PloneMeeting import PMMessageFactory as _
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
+from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
+from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
-from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
-from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import checkPermission
 from Products.PloneMeeting.utils import getLastEvent
 from Products.PloneMeeting.model import adaptations
@@ -555,6 +555,29 @@ class CustomMeetingItem(MeetingItem):
 
     def __init__(self, item):
         self.context = item
+
+    security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
+
+    def showOtherMeetingConfigsClonableToEmergency(self):
+        '''Widget condition used for field 'otherMeetingConfigsClonableToEmergency'.
+           Show it if:
+           - optional field is used;
+           - is clonable to other MC;
+           - item cloned to the other MC will be automatically presented in an available meeting;
+           - isManager;
+           - or if it was selected so if a MeetingManager selects the emergency for a destination,
+             another user editing the item after may not remove 'otherMeetingConfigsClonableTo' without
+             removing the 'otherMeetingConfigsClonableToEmergency'.
+        '''
+        item = self.getSelf()
+        # is used?
+        if not item.attributeIsUsed('otherMeetingConfigsClonableToEmergency'):
+            return False
+
+        tool = api.portal.get_tool('portal_plonemeeting')
+        hasStoredEmergencies = item.getOtherMeetingConfigsClonableToEmergency()
+        return hasStoredEmergencies or \
+            (item.isClonableToOtherMeetingConfigs() and tool.isManager(item))
 
     security.declarePrivate('validate_archivingRef')
 

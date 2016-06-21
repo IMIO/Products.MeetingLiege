@@ -1362,3 +1362,26 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(results[14]['comments'], "")
         self.assertEquals(results[14]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
         self.assertEquals(results[14]['advice_type'], 'Compl\xc3\xa9tude')
+
+    def test_ShowOtherMeetingConfigsClonableToEmergency(self):
+        """Condition method to restrict use of field
+          MeetingItem.otherMeetingConfigsClonableToEmergency to MeetingManagers.
+          Or if it was checked by a MeetingManager, then it appears to normal user,
+          so if the normal user uncheck 'clone to', emergency is unchecked as well."""
+        cfg = self.meetingConfig
+        self.changeUser('siteadmin')
+        if not 'otherMeetingConfigsClonableToEmergency' in cfg.getUsedItemAttributes():
+            cfg.setUsedItemAttributes(cfg.getUsedItemAttributes() +
+                                      ('otherMeetingConfigsClonableToEmergency', ))
+        # as notmal user, not viewable
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        item.setOtherMeetingConfigsClonableTo((self.meetingConfig2.getId(), ))
+        self.assertFalse(item.adapted().showOtherMeetingConfigsClonableToEmergency())
+        # viewable as Manager
+        self.changeUser('pmManager')
+        self.assertTrue(item.adapted().showOtherMeetingConfigsClonableToEmergency())
+        # if set, it will be viewable by common editor
+        item.setOtherMeetingConfigsClonableToEmergency((self.meetingConfig2.getId(), ))
+        self.changeUser('pmCreator1')
+        self.assertTrue(item.adapted().showOtherMeetingConfigsClonableToEmergency())

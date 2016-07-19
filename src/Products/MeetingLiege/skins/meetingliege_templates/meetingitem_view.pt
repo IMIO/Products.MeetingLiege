@@ -103,7 +103,7 @@
 
             <tal:comment replace="nothing">Copy groups for this item</tal:comment>
             <div class="discreet" tal:condition="context/isCopiesEnabled"
-                                  tal:define="copyGroups context/getCopyGroups;">
+                                  tal:define="copyGroups context/getAllCopyGroups;">
                 <span class="item_attribute_label"
                       i18n:translate="PloneMeeting_label_copyGroups"></span>:&nbsp;&nbsp;
                 <tal:displayCopyGroups condition="copyGroups">
@@ -116,7 +116,7 @@
             <div class="discreet"
                  tal:condition="python: ('itemAssembly' in usedAttrs) and ('assembly' in usedMeetingAttributes) and meeting">
                 <tal:defines define="redefinedItemAssemblies python: context.redefinedItemAssemblies(usedMeetingAttributes);
-                                     mayQuickEdit python: context.mayQuickEdit('itemAssembly');
+                                     mayQuickEdit python: context.mayQuickEdit('itemAssembly', bypassWritePermissionCheck=True);
                                      class_if_highlighted python: redefinedItemAssemblies and 'highlightValue' or '';
                                      class_to_use python: mayQuickEdit and (class_if_highlighted and class_if_highlighted + ' collapsibleHeader' or ' collapsibleHeader') or class_if_highlighted + ' collapsibleHeader'">
                     <dl id="itemAssembly"
@@ -272,7 +272,8 @@
 
             <tal:comment replace="nothing">Meeting where this item is presented</tal:comment>
             <div class="discreet">
-              <span class="item_attribute_label" i18n:translate="presented_in_meeting">Presented in meeting</span>:&nbsp;&nbsp;
+              <span class="item_attribute_label"
+                    i18n:translate="presented_in_meeting">Presented in meeting</span>:&nbsp;&nbsp;
               <tal:hasMeeting condition="python: meeting">
                   <tal:link tal:replace="structure meeting/getPrettyLink">
                   </tal:link>
@@ -298,7 +299,8 @@
             <div class="discreet"
                  tal:condition="python: otherMCs or context.isClonableToOtherMeetingConfigs()"
                  tal:define="otherMCs context/getOtherMeetingConfigsClonableTo">
-                <span class="item_attribute_label" i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
+                <span class="item_attribute_label"
+                      i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
                 <tal:displayOtherMeetingConfigsClonableTo tal:condition="otherMCs">
                     <span tal:replace="structure context/displayOtherMeetingConfigsClonableTo">Other mc clonable to (Emergency, privacy)</span>
                     <tal:to_clone_to_council_data condition="python: 'meeting-config-council' in otherMCs">
@@ -355,7 +357,7 @@
             <div class="discreet"
                  tal:condition="python: meeting and ('signatures' in usedMeetingAttributes)">
                 <tal:defines define="redefinedItemSignatures python: context.getItemSignatures(real=True);
-                                     mayQuickEdit python: context.mayQuickEdit('itemSignatures');
+                                     mayQuickEdit python: context.mayQuickEdit('itemSignatures', bypassWritePermissionCheck=True);
                                      class_if_highlighted python: redefinedItemSignatures and 'highlightValue' or '';
                                      class_to_use python: mayQuickEdit and (class_if_highlighted and class_if_highlighted + ' collapsibleHeader' or ' collapsibleHeader') or class_if_highlighted + ' collapsibleHeader'">
                     <dl id="itemSignatures"
@@ -369,13 +371,12 @@
                                      tal:attributes="src string:${portal_url}/edit.gif" />
                             </a>
                         </dt>
-                        <dd class="collapsibleContent discreet">
+                        <dd class="collapsibleContent">
                             <tal:itemSignatures replace="structure python: context.getItemSignatures().replace('\n', '<br />')">Signatures</tal:itemSignatures>
                         </dd>
                     </dl>
                 </tal:defines>
             </div>
-
         </td>
       </tr>
     </table>
@@ -428,9 +429,9 @@
     <tal:comment replace="nothing">Annexes and advices</tal:comment>
     <a name="adviceAndAnnexes"></a>
     <table width="100%" cellpadding="1" cellspacing="1"
-           tal:define="hasAnnexes context/hasAnnexesWhere;
+           tal:define="hasAnnexes python: context.hasAnnexesWhere(relatedTo='item');
                        hasAnnexesDecision python: context.hasAnnexesWhere(relatedTo='item_decision');
-                       hasAdvices python: (meetingConfig.getUseAdvices() and context.displayAdvices())">
+                       hasAdvices python: (meetingConfig.getUseAdvices() or context.displayAdvices())">
         <tr style="vertical-align: top;">
             <td class="itemAnnexesCell" width="50%">
                 <fieldset>
@@ -468,7 +469,7 @@
             </td>
 
             <tal:comment replace="nothing">Advices</tal:comment>
-            <td class="itemAdvicesCell" width="50%">
+            <td class="itemAdvicesCell" tal:condition="hasAdvices" width="50%">
                 <fieldset tal:define="meetingItem python: context">
                 <legend i18n:translate="PloneMeeting_label_advices">Advices</legend>
                     <tal:comment replace="nothing">XXX added by MeetingLiege, item with finance advice</tal:comment>
@@ -488,9 +489,10 @@
             </td>
         </tr>
     </table>
+
     <tal:comment replace="nothing">In and out moves</tal:comment>
     <tal:field define="fieldName python: 'inAndOutMoves'; ajaxEdit python:True">
-        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
     <tal:comment replace="nothing">Notes</tal:comment>
@@ -508,18 +510,18 @@
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
-   <tal:comment replace="nothing">Show navigation between items of the same meeting</tal:comment>
     <tal:itemNavigation tal:condition="python: meeting">
       <tal:itemNavigation replace="structure context/@@item-navigation-widget" />
     </tal:itemNavigation>
 
     <tal:comment replace="nothing">Fields that appear only if the item is defined in a configuration</tal:comment>
     <tal:itemInConfig condition="context/isDefinedInTool">
+
       <tal:templateUsingGroups condition="python: 'itemtemplates' in context.absolute_url()">
         <span class="discreet item_attribute_label"
               i18n:translate="PloneMeeting_label_templateUsingGroups">Template using groups</span>&nbsp:<br />
         <span metal:use-macro="python: here.widget('templateUsingGroups', mode='view')" /><p>&nbsp;</p>
-        <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#itemTemplates'" i18n:translate="back"></a>
+        <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#itemTemplates'" i18n:translate="back"></a><br /><br />
       </tal:templateUsingGroups>
 
       <tal:transitionsForRecurring condition="python: context.getParentNode().getId() == 'recurringitems'">

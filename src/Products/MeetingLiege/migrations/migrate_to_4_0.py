@@ -211,6 +211,11 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
             delattr(item, 'privacyForCouncil')
         logger.info('Done.')
 
+    def _after_reinstall(self):
+        """ """
+        PMMigrate_To_4_0._after_reinstall(self)
+        self._moveToMeetingAdviceFinances()
+
     def run(self):
         # change self.profile_name everything is right before launching steps
         self.profile_name = u'profile-Products.MeetingLiege:default'
@@ -225,7 +230,6 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
         self._updateCouncilItemFinanceAdviceAttribute()
         self._initPodTemplatesMailingListsField()
         self._addSearchFinanceAdviceDashboardAndTemplate()
-        self._moveToMeetingAdviceFinances()
         self._moveToPrivacyForCouncilFromPM()
         self.finish()
 

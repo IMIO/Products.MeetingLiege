@@ -1352,6 +1352,19 @@ class CustomMeetingItem(MeetingItem):
             return False
         return True
 
+    def treasuryCopyGroup(self):
+        """Manage fact that group TREASURY_GROUP_ID _observers must be automatically
+           set as copyGroup of items for which the finances advice was asked.
+           It will have access from the 'validated' and 'sent_to_council_emergency'
+           state and beyond.
+           This is used in the MeetingGroup.asCopyGroupOn field."""
+        item = self.getSelf()
+        if item.getFinanceAdvice() != '_none_' and \
+           (item.queryState() in ('validated', 'sent_to_council_emergency') or item.hasMeeting()):
+            return ['observers']
+        else:
+            return []
+
 
 old_listAdviceTypes = MeetingConfig.listAdviceTypes
 

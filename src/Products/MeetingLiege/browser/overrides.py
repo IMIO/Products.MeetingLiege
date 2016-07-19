@@ -139,7 +139,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
         if self.context.adapted().getLegalTextForFDAdvice():
             body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
-        body += self.printCollegeProposalInfos().encode("utf-8")
+        body += self.printCollegeProposalInfos().encode("utf-8") + '<p></p>'
         body += self.context.getDecision() + '<p></p>'
         body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p></p>' or ''
         body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''

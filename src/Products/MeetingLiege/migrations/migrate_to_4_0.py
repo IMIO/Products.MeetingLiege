@@ -211,10 +211,20 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
             delattr(item, 'privacyForCouncil')
         logger.info('Done.')
 
+    def _updateMeetingsTitle(self):
+        '''Update every meetings title as monkeypatch of formatMeetingDate was removed.'''
+        logger.info('Updating title of every meetings...')
+        brains = self.portal.portal_catalog(meta_type='Meeting')
+        for brain in brains:
+            meeting = brain.getObject()
+            meeting.updateTitle()
+        logger.info('Done.')
+
     def _after_reinstall(self):
         """ """
         PMMigrate_To_4_0._after_reinstall(self)
         self._moveToMeetingAdviceFinances()
+        self._updateMeetingsTitle()
 
     def run(self):
         # change self.profile_name everything is right before launching steps

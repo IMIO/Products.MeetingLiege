@@ -308,6 +308,8 @@ collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
 collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed',
                                     'accepted_and_returned', 'returned', 'marked_not_applicable',
                                     'sent_to_council_emergency')
+collegeMeeting.itemPositiveDecidedStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned',
+                                            'pre_accepted', 'sent_to_council_emergency')
 collegeMeeting.meetingTopicStates = ('created', 'frozen')
 collegeMeeting.decisionTopicStates = ('decided', 'closed')
 # done in setuphandlers._configureCollegeCustomAdvisers
@@ -518,6 +520,7 @@ councilMeeting.onTransitionFieldTransforms = (
      'tal_expression': 'python: here.adapted().adaptCouncilItemDecisionEnd()'},)
 councilMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
                                     'delayed', 'returned', 'refused', 'marked_not_applicable')
+councilMeeting.itemPositiveDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted')
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
 councilMeeting.meetingAppDefaultView = 'searchmyitems'

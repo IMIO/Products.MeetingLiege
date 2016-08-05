@@ -2508,10 +2508,6 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         """
           Manage icons to display before the icons managed by PrettyLink._icons.
         """
-        res = []
-        if not self.context.meta_type == 'MeetingItem':
-            return res
-
         # Default PM item icons
         icons = super(MLItemPrettyLinkAdapter, self)._leadingIcons()
 
@@ -2589,12 +2585,12 @@ class MLMeetingPrettyLinkAdapter(MeetingPrettyLinkAdapter):
       Override to take into account MeetingLiege use cases...
     """
 
-    def _leadingIcons(self):
+    def _trailingIcons(self):
         """
           Manage icons to display before the icons managed by PrettyLink._icons.
         """
         # Default PM item icons
-        icons = super(MLMeetingPrettyLinkAdapter, self)._leadingIcons()
+        icons = super(MLMeetingPrettyLinkAdapter, self)._trailingIcons()
 
         if not self.context.portal_type == 'MeetingCollege':
             return icons

@@ -2596,7 +2596,7 @@ class MLMeetingPrettyLinkAdapter(MeetingPrettyLinkAdapter):
             return icons
 
         if self.context.getAdoptsNextCouncilAgenda():
-            icons.append(('adopts_next_council_agenda.png',
+            icons.append(('adopts_next_council_agenda.gif',
                           translate('icon_help_adopts_next_council_agenda',
                                     domain="PloneMeeting",
                                     context=self.request)))

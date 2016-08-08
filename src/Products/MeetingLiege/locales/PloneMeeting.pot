@@ -56,10 +56,6 @@ msgstr ""
 msgid "icon_help_pre_accepted"
 msgstr ""
 
-#. Default: "Marked not applicable"
-msgid "icon_help_marked_not_applicable"
-msgstr ""
-
 #. Default: "Returned"
 msgid "icon_help_returned"
 msgstr ""

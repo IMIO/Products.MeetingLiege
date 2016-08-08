@@ -2556,11 +2556,6 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
                           translate('icon_help_proposed_to_finance',
                                     domain="PloneMeeting",
                                     context=self.request)))
-        elif itemState == 'marked_not_applicable':
-            icons.append(('marked_not_applicable.png',
-                          translate('icon_help_marked_not_applicable',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
 
         # add an icon if item is down the workflow from the finances
         # if item was ever gone the the finances and now it is down to the

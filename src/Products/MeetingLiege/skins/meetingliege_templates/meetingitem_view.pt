@@ -431,7 +431,7 @@
     <table width="100%" cellpadding="1" cellspacing="1"
            tal:define="hasAnnexes python: context.hasAnnexesWhere(relatedTo='item');
                        hasAnnexesDecision python: context.hasAnnexesWhere(relatedTo='item_decision');
-                       hasAdvices python: (meetingConfig.getUseAdvices() or context.displayAdvices())">
+                       hasAdvices python: (meetingConfig.getUseAdvices() or context.adapted().showAdvices())">
         <tr style="vertical-align: top;">
             <td class="itemAnnexesCell" width="50%">
                 <fieldset>
@@ -474,8 +474,8 @@
                 <legend i18n:translate="PloneMeeting_label_advices">Advices</legend>
                     <tal:advice replace="structure context/@@advices-icons" />
                     <tal:comment replace="nothing">XXX added by MeetingLiege, item with finance advice</tal:comment>
-                    <tal:financeAdvice condition="python: not context.isDefinedInTool() and itemWithFinanceAdvice != context"
-                                       define="itemWithFinanceAdvice python: context.adapted().getItemWithFinanceAdvice()">
+                    <tal:financeAdvice define="itemWithFinanceAdvice python: context.adapted().getItemWithFinanceAdvice()"
+                                       condition="python: not context.isDefinedInTool() and itemWithFinanceAdvice != context">
                         <span class="discreet" style="color: red;"
                               tal:content="structure python: context.adapted().getLegalTextForFDAdvice()">
                          Finance advice text

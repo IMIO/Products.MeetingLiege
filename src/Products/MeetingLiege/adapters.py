@@ -631,6 +631,14 @@ class CustomMeetingItem(MeetingItem):
         return old_showDuplicateItemAction(self)
     MeetingItem.showDuplicateItemAction = showDuplicateItemAction
 
+    security.declarePublic('showAdvices')
+
+    def showAdvices(self):
+        """We show advices in every case on MeetingItemCollege and MeetingItemCouncil."""
+        return True
+
+    security.declarePublic('getExtraFieldsToCopyWhenCloning')
+
     def getExtraFieldsToCopyWhenCloning(self, cloned_to_same_mc):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).

@@ -93,18 +93,16 @@ template2 = ItemTemplateDescriptor(id='template2',
 <p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>""")
 
 # Categories -------------------------------------------------------------------
-categories = [
-    CategoryDescriptor('deployment', 'Deployment topics', categoryId='deployment'),
-    CategoryDescriptor('maintenance', 'Maintenance topics', categoryId='maintenance'),
-    CategoryDescriptor('development', 'Development topics', categoryId='development'),
-    CategoryDescriptor('events', 'Events', categoryId='events'),
-    CategoryDescriptor('research', 'Research topics', categoryId='research'),
-    CategoryDescriptor('projects', 'Projects', categoryId='projects'),
-    # A vintage category
-    CategoryDescriptor('marketing', 'Marketing', categoryId='marketing', active=False),
-    # usingGroups category
-    CategoryDescriptor('subproducts', 'Subproducts wishes', categoryId='subproducts', usingGroups=('vendors',)),
-]
+deployment = CategoryDescriptor('deployment', 'Deployment topics')
+maintenance = CategoryDescriptor('maintenance', 'Maintenance topics')
+development = CategoryDescriptor('development', 'Development topics')
+events = CategoryDescriptor('events', 'Events')
+research = CategoryDescriptor('research', 'Research topics')
+projects = CategoryDescriptor('projects', 'Projects')
+# A vintage category
+marketing = CategoryDescriptor('marketing', 'Marketing', active=False)
+# usingGroups category
+subproducts = CategoryDescriptor('subproducts', 'Subproducts wishes', usingGroups=('vendors',))
 
 # Users and groups -------------------------------------------------------------
 pmFinController = UserDescriptor('pmFinController', [])
@@ -117,6 +115,7 @@ pmManager = UserDescriptor('pmManager',
                            fullname='M. PmManager')
 pmCreator1 = UserDescriptor('pmCreator1', [])
 pmCreator1b = UserDescriptor('pmCreator1b', [])
+pmObserver1 = UserDescriptor('pmObserver1', [], email="pmobserver1@plonemeeting.org", fullname='M. PMObserver One') 
 pmAdminReviewer1 = UserDescriptor('pmAdminReviewer1', [])
 pmInternalReviewer1 = UserDescriptor('pmInternalReviewer1', [])
 pmReviewer1 = UserDescriptor('pmReviewer1', [])
@@ -169,6 +168,7 @@ developers.internalreviewers.append(pmManager)
 developers.creators.append(pmManager)
 developers.reviewers.append(pmReviewer1)
 developers.reviewers.append(pmManager)
+developers.observers.append(pmObserver1)
 developers.observers.append(pmReviewer1)
 developers.observers.append(pmManager)
 developers.advisers.append(pmAdviser1)
@@ -211,16 +211,16 @@ muser_voter1 = MeetingUserDescriptor('voter1', duty='Voter1',
 muser_voter2 = MeetingUserDescriptor('voter2', duty='Voter2',
                                      usages=['assemblyMember', 'voter', ])
 
-# budget impact editors 
-budgetimpacteditor = UserDescriptor('budgetimpacteditor', 
-                                    [], 
-                                    email="budgetimpacteditor@plonemeeting.org", 
-                                    fullname='M. Budget Impact Editor') 
-college_budgetimpacteditors = PloneGroupDescriptor('meeting-config-college_budgetimpacteditors', 
-                                                   'meeting-config-college_budgetimpacteditors', 
-                                                   []) 
-budgetimpacteditor.ploneGroups = [college_budgetimpacteditors, 
-                                  college_powerobservers] 
+# budget impact editors
+budgetimpacteditor = UserDescriptor('budgetimpacteditor',
+                                    [],
+                                    email="budgetimpacteditor@plonemeeting.org",
+                                    fullname='M. Budget Impact Editor')
+college_budgetimpacteditors = PloneGroupDescriptor('meeting-config-college_budgetimpacteditors',
+                                                   'meeting-config-college_budgetimpacteditors',
+                                                   [])
+budgetimpacteditor.ploneGroups = [college_budgetimpacteditors,
+                                  college_powerobservers]
 
 # Meeting configurations -------------------------------------------------------
 # college
@@ -246,7 +246,7 @@ collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        'date_from': '',
                                        'date_to': '',
                                        }]
-collegeMeeting.categories = categories
+collegeMeeting.categories = [development, research]
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
@@ -357,7 +357,8 @@ councilMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        'date_from': '',
                                        'date_to': '',
                                        }]
-councilMeeting.categories = categories
+councilMeeting.categories = [deployment, maintenance, development, events,
+                             research, projects, marketing, subproducts]
 councilMeeting.shortName = 'Council'
 councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
                                    itemAnnex, annexeDecision, adviceAnnex, adviceLegalAnalysis]
@@ -431,8 +432,8 @@ data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting),
     groups=(developers, vendors, endUsers))
-# necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData 
-data.restrictUsers = False 
+# necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData
+data.restrictUsers = False
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
                            restrictedpowerobserver1, restrictedpowerobserver2,
                            pmFinController, pmFinReviewer, pmFinManager, budgetimpacteditor]

@@ -41,8 +41,8 @@ class testCustomFaceted(MeetingLiegeTestCase):
         pmFolder = self.getMeetingFolder()
         cfg = self.meetingConfig
         cfg.useGroupsAsCategories = False
-        cfg.categories.deployment.setGroupsOfMatter(('vendors', 'developers', ))
         cfg.categories.development.setGroupsOfMatter(('vendors', ))
+        cfg.categories.research.setGroupsOfMatter(('vendors', 'developers', ))
         cfg.categories.maintenance.setGroupsOfMatter(('developers', ))
         return cfg, pmFolder, queryUtility(IVocabularyFactory,
                                            "Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
@@ -86,7 +86,7 @@ class testCustomFaceted(MeetingLiegeTestCase):
         self.assertEquals([term.token for term in vocab(pmFolder)._terms],
                           ['developers', 'vendors'])
 
-        # some groupIds are ignored, like "ssc"
+        # some groupIds are ignored, like "scc"
         self.tool.invokeFactory('MeetingGroup', id='scc', title='SCC')
         cfg.categories.maintenance.setGroupsOfMatter(('developers', 'scc'))
         cfg.categories.maintenance.at_post_edit_script()

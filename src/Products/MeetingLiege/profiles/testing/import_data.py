@@ -93,16 +93,19 @@ template2 = ItemTemplateDescriptor(id='template2',
 <p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>""")
 
 # Categories -------------------------------------------------------------------
-deployment = CategoryDescriptor('deployment', 'Deployment topics')
-maintenance = CategoryDescriptor('maintenance', 'Maintenance topics')
-development = CategoryDescriptor('development', 'Development topics')
-events = CategoryDescriptor('events', 'Events')
-research = CategoryDescriptor('research', 'Research topics')
-projects = CategoryDescriptor('projects', 'Projects')
+deployment = CategoryDescriptor('deployment', 'Deployment topics', categoryId='deployment')
+maintenance = CategoryDescriptor('maintenance', 'Maintenance topics', categoryId='maintenance')
+development = CategoryDescriptor('development', 'Development topics', categoryId='development')
+events = CategoryDescriptor('events', 'Events', categoryId='events')
+research = CategoryDescriptor('research', 'Research topics', categoryId='research')
+projects = CategoryDescriptor('projects', 'Projects', categoryId='projects')
 # A vintage category
-marketing = CategoryDescriptor('marketing', 'Marketing', active=False)
+marketing = CategoryDescriptor('marketing', 'Marketing', categoryId='marketing', active=False)
 # usingGroups category
-subproducts = CategoryDescriptor('subproducts', 'Subproducts wishes', usingGroups=('vendors',))
+subproducts = CategoryDescriptor('subproducts',
+                                 'Subproducts wishes',
+                                 categoryId='subproducts',
+                                 usingGroups=('vendors',))
 
 # Users and groups -------------------------------------------------------------
 pmFinController = UserDescriptor('pmFinController', [])
@@ -115,16 +118,20 @@ pmManager = UserDescriptor('pmManager',
                            fullname='M. PmManager')
 pmCreator1 = UserDescriptor('pmCreator1', [])
 pmCreator1b = UserDescriptor('pmCreator1b', [])
-pmObserver1 = UserDescriptor('pmObserver1', [], email="pmobserver1@plonemeeting.org", fullname='M. PMObserver One') 
+pmObserver1 = UserDescriptor('pmObserver1', [],
+                             email="pmobserver1@plonemeeting.org",
+                             fullname='M. PMObserver One')
 pmAdminReviewer1 = UserDescriptor('pmAdminReviewer1', [])
 pmInternalReviewer1 = UserDescriptor('pmInternalReviewer1', [])
 pmReviewer1 = UserDescriptor('pmReviewer1', [])
 pmReviewerLevel1 = UserDescriptor('pmReviewerLevel1', [],
-                                  email="pmreviewerlevel1@plonemeeting.org", fullname='M. PMReviewer Level One')
+                                  email="pmreviewerlevel1@plonemeeting.org",
+                                  fullname='M. PMReviewer Level One')
 pmCreator2 = UserDescriptor('pmCreator2', [])
 pmReviewer2 = UserDescriptor('pmReviewer2', [])
 pmReviewerLevel2 = UserDescriptor('pmReviewerLevel2', [],
-                                  email="pmreviewerlevel2@plonemeeting.org", fullname='M. PMReviewer Level Two')
+                                  email="pmreviewerlevel2@plonemeeting.org",
+                                  fullname='M. PMReviewer Level Two')
 pmAdviser1 = UserDescriptor('pmAdviser1', [])
 voter1 = UserDescriptor('voter1', [], fullname='M. Voter One')
 voter2 = UserDescriptor('voter2', [], fullname='M. Voter Two')
@@ -246,7 +253,7 @@ collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        'date_from': '',
                                        'date_to': '',
                                        }]
-collegeMeeting.categories = [development, research]
+collegeMeeting.categories = [development, research, maintenance]
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
 collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,

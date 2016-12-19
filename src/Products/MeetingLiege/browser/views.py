@@ -2,7 +2,7 @@ from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
 from Products.Five import BrowserView
 from Products.CMFCore.permissions import ReviewPortalContent
-from Products.PloneMeeting.utils import checkPermission
+from Products.CMFCore.utils import _checkPermission
 
 
 class AdviceWFConditionsView(BrowserView):
@@ -18,7 +18,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         '''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -28,7 +28,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         '''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -38,7 +38,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         '''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -48,7 +48,7 @@ class AdviceWFConditionsView(BrowserView):
         '''A financial manager may send the advice to the financial manager
            in any case (advice positive or negative).'''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -59,7 +59,7 @@ class AdviceWFConditionsView(BrowserView):
            or 'not_required_finance', if not this will be the financial manager
            that will be able to sign it.'''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # if 'negative_finance', only finance manager can sign,
             # aka advice must be in state 'proposed_to_finance_manager'
@@ -74,7 +74,7 @@ class AdviceWFConditionsView(BrowserView):
         '''
         '''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 

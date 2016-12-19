@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from DateTime import DateTime
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
+from Products.PloneMeeting.profiles import AnnexTypeDescriptor
 from Products.PloneMeeting.profiles import CategoryDescriptor
 from Products.PloneMeeting.profiles import GroupDescriptor
+from Products.PloneMeeting.profiles import ItemAnnexTypeDescriptor
 from Products.PloneMeeting.profiles import ItemTemplateDescriptor
 from Products.PloneMeeting.profiles import MeetingConfigDescriptor
-from Products.PloneMeeting.profiles import MeetingFileTypeDescriptor
 from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.PloneMeeting.profiles import PloneMeetingConfiguration
 from Products.PloneMeeting.profiles import RecurringItemDescriptor
@@ -14,23 +15,20 @@ from Products.PloneMeeting.profiles import UserDescriptor
 today = DateTime().strftime('%Y/%m/%d')
 
 # File types for College -------------------------------------------------------------------
-annexe = MeetingFileTypeDescriptor('annexe', 'Annexe',
-                                   'attach.png', '', isConfidentialDefault=True)
-annexeBudget = MeetingFileTypeDescriptor('annexeBudget', 'Article Budgétaire',
-                                         'budget.png', '', isConfidentialDefault=True)
-annexeCahier = MeetingFileTypeDescriptor('annexeCahier',
-                                         'Cahier des Charges',
-                                         'cahier.gif',
-                                         '')
-courrierCollege = MeetingFileTypeDescriptor('courrier-a-valider-par-le-college',
-                                            'Document soumis au Collège',
-                                            'courrierCollege.png', '')
-annexeDecision = MeetingFileTypeDescriptor('annexeDecision', 'Annexe à la décision',
-                                           'attach.png', '', 'item_decision', isConfidentialDefault=True)
-annexeAvis = MeetingFileTypeDescriptor('annexeAvis', 'Annexe à un avis',
-                                       'attach.png', '', 'advice', isConfidentialDefault=True)
-annexeAvisLegal = MeetingFileTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
-                                            'legalAdvice.png', '', 'advice', isConfidentialDefault=True)
+annexe = ItemAnnexTypeDescriptor('annexe', 'Annexe',
+                                 'attach.png', '', confidential=True)
+annexeBudget = ItemAnnexTypeDescriptor('annexeBudget', 'Article Budgétaire',
+                                       'budget.png', '', confidential=True)
+annexeCahier = ('annexeCahier', 'Cahier des Charges', 'cahier.gif', '')
+courrierCollege = ItemAnnexTypeDescriptor('courrier-a-valider-par-le-college',
+                                          'Document soumis au Collège',
+                                          'courrierCollege.png', '')
+annexeDecision = ItemAnnexTypeDescriptor('annexeDecision', 'Annexe à la décision',
+                                         'attach.png', '', 'item_decision', confidential=True)
+annexeAvis = AnnexTypeDescriptor('annexeAvis', 'Annexe à un avis',
+                                 'attach.png', '', 'advice', confidential=True)
+annexeAvisLegal = AnnexTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
+                                      'legalAdvice.png', '', 'advice', confidential=True)
 
 # Pod templates ----------------------------------------------------------------
 agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')
@@ -255,9 +253,18 @@ categoriesCollege = [recurring,
 collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
-collegeMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
-collegeMeeting.enableAnnexConfidentiality = True
-collegeMeeting.annexConfidentialFor = ('restricted_power_observers',)
+collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
+collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpacteditors',
+                                                  'reader_advices',
+                                                  'reader_copy_groups',
+                                                  'reader_groupincharge',
+                                                  'configgroup_powerobservers',
+                                                  'suffix_proposing_group_prereviewers',
+                                                  'suffix_proposing_group_internalreviewers',
+                                                  'suffix_proposing_group_observers',
+                                                  'suffix_proposing_group_reviewers',
+                                                  'suffix_proposing_group_creators',
+                                                  'suffix_proposing_group_administrativereviewers')
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'detailedDescription',
@@ -473,10 +480,10 @@ categoriesCouncil = [recurring,
 councilMeeting.categories = categoriesCouncil
 councilMeeting.shortName = 'Council'
 councilMeeting.itemReferenceFormat = \
-    "python: 'Ref. ' + (here.hasMeeting() and here.restrictedTraverse('pm_unrestricted_methods').getLinkedMeetingDate().strftime('%Y%m%d') or '') + '/' + " \
+    "python: 'Ref. ' + (here.hasMeeting() " \
+    "and here.restrictedTraverse('pm_unrestricted_methods').getLinkedMeetingDate().strftime('%Y%m%d') or '') + '/' + " \
     "str(here.getItemNumber(relativeTo='meeting'))"
-councilMeeting.meetingFileTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
-councilMeeting.enableAnnexConfidentiality = True
+councilMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
 councilMeeting.annexConfidentialFor = ('restricted_power_observers',)
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',

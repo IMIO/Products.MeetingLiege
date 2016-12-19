@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# File: testMeetingFileType.py
+# File: testColumns.py
 #
-# Copyright (c) 2007-2013 by Imio.be
+# Copyright (c) 2016 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -23,15 +23,15 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.PloneMeeting.tests.testMeetingFile import testMeetingFile as pmtmf
+from Products.PloneMeeting.tests.testColumns import testColumns as pmtc
 
 
-class testMeetingFile(MeetingLiegeTestCase, pmtmf):
-    '''Tests the MeetingFile class methods.'''
+class testColumns(MeetingLiegeTestCase, pmtc):
+    ''' '''
 
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testMeetingFile, prefix='test_pm_'))
+    suite.addTest(makeSuite(testColumns, prefix='test_pm_'))
     return suite

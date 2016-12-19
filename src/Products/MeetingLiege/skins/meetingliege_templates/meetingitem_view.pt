@@ -9,7 +9,16 @@
 
   <body>
   <metal:title fill-slot="content-title">
-   <metal:header use-macro="here/@@pm-macros/itemHeader"/>
+   <h1 class="documentFirstHeading">
+    <span tal:content="structure here/getPrettyLink">Item pretty title</span>
+    <tal:itemRef define="itemNumber python: context.getItemNumber(relativeTo='meeting', for_display=True)"
+                 condition="python: context.adapted().mustShowItemReference()">
+      <br />
+      <span class="discreet" tal:condition="python: itemNumber != None"
+                             tal:content="python: str(itemNumber) + '.'"></span>
+      <span class="discreet" tal:content="python: context.adapted().getItemReference()"></span>
+    </tal:itemRef>
+   </h1>
   </metal:title>
   <metal:description fill-slot="content-description">
    <tal:comment replace="nothing">Just hide the description as shown by default by Plone</tal:comment>
@@ -31,19 +40,12 @@
             tal:content="python: 'ploneEditor = \'%s\';' % (member.getProperty('wysiwyg_editor') or here.portal_properties.site_properties.default_editor)">
     </script>
 
-    <tal:comment replace="nothing">Form used for going to meetingitem_view for an item
-        whose number is given by the user.</tal:comment>
-
-    <form name="formGotoItem" tal:attributes="action python: context.absolute_url_path() + '/object_goto'">
-        <input type="hidden" name="uid"/>
-    </form>
-
     <tal:comment replace="nothing">Show navigation between items of the same meeting</tal:comment>
     <tal:itemNavigation tal:condition="python: meeting">
       <tal:itemNavigation replace="structure context/@@item-navigation-widget" />
     </tal:itemNavigation>
 
-    <table width="100%" class="item-infos">
+    <table width="100%" border="0" class="item-infos">
       <tr valign="top">
         <td width="50%" style="padding-right: 0.5em;">
 
@@ -125,7 +127,7 @@
                             <span i18n:translate="item_assembly" class="item_attribute_label">
                                 Item assembly
                             </span>
-                            <a tal:condition="mayQuickEdit" href="manage_item_assembly_form" class="link-overlay-pm">
+                            <a tal:condition="mayQuickEdit" href="manage_item_assembly_form?initial_edit=1" class="link-overlay-pm">
                                 <img src="edit.gif"
                                      tal:attributes="src string:${portal_url}/edit.gif" />
                             </a>
@@ -332,6 +334,48 @@
                  tal:condition="python: ('privacy' in usedAttrs) and privacy">
               <span class="#" tal:attributes="class string:item_privacy_${privacy}" tal:content="privacy" i18n:translate="" />
             </div>
+
+            <tal:comment replace="nothing">To discuss?</tal:comment>
+            <div class="discreet" tal:condition="python: 'toDiscuss' in usedAttrs">
+                <span class="item_attribute_label"
+                      i18n:translate="PloneMeeting_label_toDiscuss"></span>:&nbsp;&nbsp;
+                <tal:to_discuss replace="structure python: context.restrictedTraverse('item-to-discuss')()" />
+            </div>
+
+            <tal:comment replace="nothing">Poll type</tal:comment>
+            <div class="discreet" tal:condition="python: 'pollType' in usedAttrs">
+                <span class="item_attribute_label"
+                      i18n:translate="PloneMeeting_label_pollType"></span>:&nbsp;&nbsp;
+                <span metal:use-macro="python: here.widget('pollType', mode='view')" />
+                <tal:displayPollTypeObservations tal:condition="python: 'pollTypeObservations' in usedAttrs">
+                    <img src="++resource++collective.iconifiedcategory/more_infos.png"
+                         id="showPollTypeObservations"
+                         style="cursor: pointer;"
+                         tal:attributes="src string:${portal_url}/++resource++collective.iconifiedcategory/more_infos.png"
+                         i18n:attributes="title" title="See/hide data used for council item" />
+                    <script type="text/javascript">
+                        $( "#showPollTypeObservations" ).bind( "click", function(event) {
+                            event.preventDefault();
+                            var dataPollTypeObservations = $('#dataPollTypeObservations');
+                            dataPollTypeObservations.fadeToggle();
+                            });
+                    </script>
+                    <fieldset id="dataPollTypeObservations" style="display: none; margin-top: 0;">
+                        <legend i18n:translate="PloneMeeting_label_pollTypeObservations">Poll type observations</legend>
+                        <span metal:use-macro="python: here.widget('pollTypeObservations', mode='view')" />
+                    </fieldset>
+                </tal:displayPollTypeObservations>
+            </div>
+
+            <div class="discreet"
+                 tal:condition="python: otherMCs or context.isClonableToOtherMeetingConfigs()"
+                 tal:define="otherMCs context/getOtherMeetingConfigsClonableTo">
+                <span class="item_attribute_label"
+                      i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
+
+                 <span tal:condition="not: otherMCs">-</span>
+            </div>
+
             <tal:comment replace="nothing">Oral question or item</tal:comment>
             <div class="discreet" tal:condition="python: 'oralQuestion' in usedAttrs">
              <tal:defines define="oq context/getOralQuestion">
@@ -343,6 +387,7 @@
               </tal:not_oral_question>
              </tal:defines>
             </div>
+
             <tal:comment replace="nothing">Item initiator</tal:comment>
             <div class="discreet" tal:condition="python: 'itemInitiator' in usedAttrs">
                 <tal:defines define="itemInitiator context/getItemInitiator">
@@ -429,22 +474,35 @@
     <tal:comment replace="nothing">Annexes and advices</tal:comment>
     <a name="adviceAndAnnexes"></a>
     <table width="100%" cellpadding="1" cellspacing="1"
-           tal:define="hasAnnexes python: context.hasAnnexesWhere(relatedTo='item');
-                       hasAnnexesDecision python: context.hasAnnexesWhere(relatedTo='item_decision')">
+           tal:define="hasAdvices python: (meetingConfig.getUseAdvices() or context.adapted().showAdvices())">
         <tr style="vertical-align: top;">
-            <td class="itemAnnexesCell" width="50%">
-                <fieldset>
+            <td class="itemAnnexesCell" width="50%" tal:condition="python: tool.showAnnexesTab(context)">
+                <fieldset tal:define="hasAnnexes python: tool.hasAnnexes(context, portal_type='annex');
+                                      hasAnnexesDecision python: tool.hasAnnexes(context, portal_type='annexDecision');">
                     <legend i18n:translate="existing_annexes">Annexes</legend>
                     <table width="100%" class="no-style-table" cellpadding="0" cellspacing="0" style="margin: 0;">
                         <tr tal:define="obj python: context">
                             <td tal:condition="hasAnnexes">
-                                <tal:annexes replace="structure python: context.restrictedTraverse('@@annexes-icons')(relatedTo='item')" />
+                                <tal:annexes replace="structure python: context.restrictedTraverse('categorized-childs')(portal_type='annex')" />
                             </td>
-                            <td tal:condition="python: member.has_permission('PloneMeeting: Read decision annex', context) and hasAnnexesDecision">
-                                <tal:annexesDecision replace="structure python: context.restrictedTraverse('@@annexes-icons')(relatedTo='item_decision')" />
+                            <td tal:condition="hasAnnexesDecision">
+                                <div class="decisionAnnexDescription">
+                                    <span class="discreet" style="padding-left: 0.7em;"
+                                          i18n:translate="AnnexesDecisionShort"></span>
+                                    <span class="discreet">:</span>&nbsp;
+                                </div>
+                                <tal:annexesDecision replace="structure python: context.restrictedTraverse('categorized-childs')(portal_type='annexDecision')" />
                             </td>
                             <td tal:condition="python: not hasAnnexes and not hasAnnexesDecision">
                                 <span>-</span>
+                            </td>
+                            <td width="110px">
+                             <a href="@@categorized-annexes">
+                              <img class="categorized_elements_more_infos_icon"
+                                   src="more_infos.png"
+                                   tal:attributes="src string:${portal_url}/++resource++collective.iconifiedcategory/more_infos.png" />
+                              <span i18n:domain="collective.iconifiedcategory" i18n:translate="">More infos</span>
+                             </a>
                             </td>
                         </tr>
                         <tr tal:condition="python: 'textCheckList' in usedAttrs and context.getTextCheckList()">
@@ -466,7 +524,6 @@
                     </table>
                 </fieldset>
             </td>
-
             <tal:comment replace="nothing">Advices</tal:comment>
             <td class="itemAdvicesCell" tal:condition="python: context.adapted().showAdvices()" width="50%">
                 <fieldset tal:define="meetingItem python: context">
@@ -517,17 +574,21 @@
     <tal:itemInConfig condition="context/isDefinedInTool">
 
       <tal:templateUsingGroups condition="python: 'itemtemplates' in context.absolute_url()">
-        <span class="discreet item_attribute_label"
-              i18n:translate="PloneMeeting_label_templateUsingGroups">Template using groups</span>&nbsp:<br />
-        <span metal:use-macro="python: here.widget('templateUsingGroups', mode='view')" /><p>&nbsp;</p>
-        <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#itemTemplates'" i18n:translate="back"></a><br /><br />
+        <div class="discreet">
+         <span class="item_attribute_label" i18n:translate="PloneMeeting_label_templateUsingGroups">Template using groups</span>:&nbsp;&nbsp;
+         <span metal:use-macro="python: here.widget('templateUsingGroups', mode='view')" />
+        </div>
+        <p>&nbsp;</p>
+        <a tal:attributes="href string:${meetingConfig/absolute_url}?pageName=data#itemTemplates" i18n:translate="back"></a><br /><br />
       </tal:templateUsingGroups>
 
       <tal:transitionsForRecurring condition="python: context.getParentNode().getId() == 'recurringitems'">
-        <span class="discreet item_attribute_label"
-              i18n:translate="PloneMeeting_label_meetingTransitionInsertingMe" />&nbsp:<br />
-        <span metal:use-macro="python: here.widget('meetingTransitionInsertingMe', mode='view')" /><p>&nbsp;</p>
-        <a tal:attributes="href python: meetingConfig.absolute_url() + '?pageName=data#recurringitems'" i18n:translate="back"></a><br /><br />
+        <div class="discreet">
+         <span class="item_attribute_label" i18n:translate="PloneMeeting_label_meetingTransitionInsertingMe">Meeting transition inserting me</span>:&nbsp;&nbsp;
+         <span metal:use-macro="python: here.widget('meetingTransitionInsertingMe', mode='view')" />
+        </div>
+        <p>&nbsp;</p>
+        <a tal:attributes="href string:${meetingConfig/absolute_url}?pageName=data#recurringitems" i18n:translate="back"></a><br /><br />
       </tal:transitionsForRecurring>
 
     </tal:itemInConfig>

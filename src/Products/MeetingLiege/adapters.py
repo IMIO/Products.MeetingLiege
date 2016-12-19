@@ -37,6 +37,7 @@ from plone.memoize import ram
 from plone import api
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import ReviewPortalContent
+from Products.CMFCore.utils import _checkPermission
 from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
@@ -50,7 +51,6 @@ from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
-from Products.PloneMeeting.utils import checkPermission
 from Products.PloneMeeting.utils import getLastEvent
 from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.Meeting import Meeting
@@ -1694,7 +1694,7 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
 
     def mayDecide(self):
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -1866,7 +1866,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         item_state = self.context.queryState()
         member = api.user.get_current()
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to administrative
             # reviewer.
@@ -1897,7 +1897,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         item_state = self.context.queryState()
         member = api.user.get_current()
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to internal reviewer.
             tool = api.portal.get_tool('portal_plonemeeting')
@@ -1940,7 +1940,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         item_state = self.context.queryState()
         member = api.user.get_current()
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to director.
             tool = api.portal.get_tool('portal_plonemeeting')
@@ -1978,7 +1978,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayProposeToFinance(self):
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             # check if one of the finance group needs to give advice on
             # the item, if it is the case, the item must go to finance before being validated
             if self.context.adapted().getFinanceGroupIdsForItem():
@@ -2007,7 +2007,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayAskAdvicesByItemCreator(self):
         '''May advices be asked by item creator.'''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             # check if asked advices are giveable in state 'itemcreated_waiting_advices'
             hasAdvicesToGive = self._hasAdvicesToGive('itemcreated_waiting_advices')
 
@@ -2029,7 +2029,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayAskAdvicesByInternalReviewer(self):
         '''May advices be asked by internal reviewer.'''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             # MeetingManager must be able to ask advice by internal reviewer,
             # but only if there is actually at least one advice to give.
             tool = api.portal.get_tool('portal_plonemeeting')
@@ -2078,7 +2078,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         isManager = tool.isManager(self.context)
         item_state = self.context.queryState()
         # first of all, the use must have the 'Review portal content permission'
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
@@ -2111,7 +2111,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''Sendable to Council without being in a meeting for MeetingManagers,
            and if emergency was asked for sending item to Council.'''
         res = False
-        if checkPermission(ReviewPortalContent, self.context) and \
+        if _checkPermission(ReviewPortalContent, self.context) and \
            'meeting-config-council' in self.context.getOtherMeetingConfigsClonableToEmergency():
             res = True
         return res
@@ -2122,7 +2122,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''We may decide an item if the linked meeting is in relevant state.'''
         res = False
         meeting = self.context.getMeeting()
-        if checkPermission(ReviewPortalContent, self.context) and \
+        if _checkPermission(ReviewPortalContent, self.context) and \
            meeting and (meeting.queryState() in ['decided', 'closed', ]):
             res = True
         return res
@@ -2132,7 +2132,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayAcceptAndReturn(self):
         '''This is a decision only available if item will be sent to council.'''
         res = False
-        if self.mayDecide() and checkPermission(ReviewPortalContent, self.context) and \
+        if self.mayDecide() and _checkPermission(ReviewPortalContent, self.context) and \
            'meeting-config-council' in self.context.getOtherMeetingConfigsClonableTo():
             res = True
         return res
@@ -2149,7 +2149,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # Manage our own behaviour now when the item is linked to a meeting,
         # a MeetingManager can correct anything except if the meeting is closed
         if res is not True:
-            if checkPermission(ReviewPortalContent, self.context):
+            if _checkPermission(ReviewPortalContent, self.context):
                 # Get the meeting
                 meeting = self.context.getMeeting()
                 if meeting:
@@ -2176,7 +2176,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         if self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
-           checkPermission(ReviewPortalContent, self.context):
+           _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -2190,7 +2190,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # A director can directly send back to creation an item which is
             # proposed to director if there are neither administrative nor
@@ -2222,7 +2222,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # do not show the transition if there is no administrative reviewer
             # or if the item is proposed to director and there is an internal
@@ -2242,7 +2242,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if there is an internal reviewer.
         '''
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
             if not self._groupIsNotEmpty('internalreviewers'):
                 res = False
@@ -2285,7 +2285,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
 
     def mayDecide(self):
         res = False
-        if checkPermission(ReviewPortalContent, self.context):
+        if _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -2301,7 +2301,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         if res is not True and currentState == "frozen":
             # Change the behaviour for being able to correct a frozen meeting
             # back to created.
-            if checkPermission(ReviewPortalContent, self.context):
+            if _checkPermission(ReviewPortalContent, self.context):
                 return True
         return res
 
@@ -2370,7 +2370,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # Manage our own behaviour now when the item is linked to a meeting,
         # a MeetingManager can correct anything except if the meeting is closed
         if res is not True:
-            if checkPermission(ReviewPortalContent, self.context):
+            if _checkPermission(ReviewPortalContent, self.context):
                 # Get the meeting
                 meeting = self.context.getMeeting()
                 if meeting:
@@ -2392,7 +2392,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''We may decide an item if the linked meeting is in relevant state.'''
         res = False
         meeting = self.context.getMeeting()
-        if checkPermission(ReviewPortalContent, self.context) and \
+        if _checkPermission(ReviewPortalContent, self.context) and \
            meeting and (meeting.queryState() in ['decided', 'closed', ]):
             res = True
         return res

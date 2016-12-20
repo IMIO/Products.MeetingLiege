@@ -2,7 +2,7 @@
 #
 # File: testWorkflows.py
 #
-# Copyright (c) 2015 by Imio.be
+# Copyright (c) 2016 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -44,7 +44,7 @@ from Products.PloneMeeting.config import ADVICE_GIVEN_HISTORIZED_COMMENT
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
 from Products.PloneMeeting.config import RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX
 from Products.PloneMeeting.indexes import indexAdvisers
-from Products.PloneMeeting.interfaces import IAnnexable
+from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import getLastEvent
 
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
@@ -553,10 +553,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmFinController')
         self.assertEquals(item.__ac_local_roles__[adviserGroupId], ['Reader', 'MeetingFinanceEditor'])
         self.changeUser('pmFinController')
-        self.assertFalse(IAnnexable(item).getAnnexes('item_decision'))
+        self.assertFalse(get_annexes(item, portal_types=['annexDecision']))
         # finance user is able to add a decision annex
         self.addAnnex(item, relatedTo='item_decision')
-        self.assertTrue(IAnnexable(item).getAnnexes('item_decision'))
+        self.assertTrue(get_annexes(item, portal_types=['annexDecision']))
         # if we go back to itemfrozen, 'MeetingFinanceEditor' is removed
         self.changeUser('pmManager')
         self.do(item, 'backToItemFrozen')

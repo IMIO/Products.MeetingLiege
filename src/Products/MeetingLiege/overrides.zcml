@@ -71,10 +71,4 @@
              factory=".adapters.MLMeetingPrettyLinkAdapter"
              provides="imio.prettylink.interfaces.IPrettyLink" />
 
-    <adapter for="Products.PloneMeeting.interfaces.IMeetingContent
-                  zope.publisher.interfaces.browser.IBrowserRequest
-                  Products.ZCatalog.interfaces.ICatalogBrain"
-              provides="collective.iconifiedcategory.interfaces.IIconifiedContent"
-              factory=".overrides.MLCategorizedObjectAdapter" />
-
 </configure>

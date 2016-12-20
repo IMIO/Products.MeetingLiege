@@ -44,6 +44,10 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
            be changed, tested in testCustomMeetingItem.test_ItemSignableSooner.'''
         pass
 
+    def test_pm_SendItemToOtherMCWithoutDefinedAnnexType(self):
+        '''Bypass as we changed behavior, we do not keep decision annexes.'''
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

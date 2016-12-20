@@ -22,14 +22,18 @@
 # 02110-1301, USA.
 #
 
+from datetime import datetime
+from DateTime import DateTime
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 
-from DateTime import DateTime
+from collective.iconifiedcategory.utils import get_categorized_elements
+from plone import api
+from plone.app.textfield.value import RichTextValue
+from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFCore.permissions import View
-
-from Products.PloneMeeting.interfaces import IAnnexable
+from Products.PloneMeeting.utils import get_annexes
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
@@ -39,13 +43,6 @@ from Products.MeetingLiege.profiles.liege import import_data as ml_import_data
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-
-from datetime import datetime
-
-from plone import api
-from plone.app.textfield.value import RichTextValue
-
-from plone.dexterity.utils import createContentInContainer
 
 
 class testCustomMeetingItem(MeetingLiegeTestCase):
@@ -155,6 +152,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('siteadmin')
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(False)
+        cfg.setItemPowerObserversStates((u'itemcreated', u'presented', u'accepted', u'delayed', u'refused'))
+        cfg.setItemRestrictedPowerObserversStates((u'itemcreated', u'presented', u'accepted', u'delayed', u'refused'))
         development = cfg.categories.development
         development.setGroupsOfMatter(('vendors', ))
         # confidential annexes are hidden to restricted power observers
@@ -198,96 +197,45 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('powerobserver1')
         # powerobservers1 is not member of 'vendors_observers' so he
         # will not be able to access the annexes of the item
-        specialReaders = 'vendors_observers'
-        self.assertTrue(not specialReaders in self.member.getGroups())
+        vendors_observers = 'vendors_observers'
+        self.assertTrue(not vendors_observers in self.member.getGroups())
         self.hasPermission(View, item)
         # not confidential annex is viewable, but not annexes that are confidential
+        categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
         self.assertFalse(annex1.confidential)
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex1.getAnnexInfo()))
+        self.assertTrue(annex1.UID() in categorized_uids)
         self.assertTrue(annex2.confidential)
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                    isPowerObserver=True,
-                                                                    isRestrictedPowerObserver=False,
-                                                                    annexInfo=annex2.getAnnexInfo()))
+        self.assertFalse(annex2.UID() in categorized_uids)
         # an annex using "annexeCahier" or "courrier-a-valider-par-le-college" will be viewable by power observers
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex3.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex4.getAnnexInfo()))
+        self.assertTrue(annex3.UID() in categorized_uids)
+        self.assertTrue(annex4.UID() in categorized_uids)
         # every decision annexes are viewable by power observers
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex_decision1.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex_decision2.getAnnexInfo()))
+        self.assertTrue(annex_decision1.UID() in categorized_uids)
+        self.assertTrue(annex_decision2.UID() in categorized_uids)
         # if we assign 'powerobserver1' to the 'vendors_observers' group
         # he will be able to view the annexes of item as he is in charge of
-        self.portal.portal_groups.addPrincipalToGroup('powerobserver1', specialReaders)
+        self.portal.portal_groups.addPrincipalToGroup('powerobserver1', vendors_observers)
         # log again as 'powerobserver1' so getGroups is refreshed
         self.changeUser('powerobserver1')
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex1.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex2.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex3.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex4.getAnnexInfo()))
+        categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
+        self.assertTrue(annex1.UID() in categorized_uids)
+        self.assertTrue(annex2.UID() in categorized_uids)
+        self.assertTrue(annex3.UID() in categorized_uids)
+        self.assertTrue(annex4.UID() in categorized_uids)
         # every decision annexes are viewable by power observers
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex_decision1.getAnnexInfo()))
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=True,
-                                                                   isRestrictedPowerObserver=False,
-                                                                   annexInfo=annex_decision2.getAnnexInfo()))
+        self.assertTrue(annex_decision1.UID() in categorized_uids)
+        self.assertTrue(annex_decision2.UID() in categorized_uids)
 
         # restricted power observers may only access not confidential annexes
         self.changeUser('restrictedpowerobserver1')
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=False,
-                                                                   isRestrictedPowerObserver=True,
-                                                                   annexInfo=annex1.getAnnexInfo()))
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                    isPowerObserver=False,
-                                                                    isRestrictedPowerObserver=True,
-                                                                    annexInfo=annex2.getAnnexInfo()))
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                    isPowerObserver=False,
-                                                                    isRestrictedPowerObserver=True,
-                                                                    annexInfo=annex3.getAnnexInfo()))
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                    isPowerObserver=False,
-                                                                    isRestrictedPowerObserver=True,
-                                                                    annexInfo=annex4.getAnnexInfo()))
+        categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
+        self.assertTrue(annex1.UID() in categorized_uids)
+        self.assertFalse(annex2.UID() in categorized_uids)
+        self.assertFalse(annex3.UID() in categorized_uids)
+        self.assertFalse(annex4.UID() in categorized_uids)
         # only not confidential decision annexes are viewable by restricted power observers
-        self.assertTrue(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                   isPowerObserver=False,
-                                                                   isRestrictedPowerObserver=True,
-                                                                   annexInfo=annex_decision1.getAnnexInfo()))
-        self.assertFalse(IAnnexable(item)._isViewableForCurrentUser(cfg=cfg,
-                                                                    isPowerObserver=False,
-                                                                    isRestrictedPowerObserver=True,
-                                                                    annexInfo=annex_decision2.getAnnexInfo()))
+        self.assertTrue(annex_decision1.UID() in categorized_uids)
+        self.assertFalse(annex_decision2.UID() in categorized_uids)
 
     def test_ItemReference(self):
         '''Test item reference generation. It uses CustomMeeting.getItemNumsForActe.'''
@@ -819,18 +767,18 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
            we do not keep the decision annexes."""
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
-        annex = self.addAnnex(item)
-        annexDecision = self.addAnnex(item, relatedTo='item_decision')
-        self.assertTrue(IAnnexable(item).getAnnexes(relatedTo='item') == [annex, ])
-        self.assertTrue(IAnnexable(item).getAnnexes(relatedTo='item_decision') == [annexDecision, ])
+        self.addAnnex(item)
+        self.addAnnex(item, relatedTo='item_decision')
+        self.assertTrue(get_annexes(item, portal_types=['annex']))
+        self.assertTrue(get_annexes(item, portal_types=['annexDecision']))
         # cloned and link not kept, decison annexes are removed
         clonedItem = item.clone()
-        self.assertTrue(IAnnexable(clonedItem).getAnnexes(relatedTo='item'))
-        self.assertFalse(IAnnexable(clonedItem).getAnnexes(relatedTo='item_decision'))
-        # cloned but link kept, decison annexes are also kept
-        clonedItem = item.clone(setCurrentAsPredecessor=True)
-        self.assertTrue(IAnnexable(clonedItem).getAnnexes(relatedTo='item'))
-        self.assertFalse(IAnnexable(clonedItem).getAnnexes(relatedTo='item_decision'))
+        self.assertTrue(get_annexes(clonedItem, portal_types=['annex']))
+        self.assertFalse(get_annexes(clonedItem, portal_types=['annexDecision']))
+        # cloned but link kept, decison annexes are also removed
+        clonedItemWithLink = item.clone(setCurrentAsPredecessor=True)
+        self.assertTrue(get_annexes(clonedItemWithLink, portal_types=['annex']))
+        self.assertFalse(get_annexes(clonedItemWithLink, portal_types=['annexDecision']))
 
     def test_GetOfficeManager(self):
         self.changeUser('pmManager')

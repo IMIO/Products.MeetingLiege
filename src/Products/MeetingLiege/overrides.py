@@ -103,7 +103,7 @@ class MLCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         super(PMCategorizedObjectAdapter, self).__init__(context, request, brain)
 
     def can_view(self):
-        res = super(MLCategorizedObjectAdapter).can_view()
+        res = super(MLCategorizedObjectAdapter, self).can_view()
         infos = self.context.categorized_elements[self.brain.UID]
 
         # not confidential, viewable
@@ -129,62 +129,6 @@ class MLCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         extraViewableAnnexTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
         if res and isPowerObserver and not infos['category_id'] in extraViewableAnnexTypeIds:
             member = api.user.get_current()
-            cat = self.context.getCategory(True)
-            if not cat or not cat.meta_type == 'MeetingCategory':
-                return res
-
-            memberGroups = member.getGroups()
-            res = False
-            for groupOfMatter in cat.getGroupsOfMatter():
-                groupId = '%s_observers' % groupOfMatter
-                if groupId in memberGroups:
-                    res = True
-                    break
-        return res
-
-
-class MatterAwareAnnexableAdapter(AnnexableAdapter):
-    """
-      This overrides the AnnexableAdapter so power advisers have only access to annexes of items
-      of their own categories.  So if default _isViewableForCurrentUser returns True,
-      double check if we should not hide it anyway because current user is a power observer
-      not in charge of the item matter (category).
-    """
-
-    def _isViewableForCurrentUser(self, cfg, isPowerObserver, isRestrictedPowerObserver, annexInfo):
-        '''
-          Power observers may only access annexes of items they are in charge of.
-        '''
-        res = super(MatterAwareAnnexableAdapter, self)._isViewableForCurrentUser(cfg,
-                                                                                 isPowerObserver,
-                                                                                 isRestrictedPowerObserver,
-                                                                                 annexInfo)
-        # not confidential, viewable
-        # restricted power observers respect classic behavior
-        if not annexInfo['isConfidential'] or isRestrictedPowerObserver:
-            return res
-
-        # every decision annexes are viewable by power observers
-        if annexInfo['relatedTo'] == 'item_decision' and isPowerObserver:
-            return res
-
-        # not (restricted) power observers may access annexes
-        if not isPowerObserver and not isRestrictedPowerObserver:
-            return res
-
-        # if user may see and isPowerObserver, double check
-        # power observer may only access annexes of items using the categories
-        # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
-        extraViewableFileTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
-        extraViewableFileTypeUids = []
-        for extraViewableFileTypeId in extraViewableFileTypeIds:
-            fileType = getattr(cfg.meetingfiletypes, extraViewableFileTypeId, None)
-            if fileType:
-                extraViewableFileTypeUids.append(fileType.UID())
-        if res and isPowerObserver and not annexInfo['meetingFileTypeObjectUID'] in extraViewableFileTypeUids:
-            # powerObservers may see annex using type
-            membershipTool = getToolByName(self.context, 'portal_membership')
-            member = membershipTool.getAuthenticatedMember()
             cat = self.context.getCategory(True)
             if not cat or not cat.meta_type == 'MeetingCategory':
                 return res

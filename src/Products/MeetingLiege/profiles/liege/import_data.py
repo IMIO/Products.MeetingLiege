@@ -16,19 +16,19 @@ today = DateTime().strftime('%Y/%m/%d')
 
 # File types for College -------------------------------------------------------------------
 annexe = ItemAnnexTypeDescriptor('annexe', 'Annexe',
-                                 'attach.png', '', confidential=True)
+                                 u'attach.png', '', confidential=True)
 annexeBudget = ItemAnnexTypeDescriptor('annexeBudget', 'Article Budgétaire',
-                                       'budget.png', '', confidential=True)
-annexeCahier = ('annexeCahier', 'Cahier des Charges', 'cahier.gif', '')
+                                       u'budget.png', '', confidential=True)
+annexeCahier = ItemAnnexTypeDescriptor('annexeCahier', 'Cahier des Charges', u'cahier.gif', '')
 courrierCollege = ItemAnnexTypeDescriptor('courrier-a-valider-par-le-college',
                                           'Document soumis au Collège',
-                                          'courrierCollege.png', '')
+                                          u'courrierCollege.png', '')
 annexeDecision = ItemAnnexTypeDescriptor('annexeDecision', 'Annexe à la décision',
-                                         'attach.png', '', 'item_decision', confidential=True)
+                                         u'attach.png', '', 'item_decision', confidential=True)
 annexeAvis = AnnexTypeDescriptor('annexeAvis', 'Annexe à un avis',
-                                 'attach.png', '', 'advice', confidential=True)
+                                 u'attach.png', '', 'advice', confidential=True)
 annexeAvisLegal = AnnexTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
-                                      'legalAdvice.png', '', 'advice', confidential=True)
+                                      u'legalAdvice.png', '', 'advice', confidential=True)
 
 # Pod templates ----------------------------------------------------------------
 agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')

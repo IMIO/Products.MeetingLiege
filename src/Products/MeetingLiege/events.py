@@ -18,7 +18,7 @@ from Products.PloneMeeting import PloneMeetingError
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
-from Products.PloneMeeting.interfaces import IAnnexable
+from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import getLastEvent
 from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
@@ -290,7 +290,7 @@ def onItemDuplicated(original, event):
         newItem.reindexObject(idxs=['sentToInfos'])
 
     # make sure we do not keep decision annexes
-    decisionAnnexes = IAnnexable(newItem).getAnnexes(relatedTo='item_decision')
+    decisionAnnexes = get_annexes(newItem, portal_types=['annexDecision'])
     # if item is sent to Council, user may not delete annexes...
     # in this case, we simply pass because it is supposed not possible to have that
     # kind of annex on an item that is sent to council, and moreover, the item in the council

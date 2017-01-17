@@ -28,6 +28,7 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 
 from collective.iconifiedcategory.utils import get_categorized_elements
+from imio.helpers.cache import cleanRamCacheFor
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
@@ -195,6 +196,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.create('Meeting', date='2015/01/01')
         self.presentItem(item)
         self.changeUser('powerobserver1')
+        cleanRamCacheFor('Products.PloneMeeting.adapters._user_groups')
         # powerobservers1 is not member of 'vendors_observers' so he
         # will not be able to access the annexes of the item
         vendors_observers = 'vendors_observers'
@@ -217,6 +219,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.portal.portal_groups.addPrincipalToGroup('powerobserver1', vendors_observers)
         # log again as 'powerobserver1' so getGroups is refreshed
         self.changeUser('powerobserver1')
+        cleanRamCacheFor('Products.PloneMeeting.adapters._user_groups')
         categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
         self.assertTrue(annex1.UID() in categorized_uids)
         self.assertTrue(annex2.UID() in categorized_uids)
@@ -228,6 +231,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # restricted power observers may only access not confidential annexes
         self.changeUser('restrictedpowerobserver1')
+        cleanRamCacheFor('Products.PloneMeeting.adapters._user_groups')
         categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
         self.assertTrue(annex1.UID() in categorized_uids)
         self.assertFalse(annex2.UID() in categorized_uids)

@@ -14,6 +14,10 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
+#. Default: "MeetingBourgmestre"
+msgid "MeetingBourgmestre"
+msgstr ""
+
 # types
 #. Default: "MeetingCollege"
 msgid "MeetingCollege"
@@ -23,6 +27,10 @@ msgstr "Meeting College"
 msgid "MeetingCouncil"
 msgstr "Meeting Council"
 
+#. Default: "MeetingItemBourgmestre"
+msgid "MeetingItemBourgmestre"
+msgstr ""
+
 #. Default: "MeetingItemCollege"
 msgid "MeetingItemCollege"
 msgstr "Item College"
@@ -31,12 +39,20 @@ msgstr "Item College"
 msgid "MeetingItemCouncil"
 msgstr "Item Council"
 
+#. Default: "MeetingItemRecurringBourgmestre"
+msgid "MeetingItemRecurringBourgmestre"
+msgstr ""
+
 #. Default: "MeetingItemRecurringCollege"
 msgid "MeetingItemRecurringCollege"
 msgstr ""
 
 #. Default: "MeetingItemRecurringCouncil"
 msgid "MeetingItemRecurringCouncil"
+msgstr ""
+
+#. Default: "MeetingItemTemplateBourgmestre"
+msgid "MeetingItemTemplateBourgmestre"
 msgstr ""
 
 #. Default: "MeetingItemTemplateCollege"

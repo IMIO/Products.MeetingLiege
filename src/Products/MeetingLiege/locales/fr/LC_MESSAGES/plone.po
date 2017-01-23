@@ -15,6 +15,10 @@ msgstr ""
 "Domain: plone\n"
 "X-is-fallback-for: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr\n"
 
+#. Default: "MeetingBourgmestre"
+msgid "MeetingBourgmestre"
+msgstr "Séance Bourgmestre"
+
 # types
 #. Default: "MeetingCollege"
 msgid "MeetingCollege"
@@ -24,6 +28,10 @@ msgstr "Séance du Collège communal"
 msgid "MeetingCouncil"
 msgstr "Séance du Conseil communal"
 
+#. Default: "MeetingItemBourgmestre"
+msgid "MeetingItemBourgmestre"
+msgstr "Point Bourgmestre"
+
 #. Default: "MeetingItemCollege"
 msgid "MeetingItemCollege"
 msgstr "Point Collège communal"
@@ -32,6 +40,10 @@ msgstr "Point Collège communal"
 msgid "MeetingItemCouncil"
 msgstr "Point Conseil communal"
 
+#. Default: "MeetingItemRecurringBourgmestre"
+msgid "MeetingItemRecurringBourgmestre"
+msgstr "Point récurrent Bourgmestre"
+
 #. Default: "MeetingItemRecurringCollege"
 msgid "MeetingItemRecurringCollege"
 msgstr "Point récurrent Collège communal"
@@ -39,6 +51,10 @@ msgstr "Point récurrent Collège communal"
 #. Default: "MeetingItemRecurringCouncil"
 msgid "MeetingItemRecurringCouncil"
 msgstr "Point récurrent Conseil communal"
+
+#. Default: "MeetingItemTemplateBourgmestre"
+msgid "MeetingItemTemplateBourgmestre"
+msgstr "Modèle de point Bourgmestre"
 
 #. Default: "MeetingItemTemplateCollege"
 msgid "MeetingItemTemplateCollege"

@@ -63,7 +63,8 @@ def logStep(method, context):
 
 def isMeetingLiegeConfigureProfile(context):
     return context.readDataFile("MeetingLiege_liege_marker.txt") or \
-        context.readDataFile("MeetingLiege_testing_marker.txt")
+        context.readDataFile("MeetingLiege_testing_marker.txt") or \
+        context.readDataFile("MeetingLiege_bourgmestre_marker.txt")
 
 
 def installMeetingLiege(context):

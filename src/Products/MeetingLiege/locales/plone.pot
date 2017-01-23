@@ -247,3 +247,19 @@ msgstr ""
 #. Default: "Create an item college from an item council"
 msgid "create_to_meeting-config-college_from_meeting-config-council"
 msgstr ""
+
+#. Default: "MeetingBourgmestre"
+msgid "MeetingBourgmestre"
+msgstr ""
+
+#. Default: "MeetingItemBourgmestre"
+msgid "MeetingItemBourgmestre"
+msgstr ""
+
+#. Default: "MeetingItemRecurringBourgmestre"
+msgid "MeetingItemRecurringBourgmestre"
+msgstr ""
+
+#. Default: "MeetingItemTemplateBourgmestre"
+msgid "MeetingItemTemplateBourgmestre"
+msgstr ""

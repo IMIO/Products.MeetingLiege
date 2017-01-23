@@ -25,6 +25,13 @@
    provides="Products.GenericSetup.interfaces.EXTENSION"
    for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
+  <genericsetup:registerProfile
+   name="zbourgmestre"
+   title="PloneMeeting / For Liege - Mayor"
+   description="PloneMeeting for mayor profile of Liege"
+   provides="Products.GenericSetup.interfaces.EXTENSION"
+   for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+  
   <genericsetup:upgradeStep
       title="Go to MeetingLiege 4.0"
       description=""

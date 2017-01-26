@@ -10,6 +10,7 @@
  <permission>Modify portal content</permission>
  <permission>Review portal content</permission>
  <permission>Delete objects</permission>
+ <permission>PloneMeeting: Add annex</permission>
  <state state_id="closed"
         title="closed"
         i18n:attributes="title">
@@ -26,6 +27,10 @@
    <permission-role>Manager</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
    <permission-role>Manager</permission-role>
   </permission-map>
@@ -58,6 +63,11 @@
    <permission-role>MeetingManager</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingManager</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
@@ -97,6 +107,11 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
   </permission-map>
+  <permission-map name="PloneMeeting: Add annex"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingManager</permission-role>
+  </permission-map>
   <permission-map name="Review portal content"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -128,6 +143,11 @@
    <permission-role>MeetingManager</permission-role>
   </permission-map>
   <permission-map name="Modify portal content"
+                  acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>MeetingManager</permission-role>
+  </permission-map>
+  <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>

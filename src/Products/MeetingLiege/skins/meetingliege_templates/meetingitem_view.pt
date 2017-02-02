@@ -30,6 +30,7 @@
                                   member tool/getUser;
                                   dummy context/checkPrivacyViewable;
                                   meetingConfig python:tool.getMeetingConfig(context);
+                                  isRestrictedPowerObserver python: tool.isPowerObserverForCfg(meetingConfig, isRestricted=True);
                                   meeting context/getMeeting;
                                   usedAttrs meetingConfig/getUsedItemAttributes;
                                   usedMeetingAttributes meetingConfig/getUsedMeetingAttributes;
@@ -176,7 +177,7 @@
             </div>
 
             <tal:comment replace="nothing">Linked items</tal:comment>
-            <div class="discreet">
+            <div class="discreet" tal:condition="not:isRestrictedPowerObserver">
                 <tal:defines define="predecessors python: context.adapted().getPredecessors(only_viewable=True);
                                      linkedItems python: context.getManuallyLinkedItems(only_viewable=True);
                                      showManuallyLinkedItems python: 'manuallyLinkedItems' in usedAttrs or linkedItems;
@@ -439,7 +440,7 @@
     </tal:field>
 
     <tal:comment replace="nothing">Budgetary informations, manage fields budgetRelated and budgetInfos</tal:comment>
-    <tal:block condition="python: 'budgetInfos' in usedAttrs">
+    <tal:block condition="python: 'budgetInfos' in usedAttrs and not isRestrictedPowerObserver">
         <p class="item-before-budget-related"></p>
         <metal:budgetInfos use-macro="here/@@pm-macros/budgetInfos" />
     </tal:block>

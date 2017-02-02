@@ -1231,8 +1231,10 @@ class CustomMeetingItem(MeetingItem):
         # now we need removeUids to be updated too, we will call updateLocalRoles on removeUids
         removedUids = item.REQUEST.get('manuallyLinkedItems_removedUids', [])
         for removeUid in removedUids:
-            removedItem = catalog.unrestrictedSearchResults(UID=removeUid)[0]._unrestrictedGetObject()
-            removedItem.updateLocalRoles()
+            removedBrain = catalog.unrestrictedSearchResults(UID=removeUid)
+            if removedBrain:
+                removedItem = removedBrain[0]._unrestrictedGetObject()
+                removedItem.updateLocalRoles()
 
         # cancel manuallyLinkedItems_... values
         item.REQUEST.set('manuallyLinkedItems_newLinkedUids', [])

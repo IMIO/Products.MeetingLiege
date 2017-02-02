@@ -13,8 +13,10 @@
     display: none !important;
 }
 
-/* hide columns 'Creator' and 'actions' */
+/* hide columns 'Creator', 'CreationDate', 'ModificationDate' and 'actions' */
 th.th_header_Creator, td.td_cell_Creator,
+th.th_header_CreationDate, td.td_cell_CreationDate,
+th.th_header_ModificationDate, td.td_cell_ModificationDate,
 th.th_header_actions, td.td_cell_actions {
     display: none !important;
 }

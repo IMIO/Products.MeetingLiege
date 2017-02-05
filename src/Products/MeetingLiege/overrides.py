@@ -102,6 +102,10 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         super(PMCategorizedObjectAdapter, self).__init__(context, request, brain)
 
     def can_view(self):
+        res = super(MLItemCategorizedObjectAdapter, self).can_view()
+        if not res:
+            return res
+
         # if user may see and isPowerObserver, double check for normal annexes (not decision annexes
         # that are all viewable when isPowerObserver
         # power observer may only access annexes of items using the categories
@@ -112,7 +116,7 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
             cfg = tool.getMeetingConfig(self.context)
             isPowerObserver = tool.isPowerObserverForCfg(cfg, isRestricted=False)
             extraViewableAnnexTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
-            if isPowerObserver and not infos['category_id'] in extraViewableAnnexTypeIds:
+            if isPowerObserver and infos['category_id'] not in extraViewableAnnexTypeIds:
                 cat = self.context.getCategory(True)
                 if not cat or not cat.meta_type == 'MeetingCategory':
                     return False

@@ -28,6 +28,14 @@ from Products.PloneMeeting.tests.testAnnexes import testAnnexes as pmta
 
 class testAnnexes(MeetingLiegeTestCase, pmta):
     ''' '''
+    def test_pm_ItemGetCategorizedElementsWithConfidentialityForBudgetImpactEditors(self):
+        """Fails because BudgetImpactEditor is a powerobserver and we manage powerobserver
+           access to confidential annexes specifically."""
+        pass
+
+    def test_pm_ItemGetCategorizedElementsWithConfidentialityForPowerObservers(self):
+        """Fails because we manage powerobserver access to confidential annexes specifically."""
+        pass
 
 
 def test_suite():

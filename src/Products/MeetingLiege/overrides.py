@@ -27,7 +27,6 @@ from Products.CMFCore.utils import getToolByName
 from plone import api
 from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
-from Products.PloneMeeting.adapters import AnnexableAdapter
 from Products.PloneMeeting.adapters import PMCategorizedObjectAdapter
 from Products.PloneMeeting.adapters import PMWfHistoryAdapter
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
@@ -96,48 +95,30 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
         return userMayAccessComment
 
 
-class MLCategorizedObjectAdapter(PMCategorizedObjectAdapter):
+class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
     """ """
 
     def __init__(self, context, request, brain):
         super(PMCategorizedObjectAdapter, self).__init__(context, request, brain)
 
     def can_view(self):
-        res = super(MLCategorizedObjectAdapter, self).can_view()
-        infos = self.context.categorized_elements[self.brain.UID]
-
-        # not confidential, viewable
-        # restricted power observers respect classic behavior
-        tool = api.portal.get_tool('portal_plonemeeting')
-        cfg = tool.getMeetingConfig(self.context)
-        isRestrictedPowerObserver = tool.isPowerObserverForCfg(cfg, isRestricted=True)
-        if not infos['confidential'] or isRestrictedPowerObserver:
-            return res
-
-        # every decision annexes are viewable by power observers
-        isPowerObserver = tool.isPowerObserverForCfg(cfg, isRestricted=False)
-        if infos['portal_type'] == 'annexDecision' and isPowerObserver:
-            return res
-
-        # not (restricted) power observers may access annexes
-        if not isPowerObserver and not isRestrictedPowerObserver:
-            return res
-
-        # if user may see and isPowerObserver, double check
+        # if user may see and isPowerObserver, double check for normal annexes (not decision annexes
+        # that are all viewable when isPowerObserver
         # power observer may only access annexes of items using the categories
         # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
-        extraViewableAnnexTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
-        if res and isPowerObserver and not infos['category_id'] in extraViewableAnnexTypeIds:
-            member = api.user.get_current()
-            cat = self.context.getCategory(True)
-            if not cat or not cat.meta_type == 'MeetingCategory':
-                return res
-
-            memberGroups = member.getGroups()
-            res = False
-            for groupOfMatter in cat.getGroupsOfMatter():
-                groupId = '%s_observers' % groupOfMatter
-                if groupId in memberGroups:
-                    res = True
-                    break
-        return res
+        if self.brain.portal_type == 'annex':
+            infos = self.context.categorized_elements[self.brain.UID]
+            tool = api.portal.get_tool('portal_plonemeeting')
+            cfg = tool.getMeetingConfig(self.context)
+            isPowerObserver = tool.isPowerObserverForCfg(cfg, isRestricted=False)
+            extraViewableAnnexTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
+            if isPowerObserver and not infos['category_id'] in extraViewableAnnexTypeIds:
+                cat = self.context.getCategory(True)
+                if not cat or not cat.meta_type == 'MeetingCategory':
+                    return False
+                for groupOfMatter in cat.getGroupsOfMatter():
+                    groupId = '%s_observers' % groupOfMatter
+                    if groupId in self._user_groups():
+                        return True
+                return False
+        return True

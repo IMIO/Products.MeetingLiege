@@ -83,7 +83,7 @@
                 zope.publisher.interfaces.browser.IBrowserRequest
                 Products.ZCatalog.interfaces.ICatalogBrain"
            provides="collective.iconifiedcategory.interfaces.IIconifiedContent"
-           factory=".overrides.MLCategorizedObjectAdapter" />
+           factory=".overrides.MLItemCategorizedObjectAdapter" />
 
   <!-- Searches adapters -->
   <adapter for="*"

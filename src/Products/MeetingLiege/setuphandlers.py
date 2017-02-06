@@ -15,11 +15,11 @@ __docformat__ = 'plaintext'
 
 import logging
 logger = logging.getLogger('MeetingLiege: setuphandlers')
-from Products.MeetingLiege.config import PROJECTNAME
 import os
 from Products.CMFCore.utils import getToolByName
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
+from Products.MeetingLiege.config import PROJECTNAME
 from Products.PloneMeeting.exportimport.content import ToolInitializer
 
 
@@ -69,11 +69,10 @@ def installMeetingLiege(context):
     if not isMeetingLiegeConfigureProfile(context):
         return
 
-    logStep("reinstallPloneMeeting", context)
-    _installPloneMeeting(context)
     logStep("installMeetingLiege", context)
     portal = context.getSite()
-    portal.portal_setup.runAllImportStepsFromProfile('profile-Products.MeetingLiege:default')
+    if not portal.portal_quickinstaller.isProductInstalled('MeetingLiege'):
+        portal.portal_setup.runAllImportStepsFromProfile('profile-Products.MeetingLiege:default')
 
 
 def reinstallPloneMeeting(context, site):
@@ -89,10 +88,11 @@ def reinstallPloneMeeting(context, site):
     site.portal_setup.runImportStepFromProfile('profile-Products.MeetingLiege:default', 'skins')
 
 
-def _installPloneMeeting(context):
+def _installPloneMeeting(context, force=False):
     site = context.getSite()
-    profileId = u'profile-Products.PloneMeeting:default'
-    site.portal_setup.runAllImportStepsFromProfile(profileId)
+    if not site.portal_quickinstaller.isProductInstalled('PloneMeeting') or not force:
+        profileId = u'profile-Products.PloneMeeting:default'
+        site.portal_setup.runAllImportStepsFromProfile(profileId)
 
 
 def initializeTool(context):
@@ -279,7 +279,8 @@ def _configureCollegeCustomAdvisers(site):
              'available_on': '',
              'delay': '10',
              'gives_auto_advice_on_help_message': '',
-             'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
+             'gives_auto_advice_on':
+                "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
              'delay_left_alert': '3',
              'is_linked_to_previous_row': '0',
              'for_item_created_from': '2014/06/05',

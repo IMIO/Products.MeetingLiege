@@ -2,7 +2,7 @@
 #
 # File: setuphandlers.py
 #
-# Copyright (c) 2015 by Imio.be
+# Copyright (c) 2017 by Imio.be
 # Generator: ArchGenXML Version 2.7
 #            http://plone.org/products/archgenxml
 #
@@ -16,28 +16,25 @@ __docformat__ = 'plaintext'
 import logging
 logger = logging.getLogger('MeetingLiege: setuphandlers')
 from Products.MeetingLiege.config import PROJECTNAME
-from Products.MeetingLiege.config import DEPENDENCIES
 import os
 from Products.CMFCore.utils import getToolByName
-import transaction
-##code-section HEAD
-from DateTime import DateTime
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
 from Products.PloneMeeting.exportimport.content import ToolInitializer
-##/code-section HEAD
+
 
 def isNotMeetingLiegeProfile(context):
     return context.readDataFile("MeetingLiege_marker.txt") is None
 
 
-
 def updateRoleMappings(context):
     """after workflow changed update the roles mapping. this is like pressing
     the button 'Update Security Setting' and portal_workflow"""
-    if isNotMeetingLiegeProfile(context): return
+    if isNotMeetingLiegeProfile(context):
+        return
     wft = getToolByName(context.getSite(), 'portal_workflow')
     wft.updateRoleMappings()
+
 
 def postInstall(context):
     """Called as at the end of the setup process. """
@@ -56,7 +53,7 @@ def postInstall(context):
     # add our own faceted advanced criteria
     #addFacetedCriteria(context, site)
 
-##code-section FOOT
+
 def logStep(method, context):
     logger.info("Applying '%s' in profile '%s'" % (method, '/'.join(context._profile_path.split(os.sep)[-3:])))
 
@@ -72,6 +69,8 @@ def installMeetingLiege(context):
     if not isMeetingLiegeConfigureProfile(context):
         return
 
+    logStep("reinstallPloneMeeting", context)
+    _installPloneMeeting(context)
     logStep("installMeetingLiege", context)
     portal = context.getSite()
     portal.portal_setup.runAllImportStepsFromProfile('profile-Products.MeetingLiege:default')
@@ -103,7 +102,6 @@ def initializeTool(context):
         return
 
     logStep("initializeTool", context)
-    _installPloneMeeting(context)
     return ToolInitializer(context, PROJECTNAME).run()
 
 
@@ -272,75 +270,75 @@ def finalizeInstance(context):
 def _configureCollegeCustomAdvisers(site):
     '''
     '''
-    today = DateTime().strftime('%Y/%m/%d')
     college = getattr(site.portal_plonemeeting, 'meeting-config-college')
-    college.setCustomAdvisers((
-        {'delay_label': 'Incidence financi\xc3\xa8re',
-         'for_item_created_until': '',
-         'group': 'df-comptabilita-c-et-audit-financier',
-         'available_on': '',
-         'delay': '10',
-         'gives_auto_advice_on_help_message': '',
-         'gives_auto_advice_on':"python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
-         'delay_left_alert': '3',
-         'is_linked_to_previous_row': '0',
-         'for_item_created_from': '2014/06/05',
-         'row_id': '2014-06-05.5584062584'},
-        {'delay_label': 'Incidence financi\xc3\xa8re (urgence)',
-         'for_item_created_until': '',
-         'group': 'df-comptabilita-c-et-audit-financier',
-         'available_on': '',
-         'delay': '5',
-         'gives_auto_advice_on_help_message': '',
-         'gives_auto_advice_on': '',
-         'delay_left_alert': '3',
-         'is_linked_to_previous_row': '1',
-         'for_item_created_from': '2014/06/05',
-         'row_id': '2014-06-05.5584062390'},
-        {'delay_label': 'Incidence financi\xc3\xa8re (prolongation)',
-         'for_item_created_until': '',
-         'group': 'df-comptabilita-c-et-audit-financier',
-         'available_on': '',
-         'delay': '20',
-         'gives_auto_advice_on_help_message': '',
-         'gives_auto_advice_on': '',
-         'delay_left_alert': '3',
-         'is_linked_to_previous_row': '1',
-         'for_item_created_from': '2014/06/05',
-         'row_id': '2014-06-05.5584074805'},
-        {'delay_label': 'Incidence financi\xc3\xa8re',
-         'for_item_created_until': '',
-         'group': 'df-contrale',
-         'available_on': '',
-         'delay': '10',
-         'gives_auto_advice_on_help_message': '',
-         'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
-         'delay_left_alert': '3',
-         'is_linked_to_previous_row': '0',
-         'for_item_created_from': '2014/06/05',
-         'row_id': '2014-06-05.5584079907'},
-        {'delay_label': 'Incidence financi\xc3\xa8re (urgence)',
-         'for_item_created_until': '',
-         'group': 'df-contrale',
-         'available_on': '',
-         'delay': '5',
-         'gives_auto_advice_on_help_message': '',
-         'gives_auto_advice_on': '',
-         'delay_left_alert': '3',
-         'is_linked_to_previous_row': '1',
-         'for_item_created_from': '2014/06/05',
-         'row_id': '2014-06-05.5584070070'},
-        {'delay_label': 'Incidence financi\xc3\xa8re (prolongation)',
-         'for_item_created_until': '',
-         'group': 'df-contrale',
-         'available_on': '',
-         'delay': '20',
-         'gives_auto_advice_on_help_message': '',
-         'gives_auto_advice_on': '',
-         'delay_left_alert': '3',
-         'is_linked_to_previous_row': '1',
-         'for_item_created_from': '2014/06/05',
-         'row_id': '2014-06-05.5584080681'}))
+    if not college.getCustomAdvisers():
+        college.setCustomAdvisers((
+            {'delay_label': 'Incidence financi\xc3\xa8re',
+             'for_item_created_until': '',
+             'group': 'df-comptabilita-c-et-audit-financier',
+             'available_on': '',
+             'delay': '10',
+             'gives_auto_advice_on_help_message': '',
+             'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-comptabilita-c-et-audit-financier')",
+             'delay_left_alert': '3',
+             'is_linked_to_previous_row': '0',
+             'for_item_created_from': '2014/06/05',
+             'row_id': '2014-06-05.5584062584'},
+            {'delay_label': 'Incidence financi\xc3\xa8re (urgence)',
+             'for_item_created_until': '',
+             'group': 'df-comptabilita-c-et-audit-financier',
+             'available_on': '',
+             'delay': '5',
+             'gives_auto_advice_on_help_message': '',
+             'gives_auto_advice_on': '',
+             'delay_left_alert': '3',
+             'is_linked_to_previous_row': '1',
+             'for_item_created_from': '2014/06/05',
+             'row_id': '2014-06-05.5584062390'},
+            {'delay_label': 'Incidence financi\xc3\xa8re (prolongation)',
+             'for_item_created_until': '',
+             'group': 'df-comptabilita-c-et-audit-financier',
+             'available_on': '',
+             'delay': '20',
+             'gives_auto_advice_on_help_message': '',
+             'gives_auto_advice_on': '',
+             'delay_left_alert': '3',
+             'is_linked_to_previous_row': '1',
+             'for_item_created_from': '2014/06/05',
+             'row_id': '2014-06-05.5584074805'},
+            {'delay_label': 'Incidence financi\xc3\xa8re',
+             'for_item_created_until': '',
+             'group': 'df-contrale',
+             'available_on': '',
+             'delay': '10',
+             'gives_auto_advice_on_help_message': '',
+             'gives_auto_advice_on': "python: item.adapted().needFinanceAdviceOf('df-contrale')",
+             'delay_left_alert': '3',
+             'is_linked_to_previous_row': '0',
+             'for_item_created_from': '2014/06/05',
+             'row_id': '2014-06-05.5584079907'},
+            {'delay_label': 'Incidence financi\xc3\xa8re (urgence)',
+             'for_item_created_until': '',
+             'group': 'df-contrale',
+             'available_on': '',
+             'delay': '5',
+             'gives_auto_advice_on_help_message': '',
+             'gives_auto_advice_on': '',
+             'delay_left_alert': '3',
+             'is_linked_to_previous_row': '1',
+             'for_item_created_from': '2014/06/05',
+             'row_id': '2014-06-05.5584070070'},
+            {'delay_label': 'Incidence financi\xc3\xa8re (prolongation)',
+             'for_item_created_until': '',
+             'group': 'df-contrale',
+             'available_on': '',
+             'delay': '20',
+             'gives_auto_advice_on_help_message': '',
+             'gives_auto_advice_on': '',
+             'delay_left_alert': '3',
+             'is_linked_to_previous_row': '1',
+             'for_item_created_from': '2014/06/05',
+             'row_id': '2014-06-05.5584080681'}))
 
 
 def _createFinanceGroups(site):
@@ -358,26 +356,27 @@ def _createFinanceGroups(site):
     tool = getToolByName(site, 'portal_plonemeeting')
     for financeGroup in financeGroupsData:
         if not hasattr(tool, financeGroup['id']):
-            newGroupId = tool.invokeFactory('MeetingGroup',
-                                            id=financeGroup['id'],
-                                            title=financeGroup['title'],
-                                            acronym=financeGroup['acronym'],
-                                            itemAdviceStates=('meeting-config-college__state__proposed_to_finance',
-                                                              'meeting-config-college__state__presented',
-                                                              'meeting-config-college__state__validated'),
-                                            itemAdviceEditStates=('meeting-config-college__state__proposed_to_finance',
-                                                                  'meeting-config-college__state__presented',
-                                                                  'meeting-config-college__state__validated'),
-                                            itemAdviceViewStates=('meeting-config-college__state__accepted',
-                                                                  'meeting-config-college__state__accepted_but_modified',
-                                                                  'meeting-config-college__state__pre_accepted',
-                                                                  'meeting-config-college__state__delayed',
-                                                                  'meeting-config-college__state__itemfrozen',
-                                                                  'meeting-config-college__state__proposed_to_finance',
-                                                                  'meeting-config-college__state__presented',
-                                                                  'meeting-config-college__state__refused',
-                                                                  'meeting-config-college__state__removed',
-                                                                  'meeting-config-college__state__validated'))
+            newGroupId = tool.invokeFactory(
+                'MeetingGroup',
+                id=financeGroup['id'],
+                title=financeGroup['title'],
+                acronym=financeGroup['acronym'],
+                itemAdviceStates=('meeting-config-college__state__proposed_to_finance',
+                                  'meeting-config-college__state__presented',
+                                  'meeting-config-college__state__validated'),
+                itemAdviceEditStates=('meeting-config-college__state__proposed_to_finance',
+                                      'meeting-config-college__state__presented',
+                                      'meeting-config-college__state__validated'),
+                itemAdviceViewStates=('meeting-config-college__state__accepted',
+                                      'meeting-config-college__state__accepted_but_modified',
+                                      'meeting-config-college__state__pre_accepted',
+                                      'meeting-config-college__state__delayed',
+                                      'meeting-config-college__state__itemfrozen',
+                                      'meeting-config-college__state__proposed_to_finance',
+                                      'meeting-config-college__state__presented',
+                                      'meeting-config-college__state__refused',
+                                      'meeting-config-college__state__removed',
+                                      'meeting-config-college__state__validated'))
             newGroup = getattr(tool, newGroupId)
             newGroup.processForm(values={'dummy': None})
 

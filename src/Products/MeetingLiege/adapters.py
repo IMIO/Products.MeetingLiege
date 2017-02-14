@@ -1888,9 +1888,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if not self._groupIsNotEmpty('administrativereviewers'):
                 res = False
             if not self.context.getCategory() and res:
-                return No(translate('required_category_ko',
-                                    domain="PloneMeeting",
-                                    context=self.context.REQUEST))
+                return No(_('required_category_ko'))
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
@@ -1922,9 +1920,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if not iRNotEmpty or isReviewer or isInternalReviewer:
                 res = False
             if not self.context.getCategory() and res:
-                return No(translate('required_category_ko',
-                                    domain="PloneMeeting",
-                                    context=self.context.REQUEST))
+                return No(_('required_category_ko'))
         return res
 
     security.declarePublic('mayProposeToDirector')
@@ -1971,9 +1967,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                         (not isAdminReviewer or iRNotEmpty):
                     res = False
             if not self.context.getCategory() and res:
-                return No(translate('required_category_ko',
-                                    domain="PloneMeeting",
-                                    context=self.context.REQUEST))
+                return No(_('required_category_ko'))
         return res
 
     security.declarePublic('mayProposeToFinance')
@@ -2016,14 +2010,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if hasAdvicesToGive:
                 res = True
                 if not self.context.getCategory():
-                    return No(translate('required_category_ko',
-                                        domain="PloneMeeting",
-                                        context=self.context.REQUEST))
+                    return No(_('required_category_ko'))
             else:
                 # return a 'No' instance explaining that no askable advice is selected on this item
-                res = No(translate('advice_required_to_ask_advices',
-                                   domain='PloneMeeting',
-                                   context=self.context.REQUEST))
+                res = No(_('advice_required_to_ask_advices'))
         return res
 
     security.declarePublic('mayAskAdvicesByInternalReviewer')
@@ -2053,9 +2043,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # show the transition.
             if res and not hasAdvicesToGive:
                 # return a 'No' instance explaining that no askable advice is selected on this item
-                res = No(translate('advice_required_to_ask_advices',
-                                   domain='PloneMeeting',
-                                   context=self.context.REQUEST))
+                res = No(_('advice_required_to_ask_advices'))
         return res
 
     security.declarePublic('mayValidate')
@@ -2102,9 +2090,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = False
 
             if res and not self.context.getCategory():
-                return No(translate('required_category_ko',
-                                    domain="PloneMeeting",
-                                    context=self.context.REQUEST))
+                return No(_('required_category_ko'))
         return res
 
     security.declarePublic('maySendToCouncilEmergency')

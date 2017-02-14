@@ -16,19 +16,20 @@ today = DateTime().strftime('%Y/%m/%d')
 
 # File types for College -------------------------------------------------------------------
 annexe = ItemAnnexTypeDescriptor('annexe', 'Annexe',
-                                 u'attach.png', '', confidential=True)
+                                 u'attach.png', confidential=True)
 annexeBudget = ItemAnnexTypeDescriptor('annexeBudget', 'Article Budgétaire',
-                                       u'budget.png', '', confidential=True)
-annexeCahier = ItemAnnexTypeDescriptor('annexeCahier', 'Cahier des Charges', u'cahier.gif', '')
+                                       u'budget.png', confidential=True)
+annexeCahier = ItemAnnexTypeDescriptor('annexeCahier', 'Cahier des Charges', u'cahier.gif')
 courrierCollege = ItemAnnexTypeDescriptor('courrier-a-valider-par-le-college',
                                           'Document soumis au Collège',
-                                          u'courrierCollege.png', '')
+                                          u'courrierCollege.png')
 annexeDecision = ItemAnnexTypeDescriptor('annexeDecision', 'Annexe à la décision',
-                                         u'attach.png', '', 'item_decision', confidential=True)
+                                         u'attach.png', relatedTo='item_decision', confidential=True)
 annexeAvis = AnnexTypeDescriptor('annexeAvis', 'Annexe à un avis',
-                                 u'attach.png', '', 'advice', confidential=True)
+                                 u'attach.png', relatedTo='advice', confidential=True)
 annexeAvisLegal = AnnexTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
-                                      u'legalAdvice.png', '', 'advice', confidential=True)
+                                      u'legalAdvice.png', relatedTo='advice', confidential=True)
+annexeSeance = AnnexTypeDescriptor('annexe', 'Annexe', u'attach.png', relatedTo='meeting')
 
 # Pod templates ----------------------------------------------------------------
 agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')
@@ -253,7 +254,8 @@ categoriesCollege = [recurring,
 collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
-collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
+collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision,
+                             annexeAvis, annexeAvisLegal, annexeSeance]
 collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpacteditors',
                                                   'reader_advices',
                                                   'reader_copy_groups',
@@ -484,7 +486,8 @@ councilMeeting.itemReferenceFormat = \
     "python: 'Ref. ' + (here.hasMeeting() " \
     "and here.restrictedTraverse('pm_unrestricted_methods').getLinkedMeetingDate().strftime('%Y%m%d') or '') + '/' + " \
     "str(here.getItemNumber(relativeTo='meeting'))"
-councilMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision]
+councilMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision,
+                             annexeAvis, annexeAvisLegal, annexeSeance]
 councilMeeting.annexConfidentialFor = ('restricted_power_observers',)
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',

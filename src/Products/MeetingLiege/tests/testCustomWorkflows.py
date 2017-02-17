@@ -191,7 +191,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         advice_required_to_ask_advices = translate('advice_required_to_ask_advices',
                                                    domain='PloneMeeting',
                                                    context=self.request)
-        self.assertTrue(item.wfConditions().mayAskAdvicesByItemCreator().msg == advice_required_to_ask_advices)
+        self.assertEqual(translate(
+            item.wfConditions().mayAskAdvicesByItemCreator().msg,
+            context=self.request), advice_required_to_ask_advices)
         # now ask 'vendors' advice
         item.setOptionalAdvisers(('vendors', ))
         item.at_post_edit_script()

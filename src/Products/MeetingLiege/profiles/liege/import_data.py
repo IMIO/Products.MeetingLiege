@@ -34,70 +34,37 @@ annexeSeance = AnnexTypeDescriptor('annexe', 'Annexe', u'attach.png', relatedTo=
 # Pod templates ----------------------------------------------------------------
 agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')
 agendaTemplate.odt_file = 'college-oj.odt'
+agendaTemplate.pod_formats = ['odt', 'pdf', ]
 agendaTemplate.pod_portal_types = ['MeetingCollege']
 agendaTemplate.tal_condition = 'python: tool.isManager(here)'
 
-agendaTemplatePDF = PodTemplateDescriptor('oj-pdf', 'Ordre du jour')
-agendaTemplatePDF.odt_file = 'college-oj.odt'
-agendaTemplatePDF.pod_formats = ['pdf', ]
-agendaTemplatePDF.pod_portal_types = ['MeetingCollege']
-agendaTemplatePDF.tal_condition = 'python: tool.isManager(here)'
-
 decisionsTemplate = PodTemplateDescriptor('pv', 'Procès-verbal')
 decisionsTemplate.odt_file = 'college-pv.odt'
+decisionsTemplate.pod_formats = ['odt', 'pdf', ]
 decisionsTemplate.pod_portal_types = ['MeetingCollege']
 decisionsTemplate.tal_condition = 'python: tool.isManager(here)'
 
-decisionsTemplatePDF = PodTemplateDescriptor('pv-pdf', 'Procès-verbal')
-decisionsTemplatePDF.odt_file = 'college-pv.odt'
-decisionsTemplatePDF.pod_formats = ['pdf', ]
-decisionsTemplatePDF.pod_portal_types = ['MeetingCollege']
-decisionsTemplatePDF.tal_condition = 'python: tool.isManager(here)'
-
-itemProjectTemplate = PodTemplateDescriptor('projet-deliberation', 'Projet délibération')
-itemProjectTemplate.odt_file = 'projet-deliberation.odt'
-itemProjectTemplate.pod_portal_types = ['MeetingItemCollege']
-itemProjectTemplate.tal_condition = 'python: not here.hasMeeting()'
-
-itemProjectTemplatePDF = PodTemplateDescriptor('projet-deliberation-pdf', 'Projet délibération')
-itemProjectTemplatePDF.odt_file = 'projet-deliberation.odt'
-itemProjectTemplatePDF.pod_formats = ['pdf', ]
-itemProjectTemplatePDF.pod_portal_types = ['MeetingItemCollege']
-itemProjectTemplatePDF.tal_condition = 'python: not here.hasMeeting()'
-
 itemTemplate = PodTemplateDescriptor('deliberation', 'Délibération')
 itemTemplate.odt_file = 'deliberation.odt'
+itemTemplate.pod_formats = ['odt', 'pdf', ]
 itemTemplate.pod_portal_types = ['MeetingItemCollege']
 itemTemplate.tal_condition = 'python: here.hasMeeting()'
 
-itemTemplatePDF = PodTemplateDescriptor('deliberation-pdf', 'Délibération')
-itemTemplatePDF.odt_file = 'deliberation.odt'
-itemTemplatePDF.pod_formats = ['pdf', ]
-itemTemplatePDF.pod_portal_types = ['MeetingItemCollege']
-itemTemplatePDF.tal_condition = 'python: here.hasMeeting()'
-
 dfAdviceTemplate = PodTemplateDescriptor('synthese-finance-advice', 'Synthèse Avis DF', dashboard=True)
 dfAdviceTemplate.odt_file = 'synthese_avis_df.odt'
-dfAdviceTemplate.pod_portal_types = ['Folder']
 dfAdviceTemplate.dashboard_collections_ids = ['searchitemswithfinanceadvice']
 dfAdviceTemplate.tal_condition = ''
 
 statsDFAdvice = PodTemplateDescriptor('stats-finance-advice', 'Statistiques Avis DF', dashboard=True)
 statsDFAdvice.odt_file = 'stats_DF_advice.ods'
-statsDFAdvice.pod_portal_types = ['Folder']
 statsDFAdvice.dashboard_collections_ids = ['searchitemswithfinanceadvice']
 statsDFAdvice.tal_condition = ''
 
-collegeTemplates = [agendaTemplate, agendaTemplatePDF,
-                    decisionsTemplate, decisionsTemplatePDF,
-                    itemProjectTemplate, itemProjectTemplatePDF,
-                    itemTemplate, itemTemplatePDF, dfAdviceTemplate,
-                    statsDFAdvice]
+collegeTemplates = [agendaTemplate, decisionsTemplate,
+                    itemTemplate,
+                    dfAdviceTemplate, statsDFAdvice]
 
-councilTemplates = [agendaTemplate, agendaTemplatePDF,
-                    decisionsTemplate, decisionsTemplatePDF,
-                    itemProjectTemplate, itemProjectTemplatePDF,
-                    itemTemplate, itemTemplatePDF]
+councilTemplates = []
 
 # Users and groups -------------------------------------------------------------
 dgen = UserDescriptor('dgen', [], email="test@test.be", fullname="Henry Directeur")

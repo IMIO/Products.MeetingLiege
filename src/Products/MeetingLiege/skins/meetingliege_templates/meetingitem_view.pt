@@ -337,7 +337,7 @@
             </div>
 
             <tal:comment replace="nothing">To discuss?</tal:comment>
-            <div class="discreet" tal:condition="python: 'toDiscuss' in usedAttrs">
+            <div class="discreet" tal:condition="context/showToDiscuss">
                 <span class="item_attribute_label"
                       i18n:translate="PloneMeeting_label_toDiscuss"></span>:&nbsp;&nbsp;
                 <tal:to_discuss replace="structure python: context.restrictedTraverse('item-to-discuss')()" />
@@ -366,15 +366,6 @@
                         <span metal:use-macro="python: here.widget('pollTypeObservations', mode='view')" />
                     </fieldset>
                 </tal:displayPollTypeObservations>
-            </div>
-
-            <div class="discreet"
-                 tal:condition="python: otherMCs or context.isClonableToOtherMeetingConfigs()"
-                 tal:define="otherMCs context/getOtherMeetingConfigsClonableTo">
-                <span class="item_attribute_label"
-                      i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
-
-                 <span tal:condition="not: otherMCs">-</span>
             </div>
 
             <tal:comment replace="nothing">Oral question or item</tal:comment>
@@ -553,6 +544,11 @@
 
     <tal:comment replace="nothing">Notes</tal:comment>
     <tal:field define="fieldName python: 'notes'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Marginal notes</tal:comment>
+    <tal:field define="fieldName python: 'marginalNotes'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 

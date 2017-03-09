@@ -106,6 +106,11 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         if not res:
             return res
 
+        # bypass for MeetingManagers
+        tool = api.portal.get_tool('portal_plonemeeting')
+        if tool.isManager(self.context):
+            return True
+
         # if user may see and isPowerObserver, double check for normal annexes (not decision annexes
         # that are all viewable when isPowerObserver
         # power observer may only access annexes of items using the categories

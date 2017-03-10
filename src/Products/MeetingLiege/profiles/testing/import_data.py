@@ -152,6 +152,11 @@ subproducts = CategoryDescriptor('subproducts',
                                  categoryId='subproducts',
                                  usingGroups=('vendors',))
 
+# Classifiers
+classifier1 = CategoryDescriptor('classifier1', 'Classifier 1')
+classifier2 = CategoryDescriptor('classifier2', 'Classifier 2')
+classifier3 = CategoryDescriptor('classifier3', 'Classifier 3')
+
 # Users and groups -------------------------------------------------------------
 pmFinController = UserDescriptor('pmFinController', [])
 pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
@@ -299,6 +304,7 @@ collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        'date_to': '',
                                        }]
 collegeMeeting.categories = [development, research, maintenance]
+collegeMeeting.classifiers = [classifier1, classifier2, classifier3]
 collegeMeeting.shortName = 'College'
 collegeMeeting.annexTypes = [financialAnalysis, budgetAnalysisCfg1, overheadAnalysis,
                              itemAnnex, decisionAnnex, marketingAnalysis,
@@ -410,6 +416,7 @@ councilMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        }]
 councilMeeting.categories = [deployment, maintenance, development, events,
                              research, projects, marketing, subproducts]
+councilMeeting.classifiers = [classifier1, classifier2, classifier3]
 councilMeeting.shortName = 'Council'
 councilMeeting.annexTypes = [financialAnalysis, legalAnalysis,
                              budgetAnalysisCfg2, itemAnnex, decisionAnnex,

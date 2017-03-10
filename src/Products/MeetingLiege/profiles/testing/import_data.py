@@ -300,7 +300,6 @@ collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        }]
 collegeMeeting.categories = [development, research, maintenance]
 collegeMeeting.shortName = 'College'
-collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
 collegeMeeting.annexTypes = [financialAnalysis, budgetAnalysisCfg1, overheadAnalysis,
                              itemAnnex, decisionAnnex, marketingAnalysis,
                              adviceAnnex, adviceLegalAnalysis, meetingAnnex]

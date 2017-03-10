@@ -577,7 +577,7 @@ class CustomMeetingItem(MeetingItem):
         tool = api.portal.get_tool('portal_plonemeeting')
         hasStoredEmergencies = item.getOtherMeetingConfigsClonableToEmergency()
         return hasStoredEmergencies or \
-            (item.isClonableToOtherMeetingConfigs() and tool.isManager(item))
+            (item.showClonableToOtherMeetingConfigs() and tool.isManager(item))
 
     security.declarePrivate('validate_archivingRef')
 

@@ -426,7 +426,7 @@ class CustomMeeting(Meeting):
     security.declarePublic('getItemNumsForActe')
 
     def getItemNumsForActe(self):
-        '''Create a dict that store item number regarding the used category.'''
+        '''Create a dict that stores item number regarding the used category.'''
         # for "normal" items, the item number depends on the used category
         # store this in an annotation on the meeting, we only recompte it if meeting was modified
         ann = IAnnotations(self)
@@ -440,26 +440,36 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe'] = {}
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
-        items = self.getItems(listTypes=['normal'], ordered=True, unrestricted=True)
-        res = {}
+        tmp_res = {}
+        items = self.getItems(listTypes=['normal'],
+                              ordered=True,
+                              useCatalog=True,
+                              unrestricted=True)
+
         for item in items:
-            item_num = 0
-            cat = item.getCategory(True).getCategoryId()
-            for item2 in items:
-                if item2.getCategory(True).getCategoryId() != cat:
-                    continue
-                item_num = item_num + 1
-                if item == item2:
-                    res[item.UID()] = item_num
-                    break
+            item_obj = item.getObject()
+            cat = item_obj.getCategory(True).getCategoryId()
+            if cat in tmp_res:
+                tmp_res[cat][item_obj.UID()] = len(tmp_res[cat]) + 1
+            else:
+                tmp_res[cat] = {}
+                tmp_res[cat][item_obj.UID()] = 1
+
+        # initialize res, we need a dict UID/item_num and we have
+        # {'Cat1': {'329da4b791b147b1820437e89bee529d': 1,
+        #           '41e54c99415b4cc581fbb46afd6ade42': 2},
+        #  'Cat2': {'7c65bc5e213e4cde9dfb5538f7558f91': 1}}
+        res = {}
+        [res.update(v) for v in tmp_res.values()]
 
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        items = self.getItems(listTypes=['late'], ordered=True, unrestricted=True)
+        items = self.getItems(listTypes=['late'],
+                              ordered=True,
+                              useCatalog=True,
+                              unrestricted=True)
         item_num = 1
         for item in items:
-            if item.UID() in res:
-                continue
-            res[item.UID()] = item_num
+            res[item.UID] = item_num
             item_num = item_num + 1
         ann['MeetingLiege-getItemNumsForActe']['nums'] = res.copy()
         ann._p_changed = True
@@ -609,6 +619,8 @@ class CustomMeetingItem(MeetingItem):
             if 'MeetingLiege-getItemNumsForActe' in ann:
                 ann['MeetingLiege-getItemNumsForActe'] = {}
             cleanRamCacheFor('Products.MeetingLiege.adapters.getItemRefForActe')
+            # add a value in the REQUEST to specify that updateItemReferences is needed
+            self.REQUEST.set('need_Meeting_updateItemReferences', True)
         self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
 

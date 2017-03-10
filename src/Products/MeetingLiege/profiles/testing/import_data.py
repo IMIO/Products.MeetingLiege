@@ -98,7 +98,7 @@ itemTemplate.odt_file = 'Item.odt'
 itemTemplate.pod_portal_types = ['MeetingItemCollege']
 itemTemplate.tal_condition = ''
 
-# Categories -------------------------------------------------------------------
+# Item templates -------------------------------------------------------------------
 
 template1 = ItemTemplateDescriptor(id='template1',
                                    title='Tutelle CPAS',

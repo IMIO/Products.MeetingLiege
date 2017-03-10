@@ -249,6 +249,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         cfg.setInsertingMethodsOnAddItem((
             {'insertingMethod': 'on_list_type', 'reverse': '0'},
             {'insertingMethod': 'on_categories', 'reverse': '0'}))
+        cfg.setItemReferenceFormat('python: here.adapted().getItemRefForActe()')
         self.changeUser('pmManager')
         # remove recurring items
         self._removeConfigObjectsFor(cfg)
@@ -270,6 +271,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(devItem1)
         self.presentItem(devItem2)
         self.presentItem(maintItem1)
+        # no itemReference until meeting is frozen
+        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                          ['', '', '', '', ''])
         self.freezeMeeting(meeting)
         # check that item references are correct
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
@@ -322,7 +326,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if we change the category used for an item, reference are updated accordingly
         # change category for resItem1 from 'research' to 'development'
         resItem2.setCategory('development')
-        resItem2.notifyModified()
+        resItem2.at_post_edit_script()
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
                           ['development1', 'development2', 'maintenance1', 'development3'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],

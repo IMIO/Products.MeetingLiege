@@ -117,7 +117,6 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
         if self.brain.portal_type == 'annex':
             infos = self.context.categorized_elements[self.brain.UID]
-            tool = api.portal.get_tool('portal_plonemeeting')
             cfg = tool.getMeetingConfig(self.context)
             isPowerObserver = tool.isPowerObserverForCfg(cfg, isRestricted=False)
             extraViewableAnnexTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')

@@ -1478,6 +1478,7 @@ class CustomMeetingConfig(MeetingConfig):
                 ('searchitemstocontrolcompletenessof',
                     {
                         'subFolderId': 'searches_items',
+                        'active': True,
                         'query':
                         [
                             {'i': 'CompoundCriterion',
@@ -1497,6 +1498,7 @@ class CustomMeetingConfig(MeetingConfig):
                 ('searchadviceproposedtocontroller',
                     {
                         'subFolderId': 'searches_items',
+                        'active': True,
                         'query':
                         [
                             {'i': 'CompoundCriterion',
@@ -1516,6 +1518,7 @@ class CustomMeetingConfig(MeetingConfig):
                 ('searchadviceproposedtoreviewer',
                     {
                         'subFolderId': 'searches_items',
+                        'active': True,
                         'query':
                         [
                             {'i': 'CompoundCriterion',
@@ -1535,6 +1538,7 @@ class CustomMeetingConfig(MeetingConfig):
                 ('searchadviceproposedtomanager',
                     {
                         'subFolderId': 'searches_items',
+                        'active': True,
                         'query':
                         [
                             {'i': 'CompoundCriterion',
@@ -1562,6 +1566,7 @@ class CustomMeetingConfig(MeetingConfig):
                     ('searchitemswithfinanceadvice',
                         {
                             'subFolderId': 'searches_items',
+                            'active': True,
                             'query':
                             [
                                 {'i': 'portal_type',

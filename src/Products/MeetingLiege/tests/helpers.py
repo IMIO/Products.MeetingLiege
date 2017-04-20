@@ -97,7 +97,8 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
     WF_STATE_NAME_MAPPINGS = {'itemcreated': 'itemcreated',
                               'proposed': 'proposed_to_director',
                               'validated': 'validated',
-                              'presented': 'presented', }
+                              'presented': 'presented',
+                              'itemfrozen': 'itemfrozen'}
 
     # in which state an item must be after an particular meeting transition?
     ITEM_WF_STATE_AFTER_MEETING_TRANSITION = {'publish_decisions': 'accepted',

@@ -162,15 +162,10 @@ pmFinController = UserDescriptor('pmFinController', [])
 pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
 pmFinReviewer = UserDescriptor('pmFinReviewer', [])
 pmFinManager = UserDescriptor('pmFinManager', [])
-pmManager = UserDescriptor('pmManager',
-                           [],
-                           email='pmmanager@plonemeeting.org',
-                           fullname='M. PmManager')
-pmCreator1 = UserDescriptor('pmCreator1', [])
-pmCreator1b = UserDescriptor('pmCreator1b', [])
-pmObserver1 = UserDescriptor('pmObserver1', [],
-                             email="pmobserver1@plonemeeting.org",
-                             fullname='M. PMObserver One')
+pmManager = UserDescriptor('pmManager', [], email="pmmanager@plonemeeting.org", fullname='M. PMManager')
+pmCreator1 = UserDescriptor('pmCreator1', [], email="pmcreator1@plonemeeting.org", fullname='M. PMCreator One')
+pmCreator1b = UserDescriptor('pmCreator1b', [], email="pmcreator1b@plonemeeting.org", fullname='M. PMCreator One bee')
+pmObserver1 = UserDescriptor('pmObserver1', [], email="pmobserver1@plonemeeting.org", fullname='M. PMObserver One')
 pmAdminReviewer1 = UserDescriptor('pmAdminReviewer1', [])
 pmInternalReviewer1 = UserDescriptor('pmInternalReviewer1', [])
 pmReviewer1 = UserDescriptor('pmReviewer1', [])
@@ -321,6 +316,7 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'motivation',
                                      'textCheckList',
                                      'itemIsSigned']
+collegeMeeting.maxShownListings = '100'
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'

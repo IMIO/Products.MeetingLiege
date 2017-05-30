@@ -298,7 +298,7 @@ collegeMeeting.certifiedSignatures = [{'signatureNumber': '1',
                                        'date_from': '',
                                        'date_to': '',
                                        }]
-collegeMeeting.categories = [development, research, maintenance]
+collegeMeeting.categories = [development, research]
 collegeMeeting.classifiers = [classifier1, classifier2, classifier3]
 collegeMeeting.shortName = 'College'
 collegeMeeting.annexTypes = [financialAnalysis, budgetAnalysisCfg1, overheadAnalysis,

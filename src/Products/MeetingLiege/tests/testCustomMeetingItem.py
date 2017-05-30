@@ -843,19 +843,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         pmManagerObj = self.portal.portal_membership.getMemberById('pmManager')
         pmManagerObj.setProperties(description='0497/696969     brol')
 
-        self.assertTrue(itemValidated.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
-        self.assertTrue(itemValidated.adapted().getOfficeManager()['phone'] == '0497/696969')
-        self.assertTrue(itemValidated.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')
+        self.assertEqual(itemValidated.adapted().getOfficeManager()['fullname'], 'M. PMManager')
+        self.assertEqual(itemValidated.adapted().getOfficeManager()['phone'], '0497/696969')
+        self.assertEqual(itemValidated.adapted().getOfficeManager()['email'], 'pmmanager@plonemeeting.org')
 
-        self.assertTrue(itemDirectlyValidated.adapted().getOfficeManager() == '')
+        self.assertEqual(itemDirectlyValidated.adapted().getOfficeManager(), '')
 
-        self.assertTrue(itemReturned.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
-        self.assertTrue(itemReturned.adapted().getOfficeManager()['phone'] == '0497/696969')
-        self.assertTrue(itemReturned.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')
+        self.assertEqual(itemReturned.adapted().getOfficeManager()['fullname'], 'M. PMManager')
+        self.assertEqual(itemReturned.adapted().getOfficeManager()['phone'], '0497/696969')
+        self.assertEqual(itemReturned.adapted().getOfficeManager()['email'], 'pmmanager@plonemeeting.org')
 
-        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['fullname'] == 'M. PmManager')
-        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['phone'] == '0497/696969')
-        self.assertTrue(itemReturnedTwice.adapted().getOfficeManager()['email'] == 'pmmanager@plonemeeting.org')
+        self.assertEqual(itemReturnedTwice.adapted().getOfficeManager()['fullname'], 'M. PMManager')
+        self.assertEqual(itemReturnedTwice.adapted().getOfficeManager()['phone'], '0497/696969')
+        self.assertEqual(itemReturnedTwice.adapted().getOfficeManager()['email'], 'pmmanager@plonemeeting.org')
 
     def test_ItemSignableSooner(self):
         """itemIsSigned can be changed when item is 'presented' or 'itemfrozen'."""

@@ -244,7 +244,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_ItemReference(self):
         '''Test item reference generation. It uses CustomMeeting.getItemNumsForActe.'''
         # use categories
+        self.changeUser('siteadmin')
         cfg = self.meetingConfig
+        self.create('MeetingCategory', id='maintenance', title='Maintenance', categoryId='maintenance')
         cfg.setUseGroupsAsCategories(False)
         cfg.setInsertingMethodsOnAddItem((
             {'insertingMethod': 'on_list_type', 'reverse': '0'},

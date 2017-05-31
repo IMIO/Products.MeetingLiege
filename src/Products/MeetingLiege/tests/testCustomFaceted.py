@@ -38,6 +38,7 @@ class testCustomFaceted(MeetingLiegeTestCase):
     def _setupGroupsOfMatter(self):
         """ """
         self.changeUser('siteadmin')
+        self.create('MeetingCategory', id='maintenance', title='Maintenance', categoryId='maintenance')
         pmFolder = self.getMeetingFolder()
         cfg = self.meetingConfig
         cfg.useGroupsAsCategories = False

@@ -40,6 +40,14 @@
       handler="Products.MeetingLiege.migrations.migrate_to_4_0.migrate"
       profile="Products.MeetingLiege:default" />
 
+  <genericsetup:upgradeStep
+      title="Go to MeetingLiege 4.1"
+      description=""
+      source="4.0"
+      destination="4.1"
+      handler="Products.MeetingLiege.migrations.migrate_to_4_1.migrate"
+      profile="Products.MeetingLiege:default" />
+
   <!-- ##/code-section profiles.zcml-bottom -->
 
 </configure>

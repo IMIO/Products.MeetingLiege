@@ -11,6 +11,14 @@
         layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
         permission="zope2.View" />
 
+  <browser:page
+    name="iconified-signed"
+    for="imio.annex.content.annex.IAnnex"
+    layer="collective.iconifiedcategory.interfaces.ICollectiveIconifiedCategoryLayer"
+    class=".overrides.MLSignedChangeView"
+    permission="zope2.View"
+    />
+
   <browser:resource
         name="collective.iconifiedcategory.more_infos.png"
         file="overrides/more_infos.png"

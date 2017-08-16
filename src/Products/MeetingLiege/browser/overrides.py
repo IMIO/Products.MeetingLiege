@@ -8,13 +8,14 @@
 #
 
 import time
+from DateTime import DateTime
 from zope.component import getAdapter
 
 from plone.memoize.view import memoize_contextless
 from plone import api
 
+from collective.iconifiedcategory.browser.actionview import SignedChangeView
 from imio.history.interfaces import IImioHistory
-from DateTime import DateTime
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
 from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
@@ -22,12 +23,12 @@ from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperVi
 from Products.MeetingLiege import logger
 
 
-class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
+class MLAdviceActionsPanelView(BaseActionsPanelView):
     """
       Specific actions displayed on a meetingadvice.
     """
     def __init__(self, context, request):
-        super(MeetingLiegeAdviceActionsPanelView, self).__init__(context, request)
+        super(MLAdviceActionsPanelView, self).__init__(context, request)
 
     @memoize_contextless
     def _transitionsToConfirm(self):
@@ -43,14 +44,14 @@ class MeetingLiegeAdviceActionsPanelView(BaseActionsPanelView):
         return toConfirm
 
 
-class MeetingLiegeAdviceDelaysView(AdviceDelaysView):
+class MLAdviceDelaysView(AdviceDelaysView):
     '''Render the advice available delays HTML on the advices list.'''
 
     def _mayEditDelays(self, isAutomatic):
         '''Rules of original method applies but here, the _financialmanagers,
            may also change an advice delay in some cases.'''
 
-        if not super(MeetingLiegeAdviceDelaysView, self)._mayEditDelays(isAutomatic):
+        if not super(MLAdviceDelaysView, self)._mayEditDelays(isAutomatic):
             # maybe a financialmanager may change delay
             # that member may change delay if advice still addable/editable
             financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
@@ -68,6 +69,24 @@ class MeetingLiegeAdviceDelaysView(AdviceDelaysView):
                 return False
 
         return True
+
+
+class MLSignedChangeView(SignedChangeView):
+    """ """
+
+    def _get_next_values(self, old_values):
+        """Only MeetingManagers may set an annex as 'signed'."""
+        values = {}
+        tool = api.portal.get_tool('portal_plonemeeting')
+        isManager = tool.isManager(self.context)
+        # if not Manager, values after to_sign True/signed False is to_sign False/signed False
+        if not isManager and old_values['to_sign'] is True and old_values['signed'] is False:
+            values['to_sign'] = False
+            values['signed'] = False
+            status = -1
+        else:
+            return super(MLSignedChangeView, self)._get_next_values(old_values)
+        return status, values
 
 
 class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):

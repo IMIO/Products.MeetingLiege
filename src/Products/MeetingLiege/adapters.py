@@ -48,6 +48,7 @@ from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
+from Products.PloneMeeting.content.advice import MeetingAdvice
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
@@ -347,7 +348,7 @@ class CustomMeeting(Meeting):
                     final_items.append((item_num, item))
                 final_res.append([elts[0], final_items])
             res = final_res
-        #allow to return the list of items only, without the list of categories.
+        # allow to return the list of items only, without the list of categories.
         if not groupByCategory:
             alt_res = []
             for category in res:
@@ -385,7 +386,7 @@ class CustomMeeting(Meeting):
                                                         firstNumber=firstNumber, renumber=renumber,
                                                         includeEmptyCategories=includeEmptyCategories,
                                                         includeEmptyGroups=includeEmptyGroups))
-            #we can find department in description
+            # we can find department in description
         pre_dpt = '---'
         for intermlst in lst:
             for sublst in intermlst:
@@ -430,7 +431,7 @@ class CustomMeeting(Meeting):
         # for "normal" items, the item number depends on the used category
         # store this in an annotation on the meeting, we only recompte it if meeting was modified
         ann = IAnnotations(self)
-        if not 'MeetingLiege-getItemNumsForActe' in ann:
+        if 'MeetingLiege-getItemNumsForActe' not in ann:
             ann['MeetingLiege-getItemNumsForActe'] = {}
         itemNums = ann['MeetingLiege-getItemNumsForActe']
         if 'modified' in itemNums and itemNums['modified'] == self.modified():
@@ -1136,13 +1137,13 @@ class CustomMeetingItem(MeetingItem):
                 adviceTypeFr = 'favorable'
             else:
                 adviceTypeFr = 'défavorable'
-            #if it's a meetingItem, return the legal bullshit.
+            # if it's a meetingItem, return the legal bullshit.
             if not isMeeting:
                 res = res + FINANCE_ADVICE_LEGAL_TEXT.format(
                     adviceTypeFr,
                     outOfFinancialdptLocalized
                 )
-            #if it's a meeting, returns only the type and date of the advice.
+            # if it's a meeting, returns only the type and date of the advice.
             else:
                 res = "<p>Avis {0} du Directeur Financier du {1}</p>".format(
                     adviceTypeFr, outOfFinancialdptLocalized)
@@ -1203,7 +1204,7 @@ class CustomMeetingItem(MeetingItem):
         finance_accesses = []
         for linkedItem in linkedItems + [item]:
             financeAdvice = linkedItem.getFinanceAdvice()
-            if financeAdvice != '_none_' and not financeAdvice in finance_accesses:
+            if financeAdvice != '_none_' and financeAdvice not in finance_accesses:
                 # only add it if finance advisers have already access to the linkedItem
                 groupId = "{0}_advisers".format(financeAdvice)
                 if groupId in linkedItem.__ac_local_roles__ and \
@@ -1236,7 +1237,7 @@ class CustomMeetingItem(MeetingItem):
         for itemToUpdate in itemsToUpdate:
             itemToUpdate.updateLocalRoles()
             for finance_access in finance_accesses:
-                if not finance_access in itemToUpdate.__ac_local_roles__:
+                if finance_access not in itemToUpdate.__ac_local_roles__:
                     itemToUpdate.manage_addLocalRoles(finance_access, (READER_USECASES['advices'], ))
                     itemToUpdate.reindexObjectSecurity()
 
@@ -1434,7 +1435,7 @@ class CustomMeetingConfig(MeetingConfig):
             groupsInVocab = [group[0] for group in res]
             for storedArchivingRefsGroup in storedArchivingRefsGroups:
                 for group in storedArchivingRefsGroup:
-                    if not group in groupsInVocab:
+                    if group not in groupsInVocab:
                         mGroup = getattr(tool, group, None)
                         groupName = mGroup and mGroup.getName() or group
                         res.append((group, groupName))
@@ -1629,7 +1630,7 @@ class CustomMeetingCategory(MeetingCategory):
         if storedGroupsOfMatter:
             groupsInVocab = [group[0] for group in res]
             for storedGroupOfMatter in storedGroupsOfMatter:
-                if not storedGroupOfMatter in groupsInVocab:
+                if storedGroupOfMatter not in groupsInVocab:
                     mGroup = getattr(tool, storedGroupOfMatter, None)
                     if mGroup:
                         res.append((mGroup.getId(), mGroup.getName()))
@@ -2403,7 +2404,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
 
-from Products.PloneMeeting.content.advice import MeetingAdvice
 old_get_advice_given_on = MeetingAdvice.get_advice_given_on
 
 
@@ -2574,7 +2574,7 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         # if item was ever gone the the finances and now it is down to the
         # services, then it is considered as down the wf from the finances
         # so take into account every states before 'validated/proposed_to_finance'
-        if not self.context.hasMeeting() and not itemState in ['proposed_to_finance', 'validated']:
+        if not self.context.hasMeeting() and itemState not in ['proposed_to_finance', 'validated']:
             wfTool = api.portal.get_tool('portal_workflow')
             itemWF = wfTool.getWorkflowsFor(self.context)[0]
             history = self.context.workflow_history[itemWF.getId()]

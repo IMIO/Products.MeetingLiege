@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 import logging
-logger = logging.getLogger('MeetingLiege')
-
 from Products.PloneMeeting.migrations.migrate_to_4_1 import Migrate_To_4_1 as PMMigrate_To_4_1
+
+logger = logging.getLogger('MeetingLiege')
 
 
 # The migration class ----------------------------------------------------------

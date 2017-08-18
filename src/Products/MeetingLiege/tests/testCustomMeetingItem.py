@@ -204,8 +204,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.hasPermission(View, item)
         # not confidential annex is viewable, but not annexes that are confidential
         categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
+        # annex1 and annex2 do not use annexTypes viewable to power_observers
         self.assertFalse(annex1.confidential)
-        self.assertTrue(annex1.UID() in categorized_uids)
+        self.assertFalse(annex1.UID() in categorized_uids)
         self.assertTrue(annex2.confidential)
         self.assertFalse(annex2.UID() in categorized_uids)
         # an annex using "annexeCahier" or "courrier-a-valider-par-le-college" will be viewable by power observers

@@ -37,6 +37,10 @@ class testAnnexes(MeetingLiegeTestCase, pmta):
         """Fails because we manage powerobserver access to confidential annexes specifically."""
         pass
 
+    def test_pm_SwitchingConfidentialityUsingActionView(self):
+        """Fails because power_observers may only access annexes using specific annexType
+           even if annex is not confidential."""
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

@@ -540,7 +540,6 @@ class CustomMeeting(Meeting):
                     if item.Title().split('.')[0] == numCateg]
         return categsId
 
-old_showDuplicateItemAction = MeetingItem.showDuplicateItemAction
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
 
 
@@ -624,25 +623,6 @@ class CustomMeetingItem(MeetingItem):
             self.REQUEST.set('need_Meeting_updateItemReferences', True)
         self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
-
-    def showDuplicateItemAction_cachekey(method, self, brain=False):
-        '''cachekey method for self.showDuplicateItemAction.'''
-        return (self, str(self.REQUEST._debug))
-
-    security.declarePublic('showDuplicateItemAction')
-
-    @ram.cache(showDuplicateItemAction_cachekey)
-    def showDuplicateItemAction(self):
-        '''Do not display the action in Council.'''
-        # Conditions for being able to see the "duplicate an item" action:
-        # - the user is not Plone-disk-aware;
-        # - the user is creator in some group;
-        # - the user must be able to see the item if it is private.
-        # The user will duplicate the item in his own folder.
-        if self.portal_type == 'MeetingItemCouncil':
-            return False
-        return old_showDuplicateItemAction(self)
-    MeetingItem.showDuplicateItemAction = showDuplicateItemAction
 
     security.declarePublic('showAdvices')
 

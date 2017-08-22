@@ -476,6 +476,7 @@ councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'used_in_inserting_method': ''}, ]
 councilMeeting.itemAutoSentToOtherMCStates = ('delayed', 'returned')
 councilMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
+councilMeeting.enableItemDuplication = False
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
 councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'

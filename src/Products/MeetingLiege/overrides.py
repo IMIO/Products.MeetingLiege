@@ -50,7 +50,7 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
             return True
 
         # if not a finance advice comment is viewable...
-        if not self.context.advice_group in FINANCE_GROUP_IDS:
+        if self.context.advice_group not in FINANCE_GROUP_IDS:
             return True
 
         # finance advice event, check if user is member of finance group
@@ -128,5 +128,10 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
                     groupId = '%s_observers' % groupOfMatter
                     if groupId in self._user_groups():
                         return True
+                return False
+        # annexDecision marked as 'to_sign' are only viewable to (Meeting)Managers
+        elif self.brain.portal_type == 'annexDecision':
+            infos = self.context.categorized_elements[self.brain.UID]
+            if infos['signed_activated'] and infos['to_sign'] and not infos['signed']:
                 return False
         return True

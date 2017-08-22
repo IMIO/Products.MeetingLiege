@@ -39,6 +39,20 @@
       destination="4.0"
       handler="Products.MeetingLiege.migrations.migrate_to_4_0.migrate"
       profile="Products.MeetingLiege:default" />
+  <genericsetup:upgradeStep
+      title="Go to MeetingLiege 4.0 (Step 1)"
+      description=""
+      source="4.0"
+      destination="4.0"
+      handler="Products.MeetingLiege.migrations.migrate_to_4_0.migrate_step1"
+      profile="Products.MeetingLiege:default" />
+  <genericsetup:upgradeStep
+      title="Go to MeetingLiege 4.0 (Step 2)"
+      description=""
+      source="4.0"
+      destination="4.0"
+      handler="Products.MeetingLiege.migrations.migrate_to_4_0.migrate_step2"
+      profile="Products.MeetingLiege:default" />
 
   <!-- ##/code-section profiles.zcml-bottom -->
 

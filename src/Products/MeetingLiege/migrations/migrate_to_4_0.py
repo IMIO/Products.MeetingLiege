@@ -2,17 +2,19 @@
 # ------------------------------------------------------------------------------
 import lxml.html
 import logging
-logger = logging.getLogger('MeetingLiege')
 import os
 
 from Acquisition import aq_base
 from zope.i18n import translate
+from plone import api
 from plone.app.textfield.value import RichTextValue
 from Products.CMFPlone.utils import safe_unicode
 from collective.documentgenerator.content.pod_template import IPODTemplate
 from Products.PloneMeeting.migrations.migrate_to_4_0 import Migrate_To_4_0 as PMMigrate_To_4_0
 from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+
+logger = logging.getLogger('MeetingLiege')
 
 
 # The migration class ----------------------------------------------------------
@@ -62,7 +64,7 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
         pr = self.portal.portal_repository
         for brain in brains:
             advice = brain.getObject()
-            if not advice.advice_group in FINANCE_GROUP_IDS:
+            if advice.advice_group not in FINANCE_GROUP_IDS:
                 continue
             newEvents = []
             for event in advice.workflow_history['meetingadviceliege_workflow']:
@@ -172,7 +174,7 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
         brains = self.portal.portal_catalog(portal_type='meetingadvice')
         for brain in brains:
             advice = brain.getObject()
-            if not advice.advice_group in FINANCE_GROUP_IDS:
+            if advice.advice_group not in FINANCE_GROUP_IDS:
                 # remove the 'advice_substep_number'
                 if hasattr(aq_base(advice), 'advice_substep_number'):
                     delattr(advice, 'advice_substep_number')
@@ -188,7 +190,7 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
         logger.info('Moving to \'MeetingItem.otherMeetingConfigsClonableToPrivacy\'...')
         # enable 'otherMeetingConfigsClonableToPrivacy' for 'meeting-config-college'
         configCollege = self.tool.get('meeting-config-college')
-        if not 'otherMeetingConfigsClonableToPrivacy' in configCollege.getUsedItemAttributes():
+        if 'otherMeetingConfigsClonableToPrivacy' not in configCollege.getUsedItemAttributes():
             usedAttrs = list(configCollege.getUsedItemAttributes())
             usedAttrs.append('otherMeetingConfigsClonableToPrivacy')
             configCollege.setUsedItemAttributes(tuple(usedAttrs))
@@ -226,22 +228,45 @@ class Migrate_To_4_0(PMMigrate_To_4_0):
         self._moveToMeetingAdviceFinances()
         self._updateMeetingsTitle()
 
-    def run(self):
-        # change self.profile_name everything is right before launching steps
-        self.profile_name = u'profile-Products.MeetingLiege:default'
-        # call steps from Products.PloneMeeting
-        PMMigrate_To_4_0.run(self)
-        # now MeetingLiege specific steps
-        logger.info('Migrating to MeetingLiege 4.0...')
-        #self._updateHistorizedFinanceAdviceInWFHistory()
-        #self._moveHistorizedFinanceAdviceToVersions()
-        self._cleanMeetingConfigs()
-        #self._migrateItemPositiveDecidedStates()
-        self._updateCouncilItemFinanceAdviceAttribute()
-        self._initPodTemplatesMailingListsField()
-        self._addSearchFinanceAdviceDashboardAndTemplate()
-        self._moveToPrivacyForCouncilFromPM()
-        self.finish()
+    def run(self, step=None):
+        if not step or step == 1:
+            # change self.profile_name everything is right before launching steps
+            self.profile_name = u'profile-Products.MeetingLiege:default'
+            # call steps from Products.PloneMeeting
+            PMMigrate_To_4_0.run(self)
+            # now MeetingLiege specific steps
+            logger.info('Migrating to MeetingLiege 4.0...')
+            # self._updateHistorizedFinanceAdviceInWFHistory()
+            # self._moveHistorizedFinanceAdviceToVersions()
+            self._cleanMeetingConfigs()
+            # self._migrateItemPositiveDecidedStates()
+            self._updateCouncilItemFinanceAdviceAttribute()
+            self._initPodTemplatesMailingListsField()
+            self._addSearchFinanceAdviceDashboardAndTemplate()
+            self._moveToPrivacyForCouncilFromPM()
+            self.finish()
+
+        if not step or step == 2:
+            # upgrade some profiles updated before v4 final
+            self.upgradeProfile('collective.ckeditor:default')
+            self.upgradeProfile('collective.documentgenerator:default')
+            self.upgradeProfile('collective.eeafaceted.z3ctable:default')
+            self.upgradeProfile('imio.dashboard:default')
+            self.upgradeProfile('plone.app.discussion:default')
+            self.upgradeProfile('plonetheme.imioapps:default')
+            # make sure form-widgets-raiseOnError_for_non_managers is enabled
+            api.portal.set_registry_record(
+                'collective.documentgenerator.browser.controlpanel.'
+                'IDocumentGeneratorControlPanelSchema.raiseOnError_for_non_managers',
+                True)
+            # last upgrade for collective.documentgenerator reapply portal_types
+            # especially ConfigurablePodTemplate that remves mailing_lists attribute
+            # reapply PloneMeeting types tool step
+            self.runProfileSteps(product='Products.PloneMeeting', steps=['typeinfo'])
+            self._adaptAnnexContentCategory()
+            self._initFirstItemNumberOnMeetings()
+            self._updateItemReferences()
+            self._replaceOldYellowHighlight()
 
 
 # The migration function -------------------------------------------------------
@@ -256,4 +281,26 @@ def migrate(context):
        7) Move finances advices to 'meetingadvicefinances'.
     '''
     Migrate_To_4_0(context).run()
+# ------------------------------------------------------------------------------
+
+
+def migrate_step1(context):
+    '''This migration function will:
+
+       1) Reinstall PloneMeeting and upgrade dependencies.
+    '''
+    migrator = Migrate_To_4_0(context)
+    migrator.run(step=1)
+    migrator.finish()
+# ------------------------------------------------------------------------------
+
+
+def migrate_step2(context):
+    '''This migration function will:
+
+       2) Move to imio.annex.
+    '''
+    migrator = Migrate_To_4_0(context)
+    migrator.run(step=2)
+    migrator.finish()
 # ------------------------------------------------------------------------------

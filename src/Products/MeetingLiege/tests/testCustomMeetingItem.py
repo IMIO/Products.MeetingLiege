@@ -362,9 +362,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEquals(lateItem1.getItemReference(), '')
         self.assertEquals(newItem.getItemReference(), '')
         # pmCreator1 is not able to access every items of the meeting
-        self.assertFalse(self.hasPermission(View, devItem1))
         # if we get the reference of other items, it is correct,
-        # getItemNumsForActe have been recomputed
+        # make meeting modified so we are sure that item reference are recomputed
+        # with pmCreator1 as current user
+        meeting.notifyModified()
+        meeting.updateItemReferences()
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True,
                                                                                 unrestricted=True)],
                           ['development1', 'maintenance1', 'development2', 'HOJ.1'])

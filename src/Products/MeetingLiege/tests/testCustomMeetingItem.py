@@ -114,7 +114,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.at_post_edit_script()
         specialReaders = 'vendors_observers'
         # right category is selected by item must be at least validated
-        self.assertTrue(not specialReaders in item.__ac_local_roles__)
+        self.assertTrue(specialReaders not in item.__ac_local_roles__)
 
         # validate the item
         self.validateItem(item)
@@ -122,7 +122,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
         # going back to 'proposed' will remove given local roles
         self.backToState(item, self.WF_STATE_NAME_MAPPINGS['proposed'])
-        self.assertTrue(not specialReaders in item.__ac_local_roles__)
+        self.assertTrue(specialReaders not in item.__ac_local_roles__)
         self.validateItem(item)
         self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
 
@@ -141,7 +141,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if we use another category, local roles are removed
         item.setCategory('projects')
         item.at_post_edit_script()
-        self.assertTrue(not specialReaders in item.__ac_local_roles__)
+        self.assertTrue(specialReaders not in item.__ac_local_roles__)
 
     def test_AnnexesConfidentialityDependingOnMatter(self):
         '''Power observers may only access annexes of items they are in charge of.
@@ -200,7 +200,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # powerobservers1 is not member of 'vendors_observers' so he
         # will not be able to access the annexes of the item
         vendors_observers = 'vendors_observers'
-        self.assertTrue(not vendors_observers in self.member.getGroups())
+        self.assertTrue(vendors_observers not in self.member.getGroups())
         self.hasPermission(View, item)
         # not confidential annex is viewable, but not annexes that are confidential
         categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
@@ -419,8 +419,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item7Id = item7.getId()
         item7_order = item7.getInsertOrder(insertingMethods)
         # result should be item1, item3, item2, item5 (equals to item2) then item4
-        self.assertTrue(item1_order < item3_order < item2_order == item5_order
-                        < item7_order < item4_order < item6_order)
+        self.assertTrue(item1_order < item3_order < item2_order ==
+                        item5_order < item7_order < item4_order < item6_order)
         # every items use proposingGroup 'developers' that is in position 1
         # if we use 'vendors' for item1, item1_order will become higher than item6_order
         insertingMethods = ({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},
@@ -519,7 +519,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(item, 'return')
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
         clonedReturnedItem = [newItem for newItem in item.getBRefs('ItemPredecessor')
-                              if not newItem in (duplicatedItem, clonedDelayedItem)][0]
+                              if newItem not in (duplicatedItem, clonedDelayedItem)][0]
         # this time, the item with finance advice is the 'returned' item
         itemWithFinanceAdvice = clonedReturnedItem.adapted().getItemWithFinanceAdvice()
         self.assertTrue(itemWithFinanceAdvice == item)
@@ -1341,7 +1341,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
           so if the normal user uncheck 'clone to', emergency is unchecked as well."""
         cfg = self.meetingConfig
         self.changeUser('siteadmin')
-        if not 'otherMeetingConfigsClonableToEmergency' in cfg.getUsedItemAttributes():
+        if 'otherMeetingConfigsClonableToEmergency' not in cfg.getUsedItemAttributes():
             cfg.setUsedItemAttributes(cfg.getUsedItemAttributes() +
                                       ('otherMeetingConfigsClonableToEmergency', ))
         # as notmal user, not viewable

@@ -7,9 +7,6 @@
 # GNU General Public License (GPL)
 #
 
-__author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
-__docformat__ = 'plaintext'
-
 from OFS.ObjectManager import BeforeDeleteException
 from plone import api
 from imio.actionspanel.interfaces import IContentDeletable
@@ -24,12 +21,15 @@ from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 
+__author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
+__docformat__ = 'plaintext'
+
 
 def _everyAdvicesAreGivenFor(item):
     '''Every advices are considered given on an item if no more
        hidden_during_redaction and created.'''
     for adviceId, adviceInfos in item.adviceIndex.items():
-        if not adviceId in FINANCE_GROUP_IDS and \
+        if adviceId not in FINANCE_GROUP_IDS and \
            adviceInfos['type'] in (NOT_GIVEN_ADVICE_VALUE, 'asked_again') or \
            adviceInfos['hidden_during_redaction'] is True:
             return False
@@ -88,7 +88,7 @@ def onAdviceTransition(advice, event):
 
     # manage finance workflow, just consider relevant transitions
     # if it is not a finance wf transition, return
-    if not advice.advice_group in FINANCE_GROUP_IDS:
+    if advice.advice_group not in FINANCE_GROUP_IDS:
         return
 
     item = advice.getParentNode()
@@ -102,7 +102,7 @@ def onAdviceTransition(advice, event):
 
     # when the finance advice state change, we have to reinitialize
     # item.takenOverBy to nothing if advice is not at the finance controller state
-    if not event.new_state.id in ['proposed_to_financial_controller']:
+    if event.new_state.id not in ['proposed_to_financial_controller']:
         # we do not use the mutator setTakenOverBy because it
         # clean takenOverByInfos and we need it to be kept if
         # advice come back to controler
@@ -162,7 +162,7 @@ def onAdviceTransition(advice, event):
     # role on the advice
     # nevertheless, we remove roles given to the localRoledGroupId
     if newStateId in ('advice_given', 'financial_advice_signed', ) and \
-       not oldStateId in ('advice_given', 'financial_advice_signed', ):
+       oldStateId not in ('advice_given', 'financial_advice_signed', ):
         localRoledGroupId = '%s_%s' % (advice.advice_group,
                                        stateToGroupSuffixMappings[oldStateId])
         advice.manage_delLocalRoles((localRoledGroupId, adviserGroupId))
@@ -174,7 +174,7 @@ def onAdviceTransition(advice, event):
     # this is the case if we validate an item and it triggers the fact that advice delay is exceeded
     # this should never be the case as advice delay should have been updated during nightly cron...
     # but if we are in a '_updateAdvices', do not _updateAdvices again...
-    if not newStateId in stateToGroupSuffixMappings:
+    if newStateId not in stateToGroupSuffixMappings:
         if not item.REQUEST.get('currentlyUpdatingAdvice', False):
             item.updateLocalRoles()
         return

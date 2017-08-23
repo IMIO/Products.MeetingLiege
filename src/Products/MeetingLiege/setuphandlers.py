@@ -9,18 +9,18 @@
 # GNU General Public License (GPL)
 #
 
-__author__ = """Gauthier Bastien <g.bastien@imio.be>"""
-__docformat__ = 'plaintext'
-
 
 import logging
-logger = logging.getLogger('MeetingLiege: setuphandlers')
 import os
 from Products.CMFCore.utils import getToolByName
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
 from Products.MeetingLiege.config import PROJECTNAME
 from Products.PloneMeeting.exportimport.content import ToolInitializer
+
+__author__ = """Gauthier Bastien <g.bastien@imio.be>"""
+__docformat__ = 'plaintext'
+logger = logging.getLogger('MeetingLiege: setuphandlers')
 
 
 def isNotMeetingLiegeProfile(context):
@@ -51,7 +51,7 @@ def postInstall(context):
     # add the groupsOfMatter index
     addOrUpdateIndexes(site, {'groupsOfMatter': ('KeywordIndex', {})})
     # add our own faceted advanced criteria
-    #addFacetedCriteria(context, site)
+    # addFacetedCriteria(context, site)
 
 
 def logStep(method, context):
@@ -400,5 +400,3 @@ def reorderCss(context):
            'ploneCustom.css']
     for resource in css:
         portal_css.moveResourceToBottom(resource)
-
-##/code-section FOOT

@@ -105,6 +105,7 @@
 
   <!-- Indexes -->
   <adapter name="groupsOfMatter" factory=".indexes.groupsOfMatter" />
+  <adapter name="category_id" factory=".indexes.category_id" />
 
   <!-- Vocabularies -->
   <utility component=".vocabularies.GroupsOfMatterVocabularyFactory"

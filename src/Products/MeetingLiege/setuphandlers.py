@@ -46,8 +46,8 @@ def postInstall(context):
     reinstallPloneMeeting(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
-    # add getAdoptsNextCouncilAgenda metadata
-    addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', ))
+    # add getAdoptsNextCouncilAgenda and category_id metadata
+    addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', 'category_id'))
     # add the groupsOfMatter index
     addOrUpdateIndexes(site, {'groupsOfMatter': ('KeywordIndex', {})})
     # add our own faceted advanced criteria

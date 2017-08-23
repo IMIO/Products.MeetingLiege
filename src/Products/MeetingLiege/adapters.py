@@ -448,13 +448,12 @@ class CustomMeeting(Meeting):
                                unrestricted=True)
 
         for brain in brains:
-            item_obj = brain._unrestrictedGetObject()
-            cat = item_obj.getCategory(True).getCategoryId()
+            cat = brain.category_id
             if cat in tmp_res:
-                tmp_res[cat][item_obj.UID()] = len(tmp_res[cat]) + 1
+                tmp_res[cat][brain.UID] = len(tmp_res[cat]) + 1
             else:
                 tmp_res[cat] = {}
-                tmp_res[cat][item_obj.UID()] = 1
+                tmp_res[cat][brain.UID] = 1
 
         # initialize res, we need a dict UID/item_num and we have
         # {'Cat1': {'329da4b791b147b1820437e89bee529d': 1,

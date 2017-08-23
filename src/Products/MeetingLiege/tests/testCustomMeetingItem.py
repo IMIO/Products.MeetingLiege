@@ -247,7 +247,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # use categories
         self.changeUser('siteadmin')
         cfg = self.meetingConfig
-        self.create('MeetingCategory', id='maintenance', title='Maintenance', categoryId='maintenance')
+        self.create('MeetingCategory', id='maintenance', title='Maintenance', categoryId='maintenance_cat_id')
         cfg.setUseGroupsAsCategories(False)
         cfg.setInsertingMethodsOnAddItem((
             {'insertingMethod': 'on_list_type', 'reverse': '0'},
@@ -280,14 +280,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.freezeMeeting(meeting)
         # check that item references are correct
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'research1', 'research2', 'maintenance1'])
+                          ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o4', 'o1', 'o2', 'o5'])
         # change position of items 1 and 2, itemReference is changed too
         changeOrder = resItem1.restrictedTraverse('@@change-item-order')
         changeOrder(moveType='down')
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'research1', 'research2', 'maintenance1'])
+                          ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o4', 'o2', 'o1', 'o5'])
         # move depItem2 to last position
@@ -295,7 +295,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         changeOrder('number', '5')
         # now depItem1 reference is back to 'deployment1' and depItem2 in last position
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'research1', 'maintenance1', 'research2'])
+                          ['development1', 'development2', 'research1', 'maintenance_cat_id1', 'research2'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o4', 'o1', 'o5', 'o2'])
 
@@ -305,7 +305,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(newItem)
         # item is inserted at the end
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'development3', 'research1', 'maintenance1', 'research2'])
+                          ['development1', 'development2', 'development3',
+                           'research1', 'maintenance_cat_id1', 'research2'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o4', 'o7', 'o1', 'o5', 'o2'])
 
@@ -313,7 +314,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # remove item with ref 'research1', the first item, the item that had 'research2' will get 'research1'
         self.backToState(resItem1, 'validated')
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'development3', 'maintenance1', 'research1'])
+                          ['development1', 'development2', 'development3', 'maintenance_cat_id1', 'research1'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o4', 'o7', 'o5', 'o2'])
 
@@ -322,7 +323,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('admin')
         self.deleteAsManager(devItem2.UID())
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'maintenance1', 'research1'])
+                          ['development1', 'development2', 'maintenance_cat_id1', 'research1'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o7', 'o5', 'o2'])
 
@@ -331,7 +332,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         resItem2.setCategory('development')
         resItem2.at_post_edit_script()
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'maintenance1', 'development3'])
+                          ['development1', 'development2', 'maintenance_cat_id1', 'development3'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
                           ['o3', 'o7', 'o5', 'o2'])
 
@@ -369,7 +370,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         meeting.updateItemReferences()
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True,
                                                                                 unrestricted=True)],
-                          ['development1', 'maintenance1', 'development2', 'HOJ.1'])
+                          ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
         self.assertEquals(devItem1.getItemReference(), 'development1')
         # no more in the meeting
         self.assertEquals(resItem1.getItemReference(), '')

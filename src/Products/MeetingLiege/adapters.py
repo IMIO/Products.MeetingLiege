@@ -442,13 +442,13 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
         tmp_res = {}
-        items = self.getItems(listTypes=['normal'],
-                              ordered=True,
-                              useCatalog=True,
-                              unrestricted=True)
+        brains = self.getItems(listTypes=['normal'],
+                               ordered=True,
+                               useCatalog=True,
+                               unrestricted=True)
 
-        for item in items:
-            item_obj = item.getObject()
+        for brain in brains:
+            item_obj = brain._unrestrictedGetObject()
             cat = item_obj.getCategory(True).getCategoryId()
             if cat in tmp_res:
                 tmp_res[cat][item_obj.UID()] = len(tmp_res[cat]) + 1
@@ -464,13 +464,13 @@ class CustomMeeting(Meeting):
         [res.update(v) for v in tmp_res.values()]
 
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        items = self.getItems(listTypes=['late'],
-                              ordered=True,
-                              useCatalog=True,
-                              unrestricted=True)
+        brains = self.getItems(listTypes=['late'],
+                               ordered=True,
+                               useCatalog=True,
+                               unrestricted=True)
         item_num = 1
-        for item in items:
-            res[item.UID] = item_num
+        for brain in brains:
+            res[brain.UID] = item_num
             item_num = item_num + 1
         ann['MeetingLiege-getItemNumsForActe']['nums'] = res.copy()
         ann._p_changed = True

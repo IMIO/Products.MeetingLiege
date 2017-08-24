@@ -441,19 +441,18 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
         tmp_res = {}
-        items = self.getItems(listTypes=['normal'],
-                              ordered=True,
-                              useCatalog=True,
-                              unrestricted=True)
+        brains = self.getItems(listTypes=['normal'],
+                               ordered=True,
+                               useCatalog=True,
+                               unrestricted=True)
 
-        for item in items:
-            item_obj = item.getObject()
-            cat = item_obj.getCategory(True).getCategoryId()
+        for brain in brains:
+            cat = brain.category_id
             if cat in tmp_res:
-                tmp_res[cat][item_obj.UID()] = len(tmp_res[cat]) + 1
+                tmp_res[cat][brain.UID] = len(tmp_res[cat]) + 1
             else:
                 tmp_res[cat] = {}
-                tmp_res[cat][item_obj.UID()] = 1
+                tmp_res[cat][brain.UID] = 1
 
         # initialize res, we need a dict UID/item_num and we have
         # {'Cat1': {'329da4b791b147b1820437e89bee529d': 1,
@@ -463,13 +462,13 @@ class CustomMeeting(Meeting):
         [res.update(v) for v in tmp_res.values()]
 
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        items = self.getItems(listTypes=['late'],
-                              ordered=True,
-                              useCatalog=True,
-                              unrestricted=True)
+        brains = self.getItems(listTypes=['late'],
+                               ordered=True,
+                               useCatalog=True,
+                               unrestricted=True)
         item_num = 1
-        for item in items:
-            res[item.UID] = item_num
+        for brain in brains:
+            res[brain.UID] = item_num
             item_num = item_num + 1
         ann['MeetingLiege-getItemNumsForActe']['nums'] = res.copy()
         ann._p_changed = True

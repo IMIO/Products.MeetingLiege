@@ -445,7 +445,8 @@ class CustomMeeting(Meeting):
         brains = self.getItems(listTypes=['normal'],
                                ordered=True,
                                useCatalog=True,
-                               unrestricted=True)
+                               unrestricted=True,
+                               force_linked_items_query=True)
 
         for brain in brains:
             cat = brain.category_id
@@ -466,7 +467,8 @@ class CustomMeeting(Meeting):
         brains = self.getItems(listTypes=['late'],
                                ordered=True,
                                useCatalog=True,
-                               unrestricted=True)
+                               unrestricted=True,
+                               force_linked_items_query=True)
         item_num = 1
         for brain in brains:
             res[brain.UID] = item_num

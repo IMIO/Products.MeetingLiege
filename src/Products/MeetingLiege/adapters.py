@@ -638,7 +638,7 @@ class CustomMeetingItem(MeetingItem):
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
         res = ['labelForCouncil', 'financeAdvice',
-               'decisionSuite', 'decisionEnd']
+               'decisionSuite', 'decisionEnd', 'toDiscuss']
         if cloned_to_same_mc:
             res = res + ['archivingRef', 'textCheckList']
         return res

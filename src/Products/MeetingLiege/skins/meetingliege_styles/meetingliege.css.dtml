@@ -122,11 +122,6 @@ table.listing tr[class][class] td.meeting_item_listType_addendum {
     color: grey;
 }
 
-/* fieldset displaying Council infos on a College item, need to manage padding for legend */
-#content fieldset#fieldsWhenSentToCouncil {
-    padding-top: 2.3em;
-}
-
 /* </dtml-with> */
 /* DOCUMENTATION ON PRE-DEFINED PROPERTIES FROM PLONE */
 

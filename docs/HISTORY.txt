@@ -1,7 +1,11 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.0 (unreleased)
+4.1 (unreleased)
+----------------
+- When an item is sent from College to Council, keep the 'toDiscuss' field
+
+4.0 (2017-08-18)
 ----------------
 - Finance advisers of an item are now able to add decision annexes
   when the item is decided

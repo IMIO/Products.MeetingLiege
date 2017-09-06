@@ -73,6 +73,49 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(newItem.getLabelForCouncil() == '<p>My label for council</p>')
         self.assertTrue(newItem.getPrivacy() == 'secret')
 
+    def test_FieldsKeptWhenItemSentToCouncil(self):
+        '''When an item is sent from College to Council, following fields are kept :
+           - labelForCouncil;
+           - financeAdvice;
+           - decisionSuite;
+           - decisionEnd;
+           - toDiscuss.
+        '''
+        # create a college item
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+
+        # make item sendable to Council when 'itemcreated'
+        cfg = self.meetingConfig
+        cfg2 = self.meetingConfig2
+        cfg2Id = cfg2.getId()
+        cfg.setItemManualSentToOtherMCStates(self._initial_state(item))
+        cfg.setToDiscussSetOnItemInsert(False)
+        cfg.setToDiscussDefault(True)
+        cfg2.setToDiscussSetOnItemInsert(False)
+
+        # create a college item
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
+
+        item.setLabelForCouncil('<p>My label for council</p>')
+        item.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        item.setDecisionSuite('<p>My decision suite</p>')
+        item.setDecisionEnd('<p>My decision end</p>')
+        item.setToDiscuss(False)
+        # send College item to Council and compare
+        new_item = item.cloneToOtherMeetingConfig(cfg2Id)
+        self.assertTrue(new_item.portal_type == 'MeetingItemCouncil')
+        self.assertEqual(item.getLabelForCouncil(),
+                         new_item.getLabelForCouncil())
+        self.assertEqual(item.getDecisionSuite(),
+                         new_item.getDecisionSuite())
+        self.assertEqual(item.getDecisionEnd(),
+                         new_item.getDecisionEnd())
+        self.assertEqual(item.getToDiscuss(),
+                         new_item.getToDiscuss())
+
     def test_FinanceAdviceAskedDependingOnFinanceAdviceField(self):
         '''Finance advice is asked depending on MeetingItem.financeAdvice selected value.'''
         # create finance groups

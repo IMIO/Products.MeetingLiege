@@ -154,7 +154,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         item = self.create('MeetingItem', title='An item with finance advice')
         # ask finance advice and give it
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
         # make item completeness complete and add advice

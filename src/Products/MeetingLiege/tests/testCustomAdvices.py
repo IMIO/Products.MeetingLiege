@@ -57,12 +57,12 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
         item.setCompleteness('completeness_complete')
-        item.at_post_edit_script()
+        item._update_after_edit()
         # ok, now advice can be given
         # a financial manager may change delays
         self.changeUser('pmFinManager')
@@ -127,7 +127,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         item = self.create('MeetingItem', title='The item')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.assertTrue('vendors' in item.adviceIndex)
 
@@ -241,7 +241,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
                              "Products.PloneMeeting.content.advice.advice_type_vocabulary")
         # ask 'vendors' advice on item
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.do(item, 'backToProposedToDirector')
         vendors_advice = createContentInContainer(
             item,

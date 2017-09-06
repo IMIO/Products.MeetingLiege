@@ -127,16 +127,16 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item = self.create('MeetingItem')
         # by default, no adviceFinance asked
         self.assertTrue(item.getFinanceAdvice() == '_none_')
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(item.adviceIndex == {})
         # ask finance advice
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)
         # now ask another advice finance
         item.setFinanceAdvice(FINANCE_GROUP_IDS[1])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(FINANCE_GROUP_IDS[1] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)
 
@@ -154,7 +154,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item = self.create('MeetingItem')
         # select the right category
         item.setCategory(development.getId())
-        item.at_post_edit_script()
+        item._update_after_edit()
         specialReaders = 'vendors_observers'
         # right category is selected by item must be at least validated
         self.assertTrue(specialReaders not in item.__ac_local_roles__)
@@ -171,7 +171,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # editing item keeps correct local roles
         self.changeUser('pmManager')
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
 
         # functionnality is for validated items and for items in a meeting
@@ -183,7 +183,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # if we use another category, local roles are removed
         item.setCategory('projects')
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(specialReaders not in item.__ac_local_roles__)
 
     def test_AnnexesConfidentialityDependingOnMatter(self):
@@ -231,7 +231,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         notify(ObjectModifiedEvent(annex_decision2))
         # select the right category
         item.setCategory(development.getId())
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.validateItem(item)
 
         # power observers may access items when it is 'presented'
@@ -379,7 +379,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if we change the category used for an item, reference are updated accordingly
         # change category for resItem1 from 'research' to 'development'
         resItem2.setCategory('development')
-        resItem2.at_post_edit_script()
+        resItem2._update_after_edit()
         self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
                           ['development1', 'development2', 'maintenance_cat_id1', 'development3'])
         self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
@@ -518,7 +518,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         self.assertTrue(item.adapted().getItemWithFinanceAdvice() == item)
         # give advice
@@ -613,8 +613,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # ask emergency so finance step is passed
         itemToCouncil1.setEmergency('emergency_asked')
         itemToCouncil2.setEmergency('emergency_asked')
-        itemToCouncil1.at_post_edit_script()
-        itemToCouncil2.at_post_edit_script()
+        itemToCouncil1._update_after_edit()
+        itemToCouncil2._update_after_edit()
         self.assertTrue(FINANCE_GROUP_IDS[0] in itemToCouncil1.adviceIndex)
         self.assertTrue(FINANCE_GROUP_IDS[0] in itemToCouncil2.adviceIndex)
         self.presentItem(itemToCouncil1)
@@ -639,7 +639,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # finance group gets automatically access to the itemInCouncil2
         self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
         # roles are kept after edit or transition
-        itemInCouncil2.at_post_edit_script()
+        itemInCouncil2._update_after_edit()
         self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
         # only available transition is 'present', so create a meeting in council to test...
         self.setMeetingConfig(self.meetingConfig2.getId())

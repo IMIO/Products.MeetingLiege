@@ -4,6 +4,7 @@ Products.MeetingLiege Changelog
 4.1 (unreleased)
 ----------------
 - When an item is sent from College to Council, keep the 'toDiscuss' field
+- Do not call at_post_edit_script directly anymore, use Meeting(Item)._update_after_edit
 
 4.0 (2017-08-18)
 ----------------

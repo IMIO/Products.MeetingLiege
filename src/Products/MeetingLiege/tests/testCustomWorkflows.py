@@ -196,7 +196,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             context=self.request), advice_required_to_ask_advices)
         # now ask 'vendors' advice
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToAdministrativeReviewer', ])
         # give advice
@@ -224,7 +224,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # advice could be asked again
         self.assertTrue(item.adapted().mayAskAdviceAgain(advice))
         item.setOptionalAdvisers(('vendors', 'developers'))
-        item.at_post_edit_script()
+        item._update_after_edit()
         # now that there is an advice to give (developers)
         # internal reviewer may ask it
         self.assertTrue(self.transitions(item) == ['askAdvicesByInternalReviewer',
@@ -266,7 +266,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # finances advice is an automatic advice aksed depending on the
         # selected MeetingItem.financeAdvice
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
         # now that it is asked, the item will have to be proposed to the finances
@@ -300,14 +300,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # set the item to "incomplete"
         self.assertTrue(item.adapted().mayEvaluateCompleteness())
         item.setCompleteness('completeness_incomplete')
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer'])
         # pmFinController may not add advice for FINANCE_GROUP_IDS[0]
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and not toEdit)
         # set item as "complete" using itemcompleteness view
         # this way, it checks that current user may actually evaluate completeness
-        # and item is updated (at_post_edit_script is called)
+        # and item is updated (_update_after_edit is called)
         changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
         self.request.set('new_completeness_value', 'completeness_complete')
         self.request.form['form.submitted'] = True
@@ -589,7 +589,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         # no emergency for now
         item.setEmergency('no_emergency')
-        item.at_post_edit_script()
+        item._update_after_edit()
         # finance advice is asked
         self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
@@ -616,7 +616,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToDirector')
         self.changeUser('pmReviewer1')
         # no emergency for now so item can not be validated
-        self.assertTrue(not 'validate' in self.transitions(item))
+        self.assertTrue('validate' not in self.transitions(item))
         # ask emergency
         self.assertTrue(item.adapted().mayAskEmergency())
         item.setEmergency('emergency_asked')
@@ -662,19 +662,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
         # item is now 'proposed_to_finance'
         self.assertTrue(item.queryState() == 'proposed_to_finance')
         # item can not be validated
-        self.assertTrue(not 'validate' in self.transitions(item))
+        self.assertTrue('validate' not in self.transitions(item))
 
         # now add advice
         self.changeUser('pmFinController')
         # give the advice
         item.setCompleteness('completeness_complete')
-        item.at_post_edit_script()
+        item._update_after_edit()
         advice = createContentInContainer(item,
                                           'meetingadvicefinances',
                                           **{'advice_group': FINANCE_GROUP_IDS[0],
@@ -689,7 +689,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(advice.queryState() == 'financial_advice_signed')
         # can not be validated
         self.changeUser('pmManager')
-        self.assertTrue(not 'validate' in self.transitions(item))
+        self.assertTrue('validate' not in self.transitions(item))
         # now does advice timed out
         item.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2014, 1, 1)
         item.updateLocalRoles()
@@ -772,7 +772,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.presentItem(item)
         self.decideMeeting(meeting)
         # as item is not to send to council, the 'accept_and_return' transition is not available
-        self.assertTrue(not 'accept_and_return' in self.transitions(item))
+        self.assertTrue('accept_and_return' not in self.transitions(item))
         # mark it to send to council
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         # now the transition 'accept_and_return' is available
@@ -800,7 +800,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(duplicatedToCfg2.UID() == item.getItemClonedToOtherMC(cfg2Id).UID())
         # duplicated locally...
         self.assertTrue(duplicatedLocally.portal_type == item.portal_type)
-        #... and validated
+        # ... and validated
         self.assertTrue(duplicatedLocally.queryState() == 'validated')
         # informations about "needs to be sent to other mc" is kept
         self.assertTrue(duplicatedLocally.getOtherMeetingConfigsClonableTo() == (cfg2.getId(), ))
@@ -886,7 +886,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item = self.create('MeetingItem', title='The first item')
         # ask finance advice
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         # the finance advice is asked
         self.assertTrue(item.adapted().getFinanceGroupIdsForItem() == FINANCE_GROUP_IDS[0])
         self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
@@ -964,7 +964,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.proposeItem(item)
         # now director send the item back to the internal reviewer
         # it will use transition 'backToProposedToInternalReviewer' but will
@@ -1009,7 +1009,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
         # make item completeness complete and add advice
@@ -1147,7 +1147,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertFalse(self.hasPermission(View, item2))
         # now link item to item2, as finance advice was asked on item, access to item2 is provided
         item.setManuallyLinkedItems([item2.UID(), ])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertEquals(self.request.get('manuallyLinkedItems_newUids'), [item2.UID(), ])
         self.assertEquals(item.getManuallyLinkedItems(), [item2])
         self.assertEquals(item2.getManuallyLinkedItems(), [item])
@@ -1156,7 +1156,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # if link to item2 is broken, access also is also removed
         item.setManuallyLinkedItems([])
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertEquals(item.getManuallyLinkedItems(), [])
         self.assertEquals(item2.getManuallyLinkedItems(), [])
         self.assertTrue(self.hasPermission(View, item))
@@ -1167,14 +1167,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         item1FinanceNeverAccessed = self.create('MeetingItem')
         item1FinanceNeverAccessed.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item1FinanceNeverAccessed.at_post_edit_script()
+        item1FinanceNeverAccessed._update_after_edit()
         item2FinanceNeverAccessed = self.create('MeetingItem')
-        item2FinanceNeverAccessed.at_post_edit_script()
+        item2FinanceNeverAccessed._update_after_edit()
         self.changeUser('pmFinController')
         self.assertFalse(self.hasPermission(View, item1FinanceNeverAccessed))
         self.assertFalse(self.hasPermission(View, item2FinanceNeverAccessed))
         item1FinanceNeverAccessed.setManuallyLinkedItems([item2FinanceNeverAccessed.UID(), ])
-        item1FinanceNeverAccessed.at_post_edit_script()
+        item1FinanceNeverAccessed._update_after_edit()
         # still not accessible
         self.assertFalse(self.hasPermission(View, item1FinanceNeverAccessed))
         self.assertFalse(self.hasPermission(View, item2FinanceNeverAccessed))
@@ -1192,7 +1192,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item3 = self.create('MeetingItem')
         item1FinanceNeverAccessed.setManuallyLinkedItems(
             [item2FinanceNeverAccessed.UID(), item3.UID()])
-        item1FinanceNeverAccessed.at_post_edit_script()
+        item1FinanceNeverAccessed._update_after_edit()
         # for now, 3 are accessible
         self.changeUser('pmFinController')
         self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
@@ -1200,7 +1200,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item3))
         # remove item1FinanceNeverAccessed, the only item with finance advice
         item3.setManuallyLinkedItems([item2FinanceNeverAccessed.UID()])
-        item3.at_post_edit_script()
+        item3._update_after_edit()
         # item1FinanceNeverAccessed alone
         self.assertEquals(item1FinanceNeverAccessed.getManuallyLinkedItems(), [])
         self.assertEquals(item2FinanceNeverAccessed.getManuallyLinkedItems(), [item3])
@@ -1213,14 +1213,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # link all together again and test when removing item3
         item2FinanceNeverAccessed.setManuallyLinkedItems(
             [item1FinanceNeverAccessed.UID(), item3.UID()])
-        item2FinanceNeverAccessed.at_post_edit_script()
+        item2FinanceNeverAccessed._update_after_edit()
         # for now, 3 are accessible
         self.changeUser('pmFinController')
         self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
         self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
         self.assertTrue(self.hasPermission(View, item3))
         item2FinanceNeverAccessed.setManuallyLinkedItems([item1FinanceNeverAccessed.UID()])
-        item2FinanceNeverAccessed.at_post_edit_script()
+        item2FinanceNeverAccessed._update_after_edit()
         self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
         self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
         self.assertFalse(self.hasPermission(View, item3))
@@ -1231,7 +1231,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item4 = self.create('MeetingItem')
         item3.setManuallyLinkedItems(
             [item4.UID()])
-        item3.at_post_edit_script()
+        item3._update_after_edit()
         self.changeUser('pmFinController')
         self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
         self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
@@ -1239,7 +1239,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertFalse(self.hasPermission(View, item4))
         item3.setManuallyLinkedItems(
             [item4.UID(), item1FinanceNeverAccessed.UID()])
-        item3.at_post_edit_script()
+        item3._update_after_edit()
         self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
         self.assertTrue(self.hasPermission(View, item2FinanceNeverAccessed))
         self.assertTrue(self.hasPermission(View, item3))
@@ -1294,7 +1294,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         vendors = self.tool.vendors
         vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToAdministrativeReviewer', ])
         self._checkItemWithoutCategory(item, item.getCategory())
@@ -1318,7 +1318,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
-        item.at_post_edit_script()
+        item._update_after_edit()
 
         # an administrative reviewer can send an item in creation directly to
         # the internal reviewer.
@@ -1348,7 +1348,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # An administrative reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToInternalReviewer', ])
         self._checkItemWithoutCategory(item, item.getCategory())
@@ -1366,7 +1366,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
-        item.at_post_edit_script()
+        item._update_after_edit()
 
         # an internal reviewer can propose an item in creation directly
         # to the direction.
@@ -1376,7 +1376,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # An internal reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
@@ -1388,14 +1388,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
-        item.at_post_edit_script()
+        item._update_after_edit()
 
         # An internal reviewer can ask an advice to internal reviewer when the
         # item is in creation.
         developers = self.tool.developers
         developers.setItemAdviceStates(('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, ))
         item.setOptionalAdvisers(('developers', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.changeUser('pmInternalReviewer1')
         self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
 
@@ -1416,7 +1416,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # A reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToDirector', ])
         self._checkItemWithoutCategory(item, item.getCategory())
@@ -1428,7 +1428,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
-        item.at_post_edit_script()
+        item._update_after_edit()
 
         # A director can send an item from administrative reviewer to director.
         self.changeUser('pmCreator1')
@@ -1481,7 +1481,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         actions_panel = item.restrictedTraverse('@@actions_panel')
         rendered_actions_panel = actions_panel()
         item.setCategory('')
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertTrue(not self.transitions(item))
         no_category_rendered_actions_panel = actions_panel()
         self.assertTrue(not no_category_rendered_actions_panel ==
@@ -1503,7 +1503,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.presentItem(item)
         self.freezeMeeting(meeting)
         item2.setPreferredMeeting(meeting.UID())
-        item2.at_post_edit_script()
+        item2._update_after_edit()
         self.presentItem(item2)
         # item is 'normal' and item2 is 'late'
         self.assertEquals(item.getListType(), 'normal')
@@ -1539,12 +1539,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item = self.create('MeetingItem')
         self.validateItem(item)
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertNotIn('sendToCouncilEmergency',
                          self.transitions(item))
         # ask emergency for sending to Council
         item.setOtherMeetingConfigsClonableToEmergency((cfg2Id, ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertIn('sendToCouncilEmergency',
                       self.transitions(item))
         # when it is 'sendToCouncilEmergency', it is cloned to the Council
@@ -1758,7 +1758,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         # for now this advice may be asked
         vendors = self.tool.vendors
         self.assertFalse(vendors.getItemAdviceStates())
@@ -1770,13 +1770,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         developers = self.tool.developers
         self.assertFalse(developers.getItemAdviceStates())
         item.setOptionalAdvisers(('vendors', 'developers'))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.assertIn('askAdvicesByItemCreator', self.transitions(item))
 
         # now test when item is 'proposed_to_internal_reviewer_waiting_advices'
         self.changeUser('pmReviewer1')
         item.setOptionalAdvisers(('vendors', ))
-        item.at_post_edit_script()
+        item._update_after_edit()
         self.changeUser('siteadmin')
         self.do(item, 'proposeToAdministrativeReviewer')
         self.do(item, 'proposeToInternalReviewer')

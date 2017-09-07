@@ -1626,13 +1626,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
     def test_CouncilItemSentToCollegeWhenReturned(self):
         """While an item in the council is set to 'delayed', it is sent
-           in 'itemcreated' state back to the College and ready to process
+           in 'validated' state back to the College and ready to process
            back to the council."""
         cfg = self.meetingConfig
         cfgId = cfg.getId()
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
+        # change proposingGroup to 'vendors' so we test that item is correctly validated
+        # even if it is not accessible during the process when in it 'itemcreated'
+        councilItem.setProposingGroup('vendors')
+        councilItem.at_post_edit_script()
         self.do(councilItem, 'return')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
         self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)

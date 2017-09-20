@@ -5,6 +5,7 @@ Products.MeetingLiege Changelog
 ----------------
 - When an item is sent from College to Council, keep the 'toDiscuss' field
 - Do not call at_post_edit_script directly anymore, use Meeting(Item)._update_after_edit
+- Moved to advanced tests/helpers.WF_STATE_NAME_MAPPINGS from PloneMeeting
 
 4.0 (2017-08-18)
 ----------------

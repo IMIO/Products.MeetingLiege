@@ -164,7 +164,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # now local_roles are correct
         self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
         # going back to 'proposed' will remove given local roles
-        self.backToState(item, self.WF_STATE_NAME_MAPPINGS['proposed'])
+        self.backToState(item, self._stateMappingFor('proposed')) 
         self.assertTrue(not specialReaders in item.__ac_local_roles__)
         self.validateItem(item)
         self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])

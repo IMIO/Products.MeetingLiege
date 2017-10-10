@@ -11,9 +11,9 @@ from OFS.ObjectManager import BeforeDeleteException
 from plone import api
 from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
-from Products.PloneMeeting import PloneMeetingError
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
+from Products.PloneMeeting.config import PloneMeetingError
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import getLastEvent

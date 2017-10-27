@@ -142,7 +142,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         if self.context.adapted().getLegalTextForFDAdvice():
             body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
         representative = self.context.getCategory(theObject=True).Description().split('|')[1]
-        body += "<p>Sur proposition de %s <br/></p>" % representative
+        body += "<p>Sur proposition de %s,<br/></p>" % representative
         body += self.context.getDecision() + '<p></p>'
         body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p></p>' or ''
         body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''

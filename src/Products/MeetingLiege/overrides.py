@@ -111,7 +111,7 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         if tool.isManager(self.context):
             return True
 
-        # if user may see and isPowerObserver, double check for normal annexes (not decision annexes
+        # if user may see and isPowerObserver, double check for normal annexes (not decision annexes)
         # that are all viewable when isPowerObserver
         # power observer may only access annexes of items using the categories
         # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'

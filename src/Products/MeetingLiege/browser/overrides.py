@@ -74,19 +74,13 @@ class MLAdviceDelaysView(AdviceDelaysView):
 class MLSignedChangeView(SignedChangeView):
     """ """
 
-    def _get_next_values(self, old_values):
-        """Only MeetingManagers may set an annex as 'signed'."""
-        values = {}
-        tool = api.portal.get_tool('portal_plonemeeting')
-        isManager = tool.isManager(self.context)
-        # if not Manager, values after to_sign True/signed False is to_sign False/signed False
-        if not isManager and old_values['to_sign'] is True and old_values['signed'] is False:
-            values['to_sign'] = False
-            values['signed'] = False
-            status = -1
-        else:
-            return super(MLSignedChangeView, self)._get_next_values(old_values)
-        return status, values
+    def _may_set_values(self, values):
+        """ """
+        res = super(MLSignedChangeView, self)._may_set_values(values)
+        if res:
+            tool = api.portal.get_tool('portal_plonemeeting')
+            res = bool(tool.isManager(self.context))
+        return res
 
 
 class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):

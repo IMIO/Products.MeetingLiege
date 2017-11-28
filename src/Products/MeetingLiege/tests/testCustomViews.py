@@ -22,8 +22,9 @@
 # 02110-1301, USA.
 #
 
+from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_category_object
-
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
@@ -31,7 +32,8 @@ class testCustomViews(MeetingLiegeTestCase):
     """Tests the Meeting adapted methods."""
 
     def test_MLSignedChangeView(self):
-        """SignedChangeView was overrided so only MeetingManagers may set an element as 'signed'."""
+        """SignedChangeView was overrided so only MeetingManagers may set
+           an element as 'to_sign' or 'signed'."""
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
         annex = self.addAnnex(item)
@@ -40,18 +42,14 @@ class testCustomViews(MeetingLiegeTestCase):
         group = category.get_category_group()
         group.signed_activated = True
 
-        # for non (Meeting)Managers, only able to switch from 'not to sign' to 'to sign', unable to set as 'signed'
-        # 'not to sign' to 'to sign'
-        self.assertEqual(
-            view._get_next_values({'to_sign': False, 'signed': False}),
-            (0, {'to_sign': True, 'signed': False}))
-        # when when set 'to sign', the next value will be 'not to sign' and not 'signed'
-        self.assertEqual(
-            view._get_next_values({'to_sign': True, 'signed': False}),
-            (-1, {'to_sign': False, 'signed': False}))
+        # for non (Meeting)Managers, nothing doable even if annex editable
+        self.assertTrue(self.hasPermission(ModifyPortalContent, annex))
+        self.assertFalse(view._may_set_values({}))
 
         # (Meeting)Managers are able to set an element as signed
         self.changeUser('pmManager')
+        self.assertTrue(self.hasPermission(ModifyPortalContent, annex))
+        self.assertTrue(view._may_set_values({}))
         # 'loop between possibilities'not to sign' to 'to sign'
         self.assertEqual(
             view._get_next_values({'to_sign': False, 'signed': False}),
@@ -64,3 +62,28 @@ class testCustomViews(MeetingLiegeTestCase):
         self.assertEqual(
             view._get_next_values({'to_sign': True, 'signed': True}),
             (-1, {'to_sign': False, 'signed': False}))
+
+    def test_DecisionAnnexToSignOnlyViewableToMeetingManagers(self):
+        '''When the 'deliberation' is added as decision annex 'to sign', nobody else
+           but (Meeting)Managers may see the annex.'''
+        cfg = self.meetingConfig
+        self._setupStorePodAsAnnex()
+        # create an item
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+
+        # add a decision annex as MeetingManager
+        # configure annex_type "decision" so it is "to_sign" by default
+        self.changeUser('pmManager')
+        decision_annex = cfg.annexes_types.item_decision_annexes.get('decision-annex')
+        decision_annex_group = decision_annex.get_category_group()
+        decision_annex_group.signed_activated = True
+        decision_annex.to_sign = True
+        # add annex
+        annex = self.addAnnex(item, relatedTo='item_decision')
+        self.assertTrue(annex.to_sign)
+        self.assertTrue(bool(get_categorized_elements(item)))
+
+        # not viewable by 'pmCreator1'
+        self.changeUser('pmCreator1')
+        self.assertFalse(bool(get_categorized_elements(item)))

@@ -29,12 +29,6 @@ from Products.PloneMeeting.tests.testViews import testViews as pmtv
 class testViews(MeetingLiegeTestCase, pmtv):
     ''' '''
 
-    def test_DecisionAnnexToSignOnlyViewableToMeetingManagers(self):
-        '''When the 'deliberation' is added as decision annex 'to sign', nobody else
-           but (Meeting)Managers may see the annex.'''
-        self._setupStorePodAsAnnex()
-        
-
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()

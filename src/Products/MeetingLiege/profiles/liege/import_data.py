@@ -25,6 +25,14 @@ courrierCollege = ItemAnnexTypeDescriptor('courrier-a-valider-par-le-college',
                                           u'courrierCollege.png')
 annexeDecision = ItemAnnexTypeDescriptor('annexeDecision', 'Annexe à la décision',
                                          u'attach.png', relatedTo='item_decision', confidential=True)
+deliberation_to_sign = ItemAnnexTypeDescriptor(
+          'deliberation_to_sign', 'Délibération à signer',
+          u'deliberation_to_sign.png', relatedTo='item_decision',
+          to_sign=True, only_for_meeting_managers=True)
+deliberation = ItemAnnexTypeDescriptor(
+          'deliberation', 'Délibération', u'deliberation.png',
+          relatedTo='item_decision', to_sign=True, signed=True,
+          only_for_meeting_managers=True)
 annexeAvis = AnnexTypeDescriptor('annexeAvis', 'Annexe à un avis',
                                  u'attach.png', relatedTo='advice', confidential=True)
 annexeAvisLegal = AnnexTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
@@ -221,7 +229,8 @@ categoriesCollege = [recurring,
 collegeMeeting.categories = categoriesCollege
 collegeMeeting.shortName = 'College'
 collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()'
-collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision,
+collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
+                             annexeDecision, deliberation_to_sign, deliberation,
                              annexeAvis, annexeAvisLegal, annexeSeance]
 collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpacteditors',
                                                   'reader_advices',
@@ -429,6 +438,9 @@ collegeMeeting.itemTemplates = [
         <p><b>Article 3&nbsp;:</b></p>
         <p>...</p>"""),
 ]
+collegeMeeting.category_group_activated_attrs = {
+          'item_annexes': ['confidentiality_activated', 'signed_activated'],
+          'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
 
 # council
 councilMeeting = MeetingConfigDescriptor(
@@ -453,7 +465,8 @@ councilMeeting.itemReferenceFormat = \
     "python: 'Ref. ' + (here.hasMeeting() " \
     "and here.restrictedTraverse('pm_unrestricted_methods').getLinkedMeetingDate().strftime('%Y%m%d') or '') + '/' + " \
     "str(here.getItemNumber(relativeTo='meeting'))"
-councilMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege, annexeDecision,
+councilMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
+                             annexeDecision, deliberation_to_sign, deliberation,
                              annexeAvis, annexeAvisLegal, annexeSeance]
 councilMeeting.annexConfidentialFor = ('restricted_power_observers',)
 councilMeeting.usedItemAttributes = ['budgetInfos',
@@ -547,6 +560,9 @@ councilMeeting.recurringItems = [
         category='recurrents',
         proposingGroup='secretariat',
         decision='Mandats de paiement de la semaine approuvés'), ]
+councilMeeting.category_group_activated_attrs = {
+          'item_annexes': ['confidentiality_activated', 'signed_activated'],
+          'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
 
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(collegeMeeting, councilMeeting),

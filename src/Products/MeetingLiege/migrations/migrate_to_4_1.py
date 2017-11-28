@@ -16,7 +16,6 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
         PMMigrate_To_4_1.run(self)
         # now MeetingLiege specific steps
         logger.info('Migrating to MeetingLiege 4.1...')
-        self.updateHolidays()
         self.finish()
 
 

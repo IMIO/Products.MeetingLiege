@@ -19,9 +19,9 @@
     permission="zope2.View"
     />
 
-  <browser:resource
-        name="collective.iconifiedcategory.more_infos.png"
-        file="overrides/more_infos.png"
-        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
+  <browser:resourceDirectory
+    name="collective.iconifiedcategory.images"
+    directory="overrides/images"
+    layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
 
 </configure>

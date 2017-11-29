@@ -168,6 +168,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
     def test_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
+        cfg = self.meetingConfig
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
         # asked by item creator and when item in state 'proposed_to_internal_reviewer_waiting_advices',
         # asekd by internal reviewer
@@ -760,8 +761,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         '''Test behaviour of the 'accept_and_return' decision transition.
            This will send the item to the council then duplicate the original item (college)
            and automatically validate it so it is available for the next meetings.'''
+        cfg = self.meetingConfig
+        cfgId = cfg.getId()
         cfg2 = self.meetingConfig2
-        cfg2Id = self.meetingConfig2.getId()
+        cfg2Id = cfg2.getId()
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='An item to return')
         # create meetingFolder in cfg2 for pmCreator1
@@ -803,18 +806,20 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # ... and validated
         self.assertTrue(duplicatedLocally.queryState() == 'validated')
         # informations about "needs to be sent to other mc" is kept
-        self.assertTrue(duplicatedLocally.getOtherMeetingConfigsClonableTo() == (cfg2.getId(), ))
+        self.assertTrue(duplicatedLocally.getOtherMeetingConfigsClonableTo() == (cfg2Id, ))
         # now if duplicated item is accepted again, it will not be sent again the council
         meeting2 = self.create('Meeting', date='2014/02/02 09:00:00')
         # present the item into the meeting
         self.presentItem(duplicatedLocally)
         self.decideMeeting(meeting2)
         # it already being considered as sent to the other mc
-        self.assertTrue(duplicatedLocally._checkAlreadyClonedToOtherMC(cfg2.getId()))
+        self.assertTrue(duplicatedLocally._checkAlreadyClonedToOtherMC(cfg2Id))
         # it will not be considered as sent to the other mc if item
         # that was sent in the council is 'delayed' or 'marked_not_applicable'
         # so insert duplicatedToCfg2 in a meeting and 'delay' it
-        councilMeeting = self.create('Meeting', date='2015/01/15 09:00:00', meetingConfig=cfg2)
+        self.setMeetingConfig(cfg2Id)
+        councilMeeting = self.create('Meeting', date='2015/01/15 09:00:00')
+        self.setMeetingConfig(cfgId)
         # meetingConfig2 is using categories
         duplicatedToCfg2.setCategory('deployment')
         self.presentItem(duplicatedToCfg2)
@@ -839,7 +844,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             newDuplicatedLocally = newduplicated2
         else:
             newDuplicatedLocally = newduplicated1
-        self.assertTrue(newDuplicatedLocally.portal_type == self.meetingConfig.getItemTypeName())
+        self.assertTrue(newDuplicatedLocally.portal_type == cfg.getItemTypeName())
         meeting3 = self.create('Meeting', date='2014/02/02 09:00:00')
         self.presentItem(newDuplicatedLocally)
         self.decideMeeting(meeting3)
@@ -1808,7 +1813,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         group = self.portal.portal_groups.getGroupById('{0}_advisers'.format(TREASURY_GROUP_ID))
         group.addMember('pmCreator2')
         # make TREASURY_GROUP_ID a power adviser group
-        self.meetingConfig.setPowerAdvisersGroups((TREASURY_GROUP_ID, ))
+        cfg.setPowerAdvisersGroups((TREASURY_GROUP_ID, ))
 
         # create an item and make it 'accepted'
         self.changeUser('pmCreator1')

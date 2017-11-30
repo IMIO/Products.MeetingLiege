@@ -42,6 +42,7 @@ from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
+from imio.history.utils import getLastAction
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
@@ -1103,7 +1104,12 @@ class CustomMeetingItem(MeetingItem):
         adviceType = adviceInd['type']
         comment = financialStuff['comment']
         adviceGivenOnLocalized = advice['advice_given_on_localized']
-        delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized']
+        delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized'] or \
+            adviceHolder.toLocalizedTime(
+                getLastAction(
+                    adviceHolder,
+                    action='completeness_complete',
+                    history_name='completeness_changes')['time'])
         delayStatus = advice['delay_infos']['delay_status']
         outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
         limitDateLocalized = advice['delay_infos']['limit_date_localized']

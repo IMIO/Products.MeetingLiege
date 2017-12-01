@@ -38,3 +38,8 @@ recursive-include src *.zargo
 recursive-include src *.zcml
 recursive-include src *.zip
 recursive-include templates *.conf
+recursive-include src *.csv
+recursive-include src *.ods
+recursive-include src *.po
+recursive-include src *.pot
+recursive-include src *.props

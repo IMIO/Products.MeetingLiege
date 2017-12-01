@@ -685,6 +685,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(item1a, 'proposeToFinance')
         item1a.setCompleteness('completeness_complete')
         self.do(item2, 'proposeToFinance')
+        # use change-item-completeness view to change completeness
+        # so completeness_changes_history is updated
+        changeCompletenessView = item1a.restrictedTraverse('@@change-item-completeness')
+        changeCompletenessView._changeCompleteness(
+            new_completeness_value='completeness_complete',
+            bypassSecurityCheck=True,
+            comment='')
+        item1a.updateLocalRoles()
         item2.setCompleteness('completeness_complete')
         self.do(item3, 'proposeToFinance')
         item3.setCompleteness('completeness_complete')
@@ -726,6 +734,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(advice1a, 'signFinancialAdvice')
         self.do(advice2, 'signFinancialAdvice')
 
+        # strange case where delay_started_on is None,
+        # in this case, the completeness_complete time action is used
+        self.changeUser('admin')
+        self.do(item1a, 'backToProposedToDirector')
+        item1a.adviceIndex[item3.getFinanceAdvice()]['delay_started_on'] = None
+        item1a.updateLocalRoles()
+
         financialStuff1 = item1.adapted().getFinancialAdviceStuff()
         financialStuff1a = item1a.adapted().getFinancialAdviceStuff()
         # positive_with_remarks 'advice_type' is printed like 'positive'
@@ -762,6 +777,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         res6 = "<p>Avis du Directeur financier expiré le {0}</p>".format(limitDateLocalized3)
 
         self.assertTrue(item1.adapted().getLegalTextForFDAdvice() == res1)
+        # when 'delay_started_on_localized' is None, the last action "completeness_complete" time is used
+        self.assertIsNone(advice1a['delay_infos']['delay_started_on_localized'])
+        # positive_with_remarks_finance is rendered as positive, so same result as res1 here
         self.assertTrue(item1a.adapted().getLegalTextForFDAdvice() == res1)
         self.assertTrue(item2.adapted().getLegalTextForFDAdvice() == res2)
         self.assertTrue(item3.adapted().getLegalTextForFDAdvice() == res3)

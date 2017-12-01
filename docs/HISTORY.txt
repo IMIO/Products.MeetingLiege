@@ -1,6 +1,12 @@
 Products.MeetingLiege Changelog
 ===============================
 
+4.1b2 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 4.1b1 (2017-12-01)
 ------------------
 - When an item is sent from College to Council, keep the 'toDiscuss' field

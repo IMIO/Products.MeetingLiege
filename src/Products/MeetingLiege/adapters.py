@@ -1104,12 +1104,14 @@ class CustomMeetingItem(MeetingItem):
         adviceType = adviceInd['type']
         comment = financialStuff['comment']
         adviceGivenOnLocalized = advice['advice_given_on_localized']
-        delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized'] or \
-            adviceHolder.toLocalizedTime(
-                getLastAction(
+        delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized']
+        if not delayStartedOnLocalized:
+            last_completeness_complete_action = getLastAction(
                     adviceHolder,
                     action='completeness_complete',
-                    history_name='completeness_changes')['time'])
+                    history_name='completeness_changes')
+            if last_completeness_complete_action:
+                delayStartedOnLocalized = adviceHolder.toLocalizedTime(last_completeness_complete_action['time'])
         delayStatus = advice['delay_infos']['delay_status']
         outOfFinancialdptLocalized = financialStuff['out_of_financial_dpt_localized']
         limitDateLocalized = advice['delay_infos']['limit_date_localized']

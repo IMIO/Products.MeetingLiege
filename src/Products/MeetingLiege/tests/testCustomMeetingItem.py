@@ -680,6 +680,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.proposeItem(item1a)
         self.proposeItem(item2)
         self.proposeItem(item3)
+        # do not fail when called and things are still not on
+        self.assertEqual(item1.adapted().getLegalTextForFDAdvice(), '')
+        self.assertEqual(item1a.adapted().getLegalTextForFDAdvice(), '')
+        self.assertEqual(item2.adapted().getLegalTextForFDAdvice(), '')
+        self.assertEqual(item3.adapted().getLegalTextForFDAdvice(), '')
         self.do(item1, 'proposeToFinance')
         item1.setCompleteness('completeness_complete')
         self.do(item1a, 'proposeToFinance')
@@ -776,18 +781,18 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         res6 = "<p>Avis du Directeur financier expiré le {0}</p>".format(limitDateLocalized3)
 
-        self.assertTrue(item1.adapted().getLegalTextForFDAdvice() == res1)
+        self.assertEqual(item1.adapted().getLegalTextForFDAdvice(), res1)
         # when 'delay_started_on_localized' is None, the last action "completeness_complete" time is used
         self.assertIsNone(advice1a['delay_infos']['delay_started_on_localized'])
         # positive_with_remarks_finance is rendered as positive, so same result as res1 here
-        self.assertTrue(item1a.adapted().getLegalTextForFDAdvice() == res1)
-        self.assertTrue(item2.adapted().getLegalTextForFDAdvice() == res2)
-        self.assertTrue(item3.adapted().getLegalTextForFDAdvice() == res3)
+        self.assertEqual(item1a.adapted().getLegalTextForFDAdvice(), res1)
+        self.assertEqual(item2.adapted().getLegalTextForFDAdvice(), res2)
+        self.assertEqual(item3.adapted().getLegalTextForFDAdvice(), res3)
 
-        self.assertTrue(item1.adapted().getLegalTextForFDAdvice(isMeeting=True) == res4)
-        self.assertTrue(item1a.adapted().getLegalTextForFDAdvice(isMeeting=True) == res4)
-        self.assertTrue(item2.adapted().getLegalTextForFDAdvice(isMeeting=True) == res5)
-        self.assertTrue(item3.adapted().getLegalTextForFDAdvice(isMeeting=True) == res6)
+        self.assertEqual(item1.adapted().getLegalTextForFDAdvice(isMeeting=True), res4)
+        self.assertEqual(item1a.adapted().getLegalTextForFDAdvice(isMeeting=True), res4)
+        self.assertEqual(item2.adapted().getLegalTextForFDAdvice(isMeeting=True), res5)
+        self.assertEqual(item3.adapted().getLegalTextForFDAdvice(isMeeting=True), res6)
 
     def test_MayGenerateFDAdvice(self):
         '''An advice can be generated when:

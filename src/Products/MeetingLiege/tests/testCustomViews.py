@@ -22,6 +22,7 @@
 # 02110-1301, USA.
 #
 
+from AccessControl import Unauthorized
 from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_category_object
 from Products.CMFCore.permissions import ModifyPortalContent
@@ -75,15 +76,28 @@ class testCustomViews(MeetingLiegeTestCase):
         # add a decision annex as MeetingManager
         # configure annex_type "decision" so it is "to_sign" by default
         self.changeUser('pmManager')
-        decision_annex = cfg.annexes_types.item_decision_annexes.get('decision-annex')
-        decision_annex_group = decision_annex.get_category_group()
-        decision_annex_group.signed_activated = True
-        decision_annex.to_sign = True
+        decision_annex_type = cfg.annexes_types.item_decision_annexes.get('decision-annex')
+        decision_annex_type_group = decision_annex_type.get_category_group()
+        decision_annex_type_group.signed_activated = True
+        decision_annex_type.to_sign = True
         # add annex
-        annex = self.addAnnex(item, relatedTo='item_decision')
-        self.assertTrue(annex.to_sign)
+        annex_decision = self.addAnnex(item, relatedTo='item_decision')
+        self.assertTrue(annex_decision.to_sign)
         self.assertTrue(bool(get_categorized_elements(item)))
 
         # not viewable by 'pmCreator1'
         self.changeUser('pmCreator1')
         self.assertFalse(bool(get_categorized_elements(item)))
+
+        # use the actionview to switch to signed so annex is viewable
+        view = annex_decision.restrictedTraverse('@@iconified-signed')
+        # if pmCreator1 tries, he gets Unauthorized
+        self.assertRaises(Unauthorized, view.set_values, {'signed': True})
+        # pmManager may change value
+        self.changeUser('pmManager')
+        view.set_values({'to_sign': True, 'signed': True})
+        self.assertTrue(annex_decision.to_sign, item.categorized_elements[annex_decision.UID()]['to_sign'])
+        self.assertTrue(annex_decision.signed, item.categorized_elements[annex_decision.UID()]['signed'])
+        # annex is viewable
+        self.changeUser('pmCreator1')
+        self.assertTrue(bool(get_categorized_elements(item)))

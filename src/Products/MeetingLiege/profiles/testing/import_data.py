@@ -343,8 +343,6 @@ collegeMeeting.decisionTopicStates = ('decided', 'closed')
 collegeMeeting.recordItemHistoryStates = []
 collegeMeeting.maxShownMeetings = 5
 collegeMeeting.maxDaysDecisions = 60
-collegeMeeting.itemDocFormats = ('odt', 'pdf')
-collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
 collegeMeeting.selectableAdvisers = ('developers', 'vendors')
 collegeMeeting.usedAdviceTypes = ('positive_finance', 'positive_with_remarks_finance',
@@ -444,8 +442,6 @@ councilMeeting.itemAdviceStates = ('validated',)
 councilMeeting.recordItemHistoryStates = []
 councilMeeting.maxShownMeetings = 5
 councilMeeting.maxDaysDecisions = 60
-councilMeeting.itemDocFormats = ('odt', 'pdf')
-councilMeeting.meetingDocFormats = ('odt', 'pdf')
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',
                                      'observations',
@@ -476,12 +472,88 @@ councilMeeting.meetingUsers = [muser_voter1, muser_voter2, ]
 councilMeeting.recurringItems = []
 councilMeeting.itemTemplates = (template1, template2)
 
+# Bourgmestre
+bourgmestreMeeting = MeetingConfigDescriptor(
+    'meeting-config-bourgmestre', 'Bourgmestre', 'Bourgmestre')
+bourgmestreMeeting.meetingManagers = ('pmManager', )
+bourgmestreMeeting.assembly = 'Default assembly'
+bourgmestreMeeting.signatures = 'Default signatures'
+bourgmestreMeeting.certifiedSignatures = [
+    {'signatureNumber': '1',
+     'name': u'Name1 Name1',
+     'function': u'Function1',
+     'date_from': '',
+     'date_to': ''},
+    {'signatureNumber': '2',
+     'name': u'Name3 Name4',
+     'function': u'Function2',
+     'date_from': '',
+     'date_to': '',
+     }]
+bourgmestreMeeting.categories = [
+    deployment, maintenance, development, events,
+    research, projects, marketing, subproducts]
+bourgmestreMeeting.shortName = 'Bourgmestre'
+bourgmestreMeeting.annexTypes = [
+    financialAnalysis, legalAnalysis, itemAnnex,
+    decisionAnnex,
+    adviceAnnex, adviceLegalAnalysis,
+    meetingAnnex]
+bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
+bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
+bourgmestreMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
+bourgmestreMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
+bourgmestreMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
+bourgmestreMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
+bourgmestreMeeting.transitionsForPresentingAnItem = (
+    u'proposeToAdministrativeReviewer',
+    u'proposeToInternalReviewer',
+    u'proposeToDirector',
+    u'proposeToGeneralManager',
+    u'proposeToCabinetManager',
+    u'proposeToCabinetReviewer',
+    u'validate',
+    u'present')
+bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
+    {'meeting_transition': 'close',
+     'item_transition': 'accept'}, )
+bourgmestreMeeting.transitionsToConfirm = []
+bourgmestreMeeting.meetingTopicStates = ('created', )
+bourgmestreMeeting.decisionTopicStates = ('closed', )
+bourgmestreMeeting.itemAdviceStates = ('proposed_to_director_waiting_advices', )
+bourgmestreMeeting.recordItemHistoryStates = []
+bourgmestreMeeting.maxShownMeetings = 5
+bourgmestreMeeting.maxDaysDecisions = 60
+bourgmestreMeeting.usedItemAttributes = [
+    'budgetInfos',
+    'observations',
+    'privacy',
+    'itemAssembly',
+    'motivation',
+    'itemIsSigned']
+bourgmestreMeeting.insertingMethodsOnAddItem = (
+    {'insertingMethod': 'at_the_end',
+     'reverse': '0'}, )
+bourgmestreMeeting.useGroupsAsCategories = False
+bourgmestreMeeting.useAdvices = True
+bourgmestreMeeting.selectableAdvisers = []
+bourgmestreMeeting.itemAdviceStates = []
+bourgmestreMeeting.itemAdviceEditStates = []
+bourgmestreMeeting.itemAdviceViewStates = []
+bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'marked_not_applicable']
+bourgmestreMeeting.itemPowerObserversStates = ('presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.itemRestrictedPowerObserversStates = ('presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.useCopies = True
+bourgmestreMeeting.useVotes = False
+bourgmestreMeeting.recurringItems = []
+bourgmestreMeeting.itemTemplates = []
+
 # no recurring items for this meetingConfig, only for tests !!!
 # so we can test a meetingConfig with recurring items (college) and without (council)
 
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
-    meetingConfigs=(collegeMeeting, councilMeeting),
+    meetingConfigs=(collegeMeeting, councilMeeting, bourgmestreMeeting),
     groups=(developers, vendors, endUsers))
 # necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData
 data.restrictUsers = False

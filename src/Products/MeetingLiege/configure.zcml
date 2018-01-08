@@ -47,6 +47,23 @@
            factory="Products.MeetingLiege.adapters.MeetingCouncilLiegeWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions"/>
 
+  <!-- WF actions and conditions for Meeting and MeetingItem for Bourgmestre -->
+  <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
+           factory="Products.MeetingLiege.adapters.MeetingItemBourgmestreWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions"/>
+
+  <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
+           factory="Products.MeetingLiege.adapters.MeetingItemBourgmestreWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions"/>
+
+  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+           factory="Products.MeetingLiege.adapters.MeetingBourgmestreWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions"/>
+
+  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+           factory="Products.MeetingLiege.adapters.MeetingBourgmestreWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions"/>
+
   <!-- Customizations for every Meetings -->
   <adapter for="Products.PloneMeeting.interfaces.IMeeting"
            factory="Products.MeetingLiege.adapters.CustomMeeting"

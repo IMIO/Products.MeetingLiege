@@ -1,18 +1,22 @@
 <?xml version="1.0"?>
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
+
  <!-- first remove then re-apply so workflows are correct regarding workflow adaptations... -->
  <object name="meetingadviceliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingbourgmestre_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingcollegeliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingcouncilliege_workflow" meta_type="Workflow" remove="True"/>
+ <object name="meetingitembourgmestre_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingitemcouncilliege_workflow" meta_type="Workflow" remove="True"/>
+
  <object name="meetingadviceliege_workflow" meta_type="Workflow"/>
+ <object name="meetingbourgmestre_workflow" meta_type="Workflow"/>
  <object name="meetingcollegeliege_workflow" meta_type="Workflow"/>
  <object name="meetingcouncilliege_workflow" meta_type="Workflow"/>
+ <object name="meetingitembourgmestre_workflow" meta_type="Workflow"/>
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow"/>
  <object name="meetingitemcouncilliege_workflow" meta_type="Workflow"/>
-<!-- ##code-section workflowobjects -->
-<!-- ##/code-section workflowobjects -->
  <bindings>
   <type type_id="MeetingCollege">
      <bound-workflow workflow_id="meetingcollegeliege_workflow" />
@@ -20,16 +24,20 @@
   <type type_id="MeetingCouncil">
      <bound-workflow workflow_id="meetingcouncilliege_workflow" />
   </type>
+  <type type_id="MeetingBourgmestre">
+     <bound-workflow workflow_id="meetingbourgmestre_workflow" />
+  </type>
   <type type_id="MeetingItemCollege">
      <bound-workflow workflow_id="meetingitemcollegeliege_workflow" />
   </type>
   <type type_id="MeetingItemCouncil">
      <bound-workflow workflow_id="meetingitemcouncilliege_workflow" />
   </type>
+  <type type_id="MeetingItemBourgmestre">
+     <bound-workflow workflow_id="meetingitembourgmestre_workflow" />
+  </type>
   <type type_id="meetingadvicefinances">
      <bound-workflow workflow_id="meetingadviceliege_workflow" />
   </type>
-<!-- ##code-section workflowbindings -->
-<!-- ##/code-section workflowbindings -->
  </bindings>
 </object>

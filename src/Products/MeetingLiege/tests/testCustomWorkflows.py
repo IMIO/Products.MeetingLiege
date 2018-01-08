@@ -168,7 +168,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
     def test_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
-        cfg = self.meetingConfig
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
         # asked by item creator and when item in state 'proposed_to_internal_reviewer_waiting_advices',
         # asekd by internal reviewer
@@ -1851,3 +1850,50 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         advice.advice_comment = RichTextValue(u'My positive comment')
         notify(ObjectModifiedEvent(advice))
         self.assertEqual(item.adviceIndex[TREASURY_GROUP_ID]['type'], 'positive')
+
+    def test_BourgmestreAdministrativeProcess(self):
+        '''This test the Bourgmestre workflows administrative part :
+           - itemcreated;
+           - proposed_to_administrative_reviewer;
+           - proposed_to_internal_reviewer;
+           - proposed_to_director;
+           - proposed_to_director_waiting_advices.'''
+        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        # pmCreator1 can no more edit item but can still view it
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self.changeUser('pmAdminReviewer1')
+        # pmAdminReviewer1 may access item and edit it
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        # he may send the item back to the pmCreator1 or send it to the internal reviewer
+        self.assertTrue(self.transitions(item) == ['backToItemCreated',
+                                                   'proposeToInternalReviewer', ])
+        self.do(item, 'proposeToInternalReviewer')
+        # pmAdminReviewer1 can no more edit item but can still view it
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        # pmInternalReviewer1 may access item and edit it
+        self.changeUser('pmInternalReviewer1')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        # he may send the item back to the administrative reviewer or send it to the reviewer (director)
+        self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
+                                                   'proposeToDirector', ])
+        self.do(item, 'proposeToDirector')
+        # pmInternalReviewer1 can no more edit item but can still view it
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        # pmReviewer1 (director) may access item and edit it
+        self.changeUser('pmReviewer1')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        # he may send the item back to the internal reviewer, askAdvicesByDirector
+        # or send it to general manager (proposeToGeneralManager)
+        import ipdb; ipdb.set_trace()
+        self.assertTrue(self.transitions(item) == ['askAdvicesByDirector',
+                                                   'backToProposedToInternalReviewer',
+                                                   'proposeToGeneralManager'])

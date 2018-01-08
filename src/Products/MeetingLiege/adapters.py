@@ -28,7 +28,6 @@ import unicodedata
 from collections import OrderedDict
 from appy.gen import No
 from AccessControl import ClassSecurityInfo
-from AccessControl import getSecurityManager
 from Globals import InitializeClass
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
@@ -66,10 +65,14 @@ from Products.PloneMeeting.interfaces import IMeetingCustom
 from Products.PloneMeeting.interfaces import IMeetingConfigCustom
 from Products.PloneMeeting.interfaces import IMeetingItemCustom
 from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
+from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingCouncilLiegeWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingCouncilLiegeWorkflowConditions
+from Products.MeetingLiege.interfaces import IMeetingItemBourgmestreWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingItemBourgmestreWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowActions
@@ -1867,7 +1870,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def __init__(self, item):
         self.context = item  # Implements IMeetingItem
-        self.sm = getSecurityManager()
 
     security.declarePublic('mayProposeToAdministrativeReviewer')
 
@@ -2351,7 +2353,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def __init__(self, item):
         self.context = item  # Implements IMeetingItem
-        self.sm = getSecurityManager()
 
     security.declarePublic('mayCorrect')
 
@@ -2393,6 +2394,167 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         return res
 
 
+class MeetingBourgmestreWorkflowActions(MeetingWorkflowActions):
+    '''Adapter that adapts a meeting item implementing IMeetingItem to the
+       interface IMeetingBourgmestreWorkflowActions'''
+
+    implements(IMeetingBourgmestreWorkflowActions)
+    security = ClassSecurityInfo()
+
+
+class MeetingBourgmestreWorkflowConditions(MeetingWorkflowConditions):
+    '''Adapter that adapts a meeting item implementing IMeetingItem to the
+       interface IMeetingBourgmestreWorkflowConditions'''
+
+    implements(IMeetingBourgmestreWorkflowConditions)
+    security = ClassSecurityInfo()
+
+
+class MeetingItemBourgmestreWorkflowActions(MeetingItemWorkflowActions):
+    '''Adapter that adapts a meeting item implementing IMeetingItem to the
+       interface IMeetingItemBourgmestreWorkflowActions'''
+
+    implements(IMeetingItemBourgmestreWorkflowActions)
+    security = ClassSecurityInfo()
+
+    security.declarePrivate('doAskAdvicesByItemCreator')
+
+    def doAskAdvicesByItemCreator(self, stateChange):
+        pass
+
+    security.declarePrivate('doProposeToAdministrativeReviewer')
+
+    def doProposeToAdministrativeReviewer(self, stateChange):
+        ''' '''
+        pass
+
+    security.declarePrivate('doProposeToInternalReviewer')
+
+    def doProposeToInternalReviewer(self, stateChange):
+        ''' '''
+        pass
+
+    security.declarePrivate('doAskAdvicesByInternalReviewer')
+
+    def doAskAdvicesByInternalReviewer(self, stateChange):
+        pass
+
+    security.declarePrivate('doProposeToDirector')
+
+    def doProposeToDirector(self, stateChange):
+        pass
+
+    security.declarePrivate('doMark_not_applicable')
+
+    def doMark_not_applicable(self, stateChange):
+        """ """
+        pass
+
+    security.declarePrivate('doRefuse')
+
+    def doRefuse(self, stateChange):
+        """ """
+        pass
+
+    security.declarePrivate('doDelay')
+
+    def doDelay(self, stateChange):
+        '''When a Bourgmestre item is delayed, it is duplicated in initial_state.'''
+        pass
+
+
+class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
+    '''Adapter that adapts a meeting item implementing IMeetingItem to the
+       interface IMeetingItemBourgmestreWorkflowConditions'''
+
+    implements(IMeetingItemBourgmestreWorkflowConditions)
+    security = ClassSecurityInfo()
+
+    def __init__(self, item):
+        self.context = item  # Implements IMeetingItem
+
+    security.declarePublic('mayProposeToAdministrativeReviewer')
+
+    def mayProposeToAdministrativeReviewer(self):
+        """ """
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayProposeToInternalReviewer')
+
+    def mayProposeToInternalReviewer(self):
+        """ """
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayProposeToDirector')
+
+    def mayProposeToDirector(self):
+        """ """
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayBackToProposedToDirector')
+
+    def mayBackToProposedToDirector(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayProposeToGeneralManager')
+
+    def mayProposeToGeneralManager(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayAskAdvicesByDirector')
+
+    def mayAskAdvicesByDirector(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayBackToItemCreated')
+
+    def mayBackToItemCreated(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayBackToProposedToAdministrativeReviewer')
+
+    def mayBackToProposedToAdministrativeReviewer(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayBackToProposedToInternalReviewer')
+
+    def mayBackToProposedToInternalReviewer(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+
 old_get_advice_given_on = MeetingAdvice.get_advice_given_on
 
 
@@ -2415,6 +2577,10 @@ InitializeClass(CustomMeetingCategory)
 InitializeClass(CustomMeetingConfig)
 InitializeClass(CustomMeetingItem)
 InitializeClass(CustomToolPloneMeeting)
+InitializeClass(MeetingBourgmestreWorkflowActions)
+InitializeClass(MeetingBourgmestreWorkflowConditions)
+InitializeClass(MeetingItemBourgmestreWorkflowActions)
+InitializeClass(MeetingItemBourgmestreWorkflowConditions)
 InitializeClass(MeetingCollegeLiegeWorkflowActions)
 InitializeClass(MeetingCollegeLiegeWorkflowConditions)
 InitializeClass(MeetingItemCollegeLiegeWorkflowActions)

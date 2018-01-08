@@ -57,12 +57,12 @@ bourgmestreMeeting.recordMeetingHistoryStates = []
 bourgmestreMeeting.xhtmlTransformFields = ()
 bourgmestreMeeting.xhtmlTransformTypes = ()
 bourgmestreMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
-bourgmestreMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
-bourgmestreMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
-bourgmestreMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
-bourgmestreMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
-bourgmestreMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
-bourgmestreMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
+bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
+bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
+bourgmestreMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
+bourgmestreMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
+bourgmestreMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
+bourgmestreMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
 bourgmestreMeeting.transitionsToConfirm = ['MeetingItem.delay', ]
 bourgmestreMeeting.meetingTopicStates = ('created', 'frozen')
 bourgmestreMeeting.decisionTopicStates = ('decided', 'closed')
@@ -112,7 +112,7 @@ bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_trans
                                                                   'item_transition': 'itemfreeze'},
                                                                  {'meeting_transition': 'close',
                                                                   'item_transition': 'accept'},)
-bourgmestreMeeting.meetingPowerObserversStates = ('closed', 'created', 'decided', 'frozen')
+bourgmestreMeeting.meetingPowerObserversStates = ('closed', 'created', )
 bourgmestreMeeting.powerAdvisersGroups = ()
 bourgmestreMeeting.itemBudgetInfosStates = ()
 bourgmestreMeeting.useCopies = True

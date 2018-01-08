@@ -49,3 +49,4 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
         PloneMeetingTestCase.setUp(self)
         self.meetingConfig = getattr(self.tool, 'meeting-config-college')
         self.meetingConfig2 = getattr(self.tool, 'meeting-config-council')
+        self.meetingConfig3 = getattr(self.tool, 'meeting-config-bourgmestre')

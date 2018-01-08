@@ -1893,7 +1893,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the internal reviewer, askAdvicesByDirector
         # or send it to general manager (proposeToGeneralManager)
-        import ipdb; ipdb.set_trace()
         self.assertTrue(self.transitions(item) == ['askAdvicesByDirector',
                                                    'backToProposedToInternalReviewer',
                                                    'proposeToGeneralManager'])

@@ -45,6 +45,7 @@ from imio.history.utils import getLastAction
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
+from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import PMMessageFactory as _
 from Products.PloneMeeting.config import READER_USECASES
@@ -77,6 +78,7 @@ from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowAct
 from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowConditions
+from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
@@ -84,6 +86,8 @@ from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
+
 from Products.MeetingLiege.config import TREASURY_GROUP_ID
 
 # disable every wfAdaptations but 'return_to_proposing_group'
@@ -568,8 +572,22 @@ class CustomMeetingItem(MeetingItem):
                                      'validated', )
     MeetingItem.beforePublicationStates = customBeforePublicationStates
 
+    BOURGMESTRE_ADMINISTRATIVE_STATES = [
+        'itemcreated', 'proposed_to_administrative_reviewer',
+        'proposed_to_internal_reviewer', 'proposed_to_director']
+
     def __init__(self, item):
         self.context = item
+
+    def is_cabinet_manager(self):
+        """Is current user a cabinet manager?"""
+        group_id = '{0}_creators'.format(BOURGMESTRE_GROUP_ID)
+        return group_id in api.user.get_current().getGroups()
+
+    def is_cabinet_reviewer(self):
+        """Is current user a cabinet reviewer?"""
+        group_id = '{0}_reviewers'.format(BOURGMESTRE_GROUP_ID)
+        return group_id in api.user.get_current().getGroups()
 
     security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
 
@@ -1291,6 +1309,37 @@ class CustomMeetingItem(MeetingItem):
         for groupOfMatter in category.getGroupsOfMatter():
             groupId = '%s_observers' % groupOfMatter
             item.manage_addLocalRoles(groupId, ('Reader', ))
+
+    def _getGroupManagingItem(self):
+        """ """
+        tool = api.portal.get_tool('portal_plonemeeting')
+        item = self.getSelf()
+        # administrative states, proposingGroup is managing the item
+        item_state = item.queryState()
+        if item_state in self.BOURGMESTRE_ADMINISTRATIVE_STATES:
+            return item.getProposingGroup(True)
+        # general manager, we take the _reviewers group
+        elif item_state in ['proposed_to_general_manager']:
+            return tool.get(GENERAL_MANAGER_GROUP_ID)
+        else:
+            return tool.get(BOURGMESTRE_GROUP_ID)
+
+    def _setBourgmestreGroupsReadAccess(self):
+        """Depending on item's review_state, we need to give Reader role to the proposing group
+           and general manager so it keeps Read access to item when it is managed by the Cabinet."""
+        item = self.getSelf()
+        item_state = item.queryState()
+        meetingGroup = None
+        roles = {suffix: 'Reader' for suffix in MEETING_GROUP_SUFFIXES}
+        # access to proposingGroup
+        if item_state not in self.BOURGMESTRE_ADMINISTRATIVE_STATES:
+            meetingGroup = item.getProposingGroup(True)
+            item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
+        # access to GENERAL_MANAGER_GROUP_ID groups
+        if item_state not in self.BOURGMESTRE_ADMINISTRATIVE_STATES + ['proposed_to_general_manager']:
+            tool = api.portal.get_tool('portal_plonemeeting')
+            meetingGroup = tool.get(GENERAL_MANAGER_GROUP_ID)
+            item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
 
     def _findCustomOneLevelFor(self, insertMethod):
         '''Manage our custom inserting method 'on_decision_first_word'.'''
@@ -2444,6 +2493,21 @@ class MeetingItemBourgmestreWorkflowActions(MeetingItemWorkflowActions):
     def doProposeToDirector(self, stateChange):
         pass
 
+    security.declarePrivate('doProposeToGeneralManager')
+
+    def doProposeToGeneralManager(self, stateChange):
+        pass
+
+    security.declarePrivate('doProposeToCabinetManager')
+
+    def doProposeToCabinetManager(self, stateChange):
+        pass
+
+    security.declarePrivate('doProposeToCabinetReviewer')
+
+    def doProposeToCabinetReviewer(self, stateChange):
+        pass
+
     security.declarePrivate('doMark_not_applicable')
 
     def doMark_not_applicable(self, stateChange):
@@ -2460,7 +2524,8 @@ class MeetingItemBourgmestreWorkflowActions(MeetingItemWorkflowActions):
 
     def doDelay(self, stateChange):
         '''When a Bourgmestre item is delayed, it is duplicated in initial_state.'''
-        pass
+        # take original behavior, aka duplicate in it's initial_state
+        super(MeetingItemBourgmestreWorkflowActions, self).doDelay(stateChange)
 
 
 class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
@@ -2516,6 +2581,27 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
+        return res
+
+    security.declarePublic('mayProposeToCabinetManager')
+
+    def mayProposeToCabinetManager(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayProposeToCabinetReviewer')
+
+    def mayProposeToCabinetReviewer(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+            # if item is itemcreated, only Cabinet Manager may propose to cabinet reviewer directly
+            if self.context.queryState() == 'itemcreated' and not self.context.adapted().is_cabinet_manager():
+                res = False
         return res
 
     security.declarePublic('mayAskAdvicesByDirector')

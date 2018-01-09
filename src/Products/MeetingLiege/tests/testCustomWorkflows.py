@@ -68,17 +68,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
-        self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer', ])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer', ])
         # a MeetingManager is able to validate an item immediatelly, bypassing
         # the entire validation workflow.
         # a director who is able to propose to administrative and internal
         # reviewer can also bypass those 2 transitions and propose the item directly to
         # the direction.
         self.changeUser('pmManager')
-        self.assertTrue(self.transitions(item) == ['proposeToAdministrativeReviewer',
-                                                   'proposeToDirector',
-                                                   'proposeToInternalReviewer',
-                                                   'validate', ])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer',
+                          'validate', ])
         # the pmCreator1 send the item to the administrative reviewer
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
@@ -90,8 +92,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the pmCreator1 or send it to the internal reviewer
-        self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'proposeToInternalReviewer', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'proposeToInternalReviewer', ])
         self.do(item, 'proposeToInternalReviewer')
         # pmAdminReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -101,8 +104,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the administrative reviewer or send it to the reviewer (director)
-        self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
-                                                   'proposeToDirector', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToProposedToAdministrativeReviewer',
+                          'proposeToDirector', ])
         self.do(item, 'proposeToDirector')
         # pmInternalReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -113,8 +117,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the internal reviewer, validate it
         # or send it back to itemCreated.
-        self.assertTrue(self.transitions(item) == ['backToProposedToInternalReviewer',
-                                                   'validate', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToProposedToInternalReviewer',
+                          'validate', ])
         self.do(item, 'validate')
         # pmReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -123,8 +128,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # create a meeting, a MeetingManager will manage it now
         self.changeUser('pmManager')
         # the item can be removed sent back to the reviewer (director) or sent back in 'itemcreated'
-        self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'backToProposedToDirector', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToDirector', ])
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         # the item is available for the meeting
         availableItemsQuery = queryparser.parseFormquery(meeting, meeting.adapted()._availableItemsQuery())
@@ -133,37 +139,40 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'present')
         self.assertTrue(item.queryState() == 'presented')
         # the item can be removed from the meeting or sent back in 'itemcreated'
-        self.assertTrue(self.transitions(item) == ['backToValidated', ])
+        self.assertEqual(self.transitions(item), ['backToValidated', ])
         # the meeting can now be frozen then decided
         self.do(meeting, 'freeze')
         # the item has been automatically frozen
         self.assertTrue(item.queryState() == 'itemfrozen')
         # but the item can be sent back to 'presented'
-        self.assertTrue(self.transitions(item) == ['backToPresented', ])
+        self.assertEqual(self.transitions(item), ['backToPresented', ])
         self.do(meeting, 'decide')
         # the item is still frozen but can be decided
-        self.assertTrue(item.queryState() == 'itemfrozen')
-        self.assertTrue(self.transitions(item) == ['accept',
-                                                   'accept_but_modify',
-                                                   'backToPresented',
-                                                   'delay',
-                                                   'mark_not_applicable',
-                                                   'pre_accept',
-                                                   'refuse',
-                                                   'return'])
+        self.assertEqual(item.queryState(), 'itemfrozen')
+        self.assertEqual(self.transitions(item),
+                         ['accept',
+                          'accept_but_modify',
+                          'backToPresented',
+                          'delay',
+                          'mark_not_applicable',
+                          'pre_accept',
+                          'refuse',
+                          'return'])
         # if we pre_accept an item, we can accept it after
         self.do(item, 'pre_accept')
-        self.assertTrue(self.transitions(item) == ['accept',
-                                                   'accept_but_modify',
-                                                   'backToItemFrozen'])
+        self.assertEqual(self.transitions(item),
+                         ['accept',
+                          'accept_but_modify',
+                          'backToItemFrozen'])
         # if we decide an item, it may still be set backToItemFrozen until the meeting is closed
         self.do(item, 'accept')
-        self.assertTrue(self.transitions(item) == ['backToItemFrozen', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemFrozen', ])
         # the meeting may be closed or back to frozen
-        self.assertTrue(self.transitions(meeting) == ['backToFrozen',
-                                                      'close', ])
+        self.assertEqual(self.transitions(meeting),
+                         ['backToFrozen', 'close', ])
         self.do(meeting, 'close')
-        self.assertTrue(not self.transitions(item))
+        self.assertFalse(self.transitions(item))
 
     def test_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
@@ -1861,6 +1870,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.setMeetingConfig(self.meetingConfig3.getId())
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
+        # pmCreator1 may only propose to administrative reviewer
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer'])
         self.do(item, 'proposeToAdministrativeReviewer')
         # pmCreator1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -1870,8 +1882,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the pmCreator1 or send it to the internal reviewer
-        self.assertTrue(self.transitions(item) == ['backToItemCreated',
-                                                   'proposeToInternalReviewer', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated', 'proposeToInternalReviewer', ])
         self.do(item, 'proposeToInternalReviewer')
         # pmAdminReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -1881,8 +1893,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the administrative reviewer or send it to the reviewer (director)
-        self.assertTrue(self.transitions(item) == ['backToProposedToAdministrativeReviewer',
-                                                   'proposeToDirector', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToProposedToAdministrativeReviewer',
+                          'proposeToDirector', ])
         self.do(item, 'proposeToDirector')
         # pmInternalReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -1893,6 +1906,143 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the internal reviewer, askAdvicesByDirector
         # or send it to general manager (proposeToGeneralManager)
-        self.assertTrue(self.transitions(item) == ['askAdvicesByDirector',
-                                                   'backToProposedToInternalReviewer',
-                                                   'proposeToGeneralManager'])
+        self.assertEqual(self.transitions(item),
+                         ['askAdvicesByDirector',
+                          'backToProposedToInternalReviewer',
+                          'proposeToGeneralManager'])
+
+    def _check_access(self, item, userIds, read=True, write=True):
+        """ """
+        original_user_id = self.member.getId()
+        for userId in userIds:
+            self.changeUser(userId)
+            if read:
+                self.assertTrue(self.hasPermission(View, item))
+            else:
+                self.assertFalse(self.hasPermission(View, item))
+            if write:
+                self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+            else:
+                self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self.changeUser(original_user_id)
+
+    def test_BourgmestreDirectionProcess(self):
+        """ """
+        '''This test the Bourgmestre workflows direction part :
+           - proposed_to_general_manager;
+           - proposed_to_cabinet_manager;
+           - proposed_to_cabinet_reviewer;
+           - validated.'''
+        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        # able to trigger proposeToCabinetReviewer
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToCabinetReviewer'])
+
+        # propose to general manager and check access
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.do(item, 'proposeToInternalReviewer')
+        self.do(item, 'proposeToDirector')
+        self.do(item, 'proposeToGeneralManager')
+        self.assertEqual(item.queryState(), 'proposed_to_general_manager')
+
+        # here, proposingGroup still have View access and GENERAL_MANAGER_GROUP_ID
+        # can manage the item
+        self._check_access(
+            item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1', 'pmReviewer1'),
+            write=False)
+
+        self.changeUser('generalManager')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+
+        # propose to cabinet, proposingGroup and GENERAL_MANAGER_GROUP_ID will have read access
+        # and BOURGMESTRE_GROUP_ID creators will have modify access
+        self.do(item, 'proposeToCabinetManager')
+        self.assertEqual(item.queryState(), 'proposed_to_cabinet_manager')
+        # general manager may see, not edit
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        # proposingGroup may see, not edit
+        self.changeUser('pmCreator1')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        # bourgmestreManager have view/edit on item
+        self.changeUser('bourgmestreManager')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        # from this point, item may be sent back to director or sent to cabinet reviewer
+        self.assertEqual(
+            self.transitions(item),
+            ['backToProposedToDirector', 'backToProposedToGeneralManager', 'proposeToCabinetReviewer'])
+
+        # propose to cabinet reviewer, bourgmestreReviewer will have read/edit
+        # and others (proposingGroup, general manager, bourgmestreManager) will have read access
+        self.do(item, 'proposeToCabinetReviewer')
+        self.assertFalse(self.transitions(item))
+        self.assertEqual(item.queryState(), 'proposed_to_cabinet_reviewer')
+        self._check_access(
+            item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                   'pmReviewer1', 'generalManager', 'bourgmestreManager'),
+            write=False)
+        # bourgmestre reviewer has the hand
+        self.changeUser('bourgmestreReviewer')
+        self.assertEqual(
+            self.transitions(item),
+            ['backToProposedToCabinetManager', 'backToProposedToDirector', 'validate'])
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+
+    def test_BourgmestreMeetingProcess(self):
+        """ """
+        '''This test the Bourgmestre workflows final part :
+           - validated;
+           - presented;
+           - decided.'''
+        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+
+        # validate item
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.do(item, 'proposeToInternalReviewer')
+        self.do(item, 'proposeToDirector')
+        self.do(item, 'proposeToGeneralManager')
+        self.changeUser('generalManager')
+        self.do(item, 'proposeToCabinetManager')
+        self.changeUser('bourgmestreManager')
+        self.do(item, 'proposeToCabinetReviewer')
+        self.changeUser('bourgmestreReviewer')
+        self.do(item, 'validate')
+
+        # from here, MeetingManagers have the hand and others are looking
+        self._check_access(
+            item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                   'pmReviewer1', 'generalManager', 'bourgmestreManager',
+                   'bourgmestreReviewer'),
+            write=False)
+        self.changeUser('pmManager')
+        self.assertTrue(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        meeting = self.create('Meeting', date=DateTime('2018/01/09'))
+        self.do(item, 'present')
+        self.assertEqual(meeting.getItems()[0], item)
+        self._check_access(
+            item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                   'pmReviewer1', 'generalManager', 'bourgmestreManager',
+                   'bourgmestreReviewer'),
+            write=False)
+
+        # if item is delayed, it is duplicated in it's initial_state
+        self.do(item, 'delay')
+        self.assertEqual(item.queryState(), 'delayed')
+        cloned_item = item.getBRefs('ItemPredecessor')[0]
+        self.assertEqual(cloned_item.queryState(), 'itemcreated')
+        # only viewable by proposingGroup MeetingMember
+        self._check_access(
+            cloned_item, ('generalManager', 'bourgmestreManager', 'bourgmestreReviewer',
+                          'pmAdminReviewer1', 'pmInternalReviewer1', 'pmReviewer1'),
+            read=False, write=False)
+        self._check_access(cloned_item, userIds=('pmCreator1', ))

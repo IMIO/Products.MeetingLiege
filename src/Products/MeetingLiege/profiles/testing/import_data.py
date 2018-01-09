@@ -14,6 +14,8 @@ from Products.PloneMeeting.profiles import PloneMeetingConfiguration
 from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.PloneMeeting.profiles import RecurringItemDescriptor
 from Products.PloneMeeting.profiles import UserDescriptor
+from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
+from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
 
 # Annex types
 overheadAnalysisSubtype = ItemAnnexSubTypeDescriptor(
@@ -102,36 +104,14 @@ template1 = ItemTemplateDescriptor(id='template1',
                                    category='',
                                    proposingGroup='',
                                    templateUsingGroups=['developers', 'vendors'],
-                                   decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale et plus particulièrement son article 111;</p>
-<p>Vu l'Arrêté du Gouvernement Wallon du 22 avril 2004 portant codification de la législation relative aux pouvoirs locaux tel que confirmé par le décret du 27 mai 2004 du Conseil régional wallon;</p>
-<p>Attendu que les décisions suivantes du Bureau permanent/du Conseil de l'Action sociale du XXX ont été reçues le XXX dans le cadre de la tutelle générale sur les centres publics d'action sociale :</p>
-<p>- ...;</p>
-<p>- ...;</p>
-<p>- ...</p>
-<p>Attendu que ces décisions sont conformes à la loi et à l'intérêt général;</p>
-<p>Déclare à l'unanimité que :</p>
-<p><strong>Article 1er :</strong></p>
-<p>Les décisions du Bureau permanent/Conseil de l'Action sociale visées ci-dessus sont conformes à la loi et à l'intérêt général et qu'il n'y a, dès lors, pas lieu de les annuler.</p>
-<p><strong>Article 2 :</strong></p>
-<p>Copie de la présente délibération sera transmise au Bureau permanent/Conseil de l'Action sociale.</p>""")
+                                   decision="""<p>...</p>""")
 template2 = ItemTemplateDescriptor(id='template2',
                                    title='Contrôle médical systématique agent contractuel',
                                    description='Contrôle médical systématique agent contractuel',
                                    category='',
                                    proposingGroup='vendors',
                                    templateUsingGroups=['vendors', ],
-                                   decision="""<p>Vu la loi du 26 mai 2002 instituant le droit à l’intégration sociale;</p>
-<p>Vu la délibération du Conseil communal du 29 juin 2009 concernant le cahier spécial des charges relatif au marché de services portant sur le contrôle des agents communaux absents pour raisons médicales;</p>
-<p>Vu sa délibération du 17 décembre 2009 désignant le docteur XXX en qualité d’adjudicataire pour la mission de contrôle médical des agents de l’Administration communale;</p>
-<p>Vu également sa décision du 17 décembre 2009 d’opérer les contrôles médicaux de manière systématique et pour une période d’essai d’un trimestre;</p>
-<p>Attendu qu’un certificat médical a été  reçu le XXX concernant XXX la couvrant du XXX au XXX, avec la mention « XXX »;</p>
-<p>Attendu que le Docteur XXX a transmis au service du Personnel, par fax, le même jour à XXX le rapport de contrôle mentionnant l’absence de XXX ce XXX à XXX;</p>
-<p>Considérant que XXX avait été informée par le Service du Personnel de la mise en route du système de contrôle systématique que le médecin-contrôleur;</p>
-<p>Considérant qu’ayant été absent(e) pour maladie la semaine précédente elle avait reçu la visite du médecin-contrôleur;</p>
-<p>DECIDE :</p>
-<p><strong>Article 1</strong> : De convoquer XXX devant  Monsieur le Secrétaire communal f.f. afin de lui rappeler ses obligations en la matière.</p>
-<p><strong>Article 2</strong> :  De prévenir XXX, qu’en cas de récidive, il sera proposé par le Secrétaire communal au Collège de transformer les jours de congés de maladie en absence injustifiée (retenue sur traitement avec application de la loi du 26 mai 2002 citée ci-dessus).</p>
-<p><strong>Article 3</strong> : De charger le service du personnel du suivi de ce dossier.</p>""")
+                                   decision="""<p>...</p>""")
 
 # Categories -------------------------------------------------------------------
 deployment = CategoryDescriptor('deployment', 'Deployment topics', categoryId='deployment')
@@ -180,6 +160,15 @@ powerobserver1 = UserDescriptor('powerobserver1',
                                 [],
                                 email="powerobserver1@plonemeeting.org",
                                 fullname='M. Power Observer1')
+generalManager = UserDescriptor(
+    'generalManager', [], email="general_manager@plonemeeting.org", fullname='M. GeneralManager')
+bourgmestreManager = UserDescriptor(
+    'bourgmestreManager', [], email="bourgmestre_manager@plonemeeting.org",
+    fullname='M. Bourgmestre Manager')
+bourgmestreReviewer = UserDescriptor(
+    'bourgmestreReviewer', [], email="bourgmestre_reviewer@plonemeeting.org",
+    fullname='M. Bourgmestre Reviewer')
+
 # powerobserver1 is 'power observer' because in the meeting-config-college '_powerobservers' group
 college_powerobservers = PloneGroupDescriptor('meeting-config-college_powerobservers',
                                               'meeting-config-college_powerobservers',
@@ -245,6 +234,13 @@ vendors.observers.append(voter2)
 
 # Add a vintage group
 endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)
+
+# Bourgmestre related groups
+general_manager_group = GroupDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
+general_manager_group.reviewers.append(generalManager)
+bourgmestre_group = GroupDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
+bourgmestre_group.creators.append(bourgmestreManager)
+bourgmestre_group.reviewers.append(bourgmestreReviewer)
 
 pmManager_observer = MeetingUserDescriptor('pmManager',
                                            duty='Secrétaire de la Chancellerie',
@@ -501,10 +497,14 @@ bourgmestreMeeting.annexTypes = [
     meetingAnnex]
 bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
 bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
-bourgmestreMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
-bourgmestreMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
-bourgmestreMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
-bourgmestreMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
+bourgmestreMeeting.itemConditionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
+bourgmestreMeeting.itemActionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
+bourgmestreMeeting.meetingConditionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
+bourgmestreMeeting.meetingActionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
 bourgmestreMeeting.transitionsForPresentingAnItem = (
     u'proposeToAdministrativeReviewer',
     u'proposeToInternalReviewer',
@@ -540,9 +540,12 @@ bourgmestreMeeting.selectableAdvisers = []
 bourgmestreMeeting.itemAdviceStates = []
 bourgmestreMeeting.itemAdviceEditStates = []
 bourgmestreMeeting.itemAdviceViewStates = []
-bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'marked_not_applicable']
-bourgmestreMeeting.itemPowerObserversStates = ('presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
-bourgmestreMeeting.itemRestrictedPowerObserversStates = ('presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.itemDecidedStates = [
+    'accepted', 'refused', 'delayed', 'marked_not_applicable']
+bourgmestreMeeting.itemPowerObserversStates = (
+    'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.itemRestrictedPowerObserversStates = (
+    'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
 bourgmestreMeeting.useCopies = True
 bourgmestreMeeting.useVotes = False
 bourgmestreMeeting.recurringItems = []
@@ -554,7 +557,7 @@ bourgmestreMeeting.itemTemplates = []
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting, bourgmestreMeeting),
-    groups=(developers, vendors, endUsers))
+    groups=(developers, vendors, endUsers, bourgmestre_group, general_manager_group))
 # necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData
 data.restrictUsers = False
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,

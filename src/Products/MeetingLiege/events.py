@@ -63,6 +63,8 @@ def onItemLocalRolesUpdated(item, event):
        Update local_roles regarding :
        - the matterOfGroups;
        - access of finance advisers."""
+    if item.portal_type == "MeetingItemBourgmestre":
+        item.adapted()._setBourgmestreGroupsReadAccess()
     item.adapted()._updateMatterOfGroupsLocalRoles()
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     item.adapted().updateFinanceAdvisersAccess(old_local_roles=event.old_local_roles)

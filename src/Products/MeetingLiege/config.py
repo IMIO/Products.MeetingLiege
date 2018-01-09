@@ -9,22 +9,14 @@
 # GNU General Public License (GPL)
 #
 
+from collections import OrderedDict
+from Products.CMFCore.permissions import setDefaultRoles
+from Products.PloneMeeting import config as PMconfig
+
 __author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
-
-# Product configuration.
-#
-# The contents of this module will be imported into __init__.py, the
-# workflow configuration and every content type module.
-#
-# If you wish to perform custom configuration, you may put a file
-# AppConfig.py in your product's root directory. The items in there
-# will be included (by importing) in this file if found.
-
-from collections import OrderedDict
-from Products.CMFCore.permissions import setDefaultRoles
-
+product_globals = globals()
 
 PROJECTNAME = "MeetingLiege"
 
@@ -32,17 +24,7 @@ PROJECTNAME = "MeetingLiege"
 DEFAULT_ADD_CONTENT_PERMISSION = "Add portal content"
 setDefaultRoles(DEFAULT_ADD_CONTENT_PERMISSION, ('Manager', 'Owner', 'Contributor'))
 
-product_globals = globals()
-
-# Dependencies of Products to be installed by quick-installer
-# override in custom configuration
-DEPENDENCIES = []
-
-# Dependend products - not quick-installed - used in testcase
-# override in custom configuration
-PRODUCT_DEPENDENCIES = []
-
-from Products.PloneMeeting import config as PMconfig
+# Roles
 LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
 LIEGEROLES['internalreviewers'] = 'MeetingInternalReviewer'
@@ -69,14 +51,18 @@ FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 
 TREASURY_GROUP_ID = 'df-controle-tresorerie'
 
+GENERAL_MANAGER_GROUP_ID = 'sc'
+
+BOURGMESTRE_GROUP_ID = 'bourgmestre'
+
 FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
                           'financialreviewers',
                           'financialmanagers')
 
-LIEGE_EXTRA_ADVICE_SUFFIXES = {}
+LIEGE_EXTRA_GROUP_SUFFIXES = {}
 for fin_group_id in FINANCE_GROUP_IDS:
-    LIEGE_EXTRA_ADVICE_SUFFIXES.update({fin_group_id: list(FINANCE_GROUP_SUFFIXES)})
-PMconfig.EXTRA_ADVICE_SUFFIXES = LIEGE_EXTRA_ADVICE_SUFFIXES
+    LIEGE_EXTRA_GROUP_SUFFIXES.update({fin_group_id: list(FINANCE_GROUP_SUFFIXES)})
+PMconfig.EXTRA_GROUP_SUFFIXES = LIEGE_EXTRA_GROUP_SUFFIXES
 
 # in those states, finance advice can still be given
 FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen')

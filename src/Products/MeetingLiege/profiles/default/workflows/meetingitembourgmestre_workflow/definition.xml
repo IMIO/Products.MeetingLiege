@@ -205,7 +205,7 @@
         title="itemcreated"
         i18n:attributes="title">
   <exit-transition transition_id="proposeToAdministrativeReviewer"/>
-  <exit-transition transition_id="proposed_to_cabinet_reviewer"/>
+  <exit-transition transition_id="proposeToCabinetReviewer"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -589,12 +589,12 @@
         i18n:attributes="title">
   <exit-transition transition_id="proposeToCabinetReviewer"/>
   <exit-transition transition_id="backToProposedToGeneralManager"/>
+  <exit-transition transition_id="backToProposedToDirector"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingObserverLocal</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
@@ -605,26 +605,22 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annex"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Add annexDecision"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingObserverLocal</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
@@ -632,7 +628,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingObserverLocal</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
@@ -640,21 +635,18 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingObserverLocal</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingBudgetImpactEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write decision"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write item MeetingManager reserved fields"
                   acquired="False">
@@ -669,14 +661,12 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
   </permission-map>
   <permission-map name="View"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingObserverLocal</permission-role>
-   <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
  </state>
@@ -685,6 +675,7 @@
         i18n:attributes="title">
   <exit-transition transition_id="validate"/>
   <exit-transition transition_id="backToProposedToCabinetManager"/>
+  <exit-transition transition_id="backToProposedToDirector"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -1379,7 +1370,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToItemCreated</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayBackToItemCreated()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('itemcreated')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToPresented"
@@ -1391,6 +1382,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToPresented</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayCorrect('presented')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToAdministrativeReviewer"
@@ -1402,7 +1394,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToProposedToAdministrativeReviewer</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayBackToProposedToAdministrativeReviewer()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('proposed_to_administrative_reviewer')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToCabinetManager"
@@ -1414,6 +1406,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToProposedToCabinetManager</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayCorrect('proposed_to_cabinet_manager')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToCabinetReviewer"
@@ -1425,6 +1418,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToProposedToCabinetReviewer</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayCorrect('proposed_to_cabinet_reviewer')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToDirector"
@@ -1436,7 +1430,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToProposedToDirector</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayBackToProposedToDirector()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('proposed_to_director')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToGeneralManager"
@@ -1448,6 +1442,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToProposedToGeneralManager</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayCorrect('proposed_to_general_manager')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToProposedToInternalReviewer"
@@ -1459,7 +1454,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToProposedToInternalReviewer</action>
   <guard>
-    <guard-expression>python:here.wfConditions().mayBackToProposedToInternalReviewer()</guard-expression>
+    <guard-expression>python:here.wfConditions().mayCorrect('proposed_to_internal_reviewer')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="backToValidated"
@@ -1471,6 +1466,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">backToValidated</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayCorrect('validated')</guard-expression>
   </guard>
  </transition>
  <transition transition_id="delay"
@@ -1504,6 +1500,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">present</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayPresent()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="proposeToAdministrativeReviewer"
@@ -1527,6 +1524,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">proposeToCabinetManager</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayProposeToCabinetManager()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="proposeToCabinetReviewer"
@@ -1538,6 +1536,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">proposeToCabinetReviewer</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayProposeToCabinetReviewer()</guard-expression>
   </guard>
  </transition>
  <transition transition_id="proposeToDirector"
@@ -1576,18 +1575,6 @@
     <guard-expression>python:here.wfConditions().mayProposeToInternalReviewer()</guard-expression>
   </guard>
  </transition>
- <transition transition_id="proposed_to_cabinet_reviewer"
-             title="proposed_to_cabinet_reviewer"
-             new_state="proposed_to_cabinet_reviewer"
-             trigger="USER"
-             before_script=""
-             after_script=""
-             i18n:attributes="title">
-  <action url="" icon="" category="workflow" i18n:translate="">proposed_to_cabinet_reviewer</action>
-  <guard>
-    <guard-expression>python:here.wfConditions().mayProposeToCabinetReviewer()</guard-expression>
-  </guard>
- </transition>
  <transition transition_id="refuse"
              title="refuse"
              new_state="refused"
@@ -1608,6 +1595,7 @@
              i18n:attributes="title">
   <action url="" icon="" category="workflow" i18n:translate="">validate</action>
   <guard>
+    <guard-expression>python:here.wfConditions().mayValidate()</guard-expression>
   </guard>
  </transition>
  <variable variable_id="action" for_catalog="False"

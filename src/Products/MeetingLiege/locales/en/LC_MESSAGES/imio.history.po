@@ -49,4 +49,3 @@ msgstr "The item has been automatically validated because the finance advice was
 #. Default: "The item has been duplicated and the new item is available for a next meeting."
 msgid "return_comments"
 msgstr "The item has been duplicated and the new item is available for a next meeting."
-

@@ -574,10 +574,16 @@ class CustomMeetingItem(MeetingItem):
 
     BOURGMESTRE_ADMINISTRATIVE_STATES = [
         'itemcreated', 'proposed_to_administrative_reviewer',
-        'proposed_to_internal_reviewer', 'proposed_to_director']
+        'proposed_to_internal_reviewer', 'proposed_to_director',
+        'proposed_to_director_waiting_advices']
 
     def __init__(self, item):
         self.context = item
+
+    def is_general_manager(self):
+        """Is current user a general manager?"""
+        group_id = '{0}_reviewers'.format(GENERAL_MANAGER_GROUP_ID)
+        return group_id in api.user.get_current().getGroups()
 
     def is_cabinet_manager(self):
         """Is current user a cabinet manager?"""
@@ -1848,7 +1854,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     def doRefuse(self, stateChange):
         """ """
         # call original action
-        MeetingItemWorkflowActions.doRefuse(self, stateChange)
+        super(MeetingItemCollegeLiegeWorkflowActions, self).doRefuse(stateChange)
         self._deleteLinkedCouncilItem()
 
     security.declarePrivate('doAccept_and_return')
@@ -1906,7 +1912,7 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         '''When a College item is delayed, if it was sent to Council, delete
            the item in the Council.'''
         # call original action
-        MeetingItemWorkflowActions.doDelay(self, stateChange)
+        super(MeetingItemCollegeLiegeWorkflowActions, self).doDelay(stateChange)
         self._deleteLinkedCouncilItem()
 
 
@@ -2191,7 +2197,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # False. The diffence here is when we correct an item from itemfrozen to
         # presented, we have to check if the Meeting is in the "created" state
         # and not "published".
-        res = MeetingItemWorkflowConditions.mayCorrect(self, destinationState)
+        res = super(MeetingItemCollegeLiegeWorkflowConditions, self).mayCorrect(destinationState)
         # Manage our own behaviour now when the item is linked to a meeting,
         # a MeetingManager can correct anything except if the meeting is closed
         if res is not True:
@@ -2341,8 +2347,7 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
         '''See docstring in interfaces.py'''
         # Take the default behaviour except if the meeting is frozen
         # we still have the permission to correct it.
-        from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
-        res = MeetingWorkflowConditions.mayCorrect(self, destinationState)
+        res = super(MeetingCouncilLiegeWorkflowConditions, self).mayCorrect(destinationState)
         currentState = self.context.queryState()
         if res is not True and currentState == "frozen":
             # Change the behaviour for being able to correct a frozen meeting
@@ -2411,7 +2416,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # False. The diffence here is when we correct an item from itemfrozen to
         # presented, we have to check if the Meeting is in the "created" state
         # and not "published".
-        res = MeetingItemWorkflowConditions.mayCorrect(self, destinationState)
+        res = super(MeetingItemCouncilLiegeWorkflowConditions, self).mayCorrect(destinationState)
         # Manage our own behaviour now when the item is linked to a meeting,
         # a MeetingManager can correct anything except if the meeting is closed
         if res is not True:
@@ -2466,11 +2471,6 @@ class MeetingItemBourgmestreWorkflowActions(MeetingItemWorkflowActions):
     implements(IMeetingItemBourgmestreWorkflowActions)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('doAskAdvicesByItemCreator')
-
-    def doAskAdvicesByItemCreator(self, stateChange):
-        pass
-
     security.declarePrivate('doProposeToAdministrativeReviewer')
 
     def doProposeToAdministrativeReviewer(self, stateChange):
@@ -2491,6 +2491,11 @@ class MeetingItemBourgmestreWorkflowActions(MeetingItemWorkflowActions):
     security.declarePrivate('doProposeToDirector')
 
     def doProposeToDirector(self, stateChange):
+        pass
+
+    security.declarePrivate('doAskAdvicesByDirector')
+
+    def doAskAdvicesByDirector(self, stateChange):
         pass
 
     security.declarePrivate('doProposeToGeneralManager')

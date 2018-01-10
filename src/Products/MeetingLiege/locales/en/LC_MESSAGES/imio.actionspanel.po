@@ -21,4 +21,3 @@ msgstr "The item has been accepted and returned, it has been duplicated and the 
 #. Default: "The item has been returned, it has been duplicated and the new item is available for a next meeting."
 msgid "return_done_descr"
 msgstr "The item has been returned, it has been duplicated and the new item is available for a next meeting."
-

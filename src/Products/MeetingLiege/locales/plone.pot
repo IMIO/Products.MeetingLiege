@@ -52,12 +52,20 @@ msgstr ""
 msgid "askAdvicesByInternalReviewer"
 msgstr ""
 
+#. Default: "Ask advices"
+msgid "askAdvicesByDirector"
+msgstr ""
+
 #. Default: "Advices asked by creator"
 msgid "itemcreated_waiting_advices"
 msgstr ""
 
 #. Default: "Advices asked by internal reviewer"
 msgid "proposed_to_internal_reviewer_waiting_advices"
+msgstr ""
+
+#. Default: "Advices asked by director"
+msgid "proposed_to_director_waiting_advices"
 msgstr ""
 
 #. Default: "Propose to administrative reviewer"
@@ -80,6 +88,18 @@ msgstr ""
 msgid "proposeToDirector"
 msgstr ""
 
+#. Default: "Propose to general manager"
+msgid "proposeToGeneralManager"
+msgstr ""
+
+#. Default: "Propose to Cabinet manager"
+msgid "proposeToCabinetManager"
+msgstr ""
+
+#. Default: "Propose to Cabinet reviewer"
+msgid "proposeToCabinetReviewer"
+msgstr ""
+
 #. Default: "Propose to finance"
 msgid "proposeToFinance"
 msgstr ""
@@ -90,6 +110,18 @@ msgstr ""
 
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
+msgstr ""
+
+#. Default: "Proposed to General Manager"
+msgid "proposed_to_general_manager"
+msgstr ""
+
+#. Default: "Proposed to Cabinet Manager"
+msgid "proposed_to_cabinet_manager"
+msgstr ""
+
+#. Default: "Proposed to Cabinet reviewer"
+msgid "proposed_to_cabinet_reviewer"
 msgstr ""
 
 #. Default: "Proposed to finance"
@@ -178,6 +210,18 @@ msgstr ""
 
 #. Default: "Back to proposed to director"
 msgid "backToProposedToDirector"
+msgstr ""
+
+#. Default: "Back to proposed to General Manager"
+msgid "backToProposedToGeneralManager"
+msgstr ""
+
+#. Default: "Back to proposed to Cabinet Manager"
+msgid "backToProposedToCabinetManager"
+msgstr ""
+
+#. Default: "Back to proposed to Cabinet Reviewer"
+msgid "backToProposedToCabinetReviewer"
 msgstr ""
 
 #. Default: "Propose to financial controller"

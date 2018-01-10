@@ -33,4 +33,3 @@ msgstr "Label"
 #. Default: "Restrict to selected groups"
 msgid "Archiving reference restrict to selected groups"
 msgstr "Restrict to selected groups"
-

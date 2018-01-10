@@ -431,4 +431,3 @@ msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
-

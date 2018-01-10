@@ -11,6 +11,8 @@ from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.PloneMeeting.profiles import PloneMeetingConfiguration
 from Products.PloneMeeting.profiles import RecurringItemDescriptor
 from Products.PloneMeeting.profiles import UserDescriptor
+from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
+from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
 
 today = DateTime().strftime('%Y/%m/%d')
 
@@ -88,6 +90,14 @@ echevinPers = UserDescriptor('echevinPers', [], email="test@test.be", fullname="
 echevinTrav = UserDescriptor('echevinTrav', [], email="test@test.be", fullname="Echevin des Travaux")
 conseiller = UserDescriptor('conseiller', [], email="test@test.be", fullname="Conseiller")
 emetteuravisPers = UserDescriptor('emetteuravisPers', [], email="test@test.be", fullname="Emetteur avis Personnel")
+generalManager = UserDescriptor(
+    'generalManager', [], email="general_manager@plonemeeting.org", fullname='M. GeneralManager')
+bourgmestreManager = UserDescriptor(
+    'bourgmestreManager', [], email="bourgmestre_manager@plonemeeting.org",
+    fullname='M. Bourgmestre Manager')
+bourgmestreReviewer = UserDescriptor(
+    'bourgmestreReviewer', [], email="bourgmestre_reviewer@plonemeeting.org",
+    fullname='M. Bourgmestre Reviewer')
 
 # add finance groups
 dfcontrol = GroupDescriptor('df-contrale',
@@ -131,6 +141,12 @@ dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
                                  'meeting-config-college__state__refused',
                                  'meeting-config-college__state__validated')
 
+general_manager_group = GroupDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
+general_manager_group.reviewers.append(generalManager)
+bourgmestre_group = GroupDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
+bourgmestre_group.creators.append(bourgmestreManager)
+bourgmestre_group.reviewers.append(bourgmestreReviewer)
+
 groups = [GroupDescriptor('dirgen', 'Directeur Général', 'DG'),
           GroupDescriptor('secretariat', 'Secrétariat communal', 'Secr'),
           GroupDescriptor('informatique', 'Service informatique', 'Info'),
@@ -138,6 +154,8 @@ groups = [GroupDescriptor('dirgen', 'Directeur Général', 'DG'),
           GroupDescriptor('dirfin', 'Directeur Financier', 'DF'),
           GroupDescriptor('comptabilite', 'Service comptabilité', 'Compt'),
           GroupDescriptor('travaux', 'Service travaux', 'Trav'),
+          general_manager_group,
+          bourgmestre_group,
           dfcontrol,
           dfcompta]
 
@@ -306,8 +324,6 @@ collegeMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 
                                            'validated', 'presented', 'refused', 'returned')
 collegeMeeting.meetingPowerObserversStates = ('closed', 'created', 'decided', 'frozen')
 collegeMeeting.meetingAppDefaultView = 'searchmyitems'
-collegeMeeting.itemDocFormats = ('odt', 'pdf')
-collegeMeeting.meetingDocFormats = ('odt', 'pdf')
 collegeMeeting.useAdvices = True
 collegeMeeting.usedAdviceTypes = ('positive_finance', 'positive_with_remarks_finance',
                                   'negative_finance', 'not_required_finance',
@@ -517,8 +533,6 @@ councilMeeting.itemPositiveDecidedStates = ('accepted', 'accepted_but_modified',
 councilMeeting.meetingTopicStates = ('created', 'frozen')
 councilMeeting.decisionTopicStates = ('decided', 'closed')
 councilMeeting.meetingAppDefaultView = 'searchmyitems'
-councilMeeting.itemDocFormats = ('odt', 'pdf')
-councilMeeting.meetingDocFormats = ('odt', 'pdf')
 councilMeeting.useAdvices = False
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.enableAdviceInvalidation = False
@@ -564,7 +578,85 @@ councilMeeting.category_group_activated_attrs = {
           'item_annexes': ['confidentiality_activated', 'signed_activated'],
           'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
 
+# Bourgmestre
+bourgmestreMeeting = MeetingConfigDescriptor(
+    'meeting-config-bourgmestre', 'Bourgmestre', 'Bourgmestre')
+bourgmestreMeeting.meetingManagers = ('pmManager', )
+bourgmestreMeeting.assembly = 'Default assembly'
+bourgmestreMeeting.signatures = 'Default signatures'
+bourgmestreMeeting.certifiedSignatures = [
+    {'signatureNumber': '1',
+     'name': u'Name1 Name1',
+     'function': u'Function1',
+     'date_from': '',
+     'date_to': ''},
+    {'signatureNumber': '2',
+     'name': u'Name3 Name4',
+     'function': u'Function2',
+     'date_from': '',
+     'date_to': '',
+     }]
+bourgmestreMeeting.categories = []
+bourgmestreMeeting.shortName = 'Bourgmestre'
+bourgmestreMeeting.annexTypes = [
+    annexe, annexeBudget, annexeCahier, courrierCollege,
+    annexeDecision, deliberation_to_sign, deliberation,
+    annexeAvis, annexeAvisLegal, annexeSeance]
+bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
+bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
+bourgmestreMeeting.itemConditionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
+bourgmestreMeeting.itemActionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
+bourgmestreMeeting.meetingConditionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
+bourgmestreMeeting.meetingActionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
+bourgmestreMeeting.transitionsForPresentingAnItem = (
+    u'proposeToAdministrativeReviewer',
+    u'proposeToInternalReviewer',
+    u'proposeToDirector',
+    u'proposeToGeneralManager',
+    u'proposeToCabinetManager',
+    u'proposeToCabinetReviewer',
+    u'validate',
+    u'present')
+bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
+    {'meeting_transition': 'close',
+     'item_transition': 'accept'}, )
+bourgmestreMeeting.transitionsToConfirm = []
+bourgmestreMeeting.meetingTopicStates = ('created', )
+bourgmestreMeeting.decisionTopicStates = ('closed', )
+bourgmestreMeeting.itemAdviceStates = ('proposed_to_director_waiting_advices', )
+bourgmestreMeeting.itemAdviceEditStates = ('proposed_to_director_waiting_advices', )
+bourgmestreMeeting.keepAccessToItemWhenAdviceIsGiven = True
+bourgmestreMeeting.recordItemHistoryStates = []
+bourgmestreMeeting.maxShownMeetings = 5
+bourgmestreMeeting.maxDaysDecisions = 60
+bourgmestreMeeting.usedItemAttributes = [
+    'budgetInfos',
+    'observations',
+    'privacy',
+    'itemAssembly',
+    'motivation',
+    'itemIsSigned']
+bourgmestreMeeting.insertingMethodsOnAddItem = (
+    {'insertingMethod': 'at_the_end',
+     'reverse': '0'}, )
+bourgmestreMeeting.useGroupsAsCategories = False
+bourgmestreMeeting.useAdvices = True
+bourgmestreMeeting.selectableAdvisers = []
+bourgmestreMeeting.itemDecidedStates = [
+    'accepted', 'refused', 'delayed', 'marked_not_applicable']
+bourgmestreMeeting.itemPowerObserversStates = (
+    'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.itemRestrictedPowerObserversStates = (
+    'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.useCopies = True
+bourgmestreMeeting.useVotes = False
+bourgmestreMeeting.recurringItems = []
+bourgmestreMeeting.itemTemplates = []
+
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
-                                 meetingConfigs=(collegeMeeting, councilMeeting),
+                                 meetingConfigs=(collegeMeeting, councilMeeting, bourgmestreMeeting),
                                  groups=groups)
-# ------------------------------------------------------------------------------

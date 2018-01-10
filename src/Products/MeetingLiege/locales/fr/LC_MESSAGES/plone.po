@@ -81,6 +81,10 @@ msgid "accepted_but_modified"
 msgstr "Accepté avec modifications"
 
 #. Default: "Ask advices"
+msgid "askAdvicesByDirector"
+msgstr "Demander les avis (Direction)"
+
+#. Default: "Ask advices"
 msgid "askAdvicesByInternalReviewer"
 msgstr "Demander les avis (VI)"
 
@@ -112,6 +116,14 @@ msgstr "Remettre 'En création'"
 msgid "backToProposedToAdministrativeReviewer"
 msgstr "Renvoyer au validateur administratif"
 
+#. Default: "Back to proposed to Cabinet Manager"
+msgid "backToProposedToCabinetManager"
+msgstr "Renvoyer au Gestionnaire Cabinet"
+
+#. Default: "Back to proposed to Cabinet Reviewer"
+msgid "backToProposedToCabinetReviewer"
+msgstr "Renvoyer au Validateur Cabinet"
+
 #. Default: "Back to proposed to director"
 msgid "backToProposedToDirector"
 msgstr "Renvoyer au directeur"
@@ -127,6 +139,10 @@ msgstr "Renvoyer au directeur financier"
 #. Default: "Back to proposed to financial reviewer"
 msgid "backToProposedToFinancialReviewer"
 msgstr "Renvoyer au validateur financier"
+
+#. Default: "Back to proposed to General Manager"
+msgid "backToProposedToGeneralManager"
+msgstr "Renvoyer au Directeur Général"
 
 #. Default: "Back to proposed to internal reviewer"
 msgid "backToProposedToInternalReviewer"
@@ -184,6 +200,14 @@ msgstr "Accepté sous réserve"
 msgid "proposeToAdministrativeReviewer"
 msgstr "Proposer au validateur administratif"
 
+#. Default: "Propose to Cabinet manager"
+msgid "proposeToCabinetManager"
+msgstr "Proposer au Gestionnaire Cabinet"
+
+#. Default: "Propose to Cabinet reviewer"
+msgid "proposeToCabinetReviewer"
+msgstr "Proposer au Validateur Cabinet"
+
 #. Default: "Propose to director"
 msgid "proposeToDirector"
 msgstr "Proposer à la direction"
@@ -204,6 +228,10 @@ msgstr "Proposer au directeur financier"
 msgid "proposeToFinancialReviewer"
 msgstr "Proposer au validateur financier"
 
+#. Default: "Propose to general manager"
+msgid "proposeToGeneralManager"
+msgstr "Proposer au Directeur Général"
+
 #. Default: "Propose to internal reviewer"
 msgid "proposeToInternalReviewer"
 msgstr "Proposer au validateur interne"
@@ -212,9 +240,21 @@ msgstr "Proposer au validateur interne"
 msgid "proposed_to_administrative_reviewer"
 msgstr "Proposé au validateur administratif"
 
+#. Default: "Proposed to Cabinet Manager"
+msgid "proposed_to_cabinet_manager"
+msgstr "Proposé au Gestionnaire Cabinet"
+
+#. Default: "Proposed to Cabinet reviewer"
+msgid "proposed_to_cabinet_reviewer"
+msgstr "Proposé au Validateur Cabinet"
+
 #. Default: "Proposed to director"
 msgid "proposed_to_director"
 msgstr "Proposé à la direction"
+
+#. Default: "Advices asked by director"
+msgid "proposed_to_director_waiting_advices"
+msgstr "Avis demandés par la direction"
 
 #. Default: "Proposed to finance"
 msgid "proposed_to_finance"
@@ -231,6 +271,10 @@ msgstr "Proposé au directeur financier"
 #. Default: "Proposed to financial reviewer"
 msgid "proposed_to_financial_reviewer"
 msgstr "Proposé au validateur financier"
+
+#. Default: "Proposed to General Manager"
+msgid "proposed_to_general_manager"
+msgstr "Proposé au Directeur Général"
 
 #. Default: "Proposed to internal reviewer"
 msgid "proposed_to_internal_reviewer"
@@ -267,4 +311,3 @@ msgstr "Proposer à la séance"
 #. Default: "Validated"
 msgid "validated"
 msgstr "Proposé à la séance"
-

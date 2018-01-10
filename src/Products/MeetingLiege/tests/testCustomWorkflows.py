@@ -1910,6 +1910,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                          ['askAdvicesByDirector',
                           'backToProposedToInternalReviewer',
                           'proposeToGeneralManager'])
+        # ask advices
+        self.do(item, 'askAdvicesByDirector')
+        self.assertEqual(item.queryState(), 'proposed_to_director_waiting_advices')
+        # director may take item back
+        self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
 
     def _check_access(self, item, userIds, read=True, write=True):
         """ """

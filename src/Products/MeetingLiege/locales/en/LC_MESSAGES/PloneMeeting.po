@@ -224,6 +224,14 @@ msgstr "Pre accepted"
 msgid "icon_help_proposed_to_administrative_reviewer"
 msgstr "Proposed to administrative reviewer"
 
+#. Default: "Proposed to Cabinet Manager"
+msgid "icon_help_proposed_to_cabinet_manager"
+msgstr ""
+
+#. Default: "Proposed to Cabinet Reviewer"
+msgid "icon_help_proposed_to_cabinet_reviewer"
+msgstr ""
+
 #. Default: "Proposed to director"
 msgid "icon_help_proposed_to_director"
 msgstr "Proposed to director"
@@ -231,6 +239,10 @@ msgstr "Proposed to director"
 #. Default: "Proposed to finance"
 msgid "icon_help_proposed_to_finance"
 msgstr "Proposed to finance"
+
+#. Default: "Proposed to General Manager"
+msgid "icon_help_proposed_to_general_manager"
+msgstr ""
 
 #. Default: "Proposed to internal reviewer"
 msgid "icon_help_proposed_to_internal_reviewer"

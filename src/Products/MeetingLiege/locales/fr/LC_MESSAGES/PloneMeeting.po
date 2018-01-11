@@ -224,6 +224,14 @@ msgstr "Accepté sous réserve"
 msgid "icon_help_proposed_to_administrative_reviewer"
 msgstr "Proposé au validateur administratif"
 
+#. Default: "Proposed to Cabinet Manager"
+msgid "icon_help_proposed_to_cabinet_manager"
+msgstr "Proposer au Gestionnaire Cabinet"
+
+#. Default: "Proposed to Cabinet Reviewer"
+msgid "icon_help_proposed_to_cabinet_reviewer"
+msgstr "Proposé au Validateur Cabinet"
+
 #. Default: "Proposed to director"
 msgid "icon_help_proposed_to_director"
 msgstr "Proposé à la direction"
@@ -231,6 +239,10 @@ msgstr "Proposé à la direction"
 #. Default: "Proposed to finance"
 msgid "icon_help_proposed_to_finance"
 msgstr "Proposé aux finances"
+
+#. Default: "Proposed to General Manager"
+msgid "icon_help_proposed_to_general_manager"
+msgstr "Proposé au Directeur Général"
 
 #. Default: "Proposed to internal reviewer"
 msgid "icon_help_proposed_to_internal_reviewer"

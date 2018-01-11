@@ -88,6 +88,18 @@ msgstr ""
 msgid "icon_help_proposed_to_finance"
 msgstr ""
 
+#. Default: "Proposed to General Manager"
+msgid "icon_help_proposed_to_general_manager"
+msgstr ""
+
+#. Default: "Proposed to Cabinet Manager"
+msgid "icon_help_proposed_to_cabinet_manager"
+msgstr ""
+
+#. Default: "Proposed to Cabinet Reviewer"
+msgid "icon_help_proposed_to_cabinet_reviewer"
+msgstr ""
+
 #. Default: "Sent to Council emergency"
 msgid "icon_help_sent_to_council_emergency"
 msgstr ""

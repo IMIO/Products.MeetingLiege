@@ -2052,6 +2052,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'bourgmestreReviewer'),
             write=False)
 
+        # only MeetingManager may decide
+        for userId in (
+                'pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1', 'pmReviewer1',
+                'generalManager', 'bourgmestreManager', 'bourgmestreReviewer'):
+            self.changeUser(userId)
+            self.assertFalse(self.transitions(item))
+
+        self.changeUser('pmManager')
+        self.assertEqual(
+            self.transitions(item),
+            ['accept', 'backToValidated', 'delay', 'mark_not_applicable', 'refuse'])
         # if item is delayed, it is duplicated in it's initial_state
         self.do(item, 'delay')
         self.assertEqual(item.queryState(), 'delayed')

@@ -2648,6 +2648,15 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
             res = True
         return res
 
+    security.declarePublic('mayDecide')
+
+    def mayDecide(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
 
 old_get_advice_given_on = MeetingAdvice.get_advice_given_on
 
@@ -2816,6 +2825,21 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         elif itemState == 'proposed_to_finance':
             icons.append(('proposeToFinance.png',
                           translate('icon_help_proposed_to_finance',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_general_manager':
+            icons.append(('proposeToGeneralManager.png',
+                          translate('icon_help_proposed_to_general_manager',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_cabinet_manager':
+            icons.append(('proposeToCabinetManager.png',
+                          translate('icon_help_proposed_to_cabinet_manager',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
+        elif itemState == 'proposed_to_cabinet_reviewer':
+            icons.append(('proposeToCabinetReviewer.png',
+                          translate('icon_help_proposed_to_cabinet_reviewer',
                                     domain="PloneMeeting",
                                     context=self.request)))
 

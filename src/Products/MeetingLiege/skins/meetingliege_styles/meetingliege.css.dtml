@@ -32,7 +32,10 @@ ul#portal-globalnav li a {
 .state-proposed_to_finance, .label-state-proposed_to_finance,
 .state-proposed_to_financial_controller, .label-state-proposed_to_financial_controller,
 .state-proposed_to_financial_reviewer, .label-state-proposed_to_financial_reviewer,
-.state-proposed_to_financial_manager, .label-state-proposed_to_financial_manager {
+.state-proposed_to_financial_manager, .label-state-proposed_to_financial_manager,
+.state-proposed_to_general_manager, .label-state-proposed_to_general_manager,
+.state-proposed_to_cabinet_manager, .label-state-proposed_to_cabinet_manager,
+.state-proposed_to_cabinet_reviewer, .label-state-cabinet_reviewer {
     color: DarkOrange !important;
 }
 

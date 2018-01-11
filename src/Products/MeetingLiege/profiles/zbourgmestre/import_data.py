@@ -85,8 +85,8 @@ bourgmestreMeeting.meetingConditionsInterface = \
 bourgmestreMeeting.meetingActionsInterface = \
     'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
 bourgmestreMeeting.transitionsToConfirm = ['MeetingItem.delay', ]
-bourgmestreMeeting.meetingTopicStates = ('created', 'frozen')
-bourgmestreMeeting.decisionTopicStates = ('decided', 'closed')
+bourgmestreMeeting.meetingTopicStates = ('created', )
+bourgmestreMeeting.decisionTopicStates = ('closed', )
 bourgmestreMeeting.enforceAdviceMandatoriness = False
 bourgmestreMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_proposing_groups',
                                                  'reverse': '0'}, )
@@ -97,42 +97,26 @@ bourgmestreMeeting.meetingAppDefaultView = 'searchmyitems'
 bourgmestreMeeting.useAdvices = True
 bourgmestreMeeting.itemAdviceStates = ('validated',)
 bourgmestreMeeting.itemAdviceEditStates = ('validated',)
-bourgmestreMeeting.itemAdviceViewStates = ('validated',
-                                           'presented',
-                                           'itemfrozen',
-                                           'accepted',
-                                           'refused',
-                                           'accepted_but_modified',
-                                           'delayed',
-                                           'pre_accepted',)
+bourgmestreMeeting.keepAccessToItemWhenAdviceIsGiven = True
 bourgmestreMeeting.usedAdviceTypes = ['positive', 'positive_with_remarks', 'negative', 'nil', ]
 bourgmestreMeeting.enableAdviceInvalidation = False
 bourgmestreMeeting.itemAdviceInvalidateStates = []
 bourgmestreMeeting.customAdvisers = []
-bourgmestreMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned',
-                                               'pre_accepted', 'delayed', 'itemfrozen', 'marked_not_applicable',
-                                               'validated', 'presented', 'refused', 'returned')
-bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'accepted_but_modified', 'pre_accepted']
+bourgmestreMeeting.itemPowerObserversStates = (
+    'validated', 'presented',
+    'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'marked_not_applicable']
 bourgmestreMeeting.workflowAdaptations = []
-bourgmestreMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewer',
-                                                     'proposeToInternalReviewer',
-                                                     'proposeToDirector',
-                                                     'validate',
-                                                     'present', )
+bourgmestreMeeting.transitionsForPresentingAnItem = (
+    u'proposeToAdministrativeReviewer', u'proposeToInternalReviewer', u'proposeToDirector',
+    u'proposeToGeneralManager', 'proposeToCabinetManager', u'proposeToCabinetReviewer', u'validate', u'present')
 bourgmestreMeeting.onTransitionFieldTransforms = (
     ({'transition': 'delay',
       'field_name': 'MeetingItem.decision',
       'tal_expression': "string:<p>Le bourgmestre décide de reporter le point.</p>"},))
-bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
-                                                                  'item_transition': 'itemfreeze'},
-
-                                                                 {'meeting_transition': 'decide',
-                                                                  'item_transition': 'itemfreeze'},
-
-                                                                 {'meeting_transition': 'close',
-                                                                  'item_transition': 'itemfreeze'},
-                                                                 {'meeting_transition': 'close',
-                                                                  'item_transition': 'accept'},)
+bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
+    {'meeting_transition': 'close',
+     'item_transition': 'accept'},)
 bourgmestreMeeting.meetingPowerObserversStates = ('closed', 'created', )
 bourgmestreMeeting.powerAdvisersGroups = ()
 bourgmestreMeeting.itemBudgetInfosStates = ()

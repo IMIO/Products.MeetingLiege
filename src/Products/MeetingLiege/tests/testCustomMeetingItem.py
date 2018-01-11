@@ -731,10 +731,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(advice1a, 'proposeToFinancialReviewer')
         self.do(advice2, 'proposeToFinancialReviewer')
         # send to finance manager
+        self.changeUser('pmFinReviewer')
         self.do(advice1, 'proposeToFinancialManager')
         self.do(advice1a, 'proposeToFinancialManager')
         self.do(advice2, 'proposeToFinancialManager')
         # sign the advice
+        self.changeUser('pmFinManager')
         self.do(advice1, 'signFinancialAdvice')
         self.do(advice1a, 'signFinancialAdvice')
         self.do(advice2, 'signFinancialAdvice')

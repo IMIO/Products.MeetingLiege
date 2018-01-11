@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2008-2015 by Imio.be
+# Copyright (c) 2008-2018 by Imio.be
 #
 # GNU General Public License (GPL)
 #
@@ -20,17 +20,18 @@
 # 02110-1301, USA.
 #
 
+from Products.PloneTestCase.setup import _createHomeFolder
+from Products.PloneMeeting.MeetingConfig import MeetingConfig
+from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
+from Products.MeetingLiege.adapters import customWfAdaptations
+from Products.MeetingLiege.adapters import RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
+from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.MeetingLiege.testing import ML_TESTING_PROFILE_FUNCTIONAL
 from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
 
 # monkey patch the MeetingConfig.wfAdaptations again because it is done in
 # adapters.py but overrided by Products.MeetingCommunes here in the tests...
-from Products.PloneMeeting.MeetingConfig import MeetingConfig
-from Products.PloneMeeting.model import adaptations
-from Products.MeetingLiege.adapters import customWfAdaptations
-from Products.MeetingLiege.adapters import RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
-
 MeetingConfig.wfAdaptations = customWfAdaptations
 adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
 
@@ -41,7 +42,7 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
     # by default, PloneMeeting's test file testPerformances.py and
     # testConversionWithDocumentViewer.py' are ignored, override the subproductIgnoredTestFiles
     # attribute to take these files into account
-    #subproductIgnoredTestFiles = ['testPerformances.py', ]
+    # subproductIgnoredTestFiles = ['testPerformances.py', ]
 
     layer = ML_TESTING_PROFILE_FUNCTIONAL
 
@@ -50,3 +51,16 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
         self.meetingConfig = getattr(self.tool, 'meeting-config-college')
         self.meetingConfig2 = getattr(self.tool, 'meeting-config-council')
         self.meetingConfig3 = getattr(self.tool, 'meeting-config-bourgmestre')
+
+    def setUpBourgmestreConfig(self):
+        """Setup meeting-config-bourgmestre :
+           - Create groups and users;
+           - ...
+        """
+        self.changeUser('siteadmin')
+        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.tool.addUsersAndGroups(groups=bg_import_data.groups)
+        for userId in ('generalManager',
+                       'bourgmestreManager',
+                       'bourgmestreReviewer'):
+            _createHomeFolder(self.portal, userId)

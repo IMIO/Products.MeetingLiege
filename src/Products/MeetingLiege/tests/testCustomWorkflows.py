@@ -1867,7 +1867,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
            - proposed_to_internal_reviewer;
            - proposed_to_director;
            - proposed_to_director_waiting_advices.'''
-        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.setUpBourgmestreConfig()
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
         # pmCreator1 may only propose to administrative reviewer
@@ -1938,13 +1938,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
            - proposed_to_cabinet_manager;
            - proposed_to_cabinet_reviewer;
            - validated.'''
-        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.setUpBourgmestreConfig()
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        # able to trigger proposeToCabinetReviewer
-        self.assertEqual(self.transitions(item),
-                         ['proposeToAdministrativeReviewer',
-                          'proposeToCabinetReviewer'])
+        # unable to trigger proposeToCabinetReviewer
+        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer'])
 
         # propose to general manager and check access
         self.do(item, 'proposeToAdministrativeReviewer')
@@ -2000,13 +1998,27 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
 
+    def test_BourgmestreCreatedItemDirectlySendableToCabinetReviewerByCabinetManager(self):
+        """ """
+        self.setUpBourgmestreConfig()
+        self.changeUser('bourgmestreManager')
+        item = self.create('MeetingItem')
+        self.assertEqual(
+            self.transitions(item),
+            ['proposeToAdministrativeReviewer', 'proposeToCabinetReviewer'])
+        self.do(item, 'proposeToCabinetReviewer')
+        # in this case, bourgmestre group correctly gets access on item
+        # actually it will the 'Reader' role in addition to Meeting role
+        self._check_access(item, ('generalManager', 'bourgmestreManager'), write=False)
+        self._check_access(item, ('bourgmestreReviewer', ))
+
     def test_BourgmestreMeetingProcess(self):
         """ """
         '''This test the Bourgmestre workflows final part :
            - validated;
            - presented;
            - decided.'''
-        self.setMeetingConfig(self.meetingConfig3.getId())
+        self.setUpBourgmestreConfig()
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
 

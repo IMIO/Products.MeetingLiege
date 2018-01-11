@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 from DateTime import DateTime
 from Products.PloneMeeting.profiles import AnnexTypeDescriptor
+from Products.PloneMeeting.profiles import GroupDescriptor
 from Products.PloneMeeting.profiles import ItemAnnexTypeDescriptor
 from Products.PloneMeeting.profiles import MeetingConfigDescriptor
 from Products.PloneMeeting.profiles import PloneMeetingConfiguration
+from Products.PloneMeeting.profiles import UserDescriptor
+from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
+from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
 
 today = DateTime().strftime('%Y/%m/%d')
 
@@ -24,7 +28,20 @@ categories = []
 bourgmestreTemplates = []
 
 # Users and groups -------------------------------------------------------------
-groups = []
+generalManager = UserDescriptor(
+    'generalManager', [], email="general_manager@plonemeeting.org", fullname='M. GeneralManager')
+bourgmestreManager = UserDescriptor(
+    'bourgmestreManager', [], email="bourgmestre_manager@plonemeeting.org",
+    fullname='M. Bourgmestre Manager')
+bourgmestreReviewer = UserDescriptor(
+    'bourgmestreReviewer', [], email="bourgmestre_reviewer@plonemeeting.org",
+    fullname='M. Bourgmestre Reviewer')
+general_manager_group = GroupDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
+general_manager_group.reviewers.append(generalManager)
+bourgmestre_group = GroupDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
+bourgmestre_group.creators.append(bourgmestreManager)
+bourgmestre_group.reviewers.append(bourgmestreReviewer)
+groups = [general_manager_group, bourgmestre_group]
 
 # Meeting configurations -------------------------------------------------------
 # Bourgmestre
@@ -59,10 +76,14 @@ bourgmestreMeeting.xhtmlTransformTypes = ()
 bourgmestreMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
 bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
 bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
-bourgmestreMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
-bourgmestreMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
-bourgmestreMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
-bourgmestreMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
+bourgmestreMeeting.itemConditionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
+bourgmestreMeeting.itemActionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
+bourgmestreMeeting.meetingConditionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
+bourgmestreMeeting.meetingActionsInterface = \
+    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
 bourgmestreMeeting.transitionsToConfirm = ['MeetingItem.delay', ]
 bourgmestreMeeting.meetingTopicStates = ('created', 'frozen')
 bourgmestreMeeting.decisionTopicStates = ('decided', 'closed')

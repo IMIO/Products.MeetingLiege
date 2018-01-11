@@ -14,8 +14,6 @@ from Products.PloneMeeting.profiles import PloneMeetingConfiguration
 from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.PloneMeeting.profiles import RecurringItemDescriptor
 from Products.PloneMeeting.profiles import UserDescriptor
-from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
-from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
 
 # Annex types
 overheadAnalysisSubtype = ItemAnnexSubTypeDescriptor(
@@ -160,14 +158,6 @@ powerobserver1 = UserDescriptor('powerobserver1',
                                 [],
                                 email="powerobserver1@plonemeeting.org",
                                 fullname='M. Power Observer1')
-generalManager = UserDescriptor(
-    'generalManager', [], email="general_manager@plonemeeting.org", fullname='M. GeneralManager')
-bourgmestreManager = UserDescriptor(
-    'bourgmestreManager', [], email="bourgmestre_manager@plonemeeting.org",
-    fullname='M. Bourgmestre Manager')
-bourgmestreReviewer = UserDescriptor(
-    'bourgmestreReviewer', [], email="bourgmestre_reviewer@plonemeeting.org",
-    fullname='M. Bourgmestre Reviewer')
 
 # powerobserver1 is 'power observer' because in the meeting-config-college '_powerobservers' group
 college_powerobservers = PloneGroupDescriptor('meeting-config-college_powerobservers',
@@ -234,13 +224,6 @@ vendors.observers.append(voter2)
 
 # Add a vintage group
 endUsers = GroupDescriptor('endUsers', 'End users', 'EndUsers', active=False)
-
-# Bourgmestre related groups
-general_manager_group = GroupDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
-general_manager_group.reviewers.append(generalManager)
-bourgmestre_group = GroupDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
-bourgmestre_group.creators.append(bourgmestreManager)
-bourgmestre_group.reviewers.append(bourgmestreReviewer)
 
 pmManager_observer = MeetingUserDescriptor('pmManager',
                                            duty='Secrétaire de la Chancellerie',
@@ -491,10 +474,10 @@ bourgmestreMeeting.categories = [
     research, projects, marketing, subproducts]
 bourgmestreMeeting.shortName = 'Bourgmestre'
 bourgmestreMeeting.annexTypes = [
-    financialAnalysis, legalAnalysis, itemAnnex,
-    decisionAnnex,
-    adviceAnnex, adviceLegalAnalysis,
-    meetingAnnex]
+    financialAnalysis, legalAnalysis,
+    budgetAnalysisCfg2, itemAnnex, decisionAnnex,
+    adviceAnnex, adviceLegalAnalysis, meetingAnnex]
+
 bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
 bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
 bourgmestreMeeting.itemConditionsInterface = \
@@ -557,7 +540,7 @@ bourgmestreMeeting.itemTemplates = []
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting, bourgmestreMeeting),
-    groups=(developers, vendors, endUsers, bourgmestre_group, general_manager_group))
+    groups=(developers, vendors, endUsers))
 # necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData
 data.restrictUsers = False
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,

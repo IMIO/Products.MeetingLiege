@@ -1318,17 +1318,20 @@ class CustomMeetingItem(MeetingItem):
 
     def _getGroupManagingItem(self):
         """ """
-        tool = api.portal.get_tool('portal_plonemeeting')
         item = self.getSelf()
-        # administrative states, proposingGroup is managing the item
-        item_state = item.queryState()
-        if item_state in self.BOURGMESTRE_ADMINISTRATIVE_STATES:
+        if item.portal_type != 'MeetingItemBourgmestre':
             return item.getProposingGroup(True)
-        # general manager, we take the _reviewers group
-        elif item_state in ['proposed_to_general_manager']:
-            return tool.get(GENERAL_MANAGER_GROUP_ID)
         else:
-            return tool.get(BOURGMESTRE_GROUP_ID)
+            tool = api.portal.get_tool('portal_plonemeeting')
+            # administrative states, proposingGroup is managing the item
+            item_state = item.queryState()
+            if item_state in self.BOURGMESTRE_ADMINISTRATIVE_STATES:
+                return item.getProposingGroup(True)
+            # general manager, we take the _reviewers group
+            elif item_state in ['proposed_to_general_manager']:
+                return tool.get(GENERAL_MANAGER_GROUP_ID)
+            else:
+                return tool.get(BOURGMESTRE_GROUP_ID)
 
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group

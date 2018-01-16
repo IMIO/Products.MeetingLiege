@@ -11,13 +11,15 @@ from OFS.ObjectManager import BeforeDeleteException
 from plone import api
 from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
+from imio.history.utils import add_action_to_history
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import PloneMeetingError
 from Products.PloneMeeting.config import READER_USECASES
+from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
 from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import getLastEvent
-from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
+from Products.PloneMeeting.utils import main_item_data
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 
@@ -313,6 +315,19 @@ def onItemAfterTransition(item, event):
         item.REQUEST.set('mayValidate', True)
         wfTool.doActionFor(collegeItem, 'validate')
         item.REQUEST.set('mayValidate', False)
+
+    # save base item informations in the main_infos_history
+    # if new state is "proposed_to_cabinet_manager"
+    if item.portal_type == 'MeetingItemBourgmestre' and \
+       event.old_state.id == 'proposed_to_general_manager' and \
+       event.new_state.id == 'proposed_to_cabinet_manager':
+        data = main_item_data(item)
+        add_action_to_history(
+            item,
+            'main_infos_history',
+            action='historize_main_infos',
+            comments='historize_main_infos_comments',
+            extra_infos={'historized_data': data})
 
 
 def onCategoryRemoved(category, event):

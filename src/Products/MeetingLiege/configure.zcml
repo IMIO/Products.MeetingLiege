@@ -95,6 +95,12 @@
            name="workflow"
            provides="imio.history.interfaces.IImioWfHistory" />
 
+  <!-- Adapter for the main_infos_history on MeetingItem -->
+  <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
+           factory=".adapters.MLItemMainInfosHistoryAdapter"
+           name="main_infos"
+           provides="imio.history.interfaces.IImioHistory" />
+
   <!-- Override CategorizedObjectAdapter.can_view for IMeetingItem -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem
                 zope.publisher.interfaces.browser.IBrowserRequest

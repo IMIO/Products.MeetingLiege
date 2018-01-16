@@ -171,6 +171,10 @@ msgstr "Delayed"
 msgid "financial_advice_signed"
 msgstr "Financial advice signed"
 
+#. Default: "Historize main data"
+msgid "historize_main_infos"
+msgstr ""
+
 #. Default: "Historize signed advice"
 msgid "historize_signed_advice_content"
 msgstr "Historize signed advice"

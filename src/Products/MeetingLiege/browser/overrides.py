@@ -16,6 +16,7 @@ from plone import api
 
 from collective.iconifiedcategory.browser.actionview import SignedChangeView
 from imio.history.interfaces import IImioHistory
+from imio.history.browser.views import IHContentHistoryView
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
 from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
@@ -372,3 +373,8 @@ class MLMeetingDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         view = item.restrictedTraverse("@@document-generation")
         helper = view.get_generation_context_helper()
         return helper.printActeContentForCouncil()
+
+
+class MLContentHistoryView(IHContentHistoryView):
+    """ """
+    histories_to_handle = (u'revision', u'workflow', u'main_infos')

@@ -42,6 +42,7 @@ from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.utils import getLastAction
+from Products.PloneMeeting.adapters import BasePMHistoryAdapter
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
@@ -2882,3 +2883,13 @@ class MLMeetingPrettyLinkAdapter(MeetingPrettyLinkAdapter):
                                     domain="PloneMeeting",
                                     context=self.request)))
         return icons
+
+
+class MLItemMainInfosHistoryAdapter(BasePMHistoryAdapter):
+    """ """
+
+    history_name = 'main_infos'
+
+    def get_history_data(self):
+        """ """
+        return getattr(self.context, 'main_infos_history', [])

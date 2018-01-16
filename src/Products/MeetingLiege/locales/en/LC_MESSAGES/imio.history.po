@@ -30,6 +30,10 @@ msgstr "Item created from a college item."
 msgid "financial_advice_signed_historized_comments"
 msgstr ""
 
+#. Default: "The item main data were historized when the item was 'Proposed to the Cabinet Manager'.<br />You may <a href='${url}?event_time=${event_time}'>view historized data</a>."
+msgid "historize_main_infos_comments"
+msgstr ""
+
 #. Default: "This transition was automatically triggered because every asked advices have been given."
 msgid "item_wf_changed_every_advices_given"
 msgstr ""

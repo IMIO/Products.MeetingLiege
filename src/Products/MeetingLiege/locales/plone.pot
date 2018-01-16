@@ -307,3 +307,7 @@ msgstr ""
 #. Default: "MeetingItemTemplateBourgmestre"
 msgid "MeetingItemTemplateBourgmestre"
 msgstr ""
+
+#. Default: "Historize main data"
+msgid "historize_main_infos"
+msgstr ""

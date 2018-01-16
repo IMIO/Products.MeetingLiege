@@ -12,15 +12,31 @@
         permission="zope2.View" />
 
     <browser:page
-      name="iconified-signed"
-      for="imio.annex.content.annex.IAnnex"
-      layer="collective.iconifiedcategory.interfaces.ICollectiveIconifiedCategoryLayer"
-      class=".overrides.MLSignedChangeView"
-      permission="zope2.View" />
+        name="iconified-signed"
+        for="imio.annex.content.annex.IAnnex"
+        layer="collective.iconifiedcategory.interfaces.ICollectiveIconifiedCategoryLayer"
+        class=".overrides.MLSignedChangeView"
+        permission="zope2.View" />
   
     <browser:resourceDirectory
-      name="collective.iconifiedcategory.images"
-      directory="overrides/images"
-      layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
+        name="collective.iconifiedcategory.images"
+        directory="overrides/images"
+        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
+
+    <!-- Override @@historyview for IMeetingItem -->
+    <browser:view
+        for="Products.PloneMeeting.interfaces.IMeetingItem"
+        name="contenthistory"
+        class=".overrides.MLContentHistoryView"
+        layer="imio.history.interfaces.IImioHistoryLayer"
+        permission="zope.Public" />
+
+    <browser:page
+        name="main_infos_history_view"
+        for="Products.PloneMeeting.interfaces.IMeetingItem"
+        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
+        class=".views.MainInfosHistoryView"
+        template="templates/item_main_infos.pt"
+        permission="zope2.View" />
 
 </configure>

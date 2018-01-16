@@ -5,6 +5,18 @@ from Products.CMFCore.permissions import ReviewPortalContent
 from Products.CMFCore.utils import _checkPermission
 
 
+class MainInfosHistoryView(BrowserView):
+    """ """
+
+    def __call__(self, event_time):
+        """ """
+        for event in self.context.main_infos_history:
+            if int(event['time']) == event_time:
+                self.historized_data = event['historized_data']
+                break
+        return super(MainInfosHistoryView, self).__call__()
+
+
 class AdviceWFConditionsView(BrowserView):
     """
       This is a view that manage workflow guards for the advice.
@@ -80,3 +92,4 @@ class AdviceWFConditionsView(BrowserView):
 
 
 InitializeClass(AdviceWFConditionsView)
+

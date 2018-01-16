@@ -1,0 +1,2 @@
+<h1 class="documentFirstHeading" i18n:domain="PloneMeeting">Historized data</h1>
+<span tal:content="view/historized_data" />

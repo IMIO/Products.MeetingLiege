@@ -378,3 +378,8 @@ class MLMeetingDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
 class MLContentHistoryView(IHContentHistoryView):
     """ """
     histories_to_handle = (u'revision', u'workflow', u'main_infos')
+
+    def renderCustomJS(self):
+        """ """
+        return '<script>overOverlays();</script>'
+

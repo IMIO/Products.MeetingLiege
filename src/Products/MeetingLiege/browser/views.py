@@ -92,4 +92,3 @@ class AdviceWFConditionsView(BrowserView):
 
 
 InitializeClass(AdviceWFConditionsView)
-

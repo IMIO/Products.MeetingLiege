@@ -25,7 +25,7 @@ msgstr "Données utilisées pour le point Conseil"
 
 #. Default: "Historized data"
 msgid "Historized data"
-msgstr "Données historisées"
+msgstr "Informations historisées"
 
 # portal_tabs
 #. Default: "College"

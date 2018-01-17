@@ -11,7 +11,7 @@ from OFS.ObjectManager import BeforeDeleteException
 from plone import api
 from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
-from imio.history.utils import add_action_to_history
+from imio.history.utils import add_event_to_history
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import PloneMeetingError
@@ -322,7 +322,7 @@ def onItemAfterTransition(item, event):
        event.old_state.id == 'proposed_to_general_manager' and \
        event.new_state.id == 'proposed_to_cabinet_manager':
         data = main_item_data(item)
-        add_action_to_history(
+        add_event_to_history(
             item,
             'main_infos_history',
             action='historize_main_infos',

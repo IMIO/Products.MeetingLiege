@@ -32,7 +32,7 @@ msgstr "L'avis a été automatiquement historisé lorsqu'il a été 'Signé'."
 
 #. Default: "The item main data were historized when the item was 'Proposed to the Cabinet Manager'.<br />You may <a href='${url}?event_time=${event_time}'>view historized data</a>."
 msgid "historize_main_infos_comments"
-msgstr "Les informations principales du point ont été historisées lors de la transition 'Proposer au Gestionnaire Cabinet'.<br />Vous pouvez <a href='${url}/@@main_infos_history_view?event_time:int=${event_time}' class='link-overlay-pm-over'>consulter les informations historisées</a>."
+msgstr "Les informations principales du point ont été historisées lors de la transition 'Proposer au Gestionnaire Cabinet'.<br /><div class='historyLinks'><a href='${url}/@@main_infos_history_view?event_time:int=${event_time}' class='link-overlay-pm-over'>Voir</a></div>"
 
 #. Default: "This transition was automatically triggered because every asked advices have been given."
 msgid "item_wf_changed_every_advices_given"

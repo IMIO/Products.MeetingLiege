@@ -23,6 +23,10 @@ msgstr "Accéder au point Collège contenant l'avis rendu par le Directeur Finan
 msgid "Data that will be used once item will be in the council"
 msgstr "Données utilisées pour le point Conseil"
 
+#. Default: "Historized data"
+msgid "Historized data"
+msgstr "Données historisées"
+
 # portal_tabs
 #. Default: "College"
 msgid "Meeting config College"

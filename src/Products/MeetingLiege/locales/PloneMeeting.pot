@@ -457,3 +457,7 @@ msgstr ""
 #. Default: "Finances advice"
 msgid "MeetingAdviceFinances"
 msgstr ""
+
+#. Default: "Historized data"
+msgid "Historized data"
+msgstr ""

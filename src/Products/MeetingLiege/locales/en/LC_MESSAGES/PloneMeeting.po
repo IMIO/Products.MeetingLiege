@@ -22,6 +22,10 @@ msgstr "Access the College item containing given finance advice."
 msgid "Data that will be used once item will be in the council"
 msgstr "Data that will be used once item will be in the council"
 
+#. Default: "Historized data"
+msgid "Historized data"
+msgstr ""
+
 # portal_tabs
 #. Default: "College"
 msgid "Meeting config College"

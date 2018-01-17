@@ -3,6 +3,7 @@ from App.class_init import InitializeClass
 from Products.Five import BrowserView
 from Products.CMFCore.permissions import ReviewPortalContent
 from Products.CMFCore.utils import _checkPermission
+from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 
 
 class MainInfosHistoryView(BrowserView):
@@ -10,7 +11,7 @@ class MainInfosHistoryView(BrowserView):
 
     def __call__(self, event_time):
         """ """
-        for event in self.context.main_infos_history:
+        for event in getattr(self.context, ITEM_MAIN_INFOS_HISTORY, []):
             if int(event['time']) == event_time:
                 self.historized_data = event['historized_data']
                 break

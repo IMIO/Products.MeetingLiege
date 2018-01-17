@@ -27,6 +27,7 @@ from datetime import datetime
 from DateTime import DateTime
 
 from AccessControl import Unauthorized
+from zope.component import getMultiAdapter
 from zope.event import notify
 from zope.i18n import translate
 from zope.lifecycleevent import ObjectModifiedEvent
@@ -46,9 +47,11 @@ from Products.PloneMeeting.config import RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX
 from Products.PloneMeeting.indexes import indexAdvisers
 from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import getLastEvent
+from Products.PloneMeeting.utils import main_item_data
 
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
@@ -2074,3 +2077,37 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                           'pmAdminReviewer1', 'pmInternalReviewer1', 'pmReviewer1'),
             read=False, write=False)
         self._check_access(cloned_item, userIds=('pmCreator1', ))
+
+    def test_ItemDataHistorizedWhenProposedToCabinetManager(self):
+        """ """
+        self.setUpBourgmestreConfig()
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item.setTitle('Sample title')
+        item.setDescription('<p>Sample description</p>')
+        item.setMotivation('<p>Sample motivation</p>')
+        item.setDecision('<p>Sample decision</p>')
+
+        # propose to general manager
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.do(item, 'proposeToInternalReviewer')
+        self.do(item, 'proposeToDirector')
+        self.do(item, 'proposeToGeneralManager')
+
+        self.changeUser('generalManager')
+        self.assertFalse(hasattr(item, ITEM_MAIN_INFOS_HISTORY))
+        self.do(item, 'proposeToCabinetManager')
+        view = getMultiAdapter((item, self.portal.REQUEST), name='contenthistory')
+        last_event = view.getHistory()[0]
+        self.assertEqual(last_event['action'], 'historize_main_infos')
+        self.assertEqual(last_event['actor'], self.member.getId())
+        self.assertEqual(last_event['comments'], 'historize_main_infos_comments')
+        self.assertEqual(last_event['action'], 'historize_main_infos')
+        self.assertEqual(last_event['action'], 'historize_main_infos')
+        self.assertEqual(last_event['historized_data'], main_item_data(item))
+        self.assertEqual(last_event['type'], 'main_infos')
+
+        # the @@main_infos_history_view
+        infos_view = getMultiAdapter((item, self.portal.REQUEST), name='main_infos_history_view')
+        self.assertTrue(item.Title() in infos_view(int(last_event['time'])))
+        self.assertEqual(infos_view.historized_data, last_event['historized_data'])

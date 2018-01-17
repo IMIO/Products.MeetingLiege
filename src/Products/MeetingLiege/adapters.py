@@ -88,7 +88,7 @@ from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
-
+from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 from Products.MeetingLiege.config import TREASURY_GROUP_ID
 
 # disable every wfAdaptations but 'return_to_proposing_group'
@@ -2892,4 +2892,4 @@ class MLItemMainInfosHistoryAdapter(BasePMHistoryAdapter):
 
     def get_history_data(self):
         """ """
-        return getattr(self.context, 'main_infos_history', [])
+        return getattr(self.context, ITEM_MAIN_INFOS_HISTORY, [])

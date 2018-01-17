@@ -22,6 +22,7 @@ from Products.PloneMeeting.utils import getLastEvent
 from Products.PloneMeeting.utils import main_item_data
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
+from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 
 __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
@@ -316,7 +317,7 @@ def onItemAfterTransition(item, event):
         wfTool.doActionFor(collegeItem, 'validate')
         item.REQUEST.set('mayValidate', False)
 
-    # save base item informations in the main_infos_history
+    # save base item informations in the ITEM_MAIN_INFOS_HISTORY
     # if new state is "proposed_to_cabinet_manager"
     if item.portal_type == 'MeetingItemBourgmestre' and \
        event.old_state.id == 'proposed_to_general_manager' and \
@@ -324,7 +325,7 @@ def onItemAfterTransition(item, event):
         data = main_item_data(item)
         add_event_to_history(
             item,
-            'main_infos_history',
+            ITEM_MAIN_INFOS_HISTORY,
             action='historize_main_infos',
             comments='historize_main_infos_comments',
             extra_infos={'historized_data': data})

@@ -46,6 +46,8 @@ LIEGE_ADVICE_STATES_ENDED = ('advice_given', )
 PMconfig.ADVICE_STATES_ALIVE = LIEGE_ADVICE_STATES_ALIVE
 PMconfig.ADVICE_STATES_ENDED = LIEGE_ADVICE_STATES_ENDED
 
+ITEM_MAIN_INFOS_HISTORY = 'main_infos_history'
+
 # finance groups ids
 FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 

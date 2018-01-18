@@ -2099,7 +2099,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToCabinetManager')
         view = getMultiAdapter((item, self.portal.REQUEST), name='contenthistory')
         last_event = view.getHistory()[0]
-        import ipdb; ipdb.set_trace()
         self.assertEqual(last_event['action'], 'historize_main_infos')
         self.assertEqual(last_event['actor'], self.member.getId())
         self.assertEqual(last_event['comments'], 'historize_main_infos_comments')

@@ -41,8 +41,8 @@ from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
+from imio.history.adapters import BaseImioHistoryAdapter
 from imio.history.utils import getLastAction
-from Products.PloneMeeting.adapters import BasePMHistoryAdapter
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
@@ -2885,11 +2885,9 @@ class MLMeetingPrettyLinkAdapter(MeetingPrettyLinkAdapter):
         return icons
 
 
-class MLItemMainInfosHistoryAdapter(BasePMHistoryAdapter):
+class MLItemMainInfosHistoryAdapter(BaseImioHistoryAdapter):
     """ """
 
-    history_name = 'main_infos'
+    history_type = 'main_infos'
+    history_attr_name = ITEM_MAIN_INFOS_HISTORY
 
-    def get_history_data(self):
-        """ """
-        return getattr(self.context, ITEM_MAIN_INFOS_HISTORY, [])

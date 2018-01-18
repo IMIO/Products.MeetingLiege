@@ -89,7 +89,8 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
                     return True
                 else:
                     # check that it is the finance group that made the transition 'backToProposedToInternalReviewer'
-                    previousEvent = getPreviousEvent(self.context, event, checkMayView=False)
+                    previousEvent = getPreviousEvent(
+                        self.context, event, checkMayViewEvent=False, checkMayViewComment=False)
                     if previousEvent and previousEvent['review_state'] == 'proposed_to_finance':
                         return True
         return userMayAccessComment

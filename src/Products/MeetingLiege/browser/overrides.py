@@ -194,8 +194,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     full_history.extend(wf_history)
             # Keep the completeness history
             full_history.extend(item.completeness_changes_history)
-            # Keep the workflow history.
-            wf_history = getAdapter(historized_advice, IImioHistory, 'workflow').getHistory()
+            # Keep the item workflow history.
+            wf_history = getAdapter(item, IImioHistory, 'workflow').getHistory()
             full_history.extend(wf_history)
             # sort from older to newer. Needed to catch the
             # completeness_incomplete before backToInternalReviewer.
@@ -209,7 +209,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 # keep the history when advice is positive, negative or timed
                 # out.
                 if (state['action'] == 'backToProposedToDirector' and
-                    state['comments'] == 'item_wf_changed_finance_advice_negative') or\
+                    state['comments'] == 'item_wf_changed_finance_advice_negative') or \
                    (state['action'] == 'validate' and
                     (state['comments'] == 'item_wf_changed_finance_advice_positive' or
                      state['comments'] == 'item_wf_changed_finance_advice_timed_out')):

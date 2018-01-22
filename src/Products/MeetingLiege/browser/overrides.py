@@ -176,7 +176,6 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         return them in a list generated in a xls file.
         """
         pr = api.portal.get_tool('portal_repository')
-        pw = api.portal.get_tool('portal_workflow')
         results = []
         startTime1 = time.time()
         for brain in brains:
@@ -190,13 +189,14 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 advice_revisions = [revision for revision in getAdapter(advice, IImioHistory, 'revision').getHistory()]
                 # Browse the advice versions and keep their history.
                 for revision in advice_revisions:
-                    rev_history = pr.retrieve(advice, revision['version_id']).object.getHistory()
-                    full_history.extend(rev_history)
+                    historized_advice = pr.retrieve(advice, revision['version_id']).object
+                    wf_history = getAdapter(historized_advice, IImioHistory, 'workflow').getHistory()
+                    full_history.extend(wf_history)
             # Keep the completeness history
             full_history.extend(item.completeness_changes_history)
             # Keep the workflow history.
-            itemWFId = pw.getWorkflowsFor(item)[0].getId()
-            full_history.extend(item.workflow_history[itemWFId])
+            wf_history = getAdapter(historized_advice, IImioHistory, 'workflow').getHistory()
+            full_history.extend(wf_history)
             # sort from older to newer. Needed to catch the
             # completeness_incomplete before backToInternalReviewer.
             full_history.sort(key=lambda x: x["time"], reverse=False)

@@ -27,6 +27,9 @@ from datetime import datetime
 from DateTime import DateTime
 
 from AccessControl import Unauthorized
+from imio.history.interfaces import IImioHistory
+from imio.history.utils import getLastAction
+from zope.component import getAdapter
 from zope.component import getMultiAdapter
 from zope.event import notify
 from zope.i18n import translate
@@ -990,19 +993,20 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # send item to finance
         self.do(item, 'proposeToFinance', comment='Proposed to finances by director')
         # save event index (position in the history) we will have to check access to
-        history = item.getHistory()
+        wf_history_adapter = getAdapter(item, IImioHistory, 'workflow')
+        history = wf_history_adapter.getHistory()
         proposedToFinancesViewableIndex = history.index(history[-1])
         # now finance send it back to the internal reviewer
         self.do(item, 'backToProposedToInternalReviewer')
         # save event
-        history = item.getHistory()
+        history = wf_history_adapter.getHistory()
         proposedToInternalReviewerViewableIndex = history.index(history[-1])
 
         # ok now, check, the only viewable events for finance grou members
         # should be proposedToFinancesViewableIndex and proposedToInternalReviewerViewableIndex
         viewableCommentIndexes = (proposedToFinancesViewableIndex, proposedToInternalReviewerViewableIndex)
         self.changeUser('pmFinController')
-        history = item.getHistory()
+        history = wf_history_adapter.getHistory()
         for event in history:
             if history.index(event) in viewableCommentIndexes:
                 # comment is viewable
@@ -1050,12 +1054,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         # now check history comment viewability
         # viewable to pmFinManager and other members of the finance group
-        history = advice.getHistory()
+        wf_history_adapter = getAdapter(advice, IImioHistory, 'workflow')
+        history = wf_history_adapter.getHistory()
         for event in history:
             self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
         # not viewable to the pmManager as only Managers may access those comments
         self.changeUser('pmManager')
-        history = advice.getHistory()
+        history = wf_history_adapter.getHistory()
         for event in history:
             self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
         # user able to see the advice have same access as a MeetingManager, so only
@@ -1063,7 +1068,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         # user may not see advice history comments like a MeetingManager
         self.hasPermission(View, advice)
-        history = advice.getHistory()
+        history = wf_history_adapter.getHistory()
         for event in history:
             self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
 
@@ -2078,7 +2083,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             read=False, write=False)
         self._check_access(cloned_item, userIds=('pmCreator1', ))
 
-    def test_ItemDataHistorizedWhenProposedToCabinetManager(self):
+    def test_BourgmestreItemDataHistorizedWhenProposedToCabinetManager(self):
         """ """
         self.setUpBourgmestreConfig()
         self.changeUser('pmManager')
@@ -2097,8 +2102,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('generalManager')
         self.assertFalse(hasattr(item, ITEM_MAIN_INFOS_HISTORY))
         self.do(item, 'proposeToCabinetManager')
-        view = getMultiAdapter((item, self.portal.REQUEST), name='contenthistory')
-        last_event = view.getHistory()[0]
+        last_event = getLastAction(item)
         self.assertEqual(last_event['action'], 'historize_main_infos')
         self.assertEqual(last_event['actor'], self.member.getId())
         self.assertEqual(last_event['comments'], 'historize_main_infos_comments')

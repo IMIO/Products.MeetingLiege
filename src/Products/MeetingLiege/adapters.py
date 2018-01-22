@@ -2890,4 +2890,3 @@ class MLItemMainInfosHistoryAdapter(BaseImioHistoryAdapter):
 
     history_type = 'main_infos'
     history_attr_name = ITEM_MAIN_INFOS_HISTORY
-

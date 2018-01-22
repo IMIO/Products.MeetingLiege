@@ -25,6 +25,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from plone import api
+from plone.memoize.instance import memoize
 from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
 from Products.PloneMeeting.adapters import PMCategorizedObjectAdapter
@@ -94,6 +95,100 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
                     if previousEvent and previousEvent['review_state'] == 'proposed_to_finance':
                         return True
         return userMayAccessComment
+
+    @memoize
+    def _userIsInProposingGroup(self):
+        """ """
+        tool = api.portal.get_tool('portal_plonemeeting')
+        return self.context.getProposingGroup(theObject=True) in tool.getGroupsForUser()
+
+    @memoize
+    def _is_general_manager(self):
+        """ """
+        return self.context.adapted().is_general_manager()
+
+    @memoize
+    def _is_cabinet_member(self):
+        """ """
+        return self.context.adapted().is_cabinet_manager() or self.context.adapted().is_cabinet_reviewer()
+
+    @memoize
+    def _build_history_with_previous_review_state(self):
+        """ """
+        history = self.get_history_data()
+        res = []
+        previous_event = None
+        for event in history:
+            new_event = event.copy()
+            new_event['previous_review_state'] = previous_event and previous_event['review_state'] or None
+            previous_event = new_event.copy()
+            res.append(new_event)
+        return res
+
+    def mayViewEvent(self, event):
+        """ """
+        # key is the transition, value is the previous review_state it can not come from
+        ADMINISTRATIVE_NOT_VIEWABLE_TRANSITIONS = {
+            'proposeToCabinetManager': None,
+            'backToProposedToGeneralManager': None,
+            'proposeToCabinetReviewer': None,
+            'backToProposedToCabinetManager': None,
+            'validate': None,
+            'backToProposedToCabinetReviewer': None}
+
+        # key is the transition, value is the previous review_state it can not come from
+        CABINET_NOT_VIEWABLE_TRANSITIONS = {
+            'proposeToAdministrativeReviewer': None,
+            'backToItemCreated': None,
+            'proposeToInternalReviewer': None,
+            'backToProposedToAdministrativeReviewer': None,
+            'proposeToDirector': None,
+            'backToProposedToInternalReviewer': None,
+            'proposeToGeneralManager': None,
+            'backToProposedToDirector': ['proposed_to_general_manager']}
+
+        if event['action'] and self.context.portal_type == 'MeetingItemBourgmestre':
+            tool = api.portal.get_tool('portal_plonemeeting')
+            # MeetingManager bypass
+
+            if tool.isManager(self.context) or self._is_general_manager():
+                return True
+
+            # is member of the proposingGroup?
+            userIsInProposingGroup = self._userIsInProposingGroup()
+            # is cabinet member?
+            is_cabinet_member = self._is_cabinet_member()
+
+            # in case user is in proposing group + cabinet member, he may see everything
+            if userIsInProposingGroup and is_cabinet_member:
+                return True
+
+            # only in proposing group
+            if userIsInProposingGroup:
+                not_viewable_transitions = ADMINISTRATIVE_NOT_VIEWABLE_TRANSITIONS
+            # only cabinet member
+            elif is_cabinet_member:
+                not_viewable_transitions = CABINET_NOT_VIEWABLE_TRANSITIONS
+            else:
+                return False
+
+            # check for not_viewable_transitions transition
+            history = self._build_history_with_previous_review_state()
+            # find event in history
+            event_with_previous_review_state = [
+                elt for elt in history if event['time'] == elt['time']][0]
+            action = event_with_previous_review_state['action']
+            if action not in not_viewable_transitions:
+                return True
+
+            previous_review_state = event_with_previous_review_state['previous_review_state']
+            forbidden_previous_review_state = not_viewable_transitions[action]
+            # if transition in not_viewable_transitions, it is viewable if previous_review_state
+            # is not in forbidden_previous_review_state.  This manage fact that backTo transitions
+            # may lead to a former state from various review_states
+            if not forbidden_previous_review_state or previous_review_state in forbidden_previous_review_state:
+                return False
+        return True
 
 
 class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):

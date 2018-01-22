@@ -2823,6 +2823,11 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
                           translate('icon_help_proposed_to_director',
                                     domain="PloneMeeting",
                                     context=self.request)))
+        elif itemState == 'proposed_to_director_waiting_advices':
+            icons.append(('askAdvicesByDirector.png',
+                          translate('icon_help_proposed_to_director_waiting_advices',
+                                    domain="PloneMeeting",
+                                    context=self.request)))
         elif itemState == 'proposed_to_finance':
             icons.append(('proposeToFinance.png',
                           translate('icon_help_proposed_to_finance',

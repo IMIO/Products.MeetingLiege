@@ -84,6 +84,10 @@ msgstr ""
 msgid "icon_help_proposed_to_director"
 msgstr ""
 
+#. Default: "Advices asked by director"
+msgid "icon_help_proposed_to_director_waiting_advices"
+msgstr ""
+
 #. Default: "Proposed to finance"
 msgid "icon_help_proposed_to_finance"
 msgstr ""

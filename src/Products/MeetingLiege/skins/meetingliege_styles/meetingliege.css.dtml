@@ -29,6 +29,7 @@ ul#portal-globalnav li a {
 .state-proposed_to_internal_reviewer, .label-state-proposed_to_internal_reviewer,
 .state-proposed_to_internal_reviewer_waiting_advices, .label-state-proposed_to_internal_reviewer_waiting_advices,
 .state-proposed_to_director, .label-state-proposed_to_director,
+.state-proposed_to_director_waiting_advices, .label-state-proposed_to_director_waiting_advices,
 .state-proposed_to_finance, .label-state-proposed_to_finance,
 .state-proposed_to_financial_controller, .label-state-proposed_to_financial_controller,
 .state-proposed_to_financial_reviewer, .label-state-proposed_to_financial_reviewer,

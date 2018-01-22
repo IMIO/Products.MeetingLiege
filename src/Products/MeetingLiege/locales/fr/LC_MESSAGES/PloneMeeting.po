@@ -240,6 +240,10 @@ msgstr "Proposé au Validateur Cabinet"
 msgid "icon_help_proposed_to_director"
 msgstr "Proposé à la direction"
 
+#. Default: "Advices asked by director"
+msgid "icon_help_proposed_to_director_waiting_advices"
+msgstr "Avis demandés par la direction"
+
 #. Default: "Proposed to finance"
 msgid "icon_help_proposed_to_finance"
 msgstr "Proposé aux finances"

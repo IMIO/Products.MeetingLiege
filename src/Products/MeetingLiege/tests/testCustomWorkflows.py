@@ -2115,3 +2115,60 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         infos_view = getMultiAdapter((item, self.portal.REQUEST), name='main_infos_history_view')
         self.assertTrue(item.Title() in infos_view(int(last_event['time'])))
         self.assertEqual(infos_view.historized_data, last_event['historized_data'])
+
+    def test_BourgmestreMayNotViewRelevantHistoryEvents(self):
+        """A user in an administrative group will only see administrative related transitions,
+           a user in a cabinet will only see cabinet related transitions."""
+        self.setUpBourgmestreConfig()
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        item.setTitle('Sample title')
+        item.setDescription('<p>Sample description</p>')
+        item.setMotivation('<p>Sample motivation</p>')
+        item.setDecision('<p>Sample decision</p>')
+        self.create('Meeting', date=DateTime('2018/01/22'))
+
+        # full WF as siteadmin
+        self.changeUser('siteadmin')
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.do(item, 'proposeToInternalReviewer')
+        self.do(item, 'proposeToDirector')
+        self.do(item, 'proposeToGeneralManager')
+        self.do(item, 'backToProposedToDirector')
+        self.do(item, 'proposeToGeneralManager')
+        self.do(item, 'proposeToCabinetManager')
+        # special backToProposedToDirector that will be viewable by cabinet members
+        self.do(item, 'backToProposedToDirector')
+        self.do(item, 'proposeToGeneralManager')
+        self.do(item, 'proposeToCabinetManager')
+        self.do(item, 'proposeToCabinetReviewer')
+        self.do(item, 'validate')
+        self.do(item, 'present')
+        self.do(item, 'accept')
+        view = getMultiAdapter((item, self.request), name='contenthistory')
+        actions = [event['action'] for event in view.getHistory()]
+        # every actions as siteadmin
+        self.assertEqual(
+            actions,
+            ['accept', 'present', 'validate', 'proposeToCabinetReviewer', 'historize_main_infos',
+             'proposeToCabinetManager', 'proposeToGeneralManager', 'backToProposedToDirector', 'historize_main_infos',
+             'proposeToCabinetManager', 'proposeToGeneralManager', 'backToProposedToDirector',
+             'proposeToGeneralManager', 'proposeToDirector', 'proposeToInternalReviewer',
+             'proposeToAdministrativeReviewer', None])
+        # as member of the proposingGroup
+        self.changeUser('pmCreator1')
+        actions = [event['action'] for event in view.getHistory()]
+        self.assertEqual(
+            actions,
+            ['accept', 'present', 'historize_main_infos', 'proposeToGeneralManager', 'backToProposedToDirector',
+             'historize_main_infos', 'proposeToGeneralManager', 'backToProposedToDirector', 'proposeToGeneralManager',
+             'proposeToDirector', 'proposeToInternalReviewer', 'proposeToAdministrativeReviewer', None])
+        # as cabinet mamager/reviewer
+        for cabinet_member_id in ('bourgmestreManager', 'bourgmestreReviewer'):
+            self.changeUser(cabinet_member_id)
+            actions = [event['action'] for event in view.getHistory()]
+            self.assertEqual(
+                actions,
+                ['accept', 'present', 'validate', 'proposeToCabinetReviewer', 'historize_main_infos',
+                 'proposeToCabinetManager', 'backToProposedToDirector', 'historize_main_infos',
+                 'proposeToCabinetManager', None])

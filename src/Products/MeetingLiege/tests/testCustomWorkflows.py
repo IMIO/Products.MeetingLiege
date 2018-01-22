@@ -2102,7 +2102,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('generalManager')
         self.assertFalse(hasattr(item, ITEM_MAIN_INFOS_HISTORY))
         self.do(item, 'proposeToCabinetManager')
-        last_event = getLastAction(item)
+        last_event = getLastAction(item, history_name='main_infos')
         self.assertEqual(last_event['action'], 'historize_main_infos')
         self.assertEqual(last_event['actor'], self.member.getId())
         self.assertEqual(last_event['comments'], 'historize_main_infos_comments')

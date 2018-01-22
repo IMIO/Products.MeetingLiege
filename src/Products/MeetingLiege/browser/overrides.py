@@ -16,11 +16,11 @@ from plone import api
 
 from collective.iconifiedcategory.browser.actionview import SignedChangeView
 from imio.history.interfaces import IImioHistory
-from imio.history.browser.views import IHContentHistoryView
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
 from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
 from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
+from Products.PloneMeeting.browser.overrides import PMContentHistoryView
 from Products.MeetingLiege import logger
 
 
@@ -375,11 +375,10 @@ class MLMeetingDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         return helper.printActeContentForCouncil()
 
 
-class MLContentHistoryView(IHContentHistoryView):
+class MLContentHistoryView(PMContentHistoryView):
     """ """
-    histories_to_handle = (u'revision', u'workflow', u'main_infos')
+    histories_to_handle = (u'revision', u'workflow', u'data_changes', u'main_infos')
 
     def renderCustomJS(self):
         """ """
         return '<script>overOverlays();</script>'
-

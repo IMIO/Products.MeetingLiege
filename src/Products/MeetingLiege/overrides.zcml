@@ -71,4 +71,11 @@
              factory=".adapters.MLMeetingPrettyLinkAdapter"
              provides="imio.prettylink.interfaces.IPrettyLink" />
 
+    <!-- Override @@historyview for IMeetingItem -->
+    <browser:view
+        for="Products.PloneMeeting.interfaces.IMeetingItem"
+        name="contenthistory"
+        class=".browser.overrides.MLContentHistoryView"
+        layer="imio.history.interfaces.IImioHistoryLayer"
+        permission="zope.Public" />
 </configure>

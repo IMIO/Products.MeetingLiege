@@ -23,14 +23,6 @@
         directory="overrides/images"
         layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
 
-    <!-- Override @@historyview for IMeetingItem -->
-    <browser:view
-        for="Products.PloneMeeting.interfaces.IMeetingItem"
-        name="contenthistory"
-        class=".overrides.MLContentHistoryView"
-        layer="imio.history.interfaces.IImioHistoryLayer"
-        permission="zope.Public" />
-
     <browser:page
         name="main_infos_history_view"
         for="Products.PloneMeeting.interfaces.IMeetingItem"

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1b2 (unreleased)
+4.1b2 (2018-01-23)
 ------------------
 - Added 'Bourgmestre' MeetingConfig (workflow, adapters, ...) :
   - main_infos history on item

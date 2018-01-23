@@ -3,9 +3,10 @@ Products.MeetingLiege Changelog
 
 4.1b2 (unreleased)
 ------------------
-
-- Nothing changed yet.
-
+- Added 'Bourgmestre' MeetingConfig (workflow, adapters, ...) :
+  - main_infos history on item
+  - bourgmestre WFs for item and meeting
+  - hide history transitions for relevant roles
 
 4.1b1 (2017-12-01)
 ------------------

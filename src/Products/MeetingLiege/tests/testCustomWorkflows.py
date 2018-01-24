@@ -157,6 +157,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.queryState(), 'itemfrozen')
         self.assertEqual(self.transitions(item),
                          ['accept',
+                          'accept_and_return',
                           'accept_but_modify',
                           'backToPresented',
                           'delay',

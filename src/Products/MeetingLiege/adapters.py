@@ -2188,7 +2188,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayAcceptAndReturn')
 
     def mayAcceptAndReturn(self):
-        '''This is a decision only available if item will be sent to council.'''
+        ''' '''
         return self.mayDecide()
 
     security.declarePublic('mayCorrect')

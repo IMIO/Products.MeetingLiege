@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.1b3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- 'Accept and return' transition also works when item not to send to Council, in this case,
+  item is just duplicated and not sent to Council
 
 4.1b2 (2018-01-23)
 ------------------

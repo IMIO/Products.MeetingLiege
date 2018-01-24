@@ -781,29 +781,36 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         cfg2Id = cfg2.getId()
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='An item to return')
+        item2 = self.create('MeetingItem', title='An item to return and to send to Council')
+        item2.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         # create meetingFolder in cfg2 for pmCreator1
         self.getMeetingFolder(cfg2)
         self.changeUser('pmManager')
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
         # present the item into the meeting
         self.presentItem(item)
+        self.presentItem(item2)
         self.decideMeeting(meeting)
-        # as item is not to send to council, the 'accept_and_return' transition is not available
-        self.assertTrue('accept_and_return' not in self.transitions(item))
-        # mark it to send to council
-        item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
-        # now the transition 'accept_and_return' is available
+        # the 'accept_and_return' transition is available no matter
+        # item is to send to Council or not
         self.assertTrue('accept_and_return' in self.transitions(item))
-        # accept_and_return, the item is send to the meetingConfig2
-        # and is duplicated in current config and set to 'validated'
+        self.assertTrue('accept_and_return' in self.transitions(item2))
+        # accept_and_return, the items, item2 is send to the meetingConfig2
+        # and both are duplicated in current config and set to 'validated'
         self.do(item, 'accept_and_return')
+        self.do(item2, 'accept_and_return')
         returned = item.getBRefs('ItemPredecessor')
-        self.assertTrue(len(returned) == 2)
-        duplicated1, duplicated2 = returned
+        returned2 = item2.getBRefs('ItemPredecessor')
+        self.assertTrue(len(returned) == 1)
+        self.assertTrue(len(returned2) == 2)
+        returned = returned[0]
+        duplicated1, duplicated2 = returned2
         # original creator was kept
         self.assertEquals(item.Creator(), 'pmCreator1')
+        self.assertEquals(returned.Creator(), item.Creator())
         self.assertEquals(duplicated1.Creator(), item.Creator())
         self.assertEquals(duplicated2.Creator(), item.Creator())
+        self.assertEqual(returned.portal_type, item.portal_type)
         # predecessors are not sorted, so one of both is duplicated to another
         # meetingConfig and the other is duplicated locally...
         # sent to the council
@@ -814,9 +821,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             duplicatedToCfg2 = duplicated2
             duplicatedLocally = duplicated1
         self.assertTrue(duplicatedToCfg2.portal_type == cfg2.getItemTypeName())
-        self.assertTrue(duplicatedToCfg2.UID() == item.getItemClonedToOtherMC(cfg2Id).UID())
+        self.assertTrue(duplicatedToCfg2.UID() == item2.getItemClonedToOtherMC(cfg2Id).UID())
         # duplicated locally...
-        self.assertTrue(duplicatedLocally.portal_type == item.portal_type)
+        self.assertTrue(duplicatedLocally.portal_type == item2.portal_type)
         # ... and validated
         self.assertTrue(duplicatedLocally.queryState() == 'validated')
         # informations about "needs to be sent to other mc" is kept

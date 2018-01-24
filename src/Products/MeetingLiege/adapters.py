@@ -2189,11 +2189,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayAcceptAndReturn(self):
         '''This is a decision only available if item will be sent to council.'''
-        res = False
-        if self.mayDecide() and _checkPermission(ReviewPortalContent, self.context) and \
-           'meeting-config-council' in self.context.getOtherMeetingConfigsClonableTo():
-            res = True
-        return res
+        return self.mayDecide()
 
     security.declarePublic('mayCorrect')
 

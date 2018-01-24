@@ -18,7 +18,7 @@
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow"/>
  <object name="meetingitemcouncilliege_workflow" meta_type="Workflow"/>
  <bindings>
-  <type type_id="MeetingCollege">
+  <!--type type_id="MeetingCollege">
      <bound-workflow workflow_id="meetingcollegeliege_workflow" />
   </type>
   <type type_id="MeetingCouncil">
@@ -35,7 +35,7 @@
   </type>
   <type type_id="MeetingItemBourgmestre">
      <bound-workflow workflow_id="meetingitembourgmestre_workflow" />
-  </type>
+  </type-->
   <type type_id="meetingadvicefinances">
      <bound-workflow workflow_id="meetingadviceliege_workflow" />
   </type>

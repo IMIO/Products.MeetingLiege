@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from Products.PloneMeeting.config import MEETINGREVIEWERS
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import AnnexTypeDescriptor
 from Products.PloneMeeting.profiles import CategoryDescriptor
@@ -190,11 +189,13 @@ developers.creators.append(pmCreator1)
 developers.creators.append(pmCreator1b)
 developers.administrativereviewers.append(pmAdminReviewer1)
 developers.administrativereviewers.append(pmManager)
+developers.administrativereviewers.append(pmReviewerLevel1)
 developers.internalreviewers.append(pmInternalReviewer1)
 developers.internalreviewers.append(pmManager)
 developers.creators.append(pmManager)
 developers.reviewers.append(pmReviewer1)
 developers.reviewers.append(pmManager)
+developers.reviewers.append(pmReviewerLevel2)
 developers.observers.append(pmObserver1)
 developers.observers.append(pmReviewer1)
 developers.observers.append(pmManager)
@@ -202,10 +203,6 @@ developers.advisers.append(pmAdviser1)
 developers.advisers.append(pmManager)
 setattr(developers, 'signatures', 'developers signatures')
 setattr(developers, 'echevinServices', 'developers')
-# put pmReviewerLevel1 in first level of reviewers from what is in MEETINGREVIEWERS
-getattr(developers, MEETINGREVIEWERS.keys()[-1]).append(pmReviewerLevel1)
-# put pmReviewerLevel2 in second level of reviewers from what is in MEETINGREVIEWERS
-getattr(developers, MEETINGREVIEWERS.keys()[0]).append(pmReviewerLevel2)
 
 # give an advice on recurring items
 vendors = GroupDescriptor('vendors', 'Vendors', 'Devil')
@@ -254,6 +251,7 @@ budgetimpacteditor.ploneGroups = [college_budgetimpacteditors,
 collegeMeeting = MeetingConfigDescriptor(
     'meeting-config-college', u'College Communal',
     u'College communal', isDefault=True)
+
 collegeMeeting.meetingManagers = ('pmManager', )
 collegeMeeting.assembly = 'Pierre Dupont - Bourgmestre,\n' \
                           'Charles Exemple - 1er Echevin,\n' \
@@ -536,7 +534,6 @@ bourgmestreMeeting.itemTemplates = []
 
 # no recurring items for this meetingConfig, only for tests !!!
 # so we can test a meetingConfig with recurring items (college) and without (council)
-
 data = PloneMeetingConfiguration(
     meetingFolderTitle='Mes seances',
     meetingConfigs=(collegeMeeting, councilMeeting, bourgmestreMeeting),

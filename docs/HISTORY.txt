@@ -6,6 +6,7 @@ Products.MeetingLiege Changelog
 
 - 'Accept and return' transition also works when item not to send to Council, in this case,
   item is just duplicated and not sent to Council
+- Adapted config.MEETINGREVIEWERS format
 
 4.1b2 (2018-01-23)
 ------------------

@@ -1,6 +1,12 @@
 Products.MeetingLiege Changelog
 ===============================
 
+4.1b4 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 4.1b3 (2018-01-31)
 ------------------
 

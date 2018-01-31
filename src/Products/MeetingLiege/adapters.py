@@ -575,7 +575,7 @@ class CustomMeetingItem(MeetingItem):
                                      'validated', )
     MeetingItem.beforePublicationStates = customBeforePublicationStates
 
-    BOURGMESTRE_ADMINISTRATIVE_STATES = [
+    BOURGMESTRE_PROPOSING_GROUP_STATES = [
         'itemcreated', 'proposed_to_administrative_reviewer',
         'proposed_to_internal_reviewer', 'proposed_to_director',
         'proposed_to_director_waiting_advices']
@@ -1326,9 +1326,10 @@ class CustomMeetingItem(MeetingItem):
             return item.getProposingGroup(True)
         else:
             tool = api.portal.get_tool('portal_plonemeeting')
-            # administrative states, proposingGroup is managing the item
+            # administrative states or item presented to a meeting,
+            # proposingGroup is managing the item
             item_state = item.queryState()
-            if item_state in self.BOURGMESTRE_ADMINISTRATIVE_STATES:
+            if item_state in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['validated'] or item.hasMeeting():
                 return item.getProposingGroup(True)
             # general manager, we take the _reviewers group
             elif item_state in ['proposed_to_general_manager']:
@@ -1343,14 +1344,26 @@ class CustomMeetingItem(MeetingItem):
         item_state = item.queryState()
         meetingGroup = None
         roles = {suffix: 'Reader' for suffix in MEETING_GROUP_SUFFIXES}
-        # access to proposingGroup
-        if item_state not in self.BOURGMESTRE_ADMINISTRATIVE_STATES:
+        item_managing_group = item.adapted()._getGroupManagingItem()
+        proposingGroup = item.getProposingGroup(theObject=True)
+        # when proposingGroup is no more the managing group, it means item is at least
+        # proposed to general manager, give read access to proposingGroup and to general manager
+        # if it is not the managing group
+        if item_managing_group != proposingGroup:
             meetingGroup = item.getProposingGroup(True)
             item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
-        # access to GENERAL_MANAGER_GROUP_ID groups
-        if item_state not in self.BOURGMESTRE_ADMINISTRATIVE_STATES + ['proposed_to_general_manager']:
+        # access for GENERAL_MANAGER_GROUP_ID groups
+        if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['proposed_to_general_manager']:
             tool = api.portal.get_tool('portal_plonemeeting')
             meetingGroup = tool.get(GENERAL_MANAGER_GROUP_ID)
+            item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
+        # access for BOURGMESTRE_GROUP_ID groups
+        if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + \
+                ['proposed_to_general_manager',
+                 'proposed_to_cabinet_manager',
+                 'proposed_to_cabinet_manager']:
+            tool = api.portal.get_tool('portal_plonemeeting')
+            meetingGroup = tool.get(BOURGMESTRE_GROUP_ID)
             item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
 
     def _findCustomOneLevelFor(self, insertMethod):

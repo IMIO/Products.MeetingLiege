@@ -7,6 +7,11 @@ Products.MeetingLiege Changelog
 - 'Accept and return' transition also works when item not to send to Council, in this case,
   item is just duplicated and not sent to Council
 - Adapted config.MEETINGREVIEWERS format
+- Define RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE for 'meetingitembourgmestre_workflow' so
+  'return_to_proposing_group' wfAdaptation is selectable
+- Do not bind default workflow for Meeting/MeetingItem types so reapplying the workflows.xml
+  portal_setup step do not change workflow selected on these types as it is different when
+  managed by the MeetingConfig
 
 4.1b2 (2018-01-23)
 ------------------

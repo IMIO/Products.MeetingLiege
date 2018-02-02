@@ -1784,6 +1784,15 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
             res = True
         return res
 
+    security.declarePublic('mayCorrect')
+
+    def mayCorrect(self, destinationState=None):
+        '''See docstring in interfaces.py'''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            return True
+        return res
+
 
 class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -2208,28 +2217,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayCorrect(self, destinationState=None):
         '''See docstring in interfaces.py'''
-        # Check with the default PloneMeeting method and our test if res is
-        # False. The diffence here is when we correct an item from itemfrozen to
-        # presented, we have to check if the Meeting is in the "created" state
-        # and not "published".
         res = super(MeetingItemCollegeLiegeWorkflowConditions, self).mayCorrect(destinationState)
-        # Manage our own behaviour now when the item is linked to a meeting,
-        # a MeetingManager can correct anything except if the meeting is closed
-        if res is not True:
-            if _checkPermission(ReviewPortalContent, self.context):
-                # Get the meeting
-                meeting = self.context.getMeeting()
-                if meeting:
-                    # Meeting can be None if there was a wf problem leading
-                    # an item to be in a "presented" state with no linked
-                    # meeting.
-                    meetingState = meeting.queryState()
-                    # A user having ReviewPortalContent permission can correct
-                    # an item in any case except if the meeting is closed.
-                    if meetingState != 'closed':
-                        res = True
-                else:
-                    res = True
         return res
 
     security.declarePublic('mayBackToProposedToDirector')
@@ -2360,15 +2348,9 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
 
     def mayCorrect(self, destinationState=None):
         '''See docstring in interfaces.py'''
-        # Take the default behaviour except if the meeting is frozen
-        # we still have the permission to correct it.
-        res = super(MeetingCouncilLiegeWorkflowConditions, self).mayCorrect(destinationState)
-        currentState = self.context.queryState()
-        if res is not True and currentState == "frozen":
-            # Change the behaviour for being able to correct a frozen meeting
-            # back to created.
-            if _checkPermission(ReviewPortalContent, self.context):
-                return True
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            return True
         return res
 
 
@@ -2427,28 +2409,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayCorrect(self, destinationState=None):
         '''See docstring in interfaces.py'''
-        # Check with the default PloneMeeting method and our test if res is
-        # False. The diffence here is when we correct an item from itemfrozen to
-        # presented, we have to check if the Meeting is in the "created" state
-        # and not "published".
         res = super(MeetingItemCouncilLiegeWorkflowConditions, self).mayCorrect(destinationState)
-        # Manage our own behaviour now when the item is linked to a meeting,
-        # a MeetingManager can correct anything except if the meeting is closed
-        if res is not True:
-            if _checkPermission(ReviewPortalContent, self.context):
-                # Get the meeting
-                meeting = self.context.getMeeting()
-                if meeting:
-                    # Meeting can be None if there was a wf problem leading
-                    # an item to be in a "presented" state with no linked
-                    # meeting.
-                    meetingState = meeting.queryState()
-                    # A user having ReviewPortalContent permission can correct
-                    # an item in any case except if the meeting is closed.
-                    if meetingState != 'closed':
-                        res = True
-                else:
-                    res = True
         return res
 
     security.declarePublic('mayDecide')

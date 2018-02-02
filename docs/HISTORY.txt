@@ -4,8 +4,7 @@ Products.MeetingLiege Changelog
 4.1b4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Simplified 'mayCorrect' for meeting and item WF condition adapters
 
 4.1b3 (2018-01-31)
 ------------------

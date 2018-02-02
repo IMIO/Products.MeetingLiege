@@ -284,6 +284,14 @@ msgstr ""
 msgid "validated"
 msgstr ""
 
+#. Default: "Propose to Bourgmestre"
+msgid "bourgmestre_validate"
+msgstr ""
+
+#. Default: "Proposed to Bourgmestre"
+msgid "bourgmestre_validated"
+msgstr ""
+
 #. Default: "Create an item council from an item college"
 msgid "create_to_meeting-config-council_from_meeting-config-college"
 msgstr ""

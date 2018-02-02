@@ -152,6 +152,14 @@ msgstr "Renvoyer au validateur interne"
 msgid "backToValidatedFromSentToCouncilEmergency"
 msgstr "Remettre en 'Proposé à la séance'"
 
+#. Default: "Propose to Bourgmestre"
+msgid "bourgmestre_validate"
+msgstr "Proposer au Bourgmestre"
+
+#. Default: "Proposed to Bourgmestre"
+msgid "bourgmestre_validated"
+msgstr "Proposé au Bourgmestre"
+
 #. Default: "Create an item college from an item council"
 msgid "create_to_meeting-config-college_from_meeting-config-council"
 msgstr "Envoyer vers Collège Communal"

@@ -2059,8 +2059,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'bourgmestreReviewer'),
             write=False)
         self.changeUser('pmManager')
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item, ('pmManager', ))
+        self.assertEqual(
+            self.transitions(item),
+            ['backToProposedToCabinetReviewer', 'backToProposedToDirector'])
         meeting = self.create('Meeting', date=DateTime('2018/01/09'))
         self.do(item, 'present')
         self.assertEqual(meeting.getItems()[0], item)

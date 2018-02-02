@@ -151,6 +151,14 @@ msgstr "Back to proposed to internal reviewer"
 msgid "backToValidatedFromSentToCouncilEmergency"
 msgstr ""
 
+#. Default: "Propose to Bourgmestre"
+msgid "bourgmestre_validate"
+msgstr ""
+
+#. Default: "Proposed to Bourgmestre"
+msgid "bourgmestre_validated"
+msgstr ""
+
 #. Default: "Create an item college from an item council"
 msgid "create_to_meeting-config-college_from_meeting-config-council"
 msgstr ""

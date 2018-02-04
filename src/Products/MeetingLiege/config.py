@@ -43,7 +43,7 @@ LIEGEMEETINGREVIEWERS = {
              ('internalreviewers', ['proposed_to_internal_reviewer']),
              ('administrativereviewers', ['proposed_to_administrative_reviewer'])]),
     }
-PMconfig.MEETINGREVIEWERS = LIEGEMEETINGREVIEWERS
+PMconfig.MEETINGREVIEWERS.update(LIEGEMEETINGREVIEWERS)
 
 LIEGE_ADVICE_STATES_ALIVE = ('advice_under_edit',
                              'proposed_to_financial_controller',

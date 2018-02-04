@@ -1,6 +1,15 @@
 Products.MeetingLiege Changelog
 ===============================
 
+4.1b4 (unreleased)
+------------------
+
+- Simplified 'mayCorrect' for meeting and item WF condition adapters
+- BG WF : added  'backToProposedToDirector' from 'validated' state
+- BG WF : changed validate transition/validated state title so it can be translated
+  differently than in College/Council
+- BG WF : do BG reviewer able to validate item in state 'proposed_to_cabinet_manager'
+
 4.1b3 (2018-01-31)
 ------------------
 

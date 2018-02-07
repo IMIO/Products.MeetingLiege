@@ -34,7 +34,7 @@ PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
 
 LIEGEMEETINGREVIEWERS = {
     'meetingitembourgmestre_workflow': OrderedDict(
-            [('reviewers', ['proposed_to_director', 'proposed_to_general_director', 'proposed_to_cabinet_reviewer']),
+            [('reviewers', ['proposed_to_director', 'proposed_to_general_manager', 'proposed_to_cabinet_reviewer']),
              ('internalreviewers', ['proposed_to_internal_reviewer']),
              ('administrativereviewers', ['proposed_to_administrative_reviewer']),
              ('creators', ['proposed_to_cabinet_manager'])]),

@@ -2287,7 +2287,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofeveryreviewerlevelsandlowerlevels')
         self.changeUser('pmReviewerLevel2')
         # the searches of a user of a '_reviewers' group will also search for
-        # 'developers__reviewprocess__proposed_to_general_director' and
+        # 'developers__reviewprocess__proposed_to_general_manager' and
         # 'developers__reviewprocess__proposed_to_cabinet_reviewer'
         # but this will not match any item as when an item is 'proposed_to_general_manager'
         # the reviewProcessInfo will be 'sc__reviewprocess__proposed_to_general_manager'
@@ -2297,7 +2297,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['developers__reviewprocess__proposed_to_director',
-                          'developers__reviewprocess__proposed_to_general_director',
+                          'developers__reviewprocess__proposed_to_general_manager',
                           'developers__reviewprocess__proposed_to_cabinet_reviewer']}})
         self.assertEqual(
             highest_hierarchic_level.query,
@@ -2305,7 +2305,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['developers__reviewprocess__proposed_to_director',
-                          'developers__reviewprocess__proposed_to_general_director',
+                          'developers__reviewprocess__proposed_to_general_manager',
                           'developers__reviewprocess__proposed_to_cabinet_reviewer']}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
@@ -2313,7 +2313,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['developers__reviewprocess__proposed_to_director',
-                          'developers__reviewprocess__proposed_to_general_director',
+                          'developers__reviewprocess__proposed_to_general_manager',
                           'developers__reviewprocess__proposed_to_cabinet_reviewer',
                           'developers__reviewprocess__proposed_to_internal_reviewer',
                           'developers__reviewprocess__proposed_to_administrative_reviewer',
@@ -2330,7 +2330,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['sc__reviewprocess__proposed_to_director',
-                          'sc__reviewprocess__proposed_to_general_director',
+                          'sc__reviewprocess__proposed_to_general_manager',
                           'sc__reviewprocess__proposed_to_cabinet_reviewer']}})
         self.assertEqual(
             highest_hierarchic_level.query,
@@ -2338,7 +2338,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['sc__reviewprocess__proposed_to_director',
-                          'sc__reviewprocess__proposed_to_general_director',
+                          'sc__reviewprocess__proposed_to_general_manager',
                           'sc__reviewprocess__proposed_to_cabinet_reviewer']}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
@@ -2346,7 +2346,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['sc__reviewprocess__proposed_to_director',
-                          'sc__reviewprocess__proposed_to_general_director',
+                          'sc__reviewprocess__proposed_to_general_manager',
                           'sc__reviewprocess__proposed_to_cabinet_reviewer',
                           'sc__reviewprocess__proposed_to_internal_reviewer',
                           'sc__reviewprocess__proposed_to_administrative_reviewer',
@@ -2387,7 +2387,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['bourgmestre__reviewprocess__proposed_to_director',
-                          'bourgmestre__reviewprocess__proposed_to_general_director',
+                          'bourgmestre__reviewprocess__proposed_to_general_manager',
                           'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer']}})
         self.assertEqual(
             highest_hierarchic_level.query,
@@ -2395,7 +2395,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['bourgmestre__reviewprocess__proposed_to_director',
-                          'bourgmestre__reviewprocess__proposed_to_general_director',
+                          'bourgmestre__reviewprocess__proposed_to_general_manager',
                           'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer']}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
@@ -2403,7 +2403,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['bourgmestre__reviewprocess__proposed_to_director',
-                          'bourgmestre__reviewprocess__proposed_to_general_director',
+                          'bourgmestre__reviewprocess__proposed_to_general_manager',
                           'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer',
                           'bourgmestre__reviewprocess__proposed_to_internal_reviewer',
                           'bourgmestre__reviewprocess__proposed_to_administrative_reviewer',

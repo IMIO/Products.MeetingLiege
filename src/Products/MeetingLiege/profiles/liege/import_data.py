@@ -319,6 +319,7 @@ collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_
                                        'proposed_to_director', 'validated', 'presented',
                                        'itemfrozen', 'refused', 'delayed',
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
+collegeMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 collegeMeeting.transitionReinitializingDelays = 'backToProposedToDirector'
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.enableAdviceInvalidation = False
@@ -518,6 +519,7 @@ councilMeeting.meetingAppDefaultView = 'searchmyitems'
 councilMeeting.useAdvices = False
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.enableAdviceInvalidation = False
+councilMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 councilMeeting.useCopies = True
 councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
                                        groups[1].getIdSuffixed('reviewers'),

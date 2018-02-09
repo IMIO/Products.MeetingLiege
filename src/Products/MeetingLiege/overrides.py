@@ -65,6 +65,15 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
     """
       Manage the the fact that a given user may see or not a comment in an item history.
     """
+
+    @memoize
+    def get_history_data(self):
+        """We need previous_review_state for MeetingItemBourgmestre."""
+        if self.context.portal_type == 'MeetingItemBourgmestre':
+            self.include_previous_review_state = True
+        history_data = super(ItemWfHistoryAdapter, self).get_history_data()
+        return history_data
+
     def mayViewComment(self, event):
         """
           By default, comments are hidden to everybody outside the proposing group
@@ -112,19 +121,6 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
         """ """
         return self.context.adapted().is_cabinet_manager() or self.context.adapted().is_cabinet_reviewer()
 
-    @memoize
-    def _build_history_with_previous_review_state(self):
-        """ """
-        history = self.get_history_data()
-        res = []
-        previous_event = None
-        for event in history:
-            new_event = event.copy()
-            new_event['previous_review_state'] = previous_event and previous_event['review_state'] or None
-            previous_event = new_event.copy()
-            res.append(new_event)
-        return res
-
     def mayViewEvent(self, event):
         """ """
         # key is the transition, value is the previous review_state it can not come from
@@ -145,7 +141,8 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
             'proposeToDirector': None,
             'backToProposedToInternalReviewer': None,
             'proposeToGeneralManager': None,
-            'backToProposedToDirector': ['proposed_to_general_manager']}
+            'backToProposedToDirector': ['proposed_to_general_manager', 'proposed_to_director_waiting_advices'],
+            'askAdvicesByDirector': None, }
 
         if event['action'] and self.context.portal_type == 'MeetingItemBourgmestre':
             tool = api.portal.get_tool('portal_plonemeeting')
@@ -173,16 +170,11 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
                 return False
 
             # check for not_viewable_transitions transition
-            history = self._build_history_with_previous_review_state()
-            # find event in history
-            event_with_previous_review_state = [
-                elt for elt in history if event['time'] == elt['time']][0]
-            action = event_with_previous_review_state['action']
-            if action not in not_viewable_transitions:
+            if event['action'] not in not_viewable_transitions:
                 return True
 
-            previous_review_state = event_with_previous_review_state['previous_review_state']
-            forbidden_previous_review_state = not_viewable_transitions[action]
+            previous_review_state = event['previous_review_state']
+            forbidden_previous_review_state = not_viewable_transitions[event['action']]
             # if transition in not_viewable_transitions, it is viewable if previous_review_state
             # is not in forbidden_previous_review_state.  This manage fact that backTo transitions
             # may lead to a former state from various review_states

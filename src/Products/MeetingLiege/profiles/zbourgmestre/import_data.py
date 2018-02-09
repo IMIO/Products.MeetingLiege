@@ -122,6 +122,7 @@ bourgmestreMeeting.powerAdvisersGroups = ()
 bourgmestreMeeting.itemBudgetInfosStates = ()
 bourgmestreMeeting.enableLabels = True
 bourgmestreMeeting.useCopies = True
+bourgmestreMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 bourgmestreMeeting.selectableCopyGroups = []
 bourgmestreMeeting.podTemplates = bourgmestreTemplates
 bourgmestreMeeting.meetingConfigsToCloneTo = []

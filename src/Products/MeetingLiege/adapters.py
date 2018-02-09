@@ -1319,7 +1319,7 @@ class CustomMeetingItem(MeetingItem):
             groupId = '%s_observers' % groupOfMatter
             item.manage_addLocalRoles(groupId, ('Reader', ))
 
-    def _getGroupManagingItem(self):
+    def _getGroupManagingItem(self, review_state=None):
         """ """
         item = self.getSelf()
         if item.portal_type != 'MeetingItemBourgmestre':
@@ -1328,11 +1328,10 @@ class CustomMeetingItem(MeetingItem):
             tool = api.portal.get_tool('portal_plonemeeting')
             # administrative states or item presented to a meeting,
             # proposingGroup is managing the item
-            item_state = item.queryState()
-            if item_state in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['validated'] or item.hasMeeting():
+            if review_state in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['validated'] or item.hasMeeting():
                 return item.getProposingGroup(True)
             # general manager, we take the _reviewers group
-            elif item_state in ['proposed_to_general_manager']:
+            elif review_state in ['proposed_to_general_manager']:
                 return tool.get(GENERAL_MANAGER_GROUP_ID)
             else:
                 return tool.get(BOURGMESTRE_GROUP_ID)

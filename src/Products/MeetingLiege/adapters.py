@@ -1343,7 +1343,7 @@ class CustomMeetingItem(MeetingItem):
         item_state = item.queryState()
         meetingGroup = None
         roles = {suffix: 'Reader' for suffix in MEETING_GROUP_SUFFIXES}
-        item_managing_group = item.adapted()._getGroupManagingItem()
+        item_managing_group = item.adapted()._getGroupManagingItem(item_state)
         proposingGroup = item.getProposingGroup(theObject=True)
         # when proposingGroup is no more the managing group, it means item is at least
         # proposed to general manager, give read access to proposingGroup and to general manager

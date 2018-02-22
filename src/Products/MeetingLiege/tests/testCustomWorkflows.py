@@ -1960,7 +1960,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         # unable to trigger proposeToCabinetReviewer
-        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer'])
 
         # propose to general manager and check access
         self.do(item, 'proposeToAdministrativeReviewer')
@@ -2021,9 +2024,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.setUpBourgmestreConfig()
         self.changeUser('bourgmestreManager')
         item = self.create('MeetingItem')
-        self.assertEqual(
-            self.transitions(item),
-            ['proposeToAdministrativeReviewer', 'proposeToCabinetReviewer'])
+        self.assertEqual(self.transitions(item), ['proposeToCabinetReviewer', 'proposeToDirector'])
         self.do(item, 'proposeToCabinetReviewer')
         # in this case, bourgmestre group correctly gets access on item
         # actually it will get the 'Reader' role in addition to Meeting roles
@@ -2114,7 +2115,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('generalManager')
         self.assertFalse(hasattr(item, ITEM_MAIN_INFOS_HISTORY))
         self.do(item, 'proposeToCabinetManager')
-        last_event = getLastAction(item, history_name='main_infos')
+        main_infos_history_adapter = getAdapter(item, IImioHistory, 'main_infos')
+        last_event = getLastAction(main_infos_history_adapter)
         self.assertEqual(last_event['action'], 'historize_main_infos')
         self.assertEqual(last_event['actor'], self.member.getId())
         self.assertEqual(last_event['comments'], 'historize_main_infos_comments')

@@ -30,6 +30,7 @@ from appy.gen import No
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
 from zope.annotation.interfaces import IAnnotations
+from zope.component import getAdapter
 from zope.interface import implements
 from zope.i18n import translate
 from plone.memoize import ram
@@ -42,6 +43,7 @@ from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.adapters import BaseImioHistoryAdapter
+from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
@@ -1136,10 +1138,11 @@ class CustomMeetingItem(MeetingItem):
         adviceGivenOnLocalized = advice['advice_given_on_localized']
         delayStartedOnLocalized = advice['delay_infos']['delay_started_on_localized']
         if not delayStartedOnLocalized:
+            adviceHolder_completeness_changes_adapter = getAdapter(
+                adviceHolder, IImioHistory, 'completeness_changes')
             last_completeness_complete_action = getLastAction(
-                    adviceHolder,
-                    action='completeness_complete',
-                    history_name='completeness_changes')
+                    adviceHolder_completeness_changes_adapter,
+                    action='completeness_complete')
             if last_completeness_complete_action:
                 delayStartedOnLocalized = adviceHolder.toLocalizedTime(last_completeness_complete_action['time'])
         delayStatus = advice['delay_infos']['delay_status']
@@ -2508,7 +2511,7 @@ class MeetingItemBourgmestreWorkflowActions(MeetingItemWorkflowActions):
         super(MeetingItemBourgmestreWorkflowActions, self).doDelay(stateChange)
 
 
-class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
+class MeetingItemBourgmestreWorkflowConditions(MeetingItemCollegeLiegeWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
        interface IMeetingItemBourgmestreWorkflowConditions'''
 
@@ -2517,42 +2520,6 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
 
     def __init__(self, item):
         self.context = item  # Implements IMeetingItem
-
-    security.declarePublic('mayProposeToAdministrativeReviewer')
-
-    def mayProposeToAdministrativeReviewer(self):
-        """ """
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayProposeToInternalReviewer')
-
-    def mayProposeToInternalReviewer(self):
-        """ """
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayProposeToDirector')
-
-    def mayProposeToDirector(self):
-        """ """
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayBackToProposedToDirector')
-
-    def mayBackToProposedToDirector(self):
-        ''' '''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
 
     security.declarePublic('mayProposeToGeneralManager')
 
@@ -2587,33 +2554,6 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemWorkflowConditions):
     security.declarePublic('mayAskAdvicesByDirector')
 
     def mayAskAdvicesByDirector(self):
-        ''' '''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayBackToItemCreated')
-
-    def mayBackToItemCreated(self):
-        ''' '''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayBackToProposedToAdministrativeReviewer')
-
-    def mayBackToProposedToAdministrativeReviewer(self):
-        ''' '''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayBackToProposedToInternalReviewer')
-
-    def mayBackToProposedToInternalReviewer(self):
         ''' '''
         res = False
         if _checkPermission(ReviewPortalContent, self.context):

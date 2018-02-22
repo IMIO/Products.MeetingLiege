@@ -9,6 +9,7 @@ Products.MeetingLiege Changelog
 - BG WF : changed validate transition/validated state title so it can be translated
   differently than in College/Council
 - BG WF : do BG reviewer able to validate item in state 'proposed_to_cabinet_manager'
+- BG WF : defined item validation WF shortcuts like it is made for College item
 
 4.1b3 (2018-01-31)
 ------------------

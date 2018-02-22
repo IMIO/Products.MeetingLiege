@@ -39,6 +39,7 @@ from imio.history.utils import getLastAction
 from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
 from plone.dexterity.utils import createContentInContainer
+from plone.memoize.instance import Memojito
 
 from Products.CMFCore.permissions import DeleteObjects
 from Products.CMFCore.permissions import ModifyPortalContent
@@ -186,21 +187,22 @@ class testCustomWorkflows(MeetingLiegeTestCase):
     def test_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
+        cfg = self.meetingConfig
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
         # asked by item creator and when item in state 'proposed_to_internal_reviewer_waiting_advices',
         # asekd by internal reviewer
-        self.meetingConfig.setUsedAdviceTypes(('asked_again', ) + self.meetingConfig.getUsedAdviceTypes())
-        self.meetingConfig.setItemAdviceStates(('itemcreated_waiting_advices',
-                                                'proposed_to_internal_reviewer_waiting_advices'))
-        self.meetingConfig.setItemAdviceEditStates = (('itemcreated_waiting_advices',
-                                                       'proposed_to_internal_reviewer_waiting_advices'))
-        self.meetingConfig.setItemAdviceViewStates = (('itemcreated_waiting_advices',
-                                                       'proposed_to_administrative_reviewer',
-                                                       'proposed_to_internal_reviewer',
-                                                       'proposed_to_internal_reviewer_waiting_advices',
-                                                       'proposed_to_director', 'validated', 'presented',
-                                                       'itemfrozen', 'refused', 'delayed', 'removed',
-                                                       'pre_accepted', 'accepted', 'accepted_but_modified', ))
+        cfg.setUsedAdviceTypes(('asked_again', ) + cfg.getUsedAdviceTypes())
+        cfg.setItemAdviceStates(('itemcreated_waiting_advices',
+                                 'proposed_to_internal_reviewer_waiting_advices'))
+        cfg.setItemAdviceEditStates = (('itemcreated_waiting_advices',
+                                        'proposed_to_internal_reviewer_waiting_advices'))
+        cfg.setItemAdviceViewStates = (('itemcreated_waiting_advices',
+                                        'proposed_to_administrative_reviewer',
+                                        'proposed_to_internal_reviewer',
+                                        'proposed_to_internal_reviewer_waiting_advices',
+                                        'proposed_to_director', 'validated', 'presented',
+                                        'itemfrozen', 'refused', 'delayed', 'removed',
+                                        'pre_accepted', 'accepted', 'accepted_but_modified', ))
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The first item')
         # if no advice to ask, pmCreator may only 'proposeToAdministrativeReviewer'
@@ -1009,6 +1011,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # now finance send it back to the internal reviewer
         self.do(item, 'backToProposedToInternalReviewer')
         # save event
+        # clean memoize
+        getattr(wf_history_adapter, Memojito.propname).clear()
         history = wf_history_adapter.getHistory()
         proposedToInternalReviewerViewableIndex = history.index(history[-1])
 
@@ -1016,6 +1020,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # should be proposedToFinancesViewableIndex and proposedToInternalReviewerViewableIndex
         viewableCommentIndexes = (proposedToFinancesViewableIndex, proposedToInternalReviewerViewableIndex)
         self.changeUser('pmFinController')
+        # clean memoize
+        getattr(wf_history_adapter, Memojito.propname).clear()
         history = wf_history_adapter.getHistory()
         for event in history:
             if history.index(event) in viewableCommentIndexes:
@@ -1070,6 +1076,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             self.assertTrue(not event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
         # not viewable to the pmManager as only Managers may access those comments
         self.changeUser('pmManager')
+        # clean memoize
+        getattr(wf_history_adapter, Memojito.propname).clear()
         history = wf_history_adapter.getHistory()
         for event in history:
             self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
@@ -1078,6 +1086,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         # user may not see advice history comments like a MeetingManager
         self.hasPermission(View, advice)
+        # clean memoize
+        getattr(wf_history_adapter, Memojito.propname).clear()
         history = wf_history_adapter.getHistory()
         for event in history:
             self.assertTrue(event['comments'] == HISTORY_COMMENT_NOT_VIEWABLE)
@@ -1922,13 +1932,16 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmReviewer1')
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
-        # he may send the item back to the internal reviewer, askAdvicesByDirector
-        # or send it to general manager (proposeToGeneralManager)
+        # he may send the item back to the internal reviewer, or send it to
+        # general manager (proposeToGeneralManager).  askAdvicesByDirector is only available
+        # if advices are asked
         self.assertEqual(self.transitions(item),
-                         ['askAdvicesByDirector',
-                          'backToProposedToInternalReviewer',
+                         ['backToProposedToInternalReviewer',
                           'proposeToGeneralManager'])
         # ask advices
+        item.setOptionalAdvisers(('vendors', ))
+        item._update_after_edit()
+        self.assertTrue('askAdvicesByDirector' in self.transitions(item))
         self.do(item, 'askAdvicesByDirector')
         self.assertEqual(item.queryState(), 'proposed_to_director_waiting_advices')
         # director may take item back
@@ -2171,6 +2184,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
              'proposeToAdministrativeReviewer', None])
         # as member of the proposingGroup
         self.changeUser('pmCreator1')
+        view = getMultiAdapter((item, self.request), name='contenthistory')
         actions = [event['action'] for event in view.getHistory()]
         self.assertEqual(
             actions,
@@ -2180,6 +2194,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # as cabinet mamager/reviewer
         for cabinet_member_id in ('bourgmestreManager', 'bourgmestreReviewer'):
             self.changeUser(cabinet_member_id)
+            view = getMultiAdapter((item, self.request), name='contenthistory')
             actions = [event['action'] for event in view.getHistory()]
             self.assertEqual(
                 actions,

@@ -104,19 +104,20 @@ class testCustomAdvices(MeetingLiegeTestCase):
     def test_ItemSentBackToAskerWhenEveryAdvicesGiven(self):
         '''Check that, when every advices are given, the item is automatically sent back to 'itemcreated'
            of 'proposed_to_internal_reviewer' depending on which 'waiting advices' state it is.'''
+        cfg = self.meetingConfig
         self.changeUser('admin')
-        self.meetingConfig.setUsedAdviceTypes(self.meetingConfig.getUsedAdviceTypes() + ('asked_again', ))
-        self.meetingConfig.setItemAdviceStates(('itemcreated_waiting_advices',
-                                                'proposed_to_internal_reviewer_waiting_advices'))
-        self.meetingConfig.setItemAdviceEditStates = (('itemcreated_waiting_advices',
-                                                       'proposed_to_internal_reviewer_waiting_advices'))
-        self.meetingConfig.setItemAdviceViewStates = (('itemcreated_waiting_advices',
-                                                       'proposed_to_administrative_reviewer',
-                                                       'proposed_to_internal_reviewer',
-                                                       'proposed_to_internal_reviewer_waiting_advices',
-                                                       'proposed_to_director', 'validated', 'presented',
-                                                       'itemfrozen', 'refused', 'delayed', 'removed',
-                                                       'pre_accepted', 'accepted', 'accepted_but_modified', ))
+        cfg.setUsedAdviceTypes(cfg.getUsedAdviceTypes() + ('asked_again', ))
+        cfg.setItemAdviceStates(('itemcreated_waiting_advices',
+                                 'proposed_to_internal_reviewer_waiting_advices'))
+        cfg.setItemAdviceEditStates = (('itemcreated_waiting_advices',
+                                        'proposed_to_internal_reviewer_waiting_advices'))
+        cfg.setItemAdviceViewStates = (('itemcreated_waiting_advices',
+                                        'proposed_to_administrative_reviewer',
+                                        'proposed_to_internal_reviewer',
+                                        'proposed_to_internal_reviewer_waiting_advices',
+                                        'proposed_to_director', 'validated', 'presented',
+                                        'itemfrozen', 'refused', 'delayed', 'removed',
+                                        'pre_accepted', 'accepted', 'accepted_but_modified', ))
         _configureCollegeCustomAdvisers(self.portal)
         _createFinanceGroups(self.portal)
         self._setupFinanceGroups()
@@ -170,6 +171,24 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                                               availableBackTr='backToProposedToInternalReviewer',
                                                               returnState='proposed_to_internal_reviewer')
 
+    def test_BourgmestreItemSentBackToAskerWhenEveryAdvicesGiven(self):
+        '''Check that, when every advices are given, the item is automatically
+           sent back to 'proposed_to_director'.'''
+        self.setUpBourgmestreConfig()
+
+        # vendors advice
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', title='The item')
+        item.setOptionalAdvisers(('vendors', ))
+        self.proposeItem(item)
+        self.changeUser('pmReviewer1')
+
+        # check when item is 'itemcreated_waiting_advices'
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
+                                                              askAdvicesTr='askAdvicesByDirector',
+                                                              availableBackTr='backToProposedToDirector',
+                                                              returnState='proposed_to_director')
+
     def _checkItemSentBackToServiceWhenEveryAdvicesGiven(self,
                                                          item,
                                                          askAdvicesTr,
@@ -196,7 +215,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.assertTrue(item.queryState() == returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
-        # now add advice as vendors and do not hide it, advice will be considered given
+        # now add advice as vendors and hide it, advice is considered not given
         self.changeUser('admin')
         item.restrictedTraverse('@@delete_givenuid')(item.meetingadvice.UID())
         self.do(item, askAdvicesTr)

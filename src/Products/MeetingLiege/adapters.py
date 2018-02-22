@@ -1953,9 +1953,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     implements(IMeetingItemCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    def __init__(self, item):
-        self.context = item  # Implements IMeetingItem
-
     security.declarePublic('mayProposeToAdministrativeReviewer')
 
     def mayProposeToAdministrativeReviewer(self):
@@ -1966,8 +1963,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             res = True
             # MeetingManager must be able to propose to administrative
             # reviewer.
-            tool = api.portal.get_tool('portal_plonemeeting')
-            if tool.isManager(self.context):
+            if self.tool.isManager(self.context):
                 return True
             isReviewer = member.has_role('MeetingReviewer', self.context)
             isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
@@ -1994,8 +1990,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to internal reviewer.
-            tool = api.portal.get_tool('portal_plonemeeting')
-            if tool.isManager(self.context):
+            if self.tool.isManager(self.context):
                 return True
             # Only administrative reviewers might propose to internal reviewer,
             # but creators can do it too if there is no administrative
@@ -2035,8 +2030,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to director.
-            tool = api.portal.get_tool('portal_plonemeeting')
-            if tool.isManager(self.context):
+            if self.tool.isManager(self.context):
                 return True
             isReviewer = member.has_role('MeetingReviewer', self.context)
             isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
@@ -2078,28 +2072,25 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def _hasAdvicesToGive(self, destination_state):
         """ """
         # check if aksed advices are giveable in state 'proposed_to_internal_reviewer_waiting_advices'
-        tool = api.portal.get_tool('portal_plonemeeting')
-        cfg = tool.getMeetingConfig(self.context)
+        cfg = self.tool.getMeetingConfig(self.context)
         hasAdvicesToGive = False
         for adviceId, adviceInfo in self.context.adviceIndex.items():
             # only consider advices to give
             if adviceInfo['type'] not in (NOT_GIVEN_ADVICE_VALUE, 'asked_again', ):
                 continue
-            mGroup = getattr(tool, adviceId)
+            mGroup = getattr(self.tool, adviceId)
             adviceStates = mGroup.getItemAdviceStates(cfg)
             if destination_state in adviceStates:
                 hasAdvicesToGive = True
                 break
         return hasAdvicesToGive
 
-    security.declarePublic('mayAskAdvicesByItemCreator')
-
-    def mayAskAdvicesByItemCreator(self):
-        '''May advices be asked by item creator.'''
+    def _mayAskAdvices(self, item_state):
+        """ """
         res = False
         if _checkPermission(ReviewPortalContent, self.context):
-            # check if asked advices are giveable in state 'itemcreated_waiting_advices'
-            hasAdvicesToGive = self._hasAdvicesToGive('itemcreated_waiting_advices')
+            # check if asked advices are giveable in state item_state
+            hasAdvicesToGive = self._hasAdvicesToGive(item_state)
 
             if hasAdvicesToGive:
                 res = True
@@ -2110,34 +2101,24 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = No(_('advice_required_to_ask_advices'))
         return res
 
+    security.declarePublic('mayAskAdvicesByItemCreator')
+
+    def mayAskAdvicesByItemCreator(self):
+        '''May advices be asked by item creator.'''
+        return self._mayAskAdvices('itemcreated_waiting_advices')
+
     security.declarePublic('mayAskAdvicesByInternalReviewer')
 
     def mayAskAdvicesByInternalReviewer(self):
         '''May advices be asked by internal reviewer.'''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            # MeetingManager must be able to ask advice by internal reviewer,
-            # but only if there is actually at least one advice to give.
-            tool = api.portal.get_tool('portal_plonemeeting')
-            hasAdvicesToGive = self._hasAdvicesToGive('proposed_to_internal_reviewer_waiting_advices')
-            if tool.isManager(self.context) and hasAdvicesToGive:
-                return True
-            res = True
+        res = self._mayAskAdvices('proposed_to_internal_reviewer_waiting_advices')
+        if res:
+            # double check that current user isInternalReviewer as this
+            # transition may be triggered from the 'itemcreated' state
             member = api.user.get_current()
             isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
-            # The item's state doesn't matter since this transition is
-            # available from creation, proposed to administrative reviewer and
-            # proposed to internal reviewer. Just check that the current user is
-            # internal reviewer.
-            if not isInternalReviewer:
+            if not isInternalReviewer and not self.tool.isManager(self.context):
                 res = False
-
-            # only certain types of advice can trigger the ask advice to
-            # internal reviewers. If there is no advices of those types, do not
-            # show the transition.
-            if res and not hasAdvicesToGive:
-                # return a 'No' instance explaining that no askable advice is selected on this item
-                res = No(_('advice_required_to_ask_advices'))
         return res
 
     security.declarePublic('mayValidate')
@@ -2158,15 +2139,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # value is found to True in the REQUEST
         if self.context.REQUEST.get('mayValidate', False):
             return True
-        tool = api.portal.get_tool('portal_plonemeeting')
-        isManager = tool.isManager(self.context)
-        item_state = self.context.queryState()
         # first of all, the use must have the 'Review portal content permission'
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
+            item_state = self.context.queryState()
             finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
-            if item_state == 'itemcreated' and not isManager:
+            if item_state == 'itemcreated' and not self.tool.isManager(self.context):
                 res = False
             # special case for item having finance advice that was still under redaction when delay timed out
             # a MeetingManager mut be able to validate it
@@ -2229,10 +2208,15 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
           Item may back to proposedToDirector if a value 'mayBackToProposedToDirector' is
           found and True in the REQUEST.  It means that the item is 'proposed_to_finance' and that the
           freshly signed advice was negative.
+          It is also the case for MeetingItemBourgmestre if 'everyAdvicesAreGiven' found and True in the REQUEST.
           If the item is 'validated', a MeetingManager can send it back to the director.
         '''
         res = False
-        if self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
+        # special case when automatically sending back an item to 'proposed_to_director'
+        # when every advices are given (coming from waiting_advices)
+        if (self.context.REQUEST.get('everyAdvicesAreGiven', False) and
+            self.context.queryState() == 'proposed_to_director_waiting_advices') or \
+           self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
            _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
@@ -2309,7 +2293,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         elif self.context.queryState() == 'proposed_to_finance':
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
-            memberGroups = api.portal.get_tool('portal_membership').getAuthenticatedMember().getGroups()
+            memberGroups = api.user.get_current().getGroups()
             for suffix in FINANCE_GROUP_SUFFIXES:
                 financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
                 if financeSubGroupId in memberGroups:
@@ -2555,10 +2539,7 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemCollegeLiegeWorkflowCo
 
     def mayAskAdvicesByDirector(self):
         ''' '''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
+        return self._mayAskAdvices('proposed_to_director_waiting_advices')
 
     security.declarePublic('mayDecide')
 

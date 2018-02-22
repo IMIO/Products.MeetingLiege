@@ -44,12 +44,16 @@ def _sendItemBackInWFIfNecessary(item):
        or backToProposedToInternalReviewer.'''
     itemState = item.queryState()
     if itemState in ['itemcreated_waiting_advices',
-                     'proposed_to_internal_reviewer_waiting_advices'] and \
+                     'proposed_to_internal_reviewer_waiting_advices',
+                     # MeetingItemBourgmestre
+                     'proposed_to_director_waiting_advices'] and \
        _everyAdvicesAreGivenFor(item):
         if itemState == 'itemcreated_waiting_advices':
             transition = 'backToItemCreated'
-        else:
+        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
             transition = 'backToProposedToInternalReviewer'
+        else:
+            transition = 'backToProposedToDirector'
         item.REQUEST.set('everyAdvicesAreGiven', True)
         # use actionspanel so we are redirected to viewable url
         actionsPanel = item.restrictedTraverse('@@actions_panel')

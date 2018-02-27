@@ -10,6 +10,7 @@ Products.MeetingLiege Changelog
   differently than in College/Council
 - BG WF : do BG reviewer able to validate item in state 'proposed_to_cabinet_manager'
 - BG WF : defined item validation WF shortcuts like it is made for College item
+- Added state 'accepted_but_modified' in BG WF.
 
 4.1b3 (2018-01-31)
 ------------------

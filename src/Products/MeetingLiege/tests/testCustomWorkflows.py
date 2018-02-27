@@ -2096,7 +2096,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         self.assertEqual(
             self.transitions(item),
-            ['accept', 'backToValidated', 'delay', 'mark_not_applicable', 'refuse'])
+            ['accept', 'accept_but_modify', 'backToValidated',
+             'delay', 'mark_not_applicable', 'refuse'])
         # if item is delayed, it is duplicated in it's initial_state
         self.do(item, 'delay')
         self.assertEqual(item.queryState(), 'delayed')

@@ -125,10 +125,11 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         if collegeItem and collegeItem.hasMeeting():
             tool = api.portal.get_tool('portal_plonemeeting')
             date = tool.formatMeetingDate(collegeItem.getMeeting())
-            sentence = u"Sur proposition du Collège Communal, en sa séance du %s, et " \
-                u"après examen du dossier par la Commission compétente ;" % date
+            sentence = u"<p>Sur proposition du Collège Communal, en sa séance du %s, et " \
+                u"après examen du dossier par la Commission compétente ;</p>" % date
         else:
-            sentence = u"Sur proposition du Collège Communal, et après examen du dossier par la Commission compétente ;"
+            sentence = u"<p>Sur proposition du Collège Communal, " \
+                u"et après examen du dossier par la Commission compétente ;</p>"
         return sentence
 
     def printActeContentForCollege(self):

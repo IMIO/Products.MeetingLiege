@@ -125,21 +125,22 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         if collegeItem and collegeItem.hasMeeting():
             tool = api.portal.get_tool('portal_plonemeeting')
             date = tool.formatMeetingDate(collegeItem.getMeeting())
-            sentence = u"Sur proposition du Collège Communal, en sa séance du %s, et " \
-                u"après examen du dossier par la Commission compétente ;" % date
+            sentence = u"<p>Sur proposition du Collège Communal, en sa séance du %s, et " \
+                u"après examen du dossier par la Commission compétente ;</p>" % date
         else:
-            sentence = u"Sur proposition du Collège Communal, et après examen du dossier par la Commission compétente ;"
+            sentence = u"<p>Sur proposition du Collège Communal, " \
+                u"et après examen du dossier par la Commission compétente ;</p>"
         return sentence
 
     def printActeContentForCollege(self):
         """Printed on a College item, get the whole body of the acte in one shot."""
-        body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
+        body = self.context.getMotivation() and self.context.getMotivation() + '<p>&nbsp;</p>' or ''
         if self.context.adapted().getLegalTextForFDAdvice():
-            body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
+            body += self.context.adapted().getLegalTextForFDAdvice() + '<p>&nbsp;</p>'
         representative = self.context.getCategory(theObject=True).Description().split('|')[1]
         body += "<p>Sur proposition de %s,<br/></p>" % representative
-        body += self.context.getDecision() + '<p></p>'
-        body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p></p>' or ''
+        body += self.context.getDecision() + '<p>&nbsp;</p>'
+        body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p>&nbsp;</p>' or ''
         body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
         if self.context.getSendToAuthority():
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
@@ -150,12 +151,12 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
 
     def printActeContentForCouncil(self):
         """Printed on a Council item, get the whole body of the acte in one shot."""
-        body = self.context.getMotivation() and self.context.getMotivation() + '<p></p>' or ''
+        body = self.context.getMotivation() and self.context.getMotivation() + '<p>&nbsp;</p>' or ''
         if self.context.adapted().getLegalTextForFDAdvice():
-            body += self.context.adapted().getLegalTextForFDAdvice() + '<p></p>'
-        body += self.printCollegeProposalInfos().encode("utf-8") + '<p></p>'
-        body += self.context.getDecision() + '<p></p>'
-        body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p></p>' or ''
+            body += self.context.adapted().getLegalTextForFDAdvice() + '<p>&nbsp;</p>'
+        body += self.printCollegeProposalInfos().encode("utf-8") + '<p>&nbsp;</p>'
+        body += self.context.getDecision() + '<p>&nbsp;</p>'
+        body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p>&nbsp;</p>' or ''
         body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
         if self.context.getSendToAuthority():
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \

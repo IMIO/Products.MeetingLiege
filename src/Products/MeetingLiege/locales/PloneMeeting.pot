@@ -65,7 +65,7 @@ msgid "icon_help_accepted_and_returned"
 msgstr ""
 
 #. Default: "Advices asked by creator"
-msgid "icon_help_itemcreated_waiting_advices"
+msgid "icon_help_waiting_advices_from_itemcreated"
 msgstr ""
 
 #. Default: "Advices asked by internal reviewer"

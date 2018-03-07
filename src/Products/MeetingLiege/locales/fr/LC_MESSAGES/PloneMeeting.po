@@ -217,7 +217,7 @@ msgid "icon_help_adopts_next_council_agenda"
 msgstr "Arrête l'ordre du jour du prochain Conseil communal"
 
 #. Default: "Advices asked by creator"
-msgid "icon_help_itemcreated_waiting_advices"
+msgid "icon_help_waiting_advices_from_itemcreated"
 msgstr "Avis demandés par le créateur"
 
 #. Default: "Pre accepted"

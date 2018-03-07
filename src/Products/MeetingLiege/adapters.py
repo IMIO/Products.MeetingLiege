@@ -2690,11 +2690,6 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
                           translate('icon_help_returned',
                                     domain="PloneMeeting",
                                     context=self.request)))
-        elif itemState == 'itemcreated_waiting_advices':
-            icons.append(('askAdvicesByItemCreator.png',
-                          translate('icon_help_itemcreated_waiting_advices',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
         elif itemState == 'proposed_to_administrative_reviewer':
             icons.append(('proposeToAdministrativeReviewer.png',
                           translate('icon_help_proposed_to_administrative_reviewer',

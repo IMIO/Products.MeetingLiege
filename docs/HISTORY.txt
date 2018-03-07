@@ -5,6 +5,9 @@ Products.MeetingLiege Changelog
 ------------------
 
 - Added state 'accepted_but_modified' in BG WF.
+- MeetingObserverLocal role is only given on items when it is at least 'validated'
+- Give the 'PloneMeeting: Read budget infos' permission to Reader in every item review_states
+- Added 'back' shortcuts in item administrative process WF of BG
 
 4.1b4 (2018-02-23)
 ------------------

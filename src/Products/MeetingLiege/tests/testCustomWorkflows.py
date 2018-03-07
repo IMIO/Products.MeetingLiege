@@ -72,13 +72,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
     def test_CollegeProcessWithoutAdvices(self):
         '''This test covers the whole decision workflow. It begins with the
            creation of some items, and ends by closing a meeting.
-           The usecase here is to test the workflow without normal and finances advice.'''
+           The usecase here is to test the workflow without normal and finances advice.
+           Observers have only access when item is 'validated'.'''
         # pmCreator1 creates an item and proposes it to the administrative reviewer
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertEqual(self.transitions(item),
                          ['proposeToAdministrativeReviewer', ])
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+
         # a MeetingManager is able to validate an item immediatelly, bypassing
         # the entire validation workflow.
         # a director who is able to propose to administrative and internal
@@ -96,6 +101,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmCreator1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+
         self.changeUser('pmAdminReviewer1')
         # pmAdminReviewer1 may access item and edit it
         self.assertTrue(self.hasPermission(View, item))
@@ -108,6 +117,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmAdminReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+
         # pmInternalReviewer1 may access item and edit it
         self.changeUser('pmInternalReviewer1')
         self.assertTrue(self.hasPermission(View, item))
@@ -120,6 +133,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmInternalReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+
         # pmReviewer1 (director) may access item and edit it
         self.changeUser('pmReviewer1')
         self.assertTrue(self.hasPermission(View, item))
@@ -130,9 +147,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                          ['backToProposedToInternalReviewer',
                           'validate', ])
         self.do(item, 'validate')
+        self.assertTrue(self.hasPermission(View, item))
         # pmReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
+        # access for observer
+        self.changeUser('pmObserver1')
+        self.assertTrue(self.hasPermission(View, item))
 
         # create a meeting, a MeetingManager will manage it now
         self.changeUser('pmManager')
@@ -1922,7 +1943,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the administrative reviewer or send it to the reviewer (director)
         self.assertEqual(self.transitions(item),
-                         ['backToProposedToAdministrativeReviewer',
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
                           'proposeToDirector', ])
         self.do(item, 'proposeToDirector')
         # pmInternalReviewer1 can no more edit item but can still view it
@@ -1936,7 +1958,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # general manager (proposeToGeneralManager).  askAdvicesByDirector is only available
         # if advices are asked
         self.assertEqual(self.transitions(item),
-                         ['backToProposedToInternalReviewer',
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'backToProposedToInternalReviewer',
                           'proposeToGeneralManager'])
         # ask advices
         item.setOptionalAdvisers(('vendors', ))

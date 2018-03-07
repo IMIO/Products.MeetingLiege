@@ -603,7 +603,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
@@ -638,7 +637,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
@@ -648,7 +646,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
@@ -658,7 +655,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
@@ -699,7 +695,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
  </state>
@@ -713,7 +708,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -743,7 +737,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -751,7 +744,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -759,7 +751,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -795,7 +786,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -810,7 +800,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -837,7 +826,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -845,7 +833,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -853,7 +840,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -886,7 +872,6 @@
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -897,13 +882,14 @@
   <exit-transition transition_id="proposeToGeneralManager"/>
   <exit-transition transition_id="backToProposedToInternalReviewer"/>
   <exit-transition transition_id="askAdvicesByDirector"/>
+  <exit-transition transition_id="backToProposedToAdministrativeReviewer"/>
+  <exit-transition transition_id="backToItemCreated"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -932,7 +918,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -942,7 +927,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -952,7 +936,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -987,7 +970,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1002,7 +984,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1031,7 +1012,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1041,7 +1021,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1051,7 +1030,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1086,7 +1064,6 @@
    <permission-role>MeetingMember</permission-role>
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1099,7 +1076,6 @@
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1125,21 +1101,18 @@
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
    <permission-role>Manager</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
    <permission-role>Manager</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
    <permission-role>Manager</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1171,7 +1144,6 @@
   <permission-map name="View"
                   acquired="False">
    <permission-role>Manager</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
@@ -1181,6 +1153,7 @@
         i18n:attributes="title">
   <exit-transition transition_id="proposeToDirector"/>
   <exit-transition transition_id="backToProposedToAdministrativeReviewer"/>
+  <exit-transition transition_id="backToItemCreated"/>
   <permission-map name="Access contents information"
                   acquired="False">
    <permission-role>Manager</permission-role>
@@ -1188,7 +1161,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
@@ -1220,7 +1192,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
@@ -1230,7 +1201,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
@@ -1240,7 +1210,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
@@ -1278,7 +1247,6 @@
    <permission-role>MeetingAdminReviewer</permission-role>
    <permission-role>MeetingInternalReviewer</permission-role>
    <permission-role>MeetingReviewer</permission-role>
-   <permission-role>MeetingObserverLocal</permission-role>
    <permission-role>Reader</permission-role>
   </permission-map>
  </state>

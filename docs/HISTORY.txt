@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1b5 (unreleased)
+4.1b5 (2018-03-07)
 ------------------
 
 - Added state 'accepted_but_modified' in BG WF.

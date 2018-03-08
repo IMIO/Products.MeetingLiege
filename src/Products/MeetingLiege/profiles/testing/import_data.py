@@ -135,6 +135,7 @@ pmFinController = UserDescriptor('pmFinController', [])
 pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
 pmFinReviewer = UserDescriptor('pmFinReviewer', [])
 pmFinManager = UserDescriptor('pmFinManager', [])
+pmMeetingManagerBG = UserDescriptor('pmMeetingManagerBG', [], email="pm_mm_bg@plone.org", fullname='M. PMMMBG')
 pmManager = UserDescriptor('pmManager', [], email="pmmanager@plonemeeting.org", fullname='M. PMManager')
 pmCreator1 = UserDescriptor('pmCreator1', [], email="pmcreator1@plonemeeting.org", fullname='M. PMCreator One')
 pmCreator1b = UserDescriptor('pmCreator1b', [], email="pmcreator1b@plonemeeting.org", fullname='M. PMCreator One bee')
@@ -452,7 +453,7 @@ councilMeeting.itemTemplates = (template1, template2)
 # Bourgmestre
 bourgmestreMeeting = MeetingConfigDescriptor(
     'meeting-config-bourgmestre', 'Bourgmestre', 'Bourgmestre')
-bourgmestreMeeting.meetingManagers = ('pmManager', )
+bourgmestreMeeting.meetingManagers = ('pmManager', 'pmMeetingManagerBG')
 bourgmestreMeeting.assembly = 'Default assembly'
 bourgmestreMeeting.signatures = 'Default signatures'
 bourgmestreMeeting.certifiedSignatures = [
@@ -542,5 +543,6 @@ data = PloneMeetingConfiguration(
 data.restrictUsers = False
 data.usersOutsideGroups = [voter1, voter2, powerobserver1, powerobserver2,
                            restrictedpowerobserver1, restrictedpowerobserver2,
-                           pmFinController, pmFinReviewer, pmFinManager, budgetimpacteditor]
+                           pmFinController, pmFinReviewer, pmFinManager,
+                           budgetimpacteditor, pmMeetingManagerBG]
 # ------------------------------------------------------------------------------

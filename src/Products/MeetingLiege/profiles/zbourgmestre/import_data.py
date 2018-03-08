@@ -48,7 +48,7 @@ groups = [general_manager_group, bourgmestre_group]
 bourgmestreMeeting = MeetingConfigDescriptor(
     'meeting-config-bourgmestre', 'Bourgmestre',
     'Bourgmestre')
-bourgmestreMeeting.meetingManagers = []
+bourgmestreMeeting.meetingManagers = ['pmManager']
 bourgmestreMeeting.assembly = 'A compléter...'
 bourgmestreMeeting.certifiedSignatures = [
     {'signatureNumber': '1',

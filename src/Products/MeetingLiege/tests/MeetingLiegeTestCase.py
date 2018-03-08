@@ -60,7 +60,9 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
         self.changeUser('siteadmin')
         self.setMeetingConfig(self.meetingConfig3.getId())
         self.tool.addUsersAndGroups(groups=bg_import_data.groups)
-        for userId in ('generalManager',
+        self.tool.addUsersOutsideGroups(bg_import_data.data.usersOutsideGroups)
+        for userId in ('pmMeetingManagerBG',
+                       'generalManager',
                        'bourgmestreManager',
                        'bourgmestreReviewer'):
             _createHomeFolder(self.portal, userId)

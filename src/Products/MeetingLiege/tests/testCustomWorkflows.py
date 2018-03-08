@@ -2096,8 +2096,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'pmReviewer1', 'generalManager', 'bourgmestreManager',
                    'bourgmestreReviewer'),
             write=False)
-        self.changeUser('pmManager')
-        self._check_access(item, ('pmManager', ))
+        self.changeUser('pmMeetingManagerBG')
+        self._check_access(item, ('pmMeetingManagerBG', ))
         self.assertEqual(
             self.transitions(item),
             ['backToProposedToCabinetReviewer', 'backToProposedToDirector'])
@@ -2109,6 +2109,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'pmReviewer1', 'generalManager', 'bourgmestreManager',
                    'bourgmestreReviewer'),
             write=False)
+        self._check_access(item, ('pmMeetingManagerBG', ))
 
         # only MeetingManager may decide
         for userId in (
@@ -2117,13 +2118,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             self.changeUser(userId)
             self.assertFalse(self.transitions(item))
 
-        self.changeUser('pmManager')
+        self.changeUser('pmMeetingManagerBG')
         self.assertEqual(
             self.transitions(item),
             ['accept', 'accept_but_modify', 'backToValidated',
              'delay', 'mark_not_applicable', 'refuse'])
         # if item is delayed, it is duplicated in it's initial_state
         self.do(item, 'delay')
+        self._check_access(
+            item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                   'pmReviewer1', 'generalManager', 'bourgmestreManager',
+                   'bourgmestreReviewer', 'pmMeetingManagerBG'),
+            write=False)
         self.assertEqual(item.queryState(), 'delayed')
         cloned_item = item.getBRefs('ItemPredecessor')[0]
         self.assertEqual(cloned_item.queryState(), 'itemcreated')

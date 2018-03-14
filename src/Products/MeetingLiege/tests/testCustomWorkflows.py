@@ -36,6 +36,7 @@ from collective.compoundcriterion.interfaces import ICompoundCriterionFilter
 from imio.helpers.cache import cleanRamCacheFor
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
+from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
 from plone.dexterity.utils import createContentInContainer
@@ -44,7 +45,6 @@ from plone.memoize.instance import Memojito
 from Products.CMFCore.permissions import DeleteObjects
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
 
 from Products.PloneMeeting.config import ADVICE_GIVEN_HISTORIZED_COMMENT
 from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
@@ -151,9 +151,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
-        # access for observer
+        # no access for observer
         self.changeUser('pmObserver1')
-        self.assertTrue(self.hasPermission(View, item))
+        self.assertFalse(self.hasPermission(View, item))
 
         # create a meeting, a MeetingManager will manage it now
         self.changeUser('pmManager')
@@ -167,11 +167,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         availableItemUids = [brain.UID for brain in self.portal.portal_catalog(availableItemsQuery)]
         self.assertTrue(item.UID() in availableItemUids)
         self.do(item, 'present')
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+        self.changeUser('pmManager')
         self.assertTrue(item.queryState() == 'presented')
         # the item can be removed from the meeting or sent back in 'itemcreated'
         self.assertEqual(self.transitions(item), ['backToValidated', ])
         # the meeting can now be frozen then decided
         self.do(meeting, 'freeze')
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+        self.changeUser('pmManager')
         # the item has been automatically frozen
         self.assertTrue(item.queryState() == 'itemfrozen')
         # but the item can be sent back to 'presented'
@@ -191,6 +199,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                           'return'])
         # if we pre_accept an item, we can accept it after
         self.do(item, 'pre_accept')
+        # access for observer
+        self.changeUser('pmObserver1')
+        self.assertTrue(self.hasPermission(View, item))
+        self.changeUser('pmManager')
         self.assertEqual(self.transitions(item),
                          ['accept',
                           'accept_but_modify',
@@ -199,6 +211,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'accept')
         self.assertEqual(self.transitions(item),
                          ['backToItemFrozen', ])
+        # access for observer
+        self.changeUser('pmObserver1')
+        self.assertTrue(self.hasPermission(View, item))
+        self.changeUser('pmManager')
         # the meeting may be closed or back to frozen
         self.assertEqual(self.transitions(meeting),
                          ['backToFrozen', 'close', ])
@@ -786,8 +802,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(not item.getBRefs('ItemPredecessor'))
         self.do(item, 'return')
         self.assertEquals(item.queryState(), 'returned')
+
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, item))
+
         # now that the item is 'returned', it has been duplicated
         # and the new item has been validated
+        self.changeUser('pmManager')
         returned = item.getBRefs('ItemPredecessor')
         self.assertTrue(len(returned) == 1)
         returned = returned[0]
@@ -879,9 +901,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(duplicatedLocally, 'accept_and_return')
         self.assertTrue(duplicatedLocally.getItemClonedToOtherMC(cfg2Id))
 
+        # access for observer
+        self.changeUser('pmObserver1')
+        self.assertTrue(self.hasPermission(View, item))
+
         # now, make sure an already duplicated item
         # with an item on the council that is not 'delayed' or 'marked_not_applicable' is
         # not sent again
+        self.changeUser('pmManager')
         returned = duplicatedLocally.getBRefs('ItemPredecessor')
         newduplicated1, newduplicated2 = returned
         # original creator was kept
@@ -954,7 +981,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
         # now play advice finance workflow and check catalog indexAdvisers is correct
-        catalog = getToolByName(self.portal, 'portal_catalog')
+        catalog = api.portal.get_tool('portal_catalog')
         itemPath = item.absolute_url_path()
         # when created, a finance advice is automatically set to 'proposed_to_financial_controller'
         self.assertTrue(advice.queryState() == 'proposed_to_financial_controller')
@@ -1675,6 +1702,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         cfg2Id = cfg2.getId()
         collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
         self.do(councilItem, 'delay')
+
+        # no access for observer
+        self.changeUser('pmObserver1')
+        self.assertFalse(self.hasPermission(View, councilItem))
+
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
         self.assertEquals(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
         self.assertEquals(backCollegeItem.getOtherMeetingConfigsClonableTo(),
@@ -1924,23 +1956,22 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                          ['proposeToAdministrativeReviewer'])
         self.do(item, 'proposeToAdministrativeReviewer')
         # pmCreator1 can no more edit item but can still view it
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         self.changeUser('pmAdminReviewer1')
         # pmAdminReviewer1 may access item and edit it
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         # he may send the item back to the pmCreator1 or send it to the internal reviewer
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated', 'proposeToInternalReviewer', ])
         self.do(item, 'proposeToInternalReviewer')
         # pmAdminReviewer1 can no more edit item but can still view it
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         # pmInternalReviewer1 may access item and edit it
         self.changeUser('pmInternalReviewer1')
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item)
         # he may send the item back to the administrative reviewer or send it to the reviewer (director)
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated',
@@ -1948,12 +1979,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                           'proposeToDirector', ])
         self.do(item, 'proposeToDirector')
         # pmInternalReviewer1 can no more edit item but can still view it
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         # pmReviewer1 (director) may access item and edit it
         self.changeUser('pmReviewer1')
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         # he may send the item back to the internal reviewer, or send it to
         # general manager (proposeToGeneralManager).  askAdvicesByDirector is only available
         # if advices are asked
@@ -1970,21 +2001,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.queryState(), 'proposed_to_director_waiting_advices')
         # director may take item back
         self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
-
-    def _check_access(self, item, userIds, read=True, write=True):
-        """ """
-        original_user_id = self.member.getId()
-        for userId in userIds:
-            self.changeUser(userId)
-            if read:
-                self.assertTrue(self.hasPermission(View, item))
-            else:
-                self.assertFalse(self.hasPermission(View, item))
-            if write:
-                self.assertTrue(self.hasPermission(ModifyPortalContent, item))
-            else:
-                self.assertFalse(self.hasPermission(ModifyPortalContent, item))
-        self.changeUser(original_user_id)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
 
     def test_BourgmestreDirectionProcess(self):
         """ """
@@ -2014,26 +2031,24 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self._check_access(
             item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1', 'pmReviewer1'),
             write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
 
         self.changeUser('generalManager')
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item)
 
         # propose to cabinet, proposingGroup and GENERAL_MANAGER_GROUP_ID will have read access
         # and BOURGMESTRE_GROUP_ID creators will have modify access
         self.do(item, 'proposeToCabinetManager')
         self.assertEqual(item.queryState(), 'proposed_to_cabinet_manager')
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         # general manager may see, not edit
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item, write=False)
         # proposingGroup may see, not edit
         self.changeUser('pmCreator1')
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertFalse(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item, write=False)
         # bourgmestreManager have view/edit on item
         self.changeUser('bourgmestreManager')
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item)
         # from this point, item may be sent back to director or sent to cabinet reviewer
         self.assertEqual(
             self.transitions(item),
@@ -2048,13 +2063,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
                    'pmReviewer1', 'generalManager', 'bourgmestreManager'),
             write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         # bourgmestre reviewer has the hand
         self.changeUser('bourgmestreReviewer')
         self.assertEqual(
             self.transitions(item),
             ['backToProposedToCabinetManager', 'backToProposedToDirector', 'validate'])
-        self.assertTrue(self.hasPermission(View, item))
-        self.assertTrue(self.hasPermission(ModifyPortalContent, item))
+        self._check_access(item)
 
     def test_BourgmestreCreatedItemDirectlySendableToCabinetReviewerByCabinetManager(self):
         """ """
@@ -2097,7 +2112,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'bourgmestreReviewer'),
             write=False)
         self.changeUser('pmMeetingManagerBG')
-        self._check_access(item, ('pmMeetingManagerBG', ))
+        self._check_access(item)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         self.assertEqual(
             self.transitions(item),
             ['backToProposedToCabinetReviewer', 'backToProposedToDirector'])
@@ -2109,7 +2125,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'pmReviewer1', 'generalManager', 'bourgmestreManager',
                    'bourgmestreReviewer'),
             write=False)
-        self._check_access(item, ('pmMeetingManagerBG', ))
+        self._check_access(item)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
 
         # only MeetingManager may decide
         for userId in (
@@ -2130,6 +2147,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'pmReviewer1', 'generalManager', 'bourgmestreManager',
                    'bourgmestreReviewer', 'pmMeetingManagerBG'),
             write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
         self.assertEqual(item.queryState(), 'delayed')
         cloned_item = item.getBRefs('ItemPredecessor')[0]
         self.assertEqual(cloned_item.queryState(), 'itemcreated')

@@ -1345,7 +1345,9 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         item_state = item.queryState()
         meetingGroup = None
-        roles = {suffix: 'Reader' for suffix in MEETING_GROUP_SUFFIXES}
+        # give 'Reader' role for every suffix except 'observers' that
+        # only get access when item is positively decided
+        roles = {suffix: 'Reader' for suffix in MEETING_GROUP_SUFFIXES if suffix != 'observers'}
         item_managing_group = item.adapted()._getGroupManagingItem(item_state)
         proposingGroup = item.getProposingGroup(theObject=True)
         # when proposingGroup is no more the managing group, it means item is at least
@@ -1363,7 +1365,7 @@ class CustomMeetingItem(MeetingItem):
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + \
                 ['proposed_to_general_manager',
                  'proposed_to_cabinet_manager',
-                 'proposed_to_cabinet_manager']:
+                 'proposed_to_cabinet_reviewer']:
             tool = api.portal.get_tool('portal_plonemeeting')
             meetingGroup = tool.get(BOURGMESTRE_GROUP_ID)
             item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)

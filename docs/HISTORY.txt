@@ -5,6 +5,7 @@ Products.MeetingLiege Changelog
 ------------------
 
 - Fixed MeetingManager read access to items in review_state validated and following states
+- Restricted access of MeetingObserverLocal to positive decided states in every item WF
 
 4.1b5 (2018-03-07)
 ------------------

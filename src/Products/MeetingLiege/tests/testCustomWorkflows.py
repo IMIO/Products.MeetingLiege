@@ -2513,7 +2513,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self._check_confidential_annex_access(
             item,
             userIds=['pmCreator1', 'pmAdminReviewer1'])
-        import ipdb; ipdb.set_trace()
         self.changeUser('pmAdminReviewer1')
         self.do(item, 'proposeToInternalReviewer')
         self._check_confidential_annex_access(

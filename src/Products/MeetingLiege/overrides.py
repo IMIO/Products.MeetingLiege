@@ -199,6 +199,10 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         if tool.isManager(self.context):
             return True
 
+        # for MeetingItemBourgmestre, give access to SC and BG groups
+        if self.context.portal_type == 'MeetingItemBourgmestre':
+            pass
+
         # if user may see and isPowerObserver, double check for normal annexes (not decision annexes)
         # that are all viewable when isPowerObserver
         # power observer may only access annexes of items using the categories

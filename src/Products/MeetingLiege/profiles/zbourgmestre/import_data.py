@@ -68,6 +68,18 @@ bourgmestreMeeting.places = ''
 bourgmestreMeeting.categories = categories
 bourgmestreMeeting.shortName = 'Bourgmestre'
 bourgmestreMeeting.annexTypes = [annexe, annexeDecision, annexeAvis, annexeSeance]
+bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
+    'configgroup_budgetimpacteditors',
+    'reader_advices',
+    'reader_copy_groups',
+    'reader_groupincharge',
+    'configgroup_powerobservers',
+    'suffix_proposing_group_prereviewers',
+    'suffix_proposing_group_internalreviewers',
+    'suffix_proposing_group_observers',
+    'suffix_proposing_group_reviewers',
+    'suffix_proposing_group_creators',
+    'suffix_proposing_group_administrativereviewers')
 bourgmestreMeeting.usedItemAttributes = ['observations', ]
 bourgmestreMeeting.usedMeetingAttributes = ['signatures', 'assembly', 'observations', ]
 bourgmestreMeeting.recordMeetingHistoryStates = []

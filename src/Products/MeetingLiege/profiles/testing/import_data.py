@@ -476,6 +476,18 @@ bourgmestreMeeting.annexTypes = [
     financialAnalysis, legalAnalysis,
     budgetAnalysisCfg2, itemAnnex, decisionAnnex,
     adviceAnnex, adviceLegalAnalysis, meetingAnnex]
+bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
+    'configgroup_budgetimpacteditors',
+    'reader_advices',
+    'reader_copy_groups',
+    'reader_groupincharge',
+    'configgroup_powerobservers',
+    'suffix_proposing_group_prereviewers',
+    'suffix_proposing_group_internalreviewers',
+    'suffix_proposing_group_observers',
+    'suffix_proposing_group_reviewers',
+    'suffix_proposing_group_creators',
+    'suffix_proposing_group_administrativereviewers')
 
 bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
 bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'

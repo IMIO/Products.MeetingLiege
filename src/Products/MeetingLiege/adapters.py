@@ -1322,6 +1322,19 @@ class CustomMeetingItem(MeetingItem):
             groupId = '%s_observers' % groupOfMatter
             item.manage_addLocalRoles(groupId, ('Reader', ))
 
+    def _getAllGroupsManagingItem(self):
+        """ """
+        item = self.getSelf()
+        res = [item.getProposingGroup(True)]
+        if item.portal_type == 'MeetingItemBourgmestre':
+            tool = api.portal.get_tool('portal_plonemeeting')
+            review_state = item.queryState()
+            if review_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES:
+                res.append(tool.get(GENERAL_MANAGER_GROUP_ID))
+                if review_state not in ['proposed_to_general_manager']:
+                    res.append(tool.get(BOURGMESTRE_GROUP_ID))
+        return res
+
     def _getGroupManagingItem(self, review_state=None):
         """ """
         item = self.getSelf()

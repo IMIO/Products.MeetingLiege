@@ -33,6 +33,9 @@ from zope.event import notify
 from zope.i18n import translate
 from zope.lifecycleevent import ObjectModifiedEvent
 from collective.compoundcriterion.interfaces import ICompoundCriterionFilter
+from collective.iconifiedcategory.utils import get_categorized_elements
+from collective.iconifiedcategory.utils import get_config_root
+from collective.iconifiedcategory.utils import get_group
 from imio.helpers.cache import cleanRamCacheFor
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
@@ -2474,3 +2477,83 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                           'bourgmestre__reviewprocess__proposed_to_internal_reviewer',
                           'bourgmestre__reviewprocess__proposed_to_administrative_reviewer',
                           'bourgmestre__reviewprocess__proposed_to_cabinet_manager']}})
+
+    def _check_confidential_annex_access(self, item, userIds=[], access=True):
+        """ """
+        original_user_id = self.member.getId()
+        # no userIds means use current user id
+        if not userIds:
+            userIds = [original_user_id]
+        for userId in userIds:
+            self.changeUser(userId)
+            if access:
+                self.assertTrue(get_categorized_elements(item))
+            else:
+                self.assertFalse(get_categorized_elements(item))
+        self.changeUser(original_user_id)
+
+    def test_BourgmestreConfidentialAnnexes(self):
+        """Confidential annexes should be visible by every groups of the validation
+           process (proposingGroup, groupManagingItem (DG, BG)."""
+        self.setUpBourgmestreConfig()
+
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem')
+        # enable annex confidentiality
+        annex_config = get_config_root(item)
+        annex_group = get_group(annex_config, item)
+        annex_group.confidentiality_activated = True
+        annex = self.addAnnex(item, confidential=True)
+        self.assertTrue(annex.confidential)
+        self.assertTrue(get_categorized_elements(item)[0]['confidential'])
+
+        # check every access while item evolve in the WF
+        self._check_confidential_annex_access(item)
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1'])
+        import ipdb; ipdb.set_trace()
+        self.changeUser('pmAdminReviewer1')
+        self.do(item, 'proposeToInternalReviewer')
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1'])
+
+        self.changeUser('pmInternalReviewer1')
+        self.do(item, 'proposeToDirector')
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                     'pmReviewer1'])
+
+        self.changeUser('pmReviewer1')
+        self.do(item, 'proposeToGeneralManager')
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                     'pmReviewer1', 'generalManager'])
+
+        self.changeUser('generalManager')
+        self.do(item, 'proposeToCabinetManager')
+
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                     'pmReviewer1', 'generalManager', 'bourgmestreManager'])
+
+        self.changeUser('bourgmestreManager')
+        self.do(item, 'proposeToCabinetReviewer')
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                     'pmReviewer1', 'generalManager', 'bourgmestreManager',
+                     'bourgmestreReviewer'])
+
+        self.changeUser('bourgmestreReviewer')
+        self.do(item, 'validate')
+        self._check_confidential_annex_access(
+            item,
+            userIds=['pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
+                     'pmReviewer1', 'generalManager', 'bourgmestreManager',
+                     'bourgmestreReviewer'])

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1b6 (unreleased)
+4.1b6 (2018-03-19)
 ------------------
 
 - Fixed MeetingManager read access to items in review_state validated and following states

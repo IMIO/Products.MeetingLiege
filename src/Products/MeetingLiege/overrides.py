@@ -214,7 +214,7 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
                     return False
                 for groupOfMatter in cat.getGroupsOfMatter():
                     groupId = '%s_observers' % groupOfMatter
-                    if groupId in self._user_groups():
+                    if groupId in tool.getPloneGroupsForUser():
                         return True
                 return False
         # annexDecision marked as 'to_sign' are only viewable to (Meeting)Managers

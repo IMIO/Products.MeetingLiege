@@ -298,16 +298,6 @@ def onItemDuplicated(original, event):
             newItem.setOtherMeetingConfigsClonableToPrivacy(('meeting-config-council', ))
         newItem.reindexObject(idxs=['sentToInfos'])
 
-    # make sure we do not keep decision annexes
-    decisionAnnexes = get_annexes(newItem, portal_types=['annexDecision'])
-    # if item is sent to Council, user may not delete annexes...
-    # in this case, we simply pass because it is supposed not possible to have that
-    # kind of annex on an item that is sent to council, and moreover, the item in the council
-    # is only editable by MeetingManagers
-    if decisionAnnexes and IContentDeletable(newItem).mayDelete():
-        toDelete = [annex.getId() for annex in decisionAnnexes]
-        newItem.manage_delObjects(ids=toDelete)
-
 
 def onItemAfterTransition(item, event):
     '''Called after the transition event called by default in PloneMeeting.

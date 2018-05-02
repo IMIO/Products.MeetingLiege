@@ -64,7 +64,7 @@ class testCustomViews(MeetingLiegeTestCase):
             view._get_next_values({'to_sign': True, 'signed': True}),
             (-1, {'to_sign': False, 'signed': False}))
 
-    def test_DecisionAnnexToSignOnlyViewableToMeetingManagers(self):
+    def test_DecisionAnnexToSignOnlyViewableByMeetingManagers(self):
         '''When the 'deliberation' is added as decision annex 'to sign', nobody else
            but (Meeting)Managers may see the annex.'''
         cfg = self.meetingConfig

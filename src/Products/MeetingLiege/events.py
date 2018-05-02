@@ -9,7 +9,6 @@
 
 from OFS.ObjectManager import BeforeDeleteException
 from plone import api
-from imio.actionspanel.interfaces import IContentDeletable
 from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.utils import add_event_to_history
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
@@ -17,7 +16,6 @@ from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import PloneMeetingError
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
-from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import getLastEvent
 from Products.PloneMeeting.utils import main_item_data
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
@@ -72,7 +70,7 @@ def onItemLocalRolesUpdated(item, event):
        - access of finance advisers."""
     if item.portal_type == "MeetingItemBourgmestre":
         item.adapted()._setBourgmestreGroupsReadAccess()
-    item.adapted()._updateMatterOfGroupsLocalRoles()
+    #item.adapted()._updateMatterOfGroupsLocalRoles()
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     item.adapted().updateFinanceAdvisersAccess(old_local_roles=event.old_local_roles)
 
@@ -286,7 +284,7 @@ def onItemDuplicated(original, event):
 
     # need to do this here because ItemLocalRolesUpdated event is called too soon...
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
-    newItem.adapted()._updateMatterOfGroupsLocalRoles()
+    #newItem.adapted()._updateMatterOfGroupsLocalRoles()
     newItem.adapted().updateFinanceAdvisersAccess()
 
     if original.portal_type == 'MeetingItemCouncil' and \
@@ -345,11 +343,6 @@ def onGroupWillBeRemoved(group, event):
         for archivinfRef in mc.getArchivingRefs():
             if groupId in archivinfRef['restrict_to_groups']:
                 raise BeforeDeleteException("can_not_delete_meetinggroup_archivingrefs")
-
-        # The meetingGroup can be used in a category.groupsOfMatter.
-        for category in mc.categories.objectValues('MeetingCategory'):
-            if groupId in category.getGroupsOfMatter():
-                raise BeforeDeleteException("can_not_delete_meetinggroup_groupsofmatter")
 
 
 def onItemListTypeChanged(item, event):

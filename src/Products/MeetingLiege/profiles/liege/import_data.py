@@ -232,6 +232,11 @@ collegeMeeting.itemReferenceFormat = 'python: here.adapted().getItemRefForActe()
 collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
                              annexeDecision, deliberation_to_sign, deliberation,
                              annexeAvis, annexeAvisLegal, annexeSeance]
+collegeMeeting.itemGroupInChargeStates = (
+          u'accepted', u'accepted_but_modified', u'accepted_and_returned',
+          u'pre_accepted', u'delayed', u'returned', u'itemfrozen', u'validated',
+          u'presented', u'refused', u'returned_to_proposing_group',
+          u'marked_not_applicable')
 collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpacteditors',
                                                   'reader_advices',
                                                   'reader_copy_groups',

@@ -555,6 +555,7 @@ class CustomMeeting(Meeting):
         return categsId
 
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
+old_getGroupInCharge = MeetingItem.getGroupInCharge
 
 
 class CustomMeetingItem(MeetingItem):
@@ -1321,6 +1322,21 @@ class CustomMeetingItem(MeetingItem):
         for groupOfMatter in category.getGroupsOfMatter():
             groupId = '%s_observers' % groupOfMatter
             item.manage_addLocalRoles(groupId, ('Reader', ))
+
+    def getGroupInCharge(self, theObject=False, **kwargs):
+        '''Redefine getGroupInCharge to return the group in charge of matter.'''
+        item = self.getSelf()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        category = item.getCategory(theObject=True)
+        if category and category.meta_type == 'MeetingCategory':
+            for groupOfMatter in category.getGroupsOfMatter():
+                res = groupOfMatter
+                if theObject:
+                    res = getattr(tool, groupOfMatter)
+                return res
+        return ''
+
+    MeetingItem.getGroupInCharge = getGroupInCharge
 
     def _getAllGroupsManagingItem(self):
         """ """

@@ -67,14 +67,6 @@ class testCustomMeetingGroup(MeetingLiegeTestCase):
              'code': '2',
              'label': '2'},))
 
-        category1 = cfg.getCategories()[1]
-        self.assertEquals(category1.portal_type, 'MeetingCategory')
-        category1.setGroupsOfMatter([newGroupId, ])
-        with self.assertRaises(BeforeDeleteException) as cm:
-            self.tool.manage_delObjects([newGroupId, ])
-        self.assertEquals(cm.exception.message, 'can_not_delete_meetinggroup_groupsofmatter')
-        category1.setGroupsOfMatter([])
-
         # now it is removable
         self.tool.manage_delObjects([newGroupId, ])
         self.failIf(hasattr(self.tool, newGroupId))

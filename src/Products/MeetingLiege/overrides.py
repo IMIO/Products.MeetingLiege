@@ -194,32 +194,13 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         if not res:
             return res
 
-        # bypass for MeetingManagers
-        tool = api.portal.get_tool('portal_plonemeeting')
-        if tool.isManager(self.context):
-            return True
-
-        # if user may see and isPowerObserver, double check for normal annexes (not decision annexes)
-        # that are all viewable when isPowerObserver
-        # power observer may only access annexes of items using the categories
-        # they are in charge of and annexes using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
-        if self.brain.portal_type == 'annex':
-            infos = self.context.categorized_elements[self.brain.UID]
-            cfg = tool.getMeetingConfig(self.context)
-            isPowerObserver = tool.isPowerObserverForCfg(cfg, isRestricted=False)
-            extraViewableAnnexTypeIds = ('annexeCahier', 'courrier-a-valider-par-le-college')
-            if isPowerObserver and infos['category_id'] not in extraViewableAnnexTypeIds:
-                cat = self.context.getCategory(True)
-                if not cat or not cat.meta_type == 'MeetingCategory':
-                    return False
-                for groupOfMatter in cat.getGroupsOfMatter():
-                    groupId = '%s_observers' % groupOfMatter
-                    if groupId in tool.getPloneGroupsForUser():
-                        return True
-                return False
         # annexDecision marked as 'to_sign' are only viewable to (Meeting)Managers
-        elif self.brain.portal_type == 'annexDecision':
+        if self.brain.portal_type == 'annexDecision':
             infos = self.context.categorized_elements[self.brain.UID]
-            if infos['signed_activated'] and infos['to_sign'] and not infos['signed']:
+            tool = api.portal.get_tool('portal_plonemeeting')
+            if infos['signed_activated'] and \
+               infos['to_sign'] and \
+               not infos['signed'] and \
+               not tool.isManager(self.context):
                 return False
-        return True
+        return res

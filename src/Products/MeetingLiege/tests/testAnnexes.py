@@ -40,6 +40,15 @@ class testAnnexes(MeetingLiegeTestCase, pmta):
     def test_pm_SwitchingConfidentialityUsingActionView(self):
         """Fails because power_observers may only access annexes using specific annexType
            even if annex is not confidential."""
+        pass
+
+    def _setUpGroupInCharge(self, item):
+        """Define groupsOfMatter on category used by p_item."""
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
+        cat = cfg.categories.development
+        cat.setGroupsOfMatter(('vendors', ))
+        item.setCategory('development')
 
 
 def test_suite():

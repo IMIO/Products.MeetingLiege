@@ -28,13 +28,11 @@ from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 
 from collective.iconifiedcategory.utils import get_categorized_elements
-from imio.helpers.cache import cleanRamCacheFor
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 
 from Products.CMFCore.permissions import View
-from Products.PloneMeeting.utils import get_annexes
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
@@ -147,8 +145,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # so we select a group in it's groupsOfMatter
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(False)
+        cfg.setItemGroupInChargeStates(ml_import_data.collegeMeeting.itemGroupInChargeStates)
         development = cfg.categories.development
         development.setGroupsOfMatter(('vendors', ))
+
         # create an item for the 'developers' group
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
@@ -185,105 +185,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setCategory('projects')
         item._update_after_edit()
         self.assertTrue(specialReaders not in item.__ac_local_roles__)
-
-    def test_AnnexesConfidentialityDependingOnMatter(self):
-        '''Power observers may only access annexes of items they are in charge of.
-           A single exception is made for annex type 'annexeCahier' that is viewable
-           by every power observers.
-           Decision annexes are visible by power observers no matter... matter nor confidentiality.'''
-        # configure so we use categories, and adapt category 'development'
-        # so we select a group in it's groupsOfMatter
-        self.changeUser('siteadmin')
-        cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(False)
-        cfg.setItemPowerObserversStates((u'itemcreated', u'presented', u'accepted', u'delayed', u'refused'))
-        cfg.setItemRestrictedPowerObserversStates((u'itemcreated', u'presented', u'accepted', u'delayed', u'refused'))
-        development = cfg.categories.development
-        development.setGroupsOfMatter(('vendors', ))
-        # confidential annexes are hidden to restricted power observers
-        cfg.annexes_types.item_annexes.confidentiality_activated = True
-        cfg.annexes_types.item_decision_annexes.confidentiality_activated = True
-        cfg.setItemAnnexConfidentialVisibleFor(ml_import_data.collegeMeeting.itemAnnexConfidentialVisibleFor)
-        # add special annexTypes 'annexeCahier' and 'courrier-a-valider-par-le-college'
-        self.addAnnexType(id='annexeCahier')
-        self.addAnnexType(id='courrier-a-valider-par-le-college')
-        # create an item for the 'developers' group
-        self.changeUser('pmCreator1')
-        item = self.create('MeetingItem')
-        # not confidential annex
-        annex1 = self.addAnnex(item)
-        self.assertFalse(annex1.confidential)
-        annex2 = self.addAnnex(item)
-        # annex using type 'annexeCahier' or 'courrier-a-valider-par-le-college'
-        # are viewable by every power observers
-        annex3 = self.addAnnex(item, annexType='annexeCahier')
-        annex4 = self.addAnnex(item, annexType='courrier-a-valider-par-le-college')
-        annex_decision1 = self.addAnnex(item, relatedTo='item_decision')
-        self.assertFalse(annex_decision1.confidential)
-        annex_decision2 = self.addAnnex(item, relatedTo='item_decision')
-        annex2.confidential = True
-        notify(ObjectModifiedEvent(annex2))
-        annex3.confidential = True
-        notify(ObjectModifiedEvent(annex3))
-        annex4.confidential = True
-        notify(ObjectModifiedEvent(annex4))
-        annex_decision2.confidential = True
-        notify(ObjectModifiedEvent(annex_decision2))
-        # select the right category
-        item.setCategory(development.getId())
-        item._update_after_edit()
-        self.validateItem(item)
-
-        # power observers may access items when it is 'presented'
-        self.changeUser('pmManager')
-        self.create('Meeting', date='2015/01/01')
-        self.presentItem(item)
-        self.changeUser('powerobserver1')
-        cleanRamCacheFor('Products.PloneMeeting.adapters._user_groups')
-        # powerobservers1 is not member of 'vendors_observers' so he
-        # will not be able to access the annexes of the item
-        vendors_observers = 'vendors_observers'
-        self.assertTrue(vendors_observers not in self.member.getGroups())
-        self.hasPermission(View, item)
-        # not confidential annex is viewable, but not annexes that are confidential
-        categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
-        # annex1 and annex2 do not use annexTypes viewable to power_observers
-        self.assertFalse(annex1.confidential)
-        self.assertFalse(annex1.UID() in categorized_uids)
-        self.assertTrue(annex2.confidential)
-        self.assertFalse(annex2.UID() in categorized_uids)
-        # an annex using "annexeCahier" or "courrier-a-valider-par-le-college" will be viewable by power observers
-        self.assertTrue(annex3.UID() in categorized_uids)
-        self.assertTrue(annex4.UID() in categorized_uids)
-        # every decision annexes are viewable by power observers
-        self.assertTrue(annex_decision1.UID() in categorized_uids)
-        self.assertTrue(annex_decision2.UID() in categorized_uids)
-        # if we assign 'powerobserver1' to the 'vendors_observers' group
-        # he will be able to view the annexes of item as he is in charge of
-        self.portal.portal_groups.addPrincipalToGroup('powerobserver1', vendors_observers)
-        # log again as 'powerobserver1' so getGroups is refreshed
-        self.changeUser('powerobserver1')
-        cleanRamCacheFor('Products.PloneMeeting.adapters._user_groups')
-        categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
-        self.assertTrue(annex1.UID() in categorized_uids)
-        self.assertTrue(annex2.UID() in categorized_uids)
-        self.assertTrue(annex3.UID() in categorized_uids)
-        self.assertTrue(annex4.UID() in categorized_uids)
-        # every decision annexes are viewable by power observers
-        self.assertTrue(annex_decision1.UID() in categorized_uids)
-        self.assertTrue(annex_decision2.UID() in categorized_uids)
-
-        # restricted power observers may only access not confidential annexes
-        self.changeUser('restrictedpowerobserver1')
-        cleanRamCacheFor('Products.PloneMeeting.adapters._user_groups')
-        categorized_uids = [elt['UID'] for elt in get_categorized_elements(item)]
-        self.assertTrue(annex1.UID() in categorized_uids)
-        self.assertFalse(annex2.UID() in categorized_uids)
-        self.assertFalse(annex3.UID() in categorized_uids)
-        self.assertFalse(annex4.UID() in categorized_uids)
-        # only not confidential decision annexes are viewable by restricted power observers
-        self.assertTrue(annex_decision1.UID() in categorized_uids)
-        self.assertFalse(annex_decision2.UID() in categorized_uids)
 
     def test_ItemReference(self):
         '''Test item reference generation. It uses CustomMeeting.getItemNumsForActe.'''

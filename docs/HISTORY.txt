@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.1b7 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Simplify confidential annex management by giving access to non confidential annexes
+  and using the default 'group in charge' parameter.  We adapt the MeetingItem.getGroupInCharge
+  method to use the groupOfMatter to handle this
 
 4.1b6 (2018-03-19)
 ------------------

@@ -179,12 +179,12 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         return item, advice
 
-    def _setUpGroupInCharge(self, item):
+    def _setUpGroupInCharge(self, item, group='vendors'):
         """Define groupsOfMatter on category used by p_item."""
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(False)
         cat = cfg.categories.development
-        cat.setGroupsOfMatter(('vendors', ))
+        cat.setGroupsOfMatter((group, ))
         item.setCategory('development')
         item.updateLocalRoles()
 

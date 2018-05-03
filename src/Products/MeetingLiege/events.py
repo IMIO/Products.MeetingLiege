@@ -70,7 +70,6 @@ def onItemLocalRolesUpdated(item, event):
        - access of finance advisers."""
     if item.portal_type == "MeetingItemBourgmestre":
         item.adapted()._setBourgmestreGroupsReadAccess()
-    #item.adapted()._updateMatterOfGroupsLocalRoles()
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     item.adapted().updateFinanceAdvisersAccess(old_local_roles=event.old_local_roles)
 
@@ -284,7 +283,6 @@ def onItemDuplicated(original, event):
 
     # need to do this here because ItemLocalRolesUpdated event is called too soon...
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
-    #newItem.adapted()._updateMatterOfGroupsLocalRoles()
     newItem.adapted().updateFinanceAdvisersAccess()
 
     if original.portal_type == 'MeetingItemCouncil' and \

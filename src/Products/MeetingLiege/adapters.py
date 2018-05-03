@@ -1299,30 +1299,6 @@ class CustomMeetingItem(MeetingItem):
             groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
             item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
-    def _updateMatterOfGroupsLocalRoles(self):
-        '''
-          When an item is edited or it's review_state changed, we will update
-          local_roles that give read access to the item once the item is at least
-          validated.  Read access is given to the _observers Plone group of the selected
-          matterOfGroups groups on the category used for the item.
-        '''
-        item = self.getSelf()
-        # when we are here, MeetingItem.updateLocalRoles already removed every unnecessary
-        # local roles given to Plone _subgroups, re-add if necessary
-        if not item.queryState() == 'validated' and not item.hasMeeting():
-            return
-
-        # compute _observers groups we will give local roles to
-        category = item.getCategory(theObject=True)
-        if not category or not category.meta_type == 'MeetingCategory':
-            return
-
-        # if we have a category, loop on groups of this matter
-        # and give 'Reader' local role to the item
-        for groupOfMatter in category.getGroupsOfMatter():
-            groupId = '%s_observers' % groupOfMatter
-            item.manage_addLocalRoles(groupId, ('Reader', ))
-
     def getGroupInCharge(self, theObject=False, **kwargs):
         '''Redefine getGroupInCharge to return the group in charge of matter.'''
         item = self.getSelf()

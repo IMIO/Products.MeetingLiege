@@ -178,3 +178,18 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.changeUser('pmFinManager')
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         return item, advice
+
+    def _setUpGroupInCharge(self, item):
+        """Define groupsOfMatter on category used by p_item."""
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
+        cat = cfg.categories.development
+        cat.setGroupsOfMatter(('vendors', ))
+        item.setCategory('development')
+        item.updateLocalRoles()
+
+    def _tearDownGroupInCharge(self, item):
+        """As group in charge is an adaptable method, it may be setup differently."""
+        cfg = self.meetingConfig
+        cat = cfg.categories.development
+        cat.setGroupsOfMatter(())

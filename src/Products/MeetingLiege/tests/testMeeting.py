@@ -29,6 +29,11 @@ from Products.PloneMeeting.tests.testMeeting import testMeeting as pmtm
 class testMeeting(MeetingLiegeTestCase, pmtm):
     """Tests the Meeting class methods."""
 
+    def test_pm_InsertItemOnGroupsInCharge(self):
+        """Bypass test that insert items in meeting on group in charge as we
+           use another implementation, moreover we do not use this inserting method."""
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

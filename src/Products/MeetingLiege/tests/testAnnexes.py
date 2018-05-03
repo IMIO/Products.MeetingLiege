@@ -42,14 +42,6 @@ class testAnnexes(MeetingLiegeTestCase, pmta):
            even if annex is not confidential."""
         pass
 
-    def _setUpGroupInCharge(self, item):
-        """Define groupsOfMatter on category used by p_item."""
-        cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(False)
-        cat = cfg.categories.development
-        cat.setGroupsOfMatter(('vendors', ))
-        item.setCategory('development')
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

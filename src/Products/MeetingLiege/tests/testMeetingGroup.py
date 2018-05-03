@@ -29,20 +29,6 @@ from Products.PloneMeeting.tests.testMeetingGroup import testMeetingGroup as pmt
 class testMeetingGroup(MeetingLiegeTestCase, pmtmg):
     '''Tests the testMeetingGroup class methods.'''
 
-    def _setUpGroupInCharge(self, item):
-        """Define groupsOfMatter on category used by p_item."""
-        cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(False)
-        cat = cfg.categories.development
-        cat.setGroupsOfMatter(('developers', ))
-        item.setCategory('development')
-
-    def _tearDownGroupInCharge(self, item):
-        """As group in charge is an adaptable method, it may be setup differently."""
-        cfg = self.meetingConfig
-        cat = cfg.categories.development
-        cat.setGroupsOfMatter(())
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

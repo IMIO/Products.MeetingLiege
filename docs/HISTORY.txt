@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1b7 (unreleased)
+4.1b7 (2018-05-04)
 ------------------
 
 - Decision annexes are no more kept in any duplication

@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.1b8 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Do not use member.getGroups, use ToolPloneMeeting.getPloneGroupsForUser that use caching.
+- Adapted tests to use _addPrincipalToGroup and _removePrincipalFromGroup from PloneMeetingTestCase.
 
 4.1b7 (2018-05-04)
 ------------------

@@ -589,17 +589,23 @@ class CustomMeetingItem(MeetingItem):
     def is_general_manager(self):
         """Is current user a general manager?"""
         group_id = '{0}_reviewers'.format(GENERAL_MANAGER_GROUP_ID)
-        return group_id in api.user.get_current().getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
+        return group_id in userGroups
 
     def is_cabinet_manager(self):
         """Is current user a cabinet manager?"""
         group_id = '{0}_creators'.format(BOURGMESTRE_GROUP_ID)
-        return group_id in api.user.get_current().getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
+        return group_id in userGroups
 
     def is_cabinet_reviewer(self):
         """Is current user a cabinet reviewer?"""
         group_id = '{0}_reviewers'.format(BOURGMESTRE_GROUP_ID)
-        return group_id in api.user.get_current().getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
+        return group_id in userGroups
 
     security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
 
@@ -781,8 +787,10 @@ class CustomMeetingItem(MeetingItem):
         financeGroupId = item.adapted().getFinanceGroupIdsForItem()
         # a finance controller may evaluate if advice is actually asked
         # and may not change completeness if advice is currently given or has been given
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
         if not financeGroupId or \
-           not '%s_financialcontrollers' % financeGroupId in member.getGroups():
+           not '%s_financialcontrollers' % financeGroupId in userGroups:
             return False
 
         # item must be still in a state where the advice can be given
@@ -833,9 +841,8 @@ class CustomMeetingItem(MeetingItem):
         # by default, only MeetingManagers can accept or refuse emergency
         item = self.getSelf()
         tool = api.portal.get_tool('portal_plonemeeting')
-        member = api.user.get_current()
         if tool.isManager(item, realManagers=True) or \
-           '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in member.getGroups():
+           '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in tool.getPloneGroupsForUser():
             return True
         return False
 
@@ -999,8 +1006,8 @@ class CustomMeetingItem(MeetingItem):
         '''
           Returns True if the current user is in the given p_finance_group_id.
         '''
-        user = api.user.get_current()
-        userGroups = user.getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
         suffixedGroups = []
         for suffix in FINANCE_GROUP_SUFFIXES:
             suffixedGroups.append("{0}_{1}".format(finance_group_id, suffix))
@@ -1731,18 +1738,13 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
     def __init__(self, item):
         self.context = item
 
-    def isFinancialUser_cachekey(method, self, brain=False):
-        '''cachekey method for self.isFinancialUser.'''
-        return str(self.REQUEST._debug)
-
     security.declarePublic('isFinancialUser')
 
-    @ram.cache(isFinancialUser_cachekey)
     def isFinancialUser(self):
         '''Is current user a financial user, so in groups 'financialcontrollers',
            'financialreviewers' or 'financialmanagers'.'''
-        member = api.user.get_current()
-        for groupId in member.getGroups():
+        tool = api.portal.get_tool('portal_plonemeeting')
+        for groupId in tool.getPloneGroupsForUser():
             for suffix in FINANCE_GROUP_SUFFIXES:
                 if groupId.endswith('_%s' % suffix):
                     return True
@@ -2300,7 +2302,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         elif self.context.queryState() == 'proposed_to_finance':
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
-            memberGroups = api.user.get_current().getGroups()
+            tool = api.portal.get_tool('portal_plonemeeting')
+            memberGroups = tool.getPloneGroupsForUser()
             for suffix in FINANCE_GROUP_SUFFIXES:
                 financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
                 if financeSubGroupId in memberGroups:
@@ -2602,8 +2605,8 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
         '''Queries all items for which there is completeness to evaluate, so where completeness
            is not 'completeness_complete'.'''
         groupIds = []
-        membershipTool = api.portal.get_tool('portal_membership')
-        userGroups = membershipTool.getAuthenticatedMember().getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2626,8 +2629,8 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
            We only return items for which completeness has been evaluated to 'complete'.'''
         groupIds = []
-        member = api.user.get_current()
-        userGroups = member.getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2644,8 +2647,8 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
         groupIds = []
-        member = api.user.get_current()
-        userGroups = member.getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is reviewer for
             if '%s_financialreviewers' % financeGroup in userGroups:
@@ -2660,8 +2663,8 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
         groupIds = []
-        member = api.user.get_current()
-        userGroups = member.getGroups()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        userGroups = tool.getPloneGroupsForUser()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is manager for
             if '%s_financialmanagers' % financeGroup in userGroups:

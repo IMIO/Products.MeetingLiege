@@ -27,12 +27,10 @@ from DateTime import DateTime
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 
-from collective.iconifiedcategory.utils import get_categorized_elements
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 
-from Products.CMFCore.permissions import View
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
@@ -985,14 +983,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # df-comptabilita-c-et-audit-financier. Since the finance users don't
         # have basically the right to handle that sort of advice, we give them
         # the right here.
-        groupsTool = api.portal.get_tool('portal_groups')
         # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
-        groupsTool.addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[1])
-        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[1])
-        groupsTool.addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[1])
-        groupsTool.addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[1])
-        groupsTool.addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[1])
-        groupsTool.addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[1])
 
         # Create the second item with advice.
         self.changeUser('pmManager')

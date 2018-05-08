@@ -641,7 +641,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # managed by the meetingadviceliege_workflow and giving access to 'Access contents information'
         for group in self.portal.portal_membership.getMemberById('pmManager').getGroups():
             if group.startswith('developers_'):
-                self.portal.portal_groups.removePrincipalFromGroup('pmManager', group)
+                self._removePrincipalFromGroup('pmManager', group)
 
         self.changeUser('pmCreator1')
         # create an item and ask finance advice

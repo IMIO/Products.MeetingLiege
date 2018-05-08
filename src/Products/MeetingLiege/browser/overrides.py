@@ -64,9 +64,8 @@ class MLAdviceDelaysView(AdviceDelaysView):
                 return False
 
             # current advice is still addable/editable, a finance manager may change delay for it
-            member = api.user.get_current()
             financialManagerGroupId = '%s_financialmanagers' % financeGroupId
-            if financialManagerGroupId not in member.getGroups():
+            if financialManagerGroupId not in self.tool.getPloneGroupsForUser():
                 return False
 
         return True

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1b8 (unreleased)
+4.1b8 (2018-05-09)
 ------------------
 
 - Do not use member.getGroups, use ToolPloneMeeting.getPloneGroupsForUser that use caching.

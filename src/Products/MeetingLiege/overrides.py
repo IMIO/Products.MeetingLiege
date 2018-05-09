@@ -23,7 +23,6 @@
 # 02110-1301, USA.
 #
 
-from Products.CMFCore.utils import getToolByName
 from plone import api
 from plone.memoize.instance import memoize
 from imio.history.adapters import ImioWfHistoryAdapter
@@ -46,7 +45,7 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
           that was signed.
         '''
         # bypass for real Managers
-        tool = getToolByName(self.context, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         if tool.isManager(self.context, True):
             return True
 
@@ -186,9 +185,6 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
 class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
     """ """
 
-    def __init__(self, context, request, brain):
-        super(PMCategorizedObjectAdapter, self).__init__(context, request, brain)
-
     def can_view(self):
         res = super(MLItemCategorizedObjectAdapter, self).can_view()
         if not res:
@@ -197,10 +193,9 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
         # annexDecision marked as 'to_sign' are only viewable to (Meeting)Managers
         if self.brain.portal_type == 'annexDecision':
             infos = self.context.categorized_elements[self.brain.UID]
-            tool = api.portal.get_tool('portal_plonemeeting')
             if infos['signed_activated'] and \
                infos['to_sign'] and \
                not infos['signed'] and \
-               not tool.isManager(self.context):
+               not self.tool.isManager(self.context):
                 return False
         return res

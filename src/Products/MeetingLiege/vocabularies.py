@@ -6,10 +6,9 @@ from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-
 from plone.memoize.instance import memoize
+from plone import api
 
 IGNORED_GROUP_IDS = ('scc', 'sc', 'secra-c-tariat-collage-conseil')
 
@@ -20,7 +19,7 @@ class GroupsOfMatterVocabulary(object):
     @memoize
     def __call__(self, context):
         """List groups that are in charge of a matter (category)."""
-        tool = getToolByName(context, 'portal_plonemeeting')
+        tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(context)
         categories = cfg.getCategories(onlySelectable=False)
         res = []

@@ -300,7 +300,7 @@ def onItemAfterTransition(item, event):
        Here, we are sure that code done in the onItemTransition event is finished.'''
 
     # if it is an item Council in state 'returned', validate the issued College item
-    if item.portal_type == 'MeetingItemCouncil' and item.queryState() == 'returned':
+    if item.portal_type == 'MeetingItemCouncil' and event.new_state.id == 'returned':
         collegeItem = item.getItemClonedToOtherMC('meeting-config-college')
         wfTool = api.portal.get_tool('portal_workflow')
         item.REQUEST.set('mayValidate', True)

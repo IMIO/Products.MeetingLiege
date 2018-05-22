@@ -4,8 +4,7 @@ Products.MeetingLiege Changelog
 4.1b9 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- In onItemAfterTransition, use event.new_state.id instead item.queryState().
 
 4.1b8 (2018-05-09)
 ------------------

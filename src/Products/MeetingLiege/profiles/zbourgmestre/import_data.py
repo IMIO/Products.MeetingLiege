@@ -73,7 +73,6 @@ bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
     'reader_advices',
     'reader_copy_groups',
     'reader_groupincharge',
-    'configgroup_powerobservers',
     'suffix_proposing_group_prereviewers',
     'suffix_proposing_group_internalreviewers',
     'suffix_proposing_group_observers',

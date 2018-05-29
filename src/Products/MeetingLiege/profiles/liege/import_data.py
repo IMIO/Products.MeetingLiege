@@ -241,7 +241,6 @@ collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'reader_advices',
                                                   'reader_copy_groups',
                                                   'reader_groupincharge',
-                                                  'configgroup_powerobservers',
                                                   'suffix_proposing_group_prereviewers',
                                                   'suffix_proposing_group_internalreviewers',
                                                   'suffix_proposing_group_observers',
@@ -472,7 +471,16 @@ councilMeeting.itemReferenceFormat = \
 councilMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege,
                              annexeDecision, deliberation_to_sign, deliberation,
                              annexeAvis, annexeAvisLegal, annexeSeance]
-councilMeeting.annexConfidentialFor = ('restricted_power_observers',)
+councilMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpacteditors',
+                                                  'reader_advices',
+                                                  'reader_copy_groups',
+                                                  'reader_groupincharge',
+                                                  'suffix_proposing_group_prereviewers',
+                                                  'suffix_proposing_group_internalreviewers',
+                                                  'suffix_proposing_group_observers',
+                                                  'suffix_proposing_group_reviewers',
+                                                  'suffix_proposing_group_creators',
+                                                  'suffix_proposing_group_administrativereviewers')
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',
                                      'observations',

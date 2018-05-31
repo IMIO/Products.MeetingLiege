@@ -5,6 +5,7 @@ Products.MeetingLiege Changelog
 ------------------
 
 - In onItemAfterTransition, use event.new_state.id instead item.queryState().
+- Added test test_ItemTakenOverByFinancesAdviser.
 
 4.1b8 (2018-05-09)
 ------------------

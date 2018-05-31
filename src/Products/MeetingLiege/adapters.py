@@ -857,10 +857,7 @@ class CustomMeetingItem(MeetingItem):
            - add the advice;
            - change transition of already added advice.'''
         item = self.getSelf()
-        wfTool = api.portal.get_tool('portal_workflow')
-        if not item.queryState() == 'proposed_to_finance':
-            return bool(wfTool.getTransitionsFor(item))
-        else:
+        if item.queryState() == 'proposed_to_finance':
             # financial controller that may evaluate completeness?
             if item.adapted().mayEvaluateCompleteness():
                 return True
@@ -869,7 +866,9 @@ class CustomMeetingItem(MeetingItem):
             if item.getFinanceAdvice() in toAdd or \
                item.getFinanceAdvice() in toEdit:
                 return True
-        return False
+        else:
+            # original behaviour
+            return item.mayTakeOver()
 
     security.declarePublic('mayAskAdviceAgain')
 

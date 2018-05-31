@@ -1313,3 +1313,41 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setOtherMeetingConfigsClonableToEmergency((self.meetingConfig2.getId(), ))
         self.changeUser('pmCreator1')
         self.assertTrue(item.adapted().showOtherMeetingConfigsClonableToEmergency())
+
+    def test_ItemTakenOverByFinancesAdviser(self):
+        """When item is proposed_to_finance, item is taken over by finances adviser.
+           There was a bug with ToolPloneMeeting.getPloneGroupsForUser cachekey
+           that is why we call it in this test."""
+        self.changeUser('admin')
+        cfg = self.meetingConfig
+        cfg.setUsedAdviceTypes(('asked_again', ) + cfg.getUsedAdviceTypes())
+        # configure customAdvisers for 'meeting-config-college'
+        _configureCollegeCustomAdvisers(self.portal)
+        # add finance groups
+        _createFinanceGroups(self.portal)
+        # define relevant users for finance groups
+        self._setupFinanceGroups()
+
+        # create item with asked finances advice
+        self.changeUser('pmCreator1')
+        self.tool.getPloneGroupsForUser()
+        item = self.create('MeetingItem')
+        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        # send item to finances
+        self.proposeItem(item)
+        self.changeUser('pmReviewer1')
+        self.tool.getPloneGroupsForUser()
+        self.do(item, 'proposeToFinance')
+        # finances take item over and send item back to director
+        self.changeUser('pmFinController')
+        self.tool.getPloneGroupsForUser()
+        view = item.restrictedTraverse('@@toggle_item_taken_over_by')
+        view.toggle(takenOverByFrom=item.getTakenOverBy())
+        self.assertTrue(item.getTakenOverBy() == 'pmFinController')
+        self.do(item, 'backToProposedToInternalReviewer')
+        self.assertTrue(item.getTakenOverBy() == '')
+        # login as director and send item back to finances
+        self.changeUser('pmReviewer1')
+        self.do(item, 'proposeToDirector')
+        self.do(item, 'proposeToFinance')
+        self.assertTrue(item.getTakenOverBy() == 'pmFinController')

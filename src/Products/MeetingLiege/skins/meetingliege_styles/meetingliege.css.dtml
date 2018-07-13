@@ -1,20 +1,14 @@
 /* <dtml-with base_properties> (do not remove this :) */
 /* <dtml-call "REQUEST.set('portal_url', portal_url())"> (not this either :) */
 
-/* remove this when we will use imio.actionspanel 1.9 */
-.notTriggerableTransitionImage {
-margin-left: 0.2em;
+#portal-header #portal-logo {
+    margin-bottom: 0em;
+    padding-bottom: 0em;
 }
-
-/* header/logo positioning */
-ul#portal-globalnav {
-    padding-left: 14em;
-}
-#portal-header a#portal-logo {
-    margin-left: 0.3em;
+#portal-globalnav a:hover, #portal-header #portal-globalnav .selected a {
+    color: #CA005D;
 }
 ul#portal-globalnav li a {
-    padding: 2.3em 1em 1em;
     color: white;
 }
 

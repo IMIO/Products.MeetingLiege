@@ -393,10 +393,10 @@ def reorderCss(context):
     css = ['plonemeeting.css',
            'meeting.css',
            'meetingitem.css',
-           'meetingliege.css',
            'imioapps.css',
            'plonemeetingskin.css',
            'imioapps_IEFixes.css',
+           'meetingliege.css',
            'ploneCustom.css']
     for resource in css:
         portal_css.moveResourceToBottom(resource)

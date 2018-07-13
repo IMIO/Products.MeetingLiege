@@ -101,7 +101,7 @@ MeetingConfig.wfAdaptations = customWfAdaptations
 RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = {'meetingitemcollegeliege_workflow':
                                             'meetingitemcollegeliege_workflow.itemcreated',
                                             'meetingitemcouncilliege_workflow':
-                                            'meetingitemcouncilliege_workflow.itemcreated',
+                                            'meetingitemcollegeliege_workflow.itemcreated',
                                             'meetingitembourgmestre_workflow':
                                             'meetingitembourgmestre_workflow.itemcreated'}
 adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE

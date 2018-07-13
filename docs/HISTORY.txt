@@ -6,6 +6,9 @@ Products.MeetingLiege Changelog
 
 - In onItemAfterTransition, use event.new_state.id instead item.queryState().
 - Added test test_ItemTakenOverByFinancesAdviser.
+- For WFA return to proposing group in Council, use 'itemcreated' state from
+  'meetingitemcollegeliege_workflow' as it does not exist in the 'meetingitemcouncilliege_workflow'.
+- Smaller logo.png.
 
 4.1b8 (2018-05-09)
 ------------------

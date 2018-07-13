@@ -457,9 +457,8 @@ class CustomMeeting(Meeting):
         tmp_res = {}
         brains = self.getItems(listTypes=['normal'],
                                ordered=True,
-                               useCatalog=True,
-                               unrestricted=True,
-                               force_linked_items_query=True)
+                               theObjects=False,
+                               unrestricted=True)
 
         for brain in brains:
             cat = brain.category_id
@@ -479,9 +478,8 @@ class CustomMeeting(Meeting):
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
         brains = self.getItems(listTypes=['late'],
                                ordered=True,
-                               useCatalog=True,
-                               unrestricted=True,
-                               force_linked_items_query=True)
+                               theObjects=False,
+                               unrestricted=True)
         item_num = 1
         for brain in brains:
             res[brain.UID] = item_num

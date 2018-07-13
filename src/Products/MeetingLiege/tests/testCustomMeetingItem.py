@@ -213,7 +213,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         maintItem1.setCategory('maintenance')
         meeting = self.create('Meeting', date='2015/01/01')
         # make sure item reference is correct no matter it seems we are in the 'available items'
-        # view, this is because we use getItems(useCatalog=True) that is sensible to being
+        # view, this is because we use getItems(theObjects=False) that is sensible to being
         # in the 'available items' view
         self.request.set('HTTP_REFERER',
                          '{0}/@@meeting_available_items_view'.format(meeting.absolute_url()))

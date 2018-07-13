@@ -352,7 +352,7 @@ def onItemListTypeChanged(item, event):
         view = item.restrictedTraverse('@@change-item-order')
         # we will set previous number + 1 so get previous item
         meeting = item.getMeeting()
-        items = meeting.getItems(ordered=True, useCatalog=True)
+        items = meeting.getItems(ordered=True, theObjects=False)
         itemUID = item.UID()
         previous = None
         for item in items:

@@ -1,6 +1,17 @@
 #
 # taken into account by: svn propset svn:ignore -F svn.ignore .
 #
+*.pyc
+*.pyo
+*.html
+*.tmp*
+*.mo
+*.egg
+*.EGG
+*.egg-info
+*.EGG-INFO
+*.log
+.*.cfg
 .installed.cfg
 bin
 var
@@ -15,6 +26,5 @@ lib
 logrotate.conf
 parts
 python-eggs
-src
 versions-picked.cfg
 *.egg-info

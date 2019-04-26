@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
+
 from DateTime import DateTime
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import AnnexTypeDescriptor
 from Products.PloneMeeting.profiles import CategoryDescriptor
-from Products.PloneMeeting.profiles import GroupDescriptor
 from Products.PloneMeeting.profiles import ItemAnnexTypeDescriptor
 from Products.PloneMeeting.profiles import ItemTemplateDescriptor
 from Products.PloneMeeting.profiles import MeetingConfigDescriptor
-from Products.PloneMeeting.profiles import PodTemplateDescriptor
+from Products.PloneMeeting.profiles import OrgDescriptor
 from Products.PloneMeeting.profiles import PloneMeetingConfiguration
+from Products.PloneMeeting.profiles import PodTemplateDescriptor
 from Products.PloneMeeting.profiles import RecurringItemDescriptor
 from Products.PloneMeeting.profiles import UserDescriptor
+
 
 today = DateTime().strftime('%Y/%m/%d')
 
@@ -26,13 +28,13 @@ courrierCollege = ItemAnnexTypeDescriptor('courrier-a-valider-par-le-college',
 annexeDecision = ItemAnnexTypeDescriptor('annexeDecision', 'Annexe à la décision',
                                          u'attach.png', relatedTo='item_decision', confidential=True)
 deliberation_to_sign = ItemAnnexTypeDescriptor(
-          'deliberation_to_sign', 'Délibération à signer',
-          u'deliberation_to_sign.png', relatedTo='item_decision',
-          to_sign=True, only_for_meeting_managers=True)
+    'deliberation_to_sign', 'Délibération à signer',
+    u'deliberation_to_sign.png', relatedTo='item_decision',
+    to_sign=True, only_for_meeting_managers=True)
 deliberation = ItemAnnexTypeDescriptor(
-          'deliberation', 'Délibération', u'deliberation.png',
-          relatedTo='item_decision', to_sign=True, signed=True,
-          only_for_meeting_managers=True)
+    'deliberation', 'Délibération', u'deliberation.png',
+    relatedTo='item_decision', to_sign=True, signed=True,
+    only_for_meeting_managers=True)
 annexeAvis = AnnexTypeDescriptor('annexeAvis', 'Annexe à un avis',
                                  u'attach.png', relatedTo='advice', confidential=True)
 annexeAvisLegal = AnnexTypeDescriptor('annexeAvisLegal', 'Extrait article de loi',
@@ -43,30 +45,30 @@ annexeSeance = AnnexTypeDescriptor('annexe', 'Annexe', u'attach.png', relatedTo=
 agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')
 agendaTemplate.odt_file = 'college-oj.odt'
 agendaTemplate.pod_formats = ['odt', 'pdf', ]
-agendaTemplate.pod_portal_types = ['MeetingCollege']
-agendaTemplate.tal_condition = 'python: tool.isManager(here)'
+agendaTemplate.pod_portal_types = ['Meeting']
+agendaTemplate.tal_condition = u'python: tool.isManager(here)'
 
 decisionsTemplate = PodTemplateDescriptor('pv', 'Procès-verbal')
 decisionsTemplate.odt_file = 'college-pv.odt'
 decisionsTemplate.pod_formats = ['odt', 'pdf', ]
-decisionsTemplate.pod_portal_types = ['MeetingCollege']
-decisionsTemplate.tal_condition = 'python: tool.isManager(here)'
+decisionsTemplate.pod_portal_types = ['Meeting']
+decisionsTemplate.tal_condition = u'python: tool.isManager(here)'
 
 itemTemplate = PodTemplateDescriptor('deliberation', 'Délibération')
 itemTemplate.odt_file = 'deliberation.odt'
 itemTemplate.pod_formats = ['odt', 'pdf', ]
-itemTemplate.pod_portal_types = ['MeetingItemCollege']
-itemTemplate.tal_condition = 'python: here.hasMeeting()'
+itemTemplate.pod_portal_types = ['MeetingItem']
+itemTemplate.tal_condition = u'python: here.hasMeeting()'
 
 dfAdviceTemplate = PodTemplateDescriptor('synthese-finance-advice', 'Synthèse Avis DF', dashboard=True)
 dfAdviceTemplate.odt_file = 'synthese_avis_df.odt'
 dfAdviceTemplate.dashboard_collections_ids = ['searchitemswithfinanceadvice']
-dfAdviceTemplate.tal_condition = ''
+dfAdviceTemplate.tal_condition = u''
 
 statsDFAdvice = PodTemplateDescriptor('stats-finance-advice', 'Statistiques Avis DF', dashboard=True)
 statsDFAdvice.odt_file = 'stats_DF_advice.ods'
 statsDFAdvice.dashboard_collections_ids = ['searchitemswithfinanceadvice']
-statsDFAdvice.tal_condition = ''
+statsDFAdvice.tal_condition = u''
 
 collegeTemplates = [agendaTemplate, decisionsTemplate,
                     itemTemplate,
@@ -90,122 +92,120 @@ conseiller = UserDescriptor('conseiller', [], email="test@test.be", fullname="Co
 emetteuravisPers = UserDescriptor('emetteuravisPers', [], email="test@test.be", fullname="Emetteur avis Personnel")
 
 # add finance groups
-dfcontrol = GroupDescriptor('df-contrale',
-                            u'DF - Contrôle',
-                            'DF')
-dfcontrol.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
-                              'meeting-config-college__state__proposed_to_finance',
-                              'meeting-config-college__state__presented',
-                              'meeting-config-college__state__validated')
-dfcontrol.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
-                                  'meeting-config-college__state__proposed_to_finance',
-                                  'meeting-config-college__state__presented',
-                                  'meeting-config-college__state__validated')
-dfcontrol.itemAdviceViewStates = ('meeting-config-college__state__accepted',
-                                  'meeting-config-college__state__accepted_but_modified',
-                                  'meeting-config-college__state__pre_accepted',
-                                  'meeting-config-college__state__delayed',
-                                  'meeting-config-college__state__itemfrozen',
-                                  'meeting-config-college__state__proposed_to_finance',
-                                  'meeting-config-college__state__presented',
-                                  'meeting-config-college__state__refused',
-                                  'meeting-config-college__state__validated')
-dfcompta = GroupDescriptor('df-comptabilita-c-et-audit-financier',
-                           u'DF - Comptabilité et Audit financier',
-                           'DF')
-dfcompta.itemAdviceStates = ('meeting-config-college__state__itemfrozen',
-                             'meeting-config-college__state__proposed_to_finance',
-                             'meeting-config-college__state__presented',
-                             'meeting-config-college__state__validated')
-dfcompta.itemAdviceEditStates = ('meeting-config-college__state__itemfrozen',
-                                 'meeting-config-college__state__proposed_to_finance',
-                                 'meeting-config-college__state__presented',
-                                 'meeting-config-college__state__validated')
-dfcompta.itemAdviceViewStates = ('meeting-config-college__state__accepted',
-                                 'meeting-config-college__state__accepted_but_modified',
-                                 'meeting-config-college__state__pre_accepted',
-                                 'meeting-config-college__state__delayed',
-                                 'meeting-config-college__state__itemfrozen',
-                                 'meeting-config-college__state__proposed_to_finance',
-                                 'meeting-config-college__state__presented',
-                                 'meeting-config-college__state__refused',
-                                 'meeting-config-college__state__validated')
+dfcontrol = OrgDescriptor('df-contrale', u'DF - Contrôle', u'DF')
+dfcontrol.item_advice_states = ('meeting-config-college__state__itemfrozen',
+                                'meeting-config-college__state__proposed_to_finance',
+                                'meeting-config-college__state__presented',
+                                'meeting-config-college__state__validated')
+dfcontrol.item_advice_edit_states = ('meeting-config-college__state__itemfrozen',
+                                     'meeting-config-college__state__proposed_to_finance',
+                                     'meeting-config-college__state__presented',
+                                     'meeting-config-college__state__validated')
+dfcontrol.item_advice_view_states = ('meeting-config-college__state__accepted',
+                                     'meeting-config-college__state__accepted_but_modified',
+                                     'meeting-config-college__state__pre_accepted',
+                                     'meeting-config-college__state__delayed',
+                                     'meeting-config-college__state__itemfrozen',
+                                     'meeting-config-college__state__proposed_to_finance',
+                                     'meeting-config-college__state__presented',
+                                     'meeting-config-college__state__refused',
+                                     'meeting-config-college__state__validated')
+dfcompta = OrgDescriptor('df-comptabilita-c-et-audit-financier',
+                         u'DF - Comptabilité et Audit financier',
+                         u'DF')
+dfcompta.item_advice_states = ('meeting-config-college__state__itemfrozen',
+                               'meeting-config-college__state__proposed_to_finance',
+                               'meeting-config-college__state__presented',
+                               'meeting-config-college__state__validated')
+dfcompta.item_advice_edit_states = ('meeting-config-college__state__itemfrozen',
+                                    'meeting-config-college__state__proposed_to_finance',
+                                    'meeting-config-college__state__presented',
+                                    'meeting-config-college__state__validated')
+dfcompta.item_advice_view_states = ('meeting-config-college__state__accepted',
+                                    'meeting-config-college__state__accepted_but_modified',
+                                    'meeting-config-college__state__pre_accepted',
+                                    'meeting-config-college__state__delayed',
+                                    'meeting-config-college__state__itemfrozen',
+                                    'meeting-config-college__state__proposed_to_finance',
+                                    'meeting-config-college__state__presented',
+                                    'meeting-config-college__state__refused',
+                                    'meeting-config-college__state__validated')
 
-groups = [GroupDescriptor('dirgen', 'Directeur Général', 'DG'),
-          GroupDescriptor('secretariat', 'Secrétariat communal', 'Secr'),
-          GroupDescriptor('informatique', 'Service informatique', 'Info'),
-          GroupDescriptor('personnel', 'Service du personnel', 'Pers'),
-          GroupDescriptor('dirfin', 'Directeur Financier', 'DF'),
-          GroupDescriptor('comptabilite', 'Service comptabilité', 'Compt'),
-          GroupDescriptor('travaux', 'Service travaux', 'Trav'),
-          dfcontrol,
-          dfcompta]
+orgs = [OrgDescriptor('dirgen', 'Directeur Général', u'DG'),
+        OrgDescriptor('secretariat', 'Secrétariat communal', u'Secr'),
+        OrgDescriptor('informatique', 'Service informatique', u'Info'),
+        OrgDescriptor('personnel', 'Service du personnel', u'Pers'),
+        OrgDescriptor('dirfin', 'Directeur Financier', u'DF'),
+        OrgDescriptor('comptabilite', 'Service comptabilité', u'Compt'),
+        OrgDescriptor('travaux', 'Service travaux', u'Trav'),
+        dfcontrol,
+        dfcompta]
 
 # MeetingManager
-groups[0].creators.append(dgen)
-groups[0].reviewers.append(dgen)
-groups[0].observers.append(dgen)
-groups[0].advisers.append(dgen)
+orgs[0].creators.append(dgen)
+orgs[0].reviewers.append(dgen)
+orgs[0].observers.append(dgen)
+orgs[0].advisers.append(dgen)
 
-groups[1].creators.append(dgen)
-groups[1].reviewers.append(dgen)
-groups[1].observers.append(dgen)
-groups[1].advisers.append(dgen)
+orgs[1].creators.append(dgen)
+orgs[1].reviewers.append(dgen)
+orgs[1].observers.append(dgen)
+orgs[1].advisers.append(dgen)
 
-groups[2].creators.append(agentInfo)
-groups[2].creators.append(dgen)
-groups[2].reviewers.append(agentInfo)
-groups[2].reviewers.append(dgen)
-groups[2].observers.append(agentInfo)
-groups[2].advisers.append(agentInfo)
+orgs[2].creators.append(agentInfo)
+orgs[2].creators.append(dgen)
+orgs[2].reviewers.append(agentInfo)
+orgs[2].reviewers.append(dgen)
+orgs[2].observers.append(agentInfo)
+orgs[2].advisers.append(agentInfo)
 
-groups[3].creators.append(agentPers)
-groups[3].observers.append(agentPers)
-groups[3].creators.append(dgen)
-groups[3].reviewers.append(dgen)
-groups[3].creators.append(chefPers)
-groups[3].reviewers.append(chefPers)
-groups[3].observers.append(chefPers)
-groups[3].observers.append(echevinPers)
-groups[3].advisers.append(emetteuravisPers)
+orgs[3].creators.append(agentPers)
+orgs[3].observers.append(agentPers)
+orgs[3].creators.append(dgen)
+orgs[3].reviewers.append(dgen)
+orgs[3].creators.append(chefPers)
+orgs[3].reviewers.append(chefPers)
+orgs[3].observers.append(chefPers)
+orgs[3].observers.append(echevinPers)
+orgs[3].advisers.append(emetteuravisPers)
 
-groups[4].creators.append(dfin)
-groups[4].reviewers.append(dfin)
-groups[4].observers.append(dfin)
-groups[4].advisers.append(dfin)
+orgs[4].creators.append(dfin)
+orgs[4].reviewers.append(dfin)
+orgs[4].observers.append(dfin)
+orgs[4].advisers.append(dfin)
 
-groups[5].creators.append(agentCompta)
-groups[5].creators.append(chefCompta)
-groups[5].creators.append(dfin)
-groups[5].creators.append(dgen)
-groups[5].reviewers.append(chefCompta)
-groups[5].reviewers.append(dfin)
-groups[5].reviewers.append(dgen)
-groups[5].observers.append(agentCompta)
-groups[5].advisers.append(chefCompta)
-groups[5].advisers.append(dfin)
+orgs[5].creators.append(agentCompta)
+orgs[5].creators.append(chefCompta)
+orgs[5].creators.append(dfin)
+orgs[5].creators.append(dgen)
+orgs[5].reviewers.append(chefCompta)
+orgs[5].reviewers.append(dfin)
+orgs[5].reviewers.append(dgen)
+orgs[5].observers.append(agentCompta)
+orgs[5].advisers.append(chefCompta)
+orgs[5].advisers.append(dfin)
 
-groups[6].creators.append(agentTrav)
-groups[6].creators.append(dgen)
-groups[6].reviewers.append(agentTrav)
-groups[6].reviewers.append(dgen)
-groups[6].observers.append(agentTrav)
-groups[6].observers.append(echevinTrav)
-groups[6].advisers.append(agentTrav)
+orgs[6].creators.append(agentTrav)
+orgs[6].creators.append(dgen)
+orgs[6].reviewers.append(agentTrav)
+orgs[6].reviewers.append(dgen)
+orgs[6].observers.append(agentTrav)
+orgs[6].observers.append(echevinTrav)
+orgs[6].advisers.append(agentTrav)
 
-groups[7].creators.append(dfin)
-groups[7].reviewers.append(dfin)
-groups[7].observers.append(dfin)
-groups[7].advisers.append(dfin)
-groups[7].administrativereviewers.append(dfin)
-groups[7].internalreviewers.append(dfin)
+orgs[7].creators.append(dfin)
+orgs[7].reviewers.append(dfin)
+orgs[7].observers.append(dfin)
+orgs[7].advisers.append(dfin)
+orgs[7].administrativereviewers.append(dfin)
+orgs[7].internalreviewers.append(dfin)
 
-groups[8].creators.append(dfin)
-groups[8].reviewers.append(dfin)
-groups[8].observers.append(dfin)
-groups[8].advisers.append(dfin)
-groups[8].administrativereviewers.append(dfin)
-groups[8].internalreviewers.append(dfin)
+orgs[8].creators.append(dfin)
+orgs[8].reviewers.append(dfin)
+orgs[8].observers.append(dfin)
+orgs[8].advisers.append(dfin)
+orgs[8].administrativereviewers.append(dfin)
+orgs[8].internalreviewers.append(dfin)
 
 # Meeting configurations -------------------------------------------------------
 # college
@@ -233,10 +233,10 @@ collegeMeeting.annexTypes = [annexe, annexeBudget, annexeCahier, courrierCollege
                              annexeDecision, deliberation_to_sign, deliberation,
                              annexeAvis, annexeAvisLegal, annexeSeance]
 collegeMeeting.itemGroupInChargeStates = (
-          u'accepted', u'accepted_but_modified', u'accepted_and_returned',
-          u'pre_accepted', u'delayed', u'returned', u'itemfrozen', u'validated',
-          u'presented', u'refused', u'returned_to_proposing_group',
-          u'marked_not_applicable')
+    u'accepted', u'accepted_but_modified', u'accepted_and_returned',
+    u'pre_accepted', u'delayed', u'returned', u'itemfrozen', u'validated',
+    u'presented', u'refused', u'returned_to_proposing_group',
+    u'marked_not_applicable')
 collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpacteditors',
                                                   'reader_advices',
                                                   'reader_copy_groups',
@@ -251,7 +251,6 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'detailedDescription',
                                      'toDiscuss',
-                                     'itemAssembly',
                                      'financeAdvice',
                                      'completeness',
                                      'labelForCouncil',
@@ -328,13 +327,13 @@ collegeMeeting.transitionReinitializingDelays = 'backToProposedToDirector'
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.enableAdviceInvalidation = False
 collegeMeeting.useCopies = True
-collegeMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
-                                       groups[1].getIdSuffixed('reviewers'),
-                                       groups[2].getIdSuffixed('reviewers'),
-                                       groups[3].getIdSuffixed('reviewers'),
-                                       groups[4].getIdSuffixed('reviewers'),
-                                       groups[5].getIdSuffixed('reviewers'),
-                                       groups[6].getIdSuffixed('reviewers'), ]
+collegeMeeting.selectableCopyGroups = [orgs[0].getIdSuffixed('reviewers'),
+                                       orgs[1].getIdSuffixed('reviewers'),
+                                       orgs[2].getIdSuffixed('reviewers'),
+                                       orgs[3].getIdSuffixed('reviewers'),
+                                       orgs[4].getIdSuffixed('reviewers'),
+                                       orgs[5].getIdSuffixed('reviewers'),
+                                       orgs[6].getIdSuffixed('reviewers'), ]
 collegeMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified', 'pre_accepted',
                                        'itemfrozen', 'refused', 'delayed')
 collegeMeeting.podTemplates = collegeTemplates
@@ -442,8 +441,8 @@ collegeMeeting.itemTemplates = [
         <p>...</p>"""),
 ]
 collegeMeeting.category_group_activated_attrs = {
-          'item_annexes': ['confidentiality_activated', 'signed_activated'],
-          'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
+    'item_annexes': ['confidentiality_activated', 'signed_activated'],
+    'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
 
 # council
 councilMeeting = MeetingConfigDescriptor(
@@ -485,7 +484,6 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'labelForCouncil',
                                      'observations',
                                      'privacy',
-                                     'itemAssembly',
                                      'motivation',
                                      'decisionSuite',
                                      'decisionEnd']
@@ -534,13 +532,13 @@ councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.enableAdviceInvalidation = False
 councilMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 councilMeeting.useCopies = True
-councilMeeting.selectableCopyGroups = [groups[0].getIdSuffixed('reviewers'),
-                                       groups[1].getIdSuffixed('reviewers'),
-                                       groups[2].getIdSuffixed('reviewers'),
-                                       groups[3].getIdSuffixed('reviewers'),
-                                       groups[4].getIdSuffixed('reviewers'),
-                                       groups[5].getIdSuffixed('reviewers'),
-                                       groups[6].getIdSuffixed('reviewers'), ]
+councilMeeting.selectableCopyGroups = [orgs[0].getIdSuffixed('reviewers'),
+                                       orgs[1].getIdSuffixed('reviewers'),
+                                       orgs[2].getIdSuffixed('reviewers'),
+                                       orgs[3].getIdSuffixed('reviewers'),
+                                       orgs[4].getIdSuffixed('reviewers'),
+                                       orgs[5].getIdSuffixed('reviewers'),
+                                       orgs[6].getIdSuffixed('reviewers'), ]
 councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified',
                                        'pre_accepted', 'itemfrozen',
                                        'refused', 'delayed')
@@ -572,9 +570,9 @@ councilMeeting.recurringItems = [
         proposingGroup='secretariat',
         decision='Mandats de paiement de la semaine approuvés'), ]
 councilMeeting.category_group_activated_attrs = {
-          'item_annexes': ['confidentiality_activated', 'signed_activated'],
-          'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
+    'item_annexes': ['confidentiality_activated', 'signed_activated'],
+    'item_decision_annexes': ['confidentiality_activated', 'signed_activated']}
 
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(collegeMeeting, councilMeeting),
-                                 groups=groups)
+                                 orgs=orgs)

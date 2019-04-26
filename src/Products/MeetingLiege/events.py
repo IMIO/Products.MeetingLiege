@@ -7,20 +7,21 @@
 # GNU General Public License (GPL)
 #
 
-from OFS.ObjectManager import BeforeDeleteException
-from plone import api
 from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.utils import add_event_to_history
+from imio.history.utils import getLastWFAction
+from OFS.ObjectManager import BeforeDeleteException
+from plone import api
+from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import PloneMeetingError
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.utils import _storedItemNumber_to_itemNumber
-from Products.PloneMeeting.utils import getLastEvent
 from Products.PloneMeeting.utils import main_item_data
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
-from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
-from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
+
 
 __author__ = """Gauthier BASTIEN <gauthier.bastien@imio.be>"""
 __docformat__ = 'plaintext'
@@ -241,7 +242,7 @@ def onAdvicesUpdated(item, event):
                 item.adviceIndex[groupId]['advice_editable'] = False
         # when a finance has accessed an item, he will always be able to access it after
         if not adviceInfo['item_viewable_by_advisers'] and \
-           getLastEvent(item, 'proposeToFinance'):
+           getLastWFAction(item, 'proposeToFinance'):
             # give access to the item to the finance group
             item.manage_addLocalRoles('%s_advisers' % groupId, (READER_USECASES['advices'],))
             item.adviceIndex[groupId]['item_viewable_by_advisers'] = True

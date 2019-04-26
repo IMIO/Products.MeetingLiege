@@ -7,8 +7,8 @@ setup(
     name='Products.MeetingLiege',
     version=version,
     description="PloneMeeting profile for city of Liege",
-    long_description=open("README.txt").read() + "\n" +
-    open(os.path.join("docs", "HISTORY.txt")).read(),
+    long_description=open("README.rst").read() + "\n" +
+    open("CHANGES.rst").read(),
     classifiers=[
         "Programming Language :: Python",
         ],

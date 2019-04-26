@@ -28,21 +28,38 @@ setDefaultRoles(DEFAULT_ADD_CONTENT_PERMISSION, ('Manager', 'Owner', 'Contributo
 LIEGEROLES = {}
 LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
 LIEGEROLES['internalreviewers'] = 'MeetingInternalReviewer'
-LIEGEROLES['reviewers'] = 'MeetingReviewer'
 PMconfig.MEETINGROLES.update(LIEGEROLES)
-PMconfig.MEETING_GROUP_SUFFIXES = PMconfig.MEETINGROLES.keys()
+
+# group suffixes
+PMconfig.EXTRA_GROUP_SUFFIXES = [
+    {'fct_title': u'administrativereviewers', 'fct_id': u'administrativereviewers', 'fct_orgs': []},
+    {'fct_title': u'internalreviewers', 'fct_id': u'internalreviewers', 'fct_orgs': []},
+    {'fct_title': u'financialcontrollers',
+     'fct_id': u'financialcontrollers',
+     'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier']},
+    {'fct_title': u'financialreviewers',
+     'fct_id': u'financialreviewers',
+     'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier']},
+    {'fct_title': u'financialmanagers',
+     'fct_id': u'financialmanagers',
+     'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier']},
+]
+
+FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
+                          'financialreviewers',
+                          'financialmanagers')
 
 LIEGEMEETINGREVIEWERS = {
     'meetingitembourgmestre_workflow': OrderedDict(
-            [('reviewers', ['proposed_to_director', 'proposed_to_general_manager', 'proposed_to_cabinet_reviewer']),
-             ('internalreviewers', ['proposed_to_internal_reviewer']),
-             ('administrativereviewers', ['proposed_to_administrative_reviewer']),
-             ('creators', ['proposed_to_cabinet_manager'])]),
+        [('reviewers', ['proposed_to_director', 'proposed_to_general_manager', 'proposed_to_cabinet_reviewer']),
+         ('internalreviewers', ['proposed_to_internal_reviewer']),
+         ('administrativereviewers', ['proposed_to_administrative_reviewer']),
+         ('creators', ['proposed_to_cabinet_manager'])]),
     'meetingitemcollegeliege_workflow': OrderedDict(
-            [('reviewers', ['proposed_to_director']),
-             ('internalreviewers', ['proposed_to_internal_reviewer']),
-             ('administrativereviewers', ['proposed_to_administrative_reviewer'])]),
-    }
+        [('reviewers', ['proposed_to_director']),
+         ('internalreviewers', ['proposed_to_internal_reviewer']),
+         ('administrativereviewers', ['proposed_to_administrative_reviewer'])]),
+}
 PMconfig.MEETINGREVIEWERS.update(LIEGEMEETINGREVIEWERS)
 
 LIEGE_ADVICE_STATES_ALIVE = ('advice_under_edit',
@@ -64,15 +81,6 @@ TREASURY_GROUP_ID = 'df-controle-tresorerie'
 GENERAL_MANAGER_GROUP_ID = 'sc'
 
 BOURGMESTRE_GROUP_ID = 'bourgmestre'
-
-FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
-                          'financialreviewers',
-                          'financialmanagers')
-
-LIEGE_EXTRA_GROUP_SUFFIXES = {}
-for fin_group_id in FINANCE_GROUP_IDS:
-    LIEGE_EXTRA_GROUP_SUFFIXES.update({fin_group_id: list(FINANCE_GROUP_SUFFIXES)})
-PMconfig.EXTRA_GROUP_SUFFIXES = LIEGE_EXTRA_GROUP_SUFFIXES
 
 # in those states, finance advice can still be given
 FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance', 'validated', 'presented', 'itemfrozen')

@@ -23,52 +23,34 @@
 # 02110-1301, USA.
 #
 # ------------------------------------------------------------------------------
-import string
-import unicodedata
-from collections import OrderedDict
-from appy.gen import No
 from AccessControl import ClassSecurityInfo
+from appy.gen import No
+from collections import OrderedDict
 from Globals import InitializeClass
-from zope.annotation.interfaces import IAnnotations
-from zope.component import getAdapter
-from zope.interface import implements
-from zope.i18n import translate
-from plone.memoize import ram
-from plone import api
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFCore.permissions import ReviewPortalContent
-from Products.CMFCore.utils import _checkPermission
-from Products.Archetypes import DisplayList
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.adapters import BaseImioHistoryAdapter
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
-from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
-from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
-from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
-from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
-from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
-from Products.PloneMeeting.config import PMMessageFactory as _
-from Products.PloneMeeting.config import READER_USECASES
-from Products.PloneMeeting.content.advice import MeetingAdvice
-from Products.PloneMeeting.MeetingItem import MeetingItem
-from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
-from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
-from Products.PloneMeeting.utils import getLastEvent
-from Products.PloneMeeting.model import adaptations
-from Products.PloneMeeting.Meeting import Meeting
-from Products.PloneMeeting.Meeting import MeetingWorkflowActions
-from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
-from Products.PloneMeeting.MeetingCategory import MeetingCategory
-from Products.PloneMeeting.MeetingConfig import MeetingConfig
-from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
-from Products.PloneMeeting.interfaces import IMeetingCategoryCustom
-from Products.PloneMeeting.interfaces import IMeetingCustom
-from Products.PloneMeeting.interfaces import IMeetingConfigCustom
-from Products.PloneMeeting.interfaces import IMeetingItemCustom
-from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
+from imio.history.utils import getLastWFAction
+from plone import api
+from plone.memoize import ram
+from Products.Archetypes import DisplayList
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import ReviewPortalContent
+from Products.CMFCore.utils import _checkPermission
+from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
+from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
+from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
+from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
+from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
+from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
+from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowActions
@@ -81,17 +63,37 @@ from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowAct
 from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowConditions
-from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
-from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
-from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
-from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
-from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
-from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
-from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
-from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
-from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
-from Products.MeetingLiege.config import TREASURY_GROUP_ID
+from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
+from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
+from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
+from Products.PloneMeeting.config import PMMessageFactory as _
+from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
+from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
+from Products.PloneMeeting.config import READER_USECASES
+from Products.PloneMeeting.content.advice import MeetingAdvice
+from Products.PloneMeeting.interfaces import IMeetingCategoryCustom
+from Products.PloneMeeting.interfaces import IMeetingConfigCustom
+from Products.PloneMeeting.interfaces import IMeetingCustom
+from Products.PloneMeeting.interfaces import IMeetingItemCustom
+from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
+from Products.PloneMeeting.Meeting import Meeting
+from Products.PloneMeeting.Meeting import MeetingWorkflowActions
+from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
+from Products.PloneMeeting.MeetingCategory import MeetingCategory
+from Products.PloneMeeting.MeetingConfig import MeetingConfig
+from Products.PloneMeeting.MeetingItem import MeetingItem
+from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
+from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
+from Products.PloneMeeting.model import adaptations
+from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
+from zope.annotation.interfaces import IAnnotations
+from zope.component import getAdapter
+from zope.i18n import translate
+from zope.interface import implements
+
+import string
+import unicodedata
+
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -347,9 +349,9 @@ class CustomMeeting(Meeting):
             # element the item itself
             final_res = []
             if privacy == 'secret':
-                item_num = self.context.REQUEST.get('renumber_first_number', firstNumber-1)
+                item_num = self.context.REQUEST.get('renumber_first_number', firstNumber - 1)
             else:
-                item_num = firstNumber-1
+                item_num = firstNumber - 1
             for elts in res:
                 final_items = []
                 # we received a list of tuple (cat, items_list)
@@ -695,7 +697,7 @@ class CustomMeetingItem(MeetingItem):
                         translate('finance_advice_not_giveable_because_item_not_complete',
                                   domain="PloneMeeting",
                                   context=item.REQUEST)}
-            elif getLastEvent(item, 'proposeToFinance') and \
+            elif getLastWFAction(item, 'proposeToFinance') and \
                 item.queryState() in ('itemcreated',
                                       'itemcreated_waiting_advices',
                                       'proposed_to_internal_reviewer',
@@ -956,7 +958,7 @@ class CustomMeetingItem(MeetingItem):
             and adviceData['comment'] or ''
         advice_id = 'advice_id' in adviceData\
             and adviceData['advice_id'] or ''
-        signature_event = advice_id and getLastEvent(getattr(item, advice_id), 'signFinancialAdvice') or ''
+        signature_event = advice_id and getLastWFAction(getattr(item, advice_id), 'signFinancialAdvice') or ''
         res['out_of_financial_dpt'] = 'time' in signature_event and signature_event['time'] or ''
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\
             and res['out_of_financial_dpt'].strftime('%d/%m/%Y') or ''
@@ -1029,7 +1031,7 @@ class CustomMeetingItem(MeetingItem):
     def _checkAlreadyClonedToOtherMC(self, destMeetingConfigId):
         ''' '''
         res = old_checkAlreadyClonedToOtherMC(self, destMeetingConfigId)
-        if not res and not getLastEvent(self, 'Duplicate and keep link'):
+        if not res and not getLastWFAction(self, 'Duplicate and keep link'):
             # if current item is not linked automatically using a 'Duplicate and keep link'
             # double check if a predecessor was not already sent to the other meetingConfig
             # this can be the case when using 'accept_and_return' transition, the item is sent
@@ -1046,7 +1048,7 @@ class CustomMeetingItem(MeetingItem):
                         return True
                 # break the loop if we encounter an item that was 'Duplicated and keep link'
                 # and it is not an item that is 'accepted_and_returned'
-                if getLastEvent(predecessor, 'Duplicate and keep link'):
+                if getLastWFAction(predecessor, 'Duplicate and keep link'):
                     return res
                 predecessor = predecessor.getPredecessor()
         return res
@@ -1062,10 +1064,10 @@ class CustomMeetingItem(MeetingItem):
         def _predecessorIsValid(current, predecessor, financeAdvice):
             """ """
             # predecessor is valid only if 'returned' or sent back to council/back to college
-            if not (getLastEvent(current, 'return') or
-                    getLastEvent(current, 'accept_and_return') or
-                    getLastEvent(current, 'create_to_meeting-config-college_from_meeting-config-council') or
-                    getLastEvent(current, 'create_to_meeting-config-council_from_meeting-config-college')):
+            if not (getLastWFAction(current, 'return') or
+                    getLastWFAction(current, 'accept_and_return') or
+                    getLastWFAction(current, 'create_to_meeting-config-college_from_meeting-config-council') or
+                    getLastWFAction(current, 'create_to_meeting-config-council_from_meeting-config-college')):
                 return False
 
             # council item and predecessor is a College item
@@ -1146,8 +1148,8 @@ class CustomMeetingItem(MeetingItem):
             adviceHolder_completeness_changes_adapter = getAdapter(
                 adviceHolder, IImioHistory, 'completeness_changes')
             last_completeness_complete_action = getLastAction(
-                    adviceHolder_completeness_changes_adapter,
-                    action='completeness_complete')
+                adviceHolder_completeness_changes_adapter,
+                action='completeness_complete')
             if last_completeness_complete_action:
                 delayStartedOnLocalized = adviceHolder.toLocalizedTime(last_completeness_complete_action['time'])
         delayStatus = advice['delay_infos']['delay_status']
@@ -1415,16 +1417,16 @@ class CustomMeetingItem(MeetingItem):
         returned multiple times.
         '''
         # If we have the name of the office manager, we just return it.
-        if getLastEvent(self.context, 'proposeToDirector'):
-            offMan = getLastEvent(self.context, 'proposeToDirector')['actor']
+        if getLastWFAction(self.context, 'proposeToDirector'):
+            offMan = getLastWFAction(self.context, 'proposeToDirector')['actor']
         # Else we look for a predecessor which can have the intel.
         elif self.context.getPredecessor():
             offMan = ''
             predecessor = self.context.getPredecessor()
             # loops while the item has no office manager
             while predecessor and not offMan:
-                if getLastEvent(predecessor, 'proposeToDirector'):
-                    offMan = getLastEvent(predecessor, 'proposeToDirector')['actor']
+                if getLastWFAction(predecessor, 'proposeToDirector'):
+                    offMan = getLastWFAction(predecessor, 'proposeToDirector')['actor']
                 predecessor = predecessor.getPredecessor()
         else:
             return ''
@@ -2565,7 +2567,7 @@ def get_advice_given_on(self):
     '''Monkeypatch the meetingadvice.get_advice_given_on method, if it is
        a finance advice, we will return date of last transition 'sign_advice'.'''
     if self.advice_group in FINANCE_GROUP_IDS:
-        lastEvent = getLastEvent(self, 'signFinancialAdvice')
+        lastEvent = getLastWFAction(self, 'signFinancialAdvice')
         if not lastEvent:
             return self.modified()
         else:

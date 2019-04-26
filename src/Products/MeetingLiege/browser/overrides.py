@@ -7,21 +7,21 @@
 # GNU General Public License (GPL)
 #
 
-import time
-from DateTime import DateTime
-from zope.component import getAdapter
-
-from plone.memoize.view import memoize_contextless
-from plone import api
-
 from collective.iconifiedcategory.browser.actionview import SignedChangeView
+from DateTime import DateTime
 from imio.history.interfaces import IImioHistory
+from imio.history.utils import getLastWFAction
+from plone import api
+from plone.memoize.view import memoize_contextless
+from Products.MeetingLiege import logger
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
 from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
-from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
-from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
 from Products.PloneMeeting.browser.overrides import PMContentHistoryView
-from Products.MeetingLiege import logger
+from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
+from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
+from zope.component import getAdapter
+
+import time
 
 
 class MLAdviceActionsPanelView(BaseActionsPanelView):
@@ -90,7 +90,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         """Used on a council item : get the administrative reviewer of the College item."""
         collegeItem = self.context.adapted().getItemCollege()
         if collegeItem:
-            event = collegeItem.getLastEvent('proposeToDirector')
+            event = getLastWFAction(collegeItem, 'proposeToDirector')
             if event:
                 return api.user.get(event['actor'])
 

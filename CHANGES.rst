@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.1b10 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Products.PloneMeeting.utils.getLastEvent was removed, use imio.history.utils.getLastWFAction.
+- Adapted profile regarding changes about integration of collective.contact.* in Products.PloneMeeting.
 
 4.1b9 (2018-07-13)
 ------------------

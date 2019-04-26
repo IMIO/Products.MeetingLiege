@@ -22,42 +22,25 @@
 # 02110-1301, USA.
 #
 
-from datetime import datetime
-
-from DateTime import DateTime
-
 from AccessControl import Unauthorized
-from zope.component import getAdapter
-from zope.component import getMultiAdapter
-from zope.event import notify
-from zope.i18n import translate
-from zope.lifecycleevent import ObjectModifiedEvent
 from collective.compoundcriterion.interfaces import ICompoundCriterionFilter
 from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_config_root
 from collective.iconifiedcategory.utils import get_group
+from DateTime import DateTime
+from datetime import datetime
 from imio.helpers.cache import cleanRamCacheFor
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
+from imio.history.utils import getLastWFAction
 from plone import api
-from plone.app.textfield.value import RichTextValue
 from plone.app.querystring import queryparser
+from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 from plone.memoize.instance import Memojito
-
 from Products.CMFCore.permissions import DeleteObjects
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
-
-from Products.PloneMeeting.config import ADVICE_GIVEN_HISTORIZED_COMMENT
-from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
-from Products.PloneMeeting.config import RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX
-from Products.PloneMeeting.indexes import indexAdvisers
-from Products.PloneMeeting.indexes import reviewProcessInfo
-from Products.PloneMeeting.utils import get_annexes
-from Products.PloneMeeting.utils import getLastEvent
-from Products.PloneMeeting.utils import main_item_data
-
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
@@ -65,6 +48,19 @@ from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from Products.PloneMeeting.config import ADVICE_GIVEN_HISTORIZED_COMMENT
+from Products.PloneMeeting.config import HISTORY_COMMENT_NOT_VIEWABLE
+from Products.PloneMeeting.config import RESTRICTEDPOWEROBSERVERS_GROUP_SUFFIX
+from Products.PloneMeeting.indexes import indexAdvisers
+from Products.PloneMeeting.indexes import reviewProcessInfo
+from Products.PloneMeeting.utils import get_annexes
+from Products.PloneMeeting.utils import main_item_data
+from zope.component import getAdapter
+from zope.component import getMultiAdapter
+from zope.event import notify
+from zope.i18n import translate
+from zope.lifecycleevent import ObjectModifiedEvent
+
 
 COUNCIL_LABEL = '<p>Label for Council.</p>'
 
@@ -943,7 +939,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         dupLinkedItemURL = duplicatedLocally.onDuplicateAndKeepLink().replace('http://nohost', '')
         dupLinkedItem = self.portal.restrictedTraverse(dupLinkedItemURL)
         self.assertEquals(dupLinkedItem.getRawManuallyLinkedItems(), [duplicatedLocally.UID()])
-        self.assertTrue(getLastEvent(dupLinkedItem, 'Duplicate and keep link'))
+        self.assertTrue(getLastWFAction(dupLinkedItem, 'Duplicate and keep link'))
         self.assertEquals(dupLinkedItem.getOtherMeetingConfigsClonableTo(),
                           (cfg2Id,))
         meeting4 = self.create('Meeting', date='2014/03/03 09:00:00')

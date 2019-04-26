@@ -1,1 +1,0 @@
-Check 'docs/README.txt'

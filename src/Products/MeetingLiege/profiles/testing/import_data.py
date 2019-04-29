@@ -49,6 +49,8 @@ collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
 
                                                              {'meeting_transition': 'backToCreated',
                                                               'item_transition': 'backToPresented'},)
+collegeMeeting.itemAdviceStates = ('proposed_to_director')
+collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
 
 # Conseil communal
 councilMeeting = deepcopy(pm_import_data.meetingPga)
@@ -85,6 +87,9 @@ councilMeeting.onTransitionFieldTransforms = (
     {'transition': 'present',
      'field_name': 'MeetingItem.decisionEnd',
      'tal_expression': 'python: here.adapted().adaptCouncilItemDecisionEnd()'},)
+councilMeeting.itemAdviceStates = ()
+councilMeeting.itemAdviceEditStates = ()
+councilMeeting.itemAdviceViewStates = ()
 councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'label': 'Addendum',
                                                   'used_in_inserting_method': ''}, ]
@@ -108,7 +113,7 @@ bourgmestreMeeting.certifiedSignatures = [
      }]
 bourgmestreMeeting.categories = collegeMeeting.categories
 bourgmestreMeeting.shortName = 'Bourgmestre'
-bourgmestreMeeting.annexTypes = collegeMeeting.annexeTypes
+bourgmestreMeeting.annexTypes = collegeMeeting.annexTypes
 bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
     'configgroup_budgetimpacteditors',
     'reader_advices',
@@ -147,7 +152,6 @@ bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
 bourgmestreMeeting.transitionsToConfirm = []
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )
-bourgmestreMeeting.itemAdviceStates = ('proposed_to_director_waiting_advices', )
 bourgmestreMeeting.recordItemHistoryStates = []
 bourgmestreMeeting.maxShownMeetings = 5
 bourgmestreMeeting.maxDaysDecisions = 60

@@ -23,15 +23,19 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
-from Products.PloneMeeting.tests.testMeetingGroup import testMeetingGroup as pmtmg
+from Products.PloneMeeting.tests.testContacts import testContacts as pmtc
 
 
-class testMeetingGroup(MeetingLiegeTestCase, pmtmg):
-    '''Tests the testMeetingGroup class methods.'''
+class testContacts(pmtc, MeetingLiegeTestCase):
+    '''Tests the contacts related methods.'''
+
+    def setUp(self):
+        ''' '''
+        super(testContacts, self).setUp()
 
 
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testMeetingGroup, prefix='test_pm_'))
+    suite.addTest(makeSuite(testContacts, prefix='test_pm_'))
     return suite

@@ -11,6 +11,8 @@
 
 
 from collective.contact.plonegroup.utils import get_own_organization
+from collective.contact.plonegroup.utils import select_org_for_function
+from collective.contact.plonegroup.utils import select_organization
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
 from plone import api

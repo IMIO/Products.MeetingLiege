@@ -24,7 +24,6 @@ class GroupsOfMatterVocabulary(object):
         categories = cfg.getCategories(onlySelectable=False)
         res = []
         existingGroupsIdsInVocab = []
-        import ipdb; ipdb.set_trace()
         if not cfg.getUseGroupsAsCategories():
             for category in categories:
                 groupsOfMatter = category.getGroupsOfMatter()

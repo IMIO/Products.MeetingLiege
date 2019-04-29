@@ -51,6 +51,7 @@ collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transitio
                                                               'item_transition': 'backToPresented'},)
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
+collegeMeeting.itemCopyGroupsStates = ['validated']
 
 # Conseil communal
 councilMeeting = deepcopy(pm_import_data.meetingPga)
@@ -93,6 +94,8 @@ councilMeeting.itemAdviceViewStates = ()
 councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'label': 'Addendum',
                                                   'used_in_inserting_method': ''}, ]
+councilMeeting.itemCopyGroupsStates = ['validated']
+
 # Bourgmestre
 bourgmestreMeeting = MeetingConfigDescriptor(
     'meeting-config-bourgmestre', 'Bourgmestre', 'Bourgmestre')
@@ -159,7 +162,6 @@ bourgmestreMeeting.usedItemAttributes = [
     'budgetInfos',
     'observations',
     'privacy',
-    'itemAssembly',
     'motivation',
     'itemIsSigned']
 bourgmestreMeeting.insertingMethodsOnAddItem = (
@@ -178,6 +180,7 @@ bourgmestreMeeting.itemPowerObserversStates = (
 bourgmestreMeeting.itemRestrictedPowerObserversStates = (
     'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
 bourgmestreMeeting.useCopies = True
+bourgmestreMeeting.itemCopyGroupsStates = ['validated']
 bourgmestreMeeting.useVotes = False
 bourgmestreMeeting.recurringItems = []
 bourgmestreMeeting.itemTemplates = []

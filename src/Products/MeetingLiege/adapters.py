@@ -2082,12 +2082,12 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # check if aksed advices are giveable in state 'proposed_to_internal_reviewer_waiting_advices'
         cfg = self.tool.getMeetingConfig(self.context)
         hasAdvicesToGive = False
-        for adviceId, adviceInfo in self.context.adviceIndex.items():
+        for org_uid, adviceInfo in self.context.adviceIndex.items():
             # only consider advices to give
             if adviceInfo['type'] not in (NOT_GIVEN_ADVICE_VALUE, 'asked_again', ):
                 continue
-            mGroup = getattr(self.tool, adviceId)
-            adviceStates = mGroup.getItemAdviceStates(cfg)
+            org = get_organization(org_uid)
+            adviceStates = org.get_item_advice_states(cfg)
             if destination_state in adviceStates:
                 hasAdvicesToGive = True
                 break

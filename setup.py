@@ -23,12 +23,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require=dict(
-        test=['unittest2',
-              'zope.testing',
-              'plone.testing',
-              'plone.app.testing',
-              'Products.CMFPlacefulWorkflow',
-              'zope.testing'],
+        test=['Products.PloneMeeting[test]'],
         templates=['Genshi']),
     install_requires=[
         'setuptools',

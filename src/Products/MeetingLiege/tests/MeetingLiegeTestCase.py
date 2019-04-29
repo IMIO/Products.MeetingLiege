@@ -20,15 +20,16 @@
 # 02110-1301, USA.
 #
 
-from Products.PloneTestCase.setup import _createHomeFolder
-from Products.PloneMeeting.MeetingConfig import MeetingConfig
-from Products.PloneMeeting.model import adaptations
-from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
+from plone.app.testing.bbb import _createMemberarea
 from Products.MeetingLiege.adapters import customWfAdaptations
 from Products.MeetingLiege.adapters import RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
 from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.MeetingLiege.testing import ML_TESTING_PROFILE_FUNCTIONAL
 from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
+from Products.PloneMeeting.MeetingConfig import MeetingConfig
+from Products.PloneMeeting.model import adaptations
+from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
+
 
 # monkey patch the MeetingConfig.wfAdaptations again because it is done in
 # adapters.py but overrided by Products.MeetingCommunes here in the tests...
@@ -65,7 +66,7 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
                        'generalManager',
                        'bourgmestreManager',
                        'bourgmestreReviewer'):
-            _createHomeFolder(self.portal, userId)
+            _createMemberarea(self.portal, userId)
         cfg = self.meetingConfig
         cfg.setUsedAdviceTypes(cfg.getUsedAdviceTypes() + ('asked_again', ))
         cfg.setItemAdviceStates(('proposed_to_director_waiting_advices', ))

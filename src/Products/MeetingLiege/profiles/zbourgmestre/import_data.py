@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from DateTime import DateTime
-from Products.PloneMeeting.profiles import AnnexTypeDescriptor
-from Products.PloneMeeting.profiles import GroupDescriptor
-from Products.PloneMeeting.profiles import ItemAnnexTypeDescriptor
-from Products.PloneMeeting.profiles import MeetingConfigDescriptor
-from Products.PloneMeeting.profiles import PloneMeetingConfiguration
-from Products.PloneMeeting.profiles import UserDescriptor
 from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
 from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
+from Products.PloneMeeting.profiles import AnnexTypeDescriptor
+from Products.PloneMeeting.profiles import ItemAnnexTypeDescriptor
+from Products.PloneMeeting.profiles import MeetingConfigDescriptor
+from Products.PloneMeeting.profiles import OrgDescriptor
+from Products.PloneMeeting.profiles import PloneMeetingConfiguration
+from Products.PloneMeeting.profiles import UserDescriptor
+
 
 today = DateTime().strftime('%Y/%m/%d')
 
@@ -36,12 +37,12 @@ bourgmestreManager = UserDescriptor(
 bourgmestreReviewer = UserDescriptor(
     'bourgmestreReviewer', [], email="bourgmestre_reviewer@plonemeeting.org",
     fullname='M. Bourgmestre Reviewer')
-general_manager_group = GroupDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
+general_manager_group = OrgDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
 general_manager_group.reviewers.append(generalManager)
-bourgmestre_group = GroupDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
+bourgmestre_group = OrgDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
 bourgmestre_group.creators.append(bourgmestreManager)
 bourgmestre_group.reviewers.append(bourgmestreReviewer)
-groups = [general_manager_group, bourgmestre_group]
+orgs = [general_manager_group, bourgmestre_group]
 
 # Meeting configurations -------------------------------------------------------
 # Bourgmestre
@@ -142,6 +143,6 @@ bourgmestreMeeting.itemTemplates = []
 
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(bourgmestreMeeting, ),
-                                 groups=groups)
+                                 orgs=orgs)
 data.enableUserPreferences = False
 # ------------------------------------------------------------------------------

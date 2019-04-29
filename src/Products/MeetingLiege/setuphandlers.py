@@ -10,13 +10,18 @@
 #
 
 
-import logging
-import os
-from Products.CMFCore.utils import getToolByName
+from collective.contact.plonegroup.utils import get_own_organization
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
+from plone import api
+from Products.CMFCore.utils import getToolByName
 from Products.MeetingLiege.config import PROJECTNAME
 from Products.PloneMeeting.exportimport.content import ToolInitializer
+from Products.PloneMeeting.utils import org_id_to_uid
+
+import logging
+import os
+
 
 __author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
@@ -275,7 +280,7 @@ def _configureCollegeCustomAdvisers(site):
         college.setCustomAdvisers((
             {'delay_label': 'Incidence financi\xc3\xa8re',
              'for_item_created_until': '',
-             'group': 'df-comptabilita-c-et-audit-financier',
+             'org': org_id_to_uid('df-comptabilita-c-et-audit-financier'),
              'available_on': '',
              'delay': '10',
              'gives_auto_advice_on_help_message': '',
@@ -287,7 +292,7 @@ def _configureCollegeCustomAdvisers(site):
              'row_id': '2014-06-05.5584062584'},
             {'delay_label': 'Incidence financi\xc3\xa8re (urgence)',
              'for_item_created_until': '',
-             'group': 'df-comptabilita-c-et-audit-financier',
+             'org': org_id_to_uid('df-comptabilita-c-et-audit-financier'),
              'available_on': '',
              'delay': '5',
              'gives_auto_advice_on_help_message': '',
@@ -298,7 +303,7 @@ def _configureCollegeCustomAdvisers(site):
              'row_id': '2014-06-05.5584062390'},
             {'delay_label': 'Incidence financi\xc3\xa8re (prolongation)',
              'for_item_created_until': '',
-             'group': 'df-comptabilita-c-et-audit-financier',
+             'org': org_id_to_uid('df-comptabilita-c-et-audit-financier'),
              'available_on': '',
              'delay': '20',
              'gives_auto_advice_on_help_message': '',
@@ -309,7 +314,7 @@ def _configureCollegeCustomAdvisers(site):
              'row_id': '2014-06-05.5584074805'},
             {'delay_label': 'Incidence financi\xc3\xa8re',
              'for_item_created_until': '',
-             'group': 'df-contrale',
+             'org': org_id_to_uid('df-contrale'),
              'available_on': '',
              'delay': '10',
              'gives_auto_advice_on_help_message': '',
@@ -320,7 +325,7 @@ def _configureCollegeCustomAdvisers(site):
              'row_id': '2014-06-05.5584079907'},
             {'delay_label': 'Incidence financi\xc3\xa8re (urgence)',
              'for_item_created_until': '',
-             'group': 'df-contrale',
+             'org': org_id_to_uid('df-contrale'),
              'available_on': '',
              'delay': '5',
              'gives_auto_advice_on_help_message': '',
@@ -331,7 +336,7 @@ def _configureCollegeCustomAdvisers(site):
              'row_id': '2014-06-05.5584070070'},
             {'delay_label': 'Incidence financi\xc3\xa8re (prolongation)',
              'for_item_created_until': '',
-             'group': 'df-contrale',
+             'org': org_id_to_uid('df-contrale'),
              'available_on': '',
              'delay': '20',
              'gives_auto_advice_on_help_message': '',
@@ -347,39 +352,33 @@ def _createFinanceGroups(site):
        Create the finance groups.
     """
     financeGroupsData = ({'id': 'df-contrale',
-                          'title': 'DF - Contrôle',
-                          'acronym': 'DF', },
+                          'title': u'DF - Contrôle',
+                          'acronym': u'DF', },
                          {'id': 'df-comptabilita-c-et-audit-financier',
-                          'title': 'DF - Comptabilité et Audit financier',
-                          'acronym': 'DF', },
+                          'title': u'DF - Comptabilité et Audit financier',
+                          'acronym': u'DF', },
                          )
 
-    tool = getToolByName(site, 'portal_plonemeeting')
+    own_org = get_own_organization()
     for financeGroup in financeGroupsData:
-        if not hasattr(tool, financeGroup['id']):
-            newGroupId = tool.invokeFactory(
-                'MeetingGroup',
-                id=financeGroup['id'],
-                title=financeGroup['title'],
-                acronym=financeGroup['acronym'],
-                itemAdviceStates=('meeting-config-college__state__proposed_to_finance',
-                                  'meeting-config-college__state__presented',
-                                  'meeting-config-college__state__validated'),
-                itemAdviceEditStates=('meeting-config-college__state__proposed_to_finance',
-                                      'meeting-config-college__state__presented',
-                                      'meeting-config-college__state__validated'),
-                itemAdviceViewStates=('meeting-config-college__state__accepted',
-                                      'meeting-config-college__state__accepted_but_modified',
-                                      'meeting-config-college__state__pre_accepted',
-                                      'meeting-config-college__state__delayed',
-                                      'meeting-config-college__state__itemfrozen',
-                                      'meeting-config-college__state__proposed_to_finance',
-                                      'meeting-config-college__state__presented',
-                                      'meeting-config-college__state__refused',
-                                      'meeting-config-college__state__removed',
-                                      'meeting-config-college__state__validated'))
-            newGroup = getattr(tool, newGroupId)
-            newGroup.processForm(values={'dummy': None})
+        if not hasattr(own_org, financeGroup['id']):
+            new_org = api.content.create(container=own_org, type='organization')
+            new_org.item_advice_states = ('meeting-config-college__state__proposed_to_finance',
+                                          'meeting-config-college__state__presented',
+                                          'meeting-config-college__state__validated')
+            new_org.item_advice_edit_states = ('meeting-config-college__state__proposed_to_finance',
+                                               'meeting-config-college__state__presented',
+                                               'meeting-config-college__state__validated'),
+            new_org.item_advice_view_states = ('meeting-config-college__state__accepted',
+                                               'meeting-config-college__state__accepted_but_modified',
+                                               'meeting-config-college__state__pre_accepted',
+                                               'meeting-config-college__state__delayed',
+                                               'meeting-config-college__state__itemfrozen',
+                                               'meeting-config-college__state__proposed_to_finance',
+                                               'meeting-config-college__state__presented',
+                                               'meeting-config-college__state__refused',
+                                               'meeting-config-college__state__removed',
+                                               'meeting-config-college__state__validated')
 
 
 def reorderCss(context):

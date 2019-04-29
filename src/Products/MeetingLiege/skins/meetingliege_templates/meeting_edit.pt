@@ -20,7 +20,7 @@
 
       <script language="javascript">
       // some checkbowes may not be checked toghether
-      var only_one_selected = ['attendee', 'excused', 'absent', 'lateAttendee'];
+      var only_one_selected = ['attendee', 'excused', 'absent'];
       function showOrHideReplField(userId, hide_select, enable_user) {
         // Shows of hides "replacement" field for p_userId, depending on p_show.
         var repl = document.getElementById('muser_'+userId+'_replacement');
@@ -154,17 +154,13 @@
         <metal:field use-macro="python:here.widget('assembly', mode='edit')"/>
         <metal:field use-macro="python:here.widget('assemblyExcused', mode='edit')"/>
         <metal:field use-macro="python:here.widget('assemblyAbsents', mode='edit')"/>
-        <metal:field use-macro="python:here.widget('assemblyGuests', mode='edit')"/>
-        <metal:field use-macro="python:here.widget('assemblyProxies', mode='edit')"/>
-        <metal:field use-macro="python:here.widget('assemblyStaves', mode='edit')"/>
-        
-        <tal:comment replace="nothing">User table: attendees, lateAttendees, absents, signatories, replacements</tal:comment>
-        <tal:users condition="python: 'attendees' in usedAttrs">
+
+        <tal:comment replace="nothing">User table: attendees, absents, signatories, replacements</tal:comment>
+        <tal:users condition="context/showAttendeesFields">
 
         <table id="meeting_users" name="meeting_users" class="listing" i18n:domain="PloneMeeting"
                tal:define="allUsers python: context.getAllUsedHeldPositions(include_new=True);
-                           attendees python: context.getAttendees() or context.getDefaultAttendees();
-                           lateAttendees context/getLateAttendees;
+                           attendees python: context.getAttendees() or (not context.getAllUsedHeldPositions(include_new=False) and context.getDefaultAttendees()) or [];
                            excused context/getExcused;
                            absents context/getAbsents;
                            signers python: context.getSignatories() or context.getDefaultSignatories();
@@ -175,8 +171,6 @@
               <th class="nosort"></th>
               <th class="nosort"></th>
               <th class="nosort" i18n:translate="is_attendee"></th>
-              <th class="nosort" tal:condition="python: 'lateAttendees' in usedAttrs"
-                  i18n:translate="is_late_attendee"></th>
               <th class="nosort" tal:condition="python: 'excused' in usedAttrs"
                   i18n:translate="is_excused"></th>
               <th class="nosort" tal:condition="python: 'absents' in usedAttrs"
@@ -200,15 +194,6 @@
                                              value cbid;
                                              checked python: test(errors, cbid in request.get('meeting_attendees', []), muid in attendees);
                                              onClick python: 'onClickBox(this, \'attendee\', \'%s\')' % muid"/>
-                    </td>
-                    <td align="center" tal:condition="python: 'lateAttendees' in usedAttrs">
-                      <input type="checkbox" class="noborder"
-                             tal:define="cbid python: 'muser_%s_lateAttendee' % muid;"
-                             tal:attributes="id cbid;
-                                             name string:meeting_attendees:list;
-                                             value cbid;
-                                             checked python: test(errors, cbid in request.get('meeting_attendees', []), muid in lateAttendees);
-                                             onClick python: 'onClickBox(this, \'lateAttendee\', \'%s\')' % muid"/>
                     </td>
                     <td align="center" tal:condition="python: 'excused' in usedAttrs">
                       <input type="checkbox" class="noborder"
@@ -296,6 +281,10 @@
         </script>
         </tal:users>
 
+        <metal:field use-macro="python:here.widget('assemblyGuests', mode='edit')"/>
+        <metal:field use-macro="python:here.widget('assemblyProxies', mode='edit')"/>
+        <metal:field use-macro="python:here.widget('assemblyStaves', mode='edit')"/>
+
         <metal:field use-macro="python:here.widget('signatures', mode='edit')"/>
 
         <metal:field use-macro="python:here.widget('adoptsNextCouncilAgenda', mode='edit')"/>
@@ -312,36 +301,28 @@
             </tr>
           </table>
         </fieldset>
-        <tal:field define="fieldName python: 'inAndOutMoves'"
-                   condition="python: context.showMeetingManagerReservedField('inAndOutMoves')">
+        <tal:field define="fieldName python: 'inAndOutMoves'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'notes'"
-                   condition="python: context.showMeetingManagerReservedField('notes')">
+        <tal:field define="fieldName python: 'notes'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'authorityNotice'"
-                   condition="python: context.showMeetingManagerReservedField('authorityNotice')">
+        <tal:field define="fieldName python: 'authorityNotice'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'observations'"
-                   condition="python: context.showMeetingManagerReservedField('observations')">
+        <tal:field define="fieldName python: 'observations'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'preObservations'"
-                   condition="python: context.showMeetingManagerReservedField('preObservations')">
+        <tal:field define="fieldName python: 'preObservations'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'committeeObservations'"
-                   condition="python: context.showMeetingManagerReservedField('committeeObservations')">
+        <tal:field define="fieldName python: 'committeeObservations'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'publicMeetingObservations'"
-                   condition="python: context.showMeetingManagerReservedField('publicMeetingObservations')">
+        <tal:field define="fieldName python: 'publicMeetingObservations'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
-        <tal:field define="fieldName python: 'secretMeetingObservations'"
-                   condition="python: context.showMeetingManagerReservedField('secretMeetingObservations')">
+        <tal:field define="fieldName python: 'secretMeetingObservations'">
           <metal:f use-macro="context/@@pm-macros/editContentField"/>
         </tal:field>
 

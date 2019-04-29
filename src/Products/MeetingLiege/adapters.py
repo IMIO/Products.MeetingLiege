@@ -26,6 +26,9 @@
 from AccessControl import ClassSecurityInfo
 from appy.gen import No
 from collections import OrderedDict
+from collective.contact.plonegroup.utils import get_organization
+from collective.contact.plonegroup.utils import get_organizations
+from collective.contact.plonegroup.utils import get_own_organization
 from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
@@ -245,7 +248,7 @@ class CustomMeeting(Meeting):
             itemList.sort(cmp=_comp)
             items = [i[0] for i in itemList]
         if by_proposing_group:
-            groups = tool.getMeetingGroups()
+            groups = get_organizations()
         else:
             groups = None
         if items:
@@ -590,21 +593,21 @@ class CustomMeetingItem(MeetingItem):
         """Is current user a general manager?"""
         group_id = '{0}_reviewers'.format(GENERAL_MANAGER_GROUP_ID)
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         return group_id in userGroups
 
     def is_cabinet_manager(self):
         """Is current user a cabinet manager?"""
         group_id = '{0}_creators'.format(BOURGMESTRE_GROUP_ID)
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         return group_id in userGroups
 
     def is_cabinet_reviewer(self):
         """Is current user a cabinet reviewer?"""
         group_id = '{0}_reviewers'.format(BOURGMESTRE_GROUP_ID)
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         return group_id in userGroups
 
     security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
@@ -673,7 +676,7 @@ class CustomMeetingItem(MeetingItem):
 
     security.declarePublic('getExtraFieldsToCopyWhenCloning')
 
-    def getExtraFieldsToCopyWhenCloning(self, cloned_to_same_mc):
+    def getExtraFieldsToCopyWhenCloning(self, cloned_to_same_mc, cloned_from_item_template):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
@@ -788,7 +791,7 @@ class CustomMeetingItem(MeetingItem):
         # a finance controller may evaluate if advice is actually asked
         # and may not change completeness if advice is currently given or has been given
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         if not financeGroupId or \
            not '%s_financialcontrollers' % financeGroupId in userGroups:
             return False
@@ -842,7 +845,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         tool = api.portal.get_tool('portal_plonemeeting')
         if tool.isManager(item, realManagers=True) or \
-           '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in tool.getPloneGroupsForUser():
+           '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in tool.get_plone_groups_for_user():
             return True
         return False
 
@@ -890,13 +893,13 @@ class CustomMeetingItem(MeetingItem):
 
     def listFinanceAdvices(self):
         '''Vocabulary for the 'financeAdvice' field.'''
-        tool = api.portal.get_tool('portal_plonemeeting')
         res = []
         res.append(('_none_', translate('no_financial_impact',
                                         domain='PloneMeeting',
                                         context=self.REQUEST)))
+        own_org = get_own_organization()
         for finance_group_id in FINANCE_GROUP_IDS:
-            res.append((finance_group_id, getattr(tool, finance_group_id).getName()))
+            res.append((finance_group_id, own_org.get(finance_group_id).Title()))
         return DisplayList(tuple(res))
     MeetingItem.listFinanceAdvices = listFinanceAdvices
 
@@ -907,7 +910,7 @@ class CustomMeetingItem(MeetingItem):
         res = []
         tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(self)
-        userGroups = set([group.getId() for group in tool.getGroupsForUser()])
+        userGroups = set([group.getId() for group in tool.get_orgs_for_user()])
         isManager = tool.isManager(self)
         storedArchivingRef = self.getArchivingRef()
         for ref in cfg.getArchivingRefs():
@@ -1006,7 +1009,7 @@ class CustomMeetingItem(MeetingItem):
           Returns True if the current user is in the given p_finance_group_id.
         '''
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         suffixedGroups = []
         for suffix in FINANCE_GROUP_SUFFIXES:
             suffixedGroups.append("{0}_{1}".format(finance_group_id, suffix))
@@ -1498,30 +1501,28 @@ class CustomMeetingConfig(MeetingConfig):
         return DisplayList(res)
     MeetingConfig.listArchivingReferenceFinanceAdvices = listArchivingReferenceFinanceAdvices
 
-    security.declarePrivate('listActiveMeetingGroupsForArchivingRefs')
+    security.declarePrivate('listActiveOrgsForArchivingRefs')
 
-    def listActiveMeetingGroupsForArchivingRefs(self):
+    def listActiveOrgsForArchivingRefs(self):
         """
-          Vocabulary for the archivingRefs.restrict_to_groups DatagridField attribute.
-          It returns every active MeetingGroups.
+          Vocabulary for the archivingRefs.restrict_to_orgs DatagridField attribute.
+          It returns every active organizations.
         """
         res = []
-        tool = api.portal.get_tool('portal_plonemeeting')
-        for mGroup in tool.getMeetingGroups():
-            res.append((mGroup.getId(), mGroup.getName()))
+        for org in get_organizations():
+            res.append((org.UID(), org.Title()))
         # make sure that if a configuration was defined for a group
         # that is now inactive, it is still displayed
-        storedArchivingRefsGroups = [archivingRef['restrict_to_groups'] for archivingRef in self.getArchivingRefs()]
-        if storedArchivingRefsGroups:
-            groupsInVocab = [group[0] for group in res]
-            for storedArchivingRefsGroup in storedArchivingRefsGroups:
-                for group in storedArchivingRefsGroup:
-                    if group not in groupsInVocab:
-                        mGroup = getattr(tool, group, None)
-                        groupName = mGroup and mGroup.getName() or group
-                        res.append((group, groupName))
+        storedArchivingRefsOrgs = [archivingRef['restrict_to_groups'] for archivingRef in self.getArchivingRefs()]
+        if storedArchivingRefsOrgs:
+            orgsInVocab = [org[0] for org in res]
+            for storedArchivingRefsOrg in storedArchivingRefsOrgs:
+                for org_uid in storedArchivingRefsOrg:
+                    if org_uid not in orgsInVocab:
+                        org = get_organization(org_uid)
+                        res.append((org_uid, org.Title()))
         return DisplayList(res).sortedByValue()
-    MeetingConfig.listActiveMeetingGroupsForArchivingRefs = listActiveMeetingGroupsForArchivingRefs
+    MeetingConfig.listActiveOrgsForArchivingRefs = listActiveOrgsForArchivingRefs
 
     security.declareProtected('Modify portal content', 'setArchivingRefs')
 
@@ -1699,24 +1700,23 @@ class CustomMeetingCategory(MeetingCategory):
     def listGroupsOfMatter(self):
         """
           Vocabulary for the MeetingCategory.groupsOfMatter field.
-          It returns every active MeetingGroups.
+          It returns every active organizations.
         """
         res = []
-        tool = api.portal.get_tool('portal_plonemeeting')
-        for mGroup in tool.getMeetingGroups():
-            res.append((mGroup.getId(), mGroup.getName()))
-        # make sure that if a configuration was defined for a group
+        for org in get_organizations():
+            res.append((org.UID(), org.Title()))
+        # make sure that if a configuration was defined for an organization
         # that is now inactive, it is still displayed
         storedGroupsOfMatter = self.getGroupsOfMatter()
         if storedGroupsOfMatter:
-            groupsInVocab = [group[0] for group in res]
-            for storedGroupOfMatter in storedGroupsOfMatter:
-                if storedGroupOfMatter not in groupsInVocab:
-                    mGroup = getattr(tool, storedGroupOfMatter, None)
-                    if mGroup:
-                        res.append((mGroup.getId(), mGroup.getName()))
+            orgsInVocab = [org[0] for org in res]
+            for org_uid in storedGroupsOfMatter:
+                if org_uid not in orgsInVocab:
+                    org = get_organization(org_uid)
+                    if org:
+                        res.append((org_uid, org.Title()))
                     else:
-                        res.append((storedGroupOfMatter, storedGroupOfMatter))
+                        res.append((org_uid, org_uid))
         return DisplayList(res).sortedByValue()
     MeetingCategory.listGroupsOfMatter = listGroupsOfMatter
 
@@ -1743,7 +1743,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         '''Is current user a financial user, so in groups 'financialcontrollers',
            'financialreviewers' or 'financialmanagers'.'''
         tool = api.portal.get_tool('portal_plonemeeting')
-        for groupId in tool.getPloneGroupsForUser():
+        for groupId in tool.get_plone_groups_for_user():
             for suffix in FINANCE_GROUP_SUFFIXES:
                 if groupId.endswith('_%s' % suffix):
                     return True
@@ -1759,7 +1759,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         'urbanisme-et-ama-c-nagement-du-territoire',
         'echevinat-de-la-culture-et-de-lurbanisme' or 'urba'
         '''
-        userGroups = set([gr.getId() for gr in self.context.getGroupsForUser()])
+        userGroups = set([gr.getId() for gr in self.context.get_orgs_for_user()])
         allowedGroups = set(['urba-gestion-administrative',
                              'urba-affaires-ga-c-na-c-rales',
                              'urba-service-de-lurbanisme',
@@ -2302,7 +2302,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
             tool = api.portal.get_tool('portal_plonemeeting')
-            memberGroups = tool.getPloneGroupsForUser()
+            memberGroups = tool.get_plone_groups_for_user()
             for suffix in FINANCE_GROUP_SUFFIXES:
                 financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
                 if financeSubGroupId in memberGroups:
@@ -2605,7 +2605,7 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
            is not 'completeness_complete'.'''
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2629,7 +2629,7 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
            We only return items for which completeness has been evaluated to 'complete'.'''
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2647,7 +2647,7 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is reviewer for
             if '%s_financialreviewers' % financeGroup in userGroups:
@@ -2663,7 +2663,7 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.getPloneGroupsForUser()
+        userGroups = tool.get_plone_groups_for_user()
         for financeGroup in FINANCE_GROUP_IDS:
             # only keep finance groupIds the current user is manager for
             if '%s_financialmanagers' % financeGroup in userGroups:

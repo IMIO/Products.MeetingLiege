@@ -1316,7 +1316,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
     def test_ItemTakenOverByFinancesAdviser(self):
         """When item is proposed_to_finance, item is taken over by finances adviser.
-           There was a bug with ToolPloneMeeting.getPloneGroupsForUser cachekey
+           There was a bug with ToolPloneMeeting.get_plone_groups_for_user cachekey
            that is why we call it in this test."""
         self.changeUser('admin')
         cfg = self.meetingConfig
@@ -1330,17 +1330,17 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # create item with asked finances advice
         self.changeUser('pmCreator1')
-        self.tool.getPloneGroupsForUser()
+        self.tool.get_plone_groups_for_user()
         item = self.create('MeetingItem')
         item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
         # send item to finances
         self.proposeItem(item)
         self.changeUser('pmReviewer1')
-        self.tool.getPloneGroupsForUser()
+        self.tool.get_plone_groups_for_user()
         self.do(item, 'proposeToFinance')
         # finances take item over and send item back to director
         self.changeUser('pmFinController')
-        self.tool.getPloneGroupsForUser()
+        self.tool.get_plone_groups_for_user()
         view = item.restrictedTraverse('@@toggle_item_taken_over_by')
         view.toggle(takenOverByFrom=item.getTakenOverBy())
         self.assertTrue(item.getTakenOverBy() == 'pmFinController')

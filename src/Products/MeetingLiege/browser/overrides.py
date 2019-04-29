@@ -65,7 +65,7 @@ class MLAdviceDelaysView(AdviceDelaysView):
 
             # current advice is still addable/editable, a finance manager may change delay for it
             financialManagerGroupId = '%s_financialmanagers' % financeGroupId
-            if financialManagerGroupId not in self.tool.getPloneGroupsForUser():
+            if financialManagerGroupId not in self.tool.get_plone_groups_for_user():
                 return False
 
         return True

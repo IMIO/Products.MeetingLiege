@@ -249,6 +249,7 @@ collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'suffix_proposing_group_administrativereviewers')
 collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
+                                     'description',
                                      'detailedDescription',
                                      'toDiscuss',
                                      'financeAdvice',
@@ -346,21 +347,21 @@ collegeMeeting.recurringItems = [
     RecurringItemDescriptor(
         id='recurringagenda1',
         title='Approuve le procès-verbal de la séance antérieure',
-        description='Approuve le procès-verbal de la séance antérieure',
+        description='<p>Approuve le procès-verbal de la séance antérieure</p>',
         category='recurrents',
         proposingGroup='secretariat',
         decision='Procès-verbal approuvé'),
     RecurringItemDescriptor(
         id='recurringofficialreport1',
         title='Autorise et signe les bons de commande de la semaine',
-        description='Autorise et signe les bons de commande de la semaine',
+        description='<p>Autorise et signe les bons de commande de la semaine</p>',
         category='recurrents',
         proposingGroup='secretariat',
         decision='Bons de commande signés'),
     RecurringItemDescriptor(
         id='recurringofficialreport2',
         title='Ordonnance et signe les mandats de paiement de la semaine',
-        description='Ordonnance et signe les mandats de paiement de la semaine',
+        description='<p>Ordonnance et signe les mandats de paiement de la semaine</p>',
         category='recurrents',
         proposingGroup='secretariat',
         decision='Mandats de paiement de la semaine approuvés'), ]
@@ -369,7 +370,7 @@ collegeMeeting.itemTemplates = [
     ItemTemplateDescriptor(
         id='template1',
         title='Tutelle CPAS',
-        description='Tutelle CPAS',
+        description='<p>Tutelle CPAS</p>',
         proposingGroup='',
         templateUsingGroups=[],
         decision="""<p>Vu la loi du 8 juillet 1976 organique des centres publics d'action sociale...;</p>
@@ -387,7 +388,7 @@ collegeMeeting.itemTemplates = [
     ItemTemplateDescriptor(
         id='template2',
         title='Contrôle médical systématique agent contractuel',
-        description='Contrôle médical systématique agent contractuel',
+        description='<p>Contrôle médical systématique agent contractuel</p>',
         proposingGroup='',
         templateUsingGroups=[],
         decision="""
@@ -406,7 +407,7 @@ collegeMeeting.itemTemplates = [
     ItemTemplateDescriptor(
         id='template4',
         title='Prestation réduite',
-        description='Prestation réduite',
+        description='<p>Prestation réduite</p>',
         proposingGroup='',
         templateUsingGroups=[],
         decision="""<p>Vu la loi de redressement du 22 janvier 1985 (article 99 et suivants) et de l’Arrêté...;</p>
@@ -424,7 +425,7 @@ collegeMeeting.itemTemplates = [
     ItemTemplateDescriptor(
         id='template5',
         title='Exemple modèle disponible pour tous',
-        description='Exemple modèle disponible pour tous',
+        description='<p>Exemple modèle disponible pour tous</p>',
         proposingGroup='',
         templateUsingGroups=[],
         decision="""<p>Vu la loi du XXX;</p>
@@ -481,6 +482,7 @@ councilMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'suffix_proposing_group_creators',
                                                   'suffix_proposing_group_administrativereviewers')
 councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'description',
                                      'labelForCouncil',
                                      'observations',
                                      'privacy',
@@ -551,21 +553,21 @@ councilMeeting.recurringItems = [
     RecurringItemDescriptor(
         id='recurringagenda1',
         title='Approuve le procès-verbal de la séance antérieure',
-        description='Approuve le procès-verbal de la séance antérieure',
+        description='<p>Approuve le procès-verbal de la séance antérieure</p>',
         category='recurrents',
         proposingGroup='secretariat',
         decision='Procès-verbal approuvé'),
     RecurringItemDescriptor(
         id='recurringofficialreport1',
         title='Autorise et signe les bons de commande de la semaine',
-        description='Autorise et signe les bons de commande de la semaine',
+        description='<p>Autorise et signe les bons de commande de la semaine</p>',
         category='recurrents',
         proposingGroup='secretariat',
         decision='Bons de commande signés'),
     RecurringItemDescriptor(
         id='recurringofficialreport2',
         title='Ordonnance et signe les mandats de paiement de la semaine',
-        description='Ordonnance et signe les mandats de paiement de la semaine',
+        description='<p>Ordonnance et signe les mandats de paiement de la semaine</p>',
         category='recurrents',
         proposingGroup='secretariat',
         decision='Mandats de paiement de la semaine approuvés'), ]

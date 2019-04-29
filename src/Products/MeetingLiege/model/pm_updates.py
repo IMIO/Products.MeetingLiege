@@ -185,7 +185,7 @@ def update_config_schema(baseSchema):
                          'finance_advice': SelectColumn("Archiving reference finance advice",
                                                         vocabulary="listArchivingReferenceFinanceAdvices"),
                          'restrict_to_groups': MultiSelectColumn("Archiving reference restrict to selected groups",
-                                                                 vocabulary="listActiveMeetingGroupsForArchivingRefs"),
+                                                                 vocabulary="listActiveOrgsForArchivingRefs"),
                          'active': SelectColumn("Archiving reference active?",
                                                 vocabulary="listBooleanVocabulary",
                                                 default='1'),

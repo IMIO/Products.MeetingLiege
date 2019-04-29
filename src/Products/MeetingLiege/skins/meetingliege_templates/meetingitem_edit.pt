@@ -31,8 +31,7 @@
     <tal:field define="fieldName python: 'description'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
-    <tal:field define="fieldName python: 'detailedDescription';"
-               condition="python: 'detailedDescription' in usedAttrs">
+    <tal:field define="fieldName python: 'detailedDescription';"    >
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
     <tal:comment replace="nothing">Proposing group, category, classifier, toDiscuss</tal:comment>
@@ -65,6 +64,9 @@
         <td tal:condition="context/isCopiesEnabled"><metal:field use-macro="python:here.widget('copyGroups', mode='edit')"/></td>
       </tr>
     </table>
+
+    <metal:field use-macro="python:here.widget('oralQuestion', mode='edit')"/>
+    <metal:field use-macro="python:here.widget('itemInitiator', mode='edit')"/>
 
     <metal:field use-macro="python:here.widget('preferredMeeting', mode='edit')"/>
     <metal:field use-macro="python:here.widget('sendToAuthority', mode='edit')"/>
@@ -116,7 +118,6 @@
         </tal:scriptForOtherMeetingConfigsClonableToSpecificFields>
     </div>
     <div style='clear: both'></div>
-    <br />
 
     <tal:comment replace="nothing">XXX begin change by MeetingLiege, management of title/privacy fields for council.</tal:comment>
     <script type="text/javascript">
@@ -150,9 +151,6 @@
         </div>
     </fieldset>
 
-    <metal:field use-macro="python:here.widget('oralQuestion', mode='edit')"/>
-    <metal:field use-macro="python:here.widget('itemInitiator', mode='edit')"/>
-
     <tal:field define="fieldName python: 'motivation'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
@@ -160,6 +158,7 @@
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
 
+    <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
     <tal:field define="fieldName python: 'decisionSuite'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
@@ -176,12 +175,10 @@
     <tal:field define="fieldName python: 'marginalNotes'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
-    <tal:field define="fieldName python: 'internalNotes'"
-               condition="python: 'internalNotes' in usedAttrs" >
+    <tal:field define="fieldName python: 'internalNotes'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
-    <tal:field define="fieldName python: 'observations'"
-               condition="python: 'observations' in usedAttrs" >
+    <tal:field define="fieldName python: 'observations'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
 
@@ -194,14 +191,12 @@
         <td><metal:field use-macro="python:here.widget('meetingTransitionInsertingMe', mode='edit')"/></td>
       </tr>
     </table>
-    <metal:field use-macro="python:here.widget('textCheckList', mode='edit')"/>
-
     <metal:field use-macro="python:here.widget('itemAssembly', mode='edit')"/>
     <metal:field use-macro="python:here.widget('itemAssemblyExcused', mode='edit')"/>
     <metal:field use-macro="python:here.widget('itemAssemblyAbsents', mode='edit')"/>
+    <metal:field use-macro="python:here.widget('itemAssemblyGuests', mode='edit')"/>
     <metal:field use-macro="python:here.widget('itemSignatures', mode='edit')"/>
-
-    <metal:field use-macro="python:here.widget('itemSignatories', mode='edit')"/>
+    <metal:field use-macro="python:here.widget('textCheckList', mode='edit')"/>
 
 </metal:widgets>
 </metal:base_body>

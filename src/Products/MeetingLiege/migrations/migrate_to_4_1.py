@@ -1,13 +1,37 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
-import logging
+from copy import deepcopy
 from Products.PloneMeeting.migrations.migrate_to_4_1 import Migrate_To_4_1 as PMMigrate_To_4_1
+from Products.PloneMeeting.utils import org_id_to_uid
+import logging
+
 
 logger = logging.getLogger('MeetingLiege')
 
 
 # The migration class ----------------------------------------------------------
 class Migrate_To_4_1(PMMigrate_To_4_1):
+
+    def _hook_after_mgroups_to_orgs(self):
+        """Migrate attributes that were using MeetingGroups :
+           - MeetingConfig.archivingRefs.restrict_to_groups;
+           - MeetingCategory.groupsOfMatter."""
+        for cfg in self.tool.objectValues('MeetingConfig'):
+            # MeetingConfig.archivingRefs
+            archivingRefs = deepcopy(cfg.getArchivingRefs())
+            migratedArchivingRefs = []
+            for archivingRef in archivingRefs:
+                migratedArchivingRef = archivingRef.copy()
+                migratedArchivingRef['restrict_to_groups'] = [
+                    org_id_to_uid(mGroupId)
+                    for mGroupId in migratedArchivingRef['restrict_to_groups']]
+                migratedArchivingRefs.append(migratedArchivingRef)
+            cfg.setArchivingRefs(migratedArchivingRefs)
+            # MeetingCategory.groupsOfMatter
+            for category in cfg.getCategories(onlySelectable=True, caching=False):
+                groupsOfMatter = category.getGroupsOfMatter()
+                migratedGroupsOfMatter = [org_id_to_uid(mGroupId) for mGroupId in groupsOfMatter]
+                category.setGroupsOfMatter(migratedGroupsOfMatter)
 
     def run(self):
         # change self.profile_name everything is right before launching steps

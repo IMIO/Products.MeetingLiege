@@ -54,7 +54,7 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
             return True
 
         # finance advice event, check if user is member of finance group
-        userMeetingGroupIds = [mGroup.getId() for mGroup in tool.getGroupsForUser()]
+        userMeetingGroupIds = [mGroup.getId() for mGroup in tool.get_orgs_for_user()]
         if self.context.advice_group in userMeetingGroupIds:
             return True
         return False
@@ -108,7 +108,7 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
     def _userIsInProposingGroup(self):
         """ """
         tool = api.portal.get_tool('portal_plonemeeting')
-        return self.context.getProposingGroup(theObject=True) in tool.getGroupsForUser()
+        return self.context.getProposingGroup(theObject=True) in tool.get_orgs_for_user()
 
     @memoize
     def _is_general_manager(self):

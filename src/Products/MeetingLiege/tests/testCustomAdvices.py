@@ -22,19 +22,15 @@
 # 02110-1301, USA.
 #
 
+from plone.app.textfield.value import RichTextValue
+from plone.dexterity.utils import createContentInContainer
+from Products.MeetingLiege.events import _everyAdvicesAreGivenFor
+from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from zope.component import queryUtility
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.schema.interfaces import IVocabularyFactory
-
-from plone.app.textfield.value import RichTextValue
-from plone.dexterity.utils import createContentInContainer
-
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
-from Products.MeetingLiege.events import _everyAdvicesAreGivenFor
-from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
-from Products.MeetingLiege.setuphandlers import _createFinanceGroups
-from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
 class testCustomAdvices(MeetingLiegeTestCase):
@@ -45,10 +41,10 @@ class testCustomAdvices(MeetingLiegeTestCase):
         '''Check that a financial manager may still change advice asked to his financial
            group while the advice is still addable or editable.'''
         self.changeUser('admin')
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
@@ -56,9 +52,10 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # not need a finances advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
-        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in item.adviceIndex)
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
         item.setCompleteness('completeness_complete')
@@ -68,13 +65,14 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         delayView = item.restrictedTraverse('@@advice-available-delays')
         # advice has been asked automatically
-        isAutomatic = not bool(item.adviceIndex[FINANCE_GROUP_IDS[0]]['optional'])
+        financial_group_uids = self.tool.financialGroupUids()
+        isAutomatic = not bool(item.adviceIndex[financial_group_uids[0]]['optional'])
         # advice is addable, delays may be changed
         self.assertTrue(delayView._mayEditDelays(isAutomatic=isAutomatic))
         # add the advice, delay still changeable as advice is editable
         advice = createContentInContainer(item,
                                           'meetingadvicefinances',
-                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                          **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'My comment finance')})
         self.assertTrue(delayView._mayEditDelays(isAutomatic=isAutomatic))
@@ -98,7 +96,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # if manager sign the advice, so advice is no more editable
         # even the finance manager may no more edit advice delay
         self.do(advice, 'signFinancialAdvice')
-        self.assertFalse(item.adviceIndex[FINANCE_GROUP_IDS[0]]['advice_editable'])
+        self.assertFalse(item.adviceIndex[financial_group_uids[0]]['advice_editable'])
         self.assertTrue(not delayView._mayEditDelays(isAutomatic=isAutomatic))
 
     def test_ItemSentBackToAskerWhenEveryAdvicesGiven(self):
@@ -118,19 +116,20 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                         'proposed_to_director', 'validated', 'presented',
                                         'itemfrozen', 'refused', 'delayed', 'removed',
                                         'pre_accepted', 'accepted', 'accepted_but_modified', ))
+        self._createFinanceGroups()
         _configureCollegeCustomAdvisers(self.portal)
-        _createFinanceGroups(self.portal)
         self._setupFinanceGroups()
 
         # ask finance advice and vendors advice
         # finance advice is not considered in the case we test here
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The item')
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
-        item.setOptionalAdvisers(('vendors', ))
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
-        self.assertTrue('vendors' in item.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in item.adviceIndex)
+        self.assertTrue(self.vendors_uid in item.adviceIndex)
 
         # check when item is 'itemcreated_waiting_advices'
         self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
@@ -140,9 +139,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # Give to pmInternalReviewer1 the creator role to grant him access to
         # items in creation.
         self.changeUser('admin')
-        pg = self.portal.portal_groups
-        dcGroup = pg.getGroupById('developers_creators')
-        dcGroup.addMember('pmInternalReviewer1')
+        self.developers_creators.addMember('pmInternalReviewer1')
 
         # now check for 'proposed_to_internal_reviewer_waiting_advices'
         # From item created.
@@ -179,7 +176,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # vendors advice
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The item')
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         self.proposeItem(item)
         self.changeUser('pmReviewer1')
 
@@ -207,7 +204,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmReviewer2')
         createContentInContainer(item,
                                  'meetingadvice',
-                                 **{'advice_group': 'vendors',
+                                 **{'advice_group': self.vendors_uid,
                                     'advice_type': u'positive',
                                     'advice_hide_during_redaction': False,
                                     'advice_comment': RichTextValue(u'My comment')})
@@ -222,7 +219,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
                                           'meetingadvice',
-                                          **{'advice_group': 'vendors',
+                                          **{'advice_group': self.vendors_uid,
                                              'advice_type': u'positive',
                                              'advice_hide_during_redaction': True,
                                              'advice_comment': RichTextValue(u'My comment')})
@@ -259,13 +256,13 @@ class testCustomAdvices(MeetingLiegeTestCase):
         vocab = queryUtility(IVocabularyFactory,
                              "Products.PloneMeeting.content.advice.advice_type_vocabulary")
         # ask 'vendors' advice on item
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.do(item, 'backToProposedToDirector')
         vendors_advice = createContentInContainer(
             item,
             'meetingadvice',
-            **{'advice_group': 'vendors',
+            **{'advice_group': self.vendors_uid,
                'advice_type': u'negative',
                'advice_comment': RichTextValue(u'<p>My comment vendors</p>'),
                'advice_observations': RichTextValue(u'<p>My observation vendors</p>')})

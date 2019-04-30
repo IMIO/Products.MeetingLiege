@@ -55,7 +55,7 @@ class MLAdviceDelaysView(AdviceDelaysView):
         if not super(MLAdviceDelaysView, self)._mayEditDelays(isAutomatic):
             # maybe a financialmanager may change delay
             # that member may change delay if advice still addable/editable
-            financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
+            financeGroupId = self.context.adapted().getFinanceGroupUIDForItem()
             if not financeGroupId:
                 return False
 
@@ -180,7 +180,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         startTime1 = time.time()
         for brain in brains:
             item = brain.getObject()
-            advice_id = item.adapted().getFinanceGroupIdsForItem(checkAdviceIndex=True)
+            advice_id = item.adapted().getFinanceGroupUIDForItem(checkAdviceIndex=True)
             full_history = []
             advice_infos = item.getAdviceDataFor(item)[advice_id]
             advice = advice_infos['given_advice']

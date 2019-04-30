@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from DateTime import DateTime
+from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import AnnexTypeDescriptor
 from Products.PloneMeeting.profiles import CategoryDescriptor
@@ -93,15 +94,15 @@ emetteuravisPers = UserDescriptor('emetteuravisPers', [], email="test@test.be", 
 
 # add finance groups
 dfcontrol = OrgDescriptor('df-contrale', u'DF - Contrôle', u'DF')
-dfcontrol.item_advice_states = ('meeting-config-college__state__itemfrozen',
+dfcontrol.item_advice_states = ['meeting-config-college__state__itemfrozen',
                                 'meeting-config-college__state__proposed_to_finance',
                                 'meeting-config-college__state__presented',
-                                'meeting-config-college__state__validated')
-dfcontrol.item_advice_edit_states = ('meeting-config-college__state__itemfrozen',
+                                'meeting-config-college__state__validated']
+dfcontrol.item_advice_edit_states = ['meeting-config-college__state__itemfrozen',
                                      'meeting-config-college__state__proposed_to_finance',
                                      'meeting-config-college__state__presented',
-                                     'meeting-config-college__state__validated')
-dfcontrol.item_advice_view_states = ('meeting-config-college__state__accepted',
+                                     'meeting-config-college__state__validated']
+dfcontrol.item_advice_view_states = ['meeting-config-college__state__accepted',
                                      'meeting-config-college__state__accepted_but_modified',
                                      'meeting-config-college__state__pre_accepted',
                                      'meeting-config-college__state__delayed',
@@ -109,19 +110,19 @@ dfcontrol.item_advice_view_states = ('meeting-config-college__state__accepted',
                                      'meeting-config-college__state__proposed_to_finance',
                                      'meeting-config-college__state__presented',
                                      'meeting-config-college__state__refused',
-                                     'meeting-config-college__state__validated')
+                                     'meeting-config-college__state__validated']
 dfcompta = OrgDescriptor('df-comptabilita-c-et-audit-financier',
                          u'DF - Comptabilité et Audit financier',
                          u'DF')
-dfcompta.item_advice_states = ('meeting-config-college__state__itemfrozen',
+dfcompta.item_advice_states = ['meeting-config-college__state__itemfrozen',
                                'meeting-config-college__state__proposed_to_finance',
                                'meeting-config-college__state__presented',
-                               'meeting-config-college__state__validated')
-dfcompta.item_advice_edit_states = ('meeting-config-college__state__itemfrozen',
+                               'meeting-config-college__state__validated']
+dfcompta.item_advice_edit_states = ['meeting-config-college__state__itemfrozen',
                                     'meeting-config-college__state__proposed_to_finance',
                                     'meeting-config-college__state__presented',
-                                    'meeting-config-college__state__validated')
-dfcompta.item_advice_view_states = ('meeting-config-college__state__accepted',
+                                    'meeting-config-college__state__validated']
+dfcompta.item_advice_view_states = ['meeting-config-college__state__accepted',
                                     'meeting-config-college__state__accepted_but_modified',
                                     'meeting-config-college__state__pre_accepted',
                                     'meeting-config-college__state__delayed',
@@ -129,7 +130,12 @@ dfcompta.item_advice_view_states = ('meeting-config-college__state__accepted',
                                     'meeting-config-college__state__proposed_to_finance',
                                     'meeting-config-college__state__presented',
                                     'meeting-config-college__state__refused',
-                                    'meeting-config-college__state__validated')
+                                    'meeting-config-college__state__validated']
+dftresor = OrgDescriptor(TREASURY_GROUP_ID, u'DF - Contrôle (Trésorerie)', u'DFCT')
+dftresor.item_advice_states = ['meeting-config-college__state__accepted',
+                               'meeting-config-college__state__accepted_but_modified']
+dftresor.item_advice_edit_states = ['meeting-config-college__state__accepted',
+                                    'meeting-config-college__state__accepted_but_modified']
 
 orgs = [OrgDescriptor('dirgen', 'Directeur Général', u'DG'),
         OrgDescriptor('secretariat', 'Secrétariat communal', u'Secr'),
@@ -139,7 +145,8 @@ orgs = [OrgDescriptor('dirgen', 'Directeur Général', u'DG'),
         OrgDescriptor('comptabilite', 'Service comptabilité', u'Compt'),
         OrgDescriptor('travaux', 'Service travaux', u'Trav'),
         dfcontrol,
-        dfcompta]
+        dfcompta,
+        dftresor]
 
 # MeetingManager
 orgs[0].creators.append(dgen)

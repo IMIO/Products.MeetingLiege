@@ -26,9 +26,9 @@
 from AccessControl import ClassSecurityInfo
 from appy.gen import No
 from collections import OrderedDict
+from collective.contact.plonegroup.config import get_registry_organizations
 from collective.contact.plonegroup.utils import get_organization
 from collective.contact.plonegroup.utils import get_organizations
-from collective.contact.plonegroup.utils import get_own_organization
 from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
@@ -70,7 +70,6 @@ from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
 from Products.PloneMeeting.config import PMMessageFactory as _
-from Products.PloneMeeting.config import MEETING_GROUP_SUFFIXES
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.content.advice import MeetingAdvice
@@ -89,6 +88,7 @@ from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowConditions
 from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
+from Products.PloneMeeting.utils import org_id_to_uid
 from zope.annotation.interfaces import IAnnotations
 from zope.component import getAdapter
 from zope.i18n import translate
@@ -690,7 +690,9 @@ class CustomMeetingItem(MeetingItem):
         '''If we are on a finance advice that is still not giveable because
            the item is not 'complete', we display a clear message.'''
         item = self.getSelf()
-        if advice['id'] in FINANCE_GROUP_IDS and \
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        if advice['id'] in financial_group_uids and \
            advice['delay'] and \
            not advice['delay_started_on']:
             # item in state giveable but item not complete
@@ -715,12 +717,12 @@ class CustomMeetingItem(MeetingItem):
         return {'displayDefaultComplementaryMessage': True,
                 'customAdviceMessage': None}
 
-    def getFinanceGroupIdsForItem(self, checkAdviceIndex=False):
-        '''Return the finance group ids the advice is asked
+    def getFinanceGroupUIDForItem(self, checkAdviceIndex=False):
+        '''Return the finance group UID the advice is asked
            on current item.  It only returns automatically asked advices.
            If p_checkAdviceIndex is True, it will try to get a finance advice
            from the adviceIndex in case financeAdvice is '_none_', it means
-           that advice was asked and given at at certain time and financeAdvice
+           that advice was asked and given at certain time and financeAdvice
            was set back to '_none_' after.'''
         item = self.getSelf()
         finance_advice = item.getFinanceAdvice()
@@ -729,27 +731,32 @@ class CustomMeetingItem(MeetingItem):
            not item.adviceIndex[finance_advice]['optional']:
             return finance_advice
         if checkAdviceIndex:
-            for advice_id, advice_info in item.adviceIndex.items():
-                if advice_id in FINANCE_GROUP_IDS and not advice_info['optional']:
-                    return advice_id
+            tool = api.portal.get_tool('portal_plonemeeting')
+            financial_group_uids = tool.financialGroupUids()
+            for advice_uid, advice_info in item.adviceIndex.items():
+                if advice_uid in financial_group_uids and not advice_info['optional']:
+                    return advice_uid
         return None
 
-    def _adviceIsEditableByCurrentUser(self, groupId):
+    def _adviceIsEditableByCurrentUser(self, org_uid):
         '''Depending on advice WF state, it is only editable by relevant level.
            This is used by MeetingItem.getAdvicesGroupsInfosForUser.'''
         item = self.getSelf()
-        if groupId in FINANCE_GROUP_IDS:
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+
+        if org_uid in financial_group_uids:
             member = api.user.get_current()
-            adviceObj = getattr(item, item.adviceIndex[groupId]['advice_id'])
+            adviceObj = item.getAdviceObj(org_uid)
             if not member.has_role('MeetingFinanceEditor', adviceObj):
                 return False
         return True
 
-    def _advicePortalTypeForAdviser(self, groupId):
-        """Return the meetingadvice portal_type that will be added for given p_groupId.
-           By default we always use meetingadvice but this makes it possible to have several
-           portal_types for meetingadvice."""
-        if groupId in FINANCE_GROUP_IDS:
+    def _advicePortalTypeForAdviser(self, org_uid):
+        """Return the meetingadvicefinances for financial groups, meetingadvice for others."""
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        if org_uid in financial_group_uids:
             return "meetingadvicefinances"
         else:
             return "meetingadvice"
@@ -766,9 +773,11 @@ class CustomMeetingItem(MeetingItem):
         else:
             return [t for t in cfg.getUsedAdviceTypes() if t.endswith('_finance')]
 
-    def _sendAdviceToGiveToGroup(self, groupId):
+    def _sendAdviceToGiveToGroup(self, org_uid):
         """Do not send an email to FINANCE_GROUP_IDS."""
-        if groupId in FINANCE_GROUP_IDS:
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        if org_uid in financial_group_uids:
             return False
         return True
 
@@ -787,7 +796,7 @@ class CustomMeetingItem(MeetingItem):
         if member.has_role('Manager'):
             return True
 
-        financeGroupId = item.adapted().getFinanceGroupIdsForItem()
+        financeGroupId = item.adapted().getFinanceGroupUIDForItem()
         # a finance controller may evaluate if advice is actually asked
         # and may not change completeness if advice is currently given or has been given
         tool = api.portal.get_tool('portal_plonemeeting')
@@ -845,7 +854,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         tool = api.portal.get_tool('portal_plonemeeting')
         if tool.isManager(item, realManagers=True) or \
-           '%s_financialmanagers' % self.getFinanceGroupIdsForItem() in tool.get_plone_groups_for_user():
+           '%s_financialmanagers' % self.getFinanceGroupUIDForItem() in tool.get_plone_groups_for_user():
             return True
         return False
 
@@ -880,9 +889,11 @@ class CustomMeetingItem(MeetingItem):
            TREASURY_GROUP_ID advice may be asked again by proposing group
            if it is accepted/accepted_but_modified.
            '''
-        if advice.advice_group in FINANCE_GROUP_IDS:
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        if advice.advice_group in financial_group_uids:
             return False
-        if advice.advice_group == TREASURY_GROUP_ID and \
+        if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID) and \
            self.context.queryState() in ('accepted', 'accepted_but_modified'):
             mGroup = self.context.getProposingGroup(theObject=True)
             if mGroup.userPloneGroups(suffixes=['internalreviewers', 'reviewers']):
@@ -897,9 +908,10 @@ class CustomMeetingItem(MeetingItem):
         res.append(('_none_', translate('no_financial_impact',
                                         domain='PloneMeeting',
                                         context=self.REQUEST)))
-        own_org = get_own_organization()
-        for finance_group_id in FINANCE_GROUP_IDS:
-            res.append((finance_group_id, own_org.get(finance_group_id).Title()))
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        for finance_group_uid in financial_group_uids:
+            res.append((finance_group_uid, get_organization(finance_group_uid).Title()))
         return DisplayList(tuple(res))
     MeetingItem.listFinanceAdvices = listFinanceAdvices
 
@@ -944,7 +956,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         # automatically ask finance advice if it is the currently selected financeAdvice
         # and if the advice given on a predecessor is still not valid for this item
-        if item.getFinanceAdvice() == financeGroupId and \
+        if item.getFinanceAdvice() == org_id_to_uid(financeGroupId) and \
            item.adapted().getItemWithFinanceAdvice() == item:
             return True
         return False
@@ -1248,8 +1260,10 @@ class CustomMeetingItem(MeetingItem):
         # we finished to compute all local_roles for self, compare to finance access
         # that were given in old local_roles if it is the same,
         # it means that we do not need to update linked items
-        potentialFinanceAccesses = set(["{0}_advisers".format(finance_advice) for
-                                        finance_advice in FINANCE_GROUP_IDS])
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        potentialFinanceAccesses = set(["{0}_advisers".format(finance_advice_uid) for
+                                        finance_advice_uid in financial_group_uids])
         financeInOldLocalRoles = potentialFinanceAccesses.intersection(set(old_local_roles.keys()))
         financeInNewLocalRoles = potentialFinanceAccesses.intersection(set(item.__ac_local_roles__.keys()))
 
@@ -1358,31 +1372,26 @@ class CustomMeetingItem(MeetingItem):
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
         item = self.getSelf()
         item_state = item.queryState()
-        meetingGroup = None
-        # give 'Reader' role for every suffix except 'observers' that
-        # only get access when item is positively decided
-        roles = {suffix: 'Reader' for suffix in MEETING_GROUP_SUFFIXES if suffix != 'observers'}
+        # give 'Reader' role for every suffixes except 'observers' that
+        # only gets access when item is positively decided
         item_managing_group = item.adapted()._getGroupManagingItem(item_state)
         proposingGroup = item.getProposingGroup(theObject=True)
         # when proposingGroup is no more the managing group, it means item is at least
         # proposed to general manager, give read access to proposingGroup and to general manager
         # if it is not the managing group
         if item_managing_group != proposingGroup:
-            meetingGroup = item.getProposingGroup(True)
-            item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
+            item._assign_roles_to_group_suffixes(proposingGroup, ignored_suffixes=['observers'])
         # access for GENERAL_MANAGER_GROUP_ID groups
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['proposed_to_general_manager']:
-            tool = api.portal.get_tool('portal_plonemeeting')
-            meetingGroup = tool.get(GENERAL_MANAGER_GROUP_ID)
-            item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
+            gm_org = get_organization(org_id_to_uid(GENERAL_MANAGER_GROUP_ID))
+            item._assign_roles_to_group_suffixes(gm_org, ignored_suffixes=['observers'])
         # access for BOURGMESTRE_GROUP_ID groups
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + \
                 ['proposed_to_general_manager',
                  'proposed_to_cabinet_manager',
                  'proposed_to_cabinet_reviewer']:
-            tool = api.portal.get_tool('portal_plonemeeting')
-            meetingGroup = tool.get(BOURGMESTRE_GROUP_ID)
-            item._assign_roles_to_group_suffixes(meetingGroup, roles=roles)
+            bg_org = get_organization(org_id_to_uid(BOURGMESTRE_GROUP_ID))
+            item._assign_roles_to_group_suffixes(bg_org, ignored_suffixes=['observers'])
 
     def _findCustomOneLevelFor(self, insertMethod):
         '''Manage our custom inserting method 'on_decision_first_word'.'''
@@ -1496,8 +1505,10 @@ class CustomMeetingConfig(MeetingConfig):
                               domain='PloneMeeting',
                               context=self.REQUEST,
                               default='No finance advice')))
-        for groupId in FINANCE_GROUP_IDS:
-            res.append((groupId, getattr(tool, groupId).getName()))
+        tool = api.portal.get_tool('portal_plonemeeting')
+        financial_group_uids = tool.financialGroupUids()
+        for org_uid in financial_group_uids:
+            res.append((org_uid, get_organization(org_uid).Title()))
         return DisplayList(res)
     MeetingConfig.listArchivingReferenceFinanceAdvices = listArchivingReferenceFinanceAdvices
 
@@ -1749,6 +1760,23 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
                     return True
         return False
     ToolPloneMeeting.isFinancialUser = isFinancialUser
+
+    def financialGroupUids_cachekey(method, self):
+        '''cachekey method for self.financialGroupUids.'''
+        return get_registry_organizations()
+
+    @ram.cache(financialGroupUids_cachekey)
+    def financialGroupUids(self):
+        """ """
+        res = []
+        for org_id in FINANCE_GROUP_IDS:
+            try:
+                org_uid = org_id_to_uid(org_id)
+            except KeyError:
+                continue
+            res.append(org_uid)
+        return res
+    ToolPloneMeeting.financialGroupUids = financialGroupUids
 
     security.declarePublic('isUrbanismUser')
 
@@ -2073,7 +2101,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if _checkPermission(ReviewPortalContent, self.context):
             # check if one of the finance group needs to give advice on
             # the item, if it is the case, the item must go to finance before being validated
-            if self.context.adapted().getFinanceGroupIdsForItem():
+            if self.context.adapted().getFinanceGroupUIDForItem():
                 return True
         return res
 
@@ -2151,7 +2179,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             item_state = self.context.queryState()
-            finance_advice = self.context.adapted().getFinanceGroupIdsForItem()
+            finance_advice = self.context.adapted().getFinanceGroupUIDForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
             if item_state == 'itemcreated' and not self.tool.isManager(self.context):
                 res = False
@@ -2300,7 +2328,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # item is incomplete
         elif self.context.queryState() == 'proposed_to_finance':
             # user must be a member of the finance group the advice is asked to
-            financeGroupId = self.context.adapted().getFinanceGroupIdsForItem()
+            financeGroupId = self.context.adapted().getFinanceGroupUIDForItem()
             tool = api.portal.get_tool('portal_plonemeeting')
             memberGroups = tool.get_plone_groups_for_user()
             for suffix in FINANCE_GROUP_SUFFIXES:
@@ -2566,7 +2594,9 @@ old_get_advice_given_on = MeetingAdvice.get_advice_given_on
 def get_advice_given_on(self):
     '''Monkeypatch the meetingadvice.get_advice_given_on method, if it is
        a finance advice, we will return date of last transition 'sign_advice'.'''
-    if self.advice_group in FINANCE_GROUP_IDS:
+    tool = api.portal.get_tool('portal_plonemeeting')
+    financial_group_uids = tool.financialGroupUids()
+    if self.advice_group in financial_group_uids:
         lastEvent = getLastWFAction(self, 'signFinancialAdvice')
         if not lastEvent:
             return self.modified()
@@ -2606,7 +2636,8 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
-        for financeGroup in FINANCE_GROUP_IDS:
+        financial_group_uids = tool.financialGroupUids()
+        for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
                 # advice not given yet
@@ -2630,7 +2661,8 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
-        for financeGroup in FINANCE_GROUP_IDS:
+        financial_group_uids = tool.financialGroupUids()
+        for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
                 groupIds.append('delay__%s_proposed_to_financial_controller' % financeGroup)
@@ -2648,7 +2680,8 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
-        for financeGroup in FINANCE_GROUP_IDS:
+        financial_group_uids = tool.financialGroupUids()
+        for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is reviewer for
             if '%s_financialreviewers' % financeGroup in userGroups:
                 groupIds.append('delay__%s_proposed_to_financial_reviewer' % financeGroup)
@@ -2664,7 +2697,8 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
-        for financeGroup in FINANCE_GROUP_IDS:
+        financial_group_uids = tool.financialGroupUids()
+        for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is manager for
             if '%s_financialmanagers' % financeGroup in userGroups:
                 groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)

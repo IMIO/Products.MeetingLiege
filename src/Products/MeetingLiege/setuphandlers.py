@@ -10,12 +10,8 @@
 #
 
 
-from collective.contact.plonegroup.utils import get_own_organization
-from collective.contact.plonegroup.utils import select_org_for_function
-from collective.contact.plonegroup.utils import select_organization
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
-from plone import api
 from Products.CMFCore.utils import getToolByName
 from Products.MeetingLiege.config import PROJECTNAME
 from Products.PloneMeeting.exportimport.content import ToolInitializer
@@ -267,8 +263,6 @@ def finalizeInstance(context):
     # or it mess tests computing available groups and so on
     # this method is called manually by relevant tests
     if not context.readDataFile("MeetingLiege_testing_marker.txt"):
-        logStep("_createFinanceGroups", context)
-        _createFinanceGroups(site)
         # populate the customAdvisers of 'meeting-config-college'
         logStep("_configureCollegeCustomAdvisers", context)
         _configureCollegeCustomAdvisers(site)
@@ -347,40 +341,6 @@ def _configureCollegeCustomAdvisers(site):
              'is_linked_to_previous_row': '1',
              'for_item_created_from': '2014/06/05',
              'row_id': '2014-06-05.5584080681'}))
-
-
-def _createFinanceGroups(site):
-    """
-       Create the finance groups.
-    """
-    financeGroupsData = ({'id': 'df-contrale',
-                          'title': u'DF - Contrôle',
-                          'acronym': u'DF', },
-                         {'id': 'df-comptabilita-c-et-audit-financier',
-                          'title': u'DF - Comptabilité et Audit financier',
-                          'acronym': u'DF', },
-                         )
-
-    own_org = get_own_organization()
-    for financeGroup in financeGroupsData:
-        if not hasattr(own_org, financeGroup['id']):
-            new_org = api.content.create(container=own_org, type='organization')
-            new_org.item_advice_states = ('meeting-config-college__state__proposed_to_finance',
-                                          'meeting-config-college__state__presented',
-                                          'meeting-config-college__state__validated')
-            new_org.item_advice_edit_states = ('meeting-config-college__state__proposed_to_finance',
-                                               'meeting-config-college__state__presented',
-                                               'meeting-config-college__state__validated'),
-            new_org.item_advice_view_states = ('meeting-config-college__state__accepted',
-                                               'meeting-config-college__state__accepted_but_modified',
-                                               'meeting-config-college__state__pre_accepted',
-                                               'meeting-config-college__state__delayed',
-                                               'meeting-config-college__state__itemfrozen',
-                                               'meeting-config-college__state__proposed_to_finance',
-                                               'meeting-config-college__state__presented',
-                                               'meeting-config-college__state__refused',
-                                               'meeting-config-college__state__removed',
-                                               'meeting-config-college__state__validated')
 
 
 def reorderCss(context):

@@ -20,13 +20,17 @@
 # 02110-1301, USA.
 #
 
+from collective.contact.plonegroup.utils import select_org_for_function
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
-
-from Products.PloneMeeting.tests.helpers import PloneMeetingTestingHelpers
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
+from Products.MeetingLiege.config import PROJECTNAME
+from Products.MeetingLiege.profiles.liege.import_data import dfcompta
+from Products.MeetingLiege.profiles.liege.import_data import dfcontrol
+from Products.MeetingLiege.profiles.liege.import_data import dftresor
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
-from Products.MeetingLiege.setuphandlers import _createFinanceGroups
+from Products.PloneMeeting.exportimport.content import ToolInitializer
+from Products.PloneMeeting.tests.helpers import PloneMeetingTestingHelpers
 
 
 class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
@@ -107,12 +111,13 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
     def _setupFinanceGroups(self):
         '''Configure finance groups.'''
         # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
-        self._addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        self._addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        self._addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[0])
-        self._addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[0])
-        self._addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[0])
-        self._addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        self._addPrincipalToGroup('pmFinController', '{0}_advisers'.format(financial_group_uids[0]))
+        self._addPrincipalToGroup('pmFinReviewer', '{0}_advisers'.format(financial_group_uids[0]))
+        self._addPrincipalToGroup('pmFinManager', '{0}_advisers'.format(financial_group_uids[0]))
+        self._addPrincipalToGroup('pmFinController', '{0}_financialcontrollers'.format(financial_group_uids[0]))
+        self._addPrincipalToGroup('pmFinReviewer', '{0}_financialreviewers'.format(financial_group_uids[0]))
+        self._addPrincipalToGroup('pmFinManager', '{0}_financialmanagers'.format(financial_group_uids[0]))
 
     def _giveFinanceAdvice(self, item, adviser_group_id):
         """Given an p_item in state 'proposed_to_finance', give the p_adviser_group_id advice on it."""
@@ -141,10 +146,10 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
     def _setupCollegeItemWithFinanceAdvice(self, ):
         """Setup, create a College item and give finance advice on it."""
         self.changeUser('admin')
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
@@ -152,7 +157,8 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='An item with finance advice')
         # ask finance advice and give it
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
@@ -164,7 +170,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         changeCompleteness()
         advice = createContentInContainer(item,
                                           'meetingadvicefinances',
-                                          **{'advice_group': FINANCE_GROUP_IDS[0],
+                                          **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
                                              'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
@@ -191,3 +197,19 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         cfg = self.meetingConfig
         cat = cfg.categories.development
         cat.setGroupsOfMatter(())
+
+    def _createFinanceGroups(self):
+        """
+           Create the finance groups.
+        """
+        context = self.portal.portal_setup._getImportContext('Products.MeetingLiege:testing')
+        initializer = ToolInitializer(context, PROJECTNAME)
+        org_descriptors = (dfcompta, dfcontrol, dftresor)
+        orgs, active_orgs, savedOrgsData = initializer.addOrgs(org_descriptors, defer_data=False)
+        for org in orgs:
+            org_uid = org.UID()
+            self._select_organization(org_uid)
+            if org.getId() in FINANCE_GROUP_IDS:
+                select_org_for_function(org_uid, 'financialcontrollers')
+                select_org_for_function(org_uid, 'financialmanagers')
+                select_org_for_function(org_uid, 'financialreviewers')

@@ -13,7 +13,6 @@ from imio.history.utils import getLastWFAction
 from OFS.ObjectManager import BeforeDeleteException
 from plone import api
 from Products.MeetingLiege.config import FINANCE_ADVICE_HISTORIZE_COMMENTS
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 from Products.PloneMeeting.browser.itemchangeorder import _is_integer
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
@@ -30,8 +29,10 @@ __docformat__ = 'plaintext'
 def _everyAdvicesAreGivenFor(item):
     '''Every advices are considered given on an item if no more
        hidden_during_redaction and created.'''
-    for adviceId, adviceInfos in item.adviceIndex.items():
-        if adviceId not in FINANCE_GROUP_IDS and \
+    tool = api.portal.get_tool('portal_plonemeeting')
+    finance_group_uids = tool.financialGroupUids()
+    for adviceUid, adviceInfos in item.adviceIndex.items():
+        if adviceUid not in finance_group_uids and \
            adviceInfos['type'] in (NOT_GIVEN_ADVICE_VALUE, 'asked_again') or \
            adviceInfos['hidden_during_redaction'] is True:
             return False
@@ -95,7 +96,9 @@ def onAdviceTransition(advice, event):
 
     # manage finance workflow, just consider relevant transitions
     # if it is not a finance wf transition, return
-    if advice.advice_group not in FINANCE_GROUP_IDS:
+    tool = api.portal.get_tool('portal_plonemeeting')
+    finance_group_uids = tool.financialGroupUids()
+    if advice.advice_group not in finance_group_uids:
         return
 
     item = advice.getParentNode()
@@ -211,15 +214,15 @@ def onAdvicesUpdated(item, event):
       are really editable, this could not be the case if the advice is signed.
       In a second step, if item is 'backToProposedToInternalReviewer', we need to reinitialize finance advice delay.
     '''
-    for groupId, adviceInfo in item.adviceIndex.items():
+    for org_uid, adviceInfo in item.adviceIndex.items():
         # special behaviour for finance advice
-        if not groupId == item.adapted().getFinanceGroupIdsForItem():
+        if not org_uid == item.adapted().getFinanceGroupUIDForItem():
             continue
 
         itemState = item.queryState()
         tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(item)
-        adviserGroupId = '%s_advisers' % groupId
+        adviserGroupId = '%s_advisers' % org_uid
 
         # if item is decided, we need to give the _advisers, the 'MeetingFinanceEditor'
         # role on the item so he is able to add decision annexes
@@ -239,26 +242,26 @@ def onAdvicesUpdated(item, event):
                                            'proposed_to_financial_reviewer',
                                            'proposed_to_financial_manager'):
                 # advice is no more editable, adapt adviceIndex
-                item.adviceIndex[groupId]['advice_editable'] = False
+                item.adviceIndex[org_uid]['advice_editable'] = False
         # when a finance has accessed an item, he will always be able to access it after
         if not adviceInfo['item_viewable_by_advisers'] and \
            getLastWFAction(item, 'proposeToFinance'):
             # give access to the item to the finance group
-            item.manage_addLocalRoles('%s_advisers' % groupId, (READER_USECASES['advices'],))
-            item.adviceIndex[groupId]['item_viewable_by_advisers'] = True
+            item.manage_addLocalRoles('%s_advisers' % org_uid, (READER_USECASES['advices'],))
+            item.adviceIndex[org_uid]['item_viewable_by_advisers'] = True
         # the advice delay is really started when item completeness is 'complete' or 'evaluation_not_required'
         # until then, we do not let the delay start
         if not item.getCompleteness() in ('completeness_complete', 'completeness_evaluation_not_required'):
             adviceInfo['delay_started_on'] = None
             adviceInfo['advice_addable'] = False
             adviceInfo['advice_editable'] = False
-            adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(groupId)
+            adviceInfo['delay_infos'] = item.getDelayInfosForAdvice(org_uid)
 
         # when a finance advice is just timed out, we will validate the item
         # so MeetingManagers receive the item and do what necessary
         if adviceInfo['delay_infos']['delay_status'] == 'timed_out' and \
-           'delay_infos' in event.old_adviceIndex[groupId] and not \
-           event.old_adviceIndex[groupId]['delay_infos']['delay_status'] == 'timed_out':
+           'delay_infos' in event.old_adviceIndex[org_uid] and not \
+           event.old_adviceIndex[org_uid]['delay_infos']['delay_status'] == 'timed_out':
             if item.queryState() == 'proposed_to_finance':
                 wfTool = api.portal.get_tool('portal_workflow')
                 item.REQUEST.set('mayValidate', True)
@@ -267,7 +270,7 @@ def onAdvicesUpdated(item, event):
 
     # when item is 'backToProposedToInternalReviewer', reinitialize advice delay
     if event.triggered_by_transition == 'backToProposedToInternalReviewer':
-        financeGroupId = item.adapted().getFinanceGroupIdsForItem()
+        financeGroupId = item.adapted().getFinanceGroupUIDForItem()
         if financeGroupId in item.adviceIndex:
             adviceInfo = item.adviceIndex[financeGroupId]
             adviceInfo['delay_started_on'] = None
@@ -328,19 +331,19 @@ def onCategoryRemoved(category, event):
     cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
 
 
-def onGroupWillBeRemoved(group, event):
-    '''Checks if the current meetingGroup can be deleted:
+def onOrgWillBeRemoved(current_org, event):
+    '''Checks if the current organization can be deleted:
       - it can not be used in MeetingConfig.archivingRefs;
       - it can not be used in MeetingCategory.groupsOfMatter.'''
-    if event.object.meta_type == 'Plone Site' or group._at_creation_flag:
+    if event.object.meta_type == 'Plone Site':
         return
 
+    current_org_uid = current_org.UID()
     tool = api.portal.get_tool('portal_plonemeeting')
-    groupId = group.getId()
-    for mc in tool.objectValues('MeetingConfig'):
+    for cfg in tool.objectValues('MeetingConfig'):
         # The meetingGroup can be used in archivingRefs.
-        for archivinfRef in mc.getArchivingRefs():
-            if groupId in archivinfRef['restrict_to_groups']:
+        for archivinfRef in cfg.getArchivingRefs():
+            if current_org_uid in archivinfRef['restrict_to_groups']:
                 raise BeforeDeleteException("can_not_delete_meetinggroup_archivingrefs")
 
 

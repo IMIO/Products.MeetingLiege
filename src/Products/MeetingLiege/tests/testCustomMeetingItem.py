@@ -22,24 +22,20 @@
 # 02110-1301, USA.
 #
 
-from datetime import datetime
 from DateTime import DateTime
-from zope.event import notify
-from zope.lifecycleevent import ObjectModifiedEvent
-
+from datetime import datetime
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
-
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
-from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
+from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.profiles.liege import import_data as ml_import_data
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
-from Products.MeetingLiege.setuphandlers import _createFinanceGroups
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from zope.event import notify
+from zope.lifecycleevent import ObjectModifiedEvent
 
 
 class testCustomMeetingItem(MeetingLiegeTestCase):
@@ -116,7 +112,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         '''Finance advice is asked depending on MeetingItem.financeAdvice selected value.'''
         # create finance groups
         self.changeUser('admin')
-        _createFinanceGroups(self.portal)
+        self._createFinanceGroups()
         _configureCollegeCustomAdvisers(self.portal)
         self.changeUser('pmManager')
         # create an item with relevant adviceFinance
@@ -126,14 +122,15 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item._update_after_edit()
         self.assertTrue(item.adviceIndex == {})
         # ask finance advice
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
-        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)
         # now ask another advice finance
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        item.setFinanceAdvice(financial_group_uids[1])
         item._update_after_edit()
-        self.assertTrue(FINANCE_GROUP_IDS[1] in item.adviceIndex)
+        self.assertTrue(financial_group_uids[1] in item.adviceIndex)
         self.assertTrue(len(item.adviceIndex) == 1)
 
     def test_GroupsOfMatter(self):
@@ -407,18 +404,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         cfg2Id = cfg2.getId()
         cfg.setItemAutoSentToOtherMCStates(cfg.getItemAutoSentToOtherMCStates() + ('itemfrozen', ))
 
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
-        self.assertTrue(FINANCE_GROUP_IDS[0] in item.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in item.adviceIndex)
         self.assertTrue(item.adapted().getItemWithFinanceAdvice() == item)
         # give advice
         self.proposeItem(item)
@@ -428,7 +426,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setEmergency('emergency_accepted')
         createContentInContainer(item,
                                  'meetingadvicefinances',
-                                 **{'advice_group': FINANCE_GROUP_IDS[0],
+                                 **{'advice_group': financial_group_uids[0],
                                     'advice_type': 'positive_finance',
                                     'advice_comment': RichTextValue(u'My positive comment finance')})
         # finance group has read access to the item
@@ -443,8 +441,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # the duplicatedItem advice referent is the duplicatedItem...
         self.assertTrue(duplicatedItem.adapted().getItemWithFinanceAdvice() == duplicatedItem)
         # the finance advice is asked on the duplicatedItem
-        self.assertTrue(duplicatedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
-        self.assertTrue(FINANCE_GROUP_IDS[0] in duplicatedItem.adviceIndex)
+        self.assertTrue(duplicatedItem.getFinanceAdvice() == financial_group_uids[0])
+        self.assertTrue(financial_group_uids[0] in duplicatedItem.adviceIndex)
         # finance group get automatically access to the duplicatedItem as it is linked manually
         self.assertTrue(duplicatedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
 
@@ -459,8 +457,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                              if not newItem == duplicatedItem][0]
         self.assertTrue(clonedDelayedItem.adapted().getItemWithFinanceAdvice() == clonedDelayedItem)
         # the finance advice is asked on the clonedDelayedItem
-        self.assertTrue(clonedDelayedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
-        self.assertTrue(FINANCE_GROUP_IDS[0] in clonedDelayedItem.adviceIndex)
+        self.assertTrue(clonedDelayedItem.getFinanceAdvice() == financial_group_uids[0])
+        self.assertTrue(financial_group_uids[0] in clonedDelayedItem.adviceIndex)
         # finance group did not get automatically access to the clonedDelayedItem
         self.assertTrue(financeGroupAdvisersId not in clonedDelayedItem.__ac_local_roles__)
 
@@ -477,8 +475,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(itemWithFinanceAdvice.queryState() == 'returned')
         # the info is kept in the financeAdvice attribute
         # nevertheless, the advice is not asked automatically anymore
-        self.assertTrue(clonedReturnedItem.getFinanceAdvice() == FINANCE_GROUP_IDS[0])
-        self.assertTrue(not FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
+        self.assertTrue(clonedReturnedItem.getFinanceAdvice() == financial_group_uids[0])
+        self.assertTrue(not financial_group_uids[0] in clonedReturnedItem.adviceIndex)
         # finance group gets automatically access to the clonedReturnedItem
         self.assertTrue(clonedReturnedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
 
@@ -492,9 +490,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
             clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
             item)
         # now test if setting an optional finance advice does not break getItemWithFinanceAdvice
-        clonedReturnedItem.setOptionalAdvisers((FINANCE_GROUP_IDS[0], ))
+        clonedReturnedItem.setOptionalAdvisers((financial_group_uids[0], ))
         clonedReturnedItem.updateLocalRoles()
-        self.assertTrue(FINANCE_GROUP_IDS[0] in clonedReturnedItem.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in clonedReturnedItem.adviceIndex)
         self.assertEquals(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
         self.assertEquals(
             clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
@@ -504,31 +502,31 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # the right college item should be found too
         # use 2 items, one that will be classicaly accepted and one that will 'accepted_and_returned'
         itemToCouncil1 = self.create('MeetingItem')
-        itemToCouncil1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        itemToCouncil1.setFinanceAdvice(financial_group_uids[0])
         itemToCouncil1.setOtherMeetingConfigsClonableTo('meeting-config-council')
         itemToCouncil2 = self.create('MeetingItem')
-        itemToCouncil2.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        itemToCouncil2.setFinanceAdvice(financial_group_uids[0])
         itemToCouncil2.setOtherMeetingConfigsClonableTo('meeting-config-council')
         # ask emergency so finance step is passed
         itemToCouncil1.setEmergency('emergency_asked')
         itemToCouncil2.setEmergency('emergency_asked')
         itemToCouncil1._update_after_edit()
         itemToCouncil2._update_after_edit()
-        self.assertTrue(FINANCE_GROUP_IDS[0] in itemToCouncil1.adviceIndex)
-        self.assertTrue(FINANCE_GROUP_IDS[0] in itemToCouncil2.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in itemToCouncil1.adviceIndex)
+        self.assertTrue(financial_group_uids[0] in itemToCouncil2.adviceIndex)
         self.presentItem(itemToCouncil1)
         self.presentItem(itemToCouncil2)
         # accept itemToCouncil1 and check
         self.do(itemToCouncil1, 'accept')
         itemInCouncil1 = itemToCouncil1.getItemClonedToOtherMC('meeting-config-council')
-        self.assertEquals(itemInCouncil1.getFinanceAdvice(), FINANCE_GROUP_IDS[0])
+        self.assertEquals(itemInCouncil1.getFinanceAdvice(), financial_group_uids[0])
         self.assertTrue(itemInCouncil1.adapted().getItemWithFinanceAdvice() == itemToCouncil1)
         # finance group gets automatically access to the itemInCouncil1
         self.assertTrue(itemInCouncil1.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
         # accept_and_return itemToCouncil2 and check
         self.do(itemToCouncil2, 'accept_and_return')
         itemInCouncil2 = itemToCouncil2.getItemClonedToOtherMC('meeting-config-council')
-        self.assertEquals(itemInCouncil2.getFinanceAdvice(), FINANCE_GROUP_IDS[0])
+        self.assertEquals(itemInCouncil2.getFinanceAdvice(), financial_group_uids[0])
         self.assertTrue(itemInCouncil2.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
         # when college item was accepted_and_returned, it was cloned, the finance advice
         # is also found for this cloned item
@@ -558,22 +556,23 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
     def test_GetLegalTextForFDAdvice(self):
         self.changeUser('admin')
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
         self.changeUser('pmManager')
         item1 = self.create('MeetingItem', title='Item with positive advice')
-        item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item1.setFinanceAdvice(financial_group_uids[0])
         item1a = self.create('MeetingItem', title='Item with positive with remarks advice')
-        item1a.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item1a.setFinanceAdvice(financial_group_uids[0])
         item2 = self.create('MeetingItem', title='Item with negative advice')
-        item2.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item2.setFinanceAdvice(financial_group_uids[0])
         item3 = self.create('MeetingItem', title='Item with no advice')
-        item3.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item3.setFinanceAdvice(financial_group_uids[0])
 
         self.proposeItem(item1)
         self.proposeItem(item1a)
@@ -608,19 +607,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         advice1 = createContentInContainer(
             item1,
             'meetingadvicefinances',
-            **{'advice_group': FINANCE_GROUP_IDS[0],
+            **{'advice_group': financial_group_uids[0],
                'advice_type': 'positive_finance',
                'advice_comment': RichTextValue(u'My good comment finance')})
         advice1a = createContentInContainer(
             item1a,
             'meetingadvicefinances',
-            **{'advice_group': FINANCE_GROUP_IDS[0],
+            **{'advice_group': financial_group_uids[0],
                'advice_type': 'positive_with_remarks_finance',
                'advice_comment': RichTextValue(u'My good with remarks comment finance')})
         advice2 = createContentInContainer(
             item2,
             'meetingadvicefinances',
-            **{'advice_group': FINANCE_GROUP_IDS[0],
+            **{'advice_group': financial_group_uids[0],
                'advice_type': 'negative_finance',
                'advice_comment': RichTextValue(u'My bad comment finance')})
 
@@ -703,10 +702,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                 longer editable
         '''
         self.changeUser('admin')
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
@@ -715,7 +714,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if no advice is asked, mayGenerate returns False.
         self.assertFalse(item1.adapted().mayGenerateFDAdvice())
 
-        item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item1.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item1)
         self.do(item1, 'proposeToFinance')
         item1.setCompleteness('completeness_complete')
@@ -723,7 +723,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(item1,
                                            'meetingadvicefinances',
-                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                           **{'advice_group': financial_group_uids[0],
                                               'advice_type': 'positive_finance',
                                               'advice_comment': RichTextValue(u'My comment finance')})
         # if advice is hidden, it can only be seen by advisers of the finance group.
@@ -899,10 +899,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_PrintFDStats(self):
 
         self.changeUser('admin')
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
@@ -910,7 +910,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item1 = self.create('MeetingItem', title='Item1 with advice')
 
-        item1.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item1.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item1)
         self.do(item1, 'proposeToFinance')
         self.changeUser('pmFinController')
@@ -924,7 +925,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(item1,
                                            'meetingadvicefinances',
-                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                           **{'advice_group': financial_group_uids[0],
                                               'advice_type': 'negative_finance',
                                               'advice_comment': RichTextValue(u'My bad comment finance')})
         self.changeUser('pmFinController')
@@ -984,17 +985,17 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # have basically the right to handle that sort of advice, we give them
         # the right here.
         # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
-        self._addPrincipalToGroup('pmFinController', '%s_advisers' % FINANCE_GROUP_IDS[1])
-        self._addPrincipalToGroup('pmFinReviewer', '%s_advisers' % FINANCE_GROUP_IDS[1])
-        self._addPrincipalToGroup('pmFinManager', '%s_advisers' % FINANCE_GROUP_IDS[1])
-        self._addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % FINANCE_GROUP_IDS[1])
-        self._addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % FINANCE_GROUP_IDS[1])
-        self._addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % FINANCE_GROUP_IDS[1])
+        self._addPrincipalToGroup('pmFinController', '%s_advisers' % financial_group_uids[1])
+        self._addPrincipalToGroup('pmFinReviewer', '%s_advisers' % financial_group_uids[1])
+        self._addPrincipalToGroup('pmFinManager', '%s_advisers' % financial_group_uids[1])
+        self._addPrincipalToGroup('pmFinController', '%s_financialcontrollers' % financial_group_uids[1])
+        self._addPrincipalToGroup('pmFinReviewer', '%s_financialreviewers' % financial_group_uids[1])
+        self._addPrincipalToGroup('pmFinManager', '%s_financialmanagers' % financial_group_uids[1])
 
         # Create the second item with advice.
         self.changeUser('pmManager')
         item2 = self.create('MeetingItem', title='Item2 with advice')
-        item2.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        item2.setFinanceAdvice(financial_group_uids[1])
         self.proposeItem(item2)
         self.do(item2, 'proposeToFinance')
         self.changeUser('pmFinController')
@@ -1008,7 +1009,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice2 = createContentInContainer(item2,
                                            'meetingadvicefinances',
-                                           **{'advice_group': FINANCE_GROUP_IDS[1],
+                                           **{'advice_group': financial_group_uids[1],
                                               'advice_type': 'positive_finance'})
 
         self.changeUser('pmFinController')
@@ -1032,7 +1033,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Create the third item with advice which gonna be timed out..
         self.changeUser('pmManager')
         item3 = self.create('MeetingItem', title='Item3 with advice timed out')
-        item3.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        item3.setFinanceAdvice(financial_group_uids[1])
         self.proposeItem(item3)
         self.do(item3, 'proposeToFinance')
         self.changeUser('pmFinController')
@@ -1046,7 +1047,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice3 = createContentInContainer(item3,
                                            'meetingadvicefinances',
-                                           **{'advice_group': FINANCE_GROUP_IDS[1],
+                                           **{'advice_group': financial_group_uids[1],
                                               'advice_type': 'negative_finance'})
 
         self.changeUser('pmFinController')
@@ -1070,13 +1071,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         changeCompleteness()
 
         # Now, finance will forget this item and make it expire.
-        item3.adviceIndex[FINANCE_GROUP_IDS[1]]['delay_started_on'] = datetime(2016, 1, 1)
+        item3.adviceIndex[financial_group_uids[1]]['delay_started_on'] = datetime(2016, 1, 1)
         item3.updateLocalRoles()
 
         # Create the fourth item without advice, but timed out too.
         self.changeUser('pmManager')
         item4 = self.create('MeetingItem', title='Item4 timed out without advice')
-        item4.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        item4.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item4)
         self.do(item4, 'proposeToFinance')
         self.changeUser('pmFinController')
@@ -1087,14 +1088,15 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         changeCompleteness()
 
         # Now, finance will forget this item and make it expire.
-        item4.adviceIndex[FINANCE_GROUP_IDS[0]]['delay_started_on'] = datetime(2016, 1, 1)
+        item4.adviceIndex[financial_group_uids[0]]['delay_started_on'] = datetime(2016, 1, 1)
         item4.updateLocalRoles()
 
         # Create the fifth item with a bad advice and then remove financial impact.
         self.changeUser('pmManager')
         item5 = self.create('MeetingItem', title='Item5 with advice')
 
-        item5.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item5.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item5)
         self.do(item5, 'proposeToFinance')
         self.changeUser('pmFinController')
@@ -1108,7 +1110,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice5 = createContentInContainer(item5,
                                            'meetingadvicefinances',
-                                           **{'advice_group': FINANCE_GROUP_IDS[0],
+                                           **{'advice_group': financial_group_uids[0],
                                               'advice_type': 'negative_finance',
                                               'advice_comment': RichTextValue(u'Bad comment finance')})
         self.changeUser('pmFinController')
@@ -1127,7 +1129,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Create the sixth item with positive advice with remarks.
         self.changeUser('pmManager')
         item6 = self.create('MeetingItem', title='Item6 with positive advice with remarks')
-        item6.setFinanceAdvice(FINANCE_GROUP_IDS[1])
+        item6.setFinanceAdvice(financial_group_uids[1])
         self.proposeItem(item6)
         self.do(item6, 'proposeToFinance')
         self.changeUser('pmFinController')
@@ -1141,7 +1143,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         advice6 = createContentInContainer(item6,
                                            'meetingadvicefinances',
-                                           **{'advice_group': FINANCE_GROUP_IDS[1],
+                                           **{'advice_group': financial_group_uids[1],
                                               'advice_type': 'positive_with_remarks_finance',
                                               'advice_comment': RichTextValue(u'A remark')})
 
@@ -1321,10 +1323,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('admin')
         cfg = self.meetingConfig
         cfg.setUsedAdviceTypes(('asked_again', ) + cfg.getUsedAdviceTypes())
+        # add finance groups
+        self._createFinanceGroups()
         # configure customAdvisers for 'meeting-config-college'
         _configureCollegeCustomAdvisers(self.portal)
-        # add finance groups
-        _createFinanceGroups(self.portal)
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
@@ -1332,7 +1334,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         self.tool.get_plone_groups_for_user()
         item = self.create('MeetingItem')
-        item.setFinanceAdvice(FINANCE_GROUP_IDS[0])
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
         # send item to finances
         self.proposeItem(item)
         self.changeUser('pmReviewer1')

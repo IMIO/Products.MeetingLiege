@@ -29,7 +29,6 @@ from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
 from Products.PloneMeeting.adapters import PMCategorizedObjectAdapter
 from Products.PloneMeeting.adapters import PMWfHistoryAdapter
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 
 
 class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
@@ -50,7 +49,8 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
             return True
 
         # if not a finance advice comment is viewable...
-        if self.context.advice_group not in FINANCE_GROUP_IDS:
+        financial_group_uids = tool.financialGroupUids()
+        if self.context.advice_group not in financial_group_uids:
             return True
 
         # finance advice event, check if user is member of finance group

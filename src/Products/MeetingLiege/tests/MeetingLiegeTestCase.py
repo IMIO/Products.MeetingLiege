@@ -23,13 +23,14 @@
 from plone.app.testing.bbb import _createMemberarea
 from Products.MeetingLiege.adapters import customWfAdaptations
 from Products.MeetingLiege.adapters import RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
+from Products.MeetingLiege.config import PROJECTNAME
 from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.MeetingLiege.testing import ML_TESTING_PROFILE_FUNCTIONAL
 from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
+from Products.PloneMeeting.exportimport.content import ToolInitializer
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
-
 
 # monkey patch the MeetingConfig.wfAdaptations again because it is done in
 # adapters.py but overrided by Products.MeetingCommunes here in the tests...
@@ -60,8 +61,13 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
         """
         self.changeUser('siteadmin')
         self.setMeetingConfig(self.meetingConfig3.getId())
-        self.tool.addUsersAndGroups(groups=bg_import_data.groups)
-        self.tool.addUsersOutsideGroups(bg_import_data.data.usersOutsideGroups)
+        context = self.portal.portal_setup._getImportContext('Products.MeetingLiege:testing')
+        initializer = ToolInitializer(context, PROJECTNAME)
+        orgs, active_orgs, savedOrgsData = initializer.addOrgs(bg_import_data.orgs)
+        for org in orgs:
+            self._select_organization(org.UID())
+        initializer.addUsers(bg_import_data.orgs)
+        initializer.addUsersOutsideGroups(bg_import_data.data.usersOutsideGroups)
         for userId in ('pmMeetingManagerBG',
                        'generalManager',
                        'bourgmestreManager',

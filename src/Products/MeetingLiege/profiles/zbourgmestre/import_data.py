@@ -37,9 +37,9 @@ bourgmestreManager = UserDescriptor(
 bourgmestreReviewer = UserDescriptor(
     'bourgmestreReviewer', [], email="bourgmestre_reviewer@plonemeeting.org",
     fullname='M. Bourgmestre Reviewer')
-general_manager_group = OrgDescriptor(GENERAL_MANAGER_GROUP_ID, 'General Managers', 'GMs')
+general_manager_group = OrgDescriptor(GENERAL_MANAGER_GROUP_ID, u'General Managers', u'GMs')
 general_manager_group.reviewers.append(generalManager)
-bourgmestre_group = OrgDescriptor(BOURGMESTRE_GROUP_ID, 'Bourgmestre', 'BG')
+bourgmestre_group = OrgDescriptor(BOURGMESTRE_GROUP_ID, u'Bourgmestre', u'BG')
 bourgmestre_group.creators.append(bourgmestreManager)
 bourgmestre_group.reviewers.append(bourgmestreReviewer)
 orgs = [general_manager_group, bourgmestre_group]

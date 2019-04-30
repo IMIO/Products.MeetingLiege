@@ -22,6 +22,7 @@
 # 02110-1301, USA.
 #
 
+from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 from Products.MeetingLiege.events import _everyAdvicesAreGivenFor
@@ -139,7 +140,8 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # Give to pmInternalReviewer1 the creator role to grant him access to
         # items in creation.
         self.changeUser('admin')
-        self.developers_creators.addMember('pmInternalReviewer1')
+        developers_creators = api.group.get(self.developers_creators)
+        developers_creators.addMember('pmInternalReviewer1')
 
         # now check for 'proposed_to_internal_reviewer_waiting_advices'
         # From item created.

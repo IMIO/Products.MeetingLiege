@@ -60,6 +60,7 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
            - ...
         """
         self.changeUser('siteadmin')
+        self._createFinanceGroups()
         self.setMeetingConfig(self.meetingConfig3.getId())
         context = self.portal.portal_setup._getImportContext('Products.MeetingLiege:testing')
         initializer = ToolInitializer(context, PROJECTNAME)

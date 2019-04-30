@@ -61,9 +61,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.closeMeeting(meeting)
         # the item has been sent, get it and test that relevant fields are correctly initialized
         newItem = item.getBRefs('ItemPredecessor')[0]
-        self.assertTrue(newItem.getPredecessor().UID() == item.UID())
-        self.assertTrue(newItem.getLabelForCouncil() == '<p>My label for council</p>')
-        self.assertTrue(newItem.getPrivacy() == 'secret')
+        self.assertEqual(newItem.getPredecessor().UID(), item.UID())
+        self.assertEqual(newItem.getLabelForCouncil(), '<p>My label for council</p>')
+        self.assertEqual(newItem.getPrivacy(), 'secret')
 
     def test_FieldsKeptWhenItemSentToCouncil(self):
         '''When an item is sent from College to Council, following fields are kept :
@@ -142,7 +142,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         cfg.setUseGroupsAsCategories(False)
         cfg.setItemGroupInChargeStates(ml_import_data.collegeMeeting.itemGroupInChargeStates)
         development = cfg.categories.development
-        development.setGroupsOfMatter(('vendors', ))
+        development.setGroupsOfMatter((self.vendors_uid, ))
 
         # create an item for the 'developers' group
         self.changeUser('pmCreator1')
@@ -150,36 +150,35 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # select the right category
         item.setCategory(development.getId())
         item._update_after_edit()
-        specialReaders = 'vendors_observers'
         # right category is selected by item must be at least validated
-        self.assertTrue(specialReaders not in item.__ac_local_roles__)
+        self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
 
         # validate the item
         self.validateItem(item)
         # now local_roles are correct
-        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
         # going back to 'proposed' will remove given local roles
         self.backToState(item, self._stateMappingFor('proposed'))
-        self.assertTrue(specialReaders not in item.__ac_local_roles__)
+        self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
         self.validateItem(item)
-        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
 
         # editing item keeps correct local roles
         self.changeUser('pmManager')
         item._update_after_edit()
-        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
 
         # functionnality is for validated items and for items in a meeting
         # so present the item and check that it still works
         self.create('Meeting', date='2015/01/01')
         self.presentItem(item)
         self.assertTrue(item.queryState() != 'validated')
-        self.assertTrue(item.__ac_local_roles__[specialReaders] == ['Reader', ])
+        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
 
         # if we use another category, local roles are removed
         item.setCategory('projects')
         item._update_after_edit()
-        self.assertTrue(specialReaders not in item.__ac_local_roles__)
+        self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
 
     def test_ItemReference(self):
         '''Test item reference generation. It uses CustomMeeting.getItemNumsForActe.'''
@@ -202,7 +201,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         resItem2 = self.create('MeetingItem')
         resItem2.setCategory('research')
         # use proposingGroup 'vendors' so it is not viewable by 'pmCreator1'
-        devItem1 = self.create('MeetingItem', proposingGroup='vendors')
+        devItem1 = self.create('MeetingItem', proposingGroup=self.vendors_uid)
         devItem1.setCategory('development')
         devItem2 = self.create('MeetingItem')
         devItem2.setCategory('development')
@@ -330,42 +329,43 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         self._removeConfigObjectsFor(cfg)
         insertingMethods = ({'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
+        cfg.setInsertingMethodsOnAddItem(insertingMethods)
         # no decision, it will get minimum possible index value
         item1 = self.create('MeetingItem')
         item1.setDecision('<p></p>')
         item1Id = item1.getId()
-        item1_order = item1.getInsertOrder(insertingMethods)
+        item1_order = item1._getInsertOrder(cfg)
         # decision < 6 chars
         item2 = self.create('MeetingItem')
         item2.setDecision('<p>EMET</p>')
         item2Id = item2.getId()
-        item2_order = item2.getInsertOrder(insertingMethods)
+        item2_order = item2._getInsertOrder(cfg)
         # beginning with 'A'
         item3 = self.create('MeetingItem')
         item3.setDecision('<p>ACCORDE un avis de ...</p>')
         item3Id = item3.getId()
-        item3_order = item3.getInsertOrder(insertingMethods)
+        item3_order = item3._getInsertOrder(cfg)
         # beginning with 'O'
         item4 = self.create('MeetingItem')
         item4.setDecision('<p>&nbsp;OCTROIE un avis de ...</p>')
         item4Id = item4.getId()
-        item4_order = item4.getInsertOrder(insertingMethods)
+        item4_order = item4._getInsertOrder(cfg)
         # begin with a space then EMET
         item5 = self.create('MeetingItem')
         item5.setDecision('<p>&nbsp;</p><p>EMET</p>')
         item5Id = item5.getId()
-        item5_order = item5.getInsertOrder(insertingMethods)
+        item5_order = item5._getInsertOrder(cfg)
         # use 'zzzzzz', it will get maximum possible index value
         item6 = self.create('MeetingItem')
         item6.setDecision('<p>zzzzzz</p>')
         item6Id = item6.getId()
-        item6_order = item6.getInsertOrder(insertingMethods)
+        item6_order = item6._getInsertOrder(cfg)
         # use same beginning of sentence as item2 and item5 but
         # with an extra letter that will be taken into account
         item7 = self.create('MeetingItem')
         item7.setDecision('<p>EMET un avis</p>')
         item7Id = item7.getId()
-        item7_order = item7.getInsertOrder(insertingMethods)
+        item7_order = item7._getInsertOrder(cfg)
         # result should be item1, item3, item2, item5 (equals to item2) then item4
         self.assertTrue(item1_order < item3_order < item2_order ==
                         item5_order < item7_order < item4_order < item6_order)
@@ -373,16 +373,16 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if we use 'vendors' for item1, item1_order will become higher than item6_order
         insertingMethods = ({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},
                             {'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
+        cfg.setInsertingMethodsOnAddItem(insertingMethods)
         for item in item1, item2, item3, item4, item5, item6, item7:
-            self.assertTrue(item.getProposingGroup() == 'developers')
+            self.assertTrue(item.getProposingGroup() == self.developers_uid)
         self.assertTrue(item1._findOrderFor('on_proposing_groups') == 0)
-        item1.setProposingGroup('vendors')
+        item1.setProposingGroup(self.vendors_uid)
         self.assertTrue(item1._findOrderFor('on_proposing_groups') == 1)
         # now order of item1 is higher than order of item6
-        self.assertTrue(item1.getInsertOrder(insertingMethods) > item6.getInsertOrder(insertingMethods))
+        self.assertTrue(item1._getInsertOrder(cfg) > item6._getInsertOrder(cfg))
 
         # now insert items in a meeting and compare
-        cfg.setInsertingMethodsOnAddItem(insertingMethods)
         meeting = self.create('Meeting', date='2015/01/01')
         for item in item1, item2, item3, item4, item5, item6, item7:
             self.presentItem(item)

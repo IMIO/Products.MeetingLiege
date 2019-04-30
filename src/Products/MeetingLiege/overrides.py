@@ -54,8 +54,7 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
             return True
 
         # finance advice event, check if user is member of finance group
-        userMeetingGroupIds = [mGroup.getId() for mGroup in tool.get_orgs_for_user()]
-        if self.context.advice_group in userMeetingGroupIds:
+        if self.context.advice_group in tool.get_orgs_for_user(the_objects=False):
             return True
         return False
 

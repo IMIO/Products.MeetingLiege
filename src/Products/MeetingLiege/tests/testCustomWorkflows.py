@@ -24,6 +24,7 @@
 
 from AccessControl import Unauthorized
 from collective.compoundcriterion.interfaces import ICompoundCriterionFilter
+from collective.contact.plonegroup.utils import get_organization
 from collective.contact.plonegroup.utils import get_plone_group_id
 from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_config_root
@@ -53,6 +54,7 @@ from Products.PloneMeeting.indexes import indexAdvisers
 from Products.PloneMeeting.indexes import reviewProcessInfo
 from Products.PloneMeeting.utils import get_annexes
 from Products.PloneMeeting.utils import main_item_data
+from Products.PloneMeeting.utils import org_id_to_uid
 from zope.component import getAdapter
 from zope.component import getMultiAdapter
 from zope.event import notify
@@ -249,7 +251,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             item.wfConditions().mayAskAdvicesByItemCreator().msg,
             context=self.request), advice_required_to_ask_advices)
         # now ask 'vendors' advice
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToAdministrativeReviewer', ])
@@ -259,7 +261,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
                                           'meetingadvice',
-                                          **{'advice_group': 'vendors',
+                                          **{'advice_group': self.vendors_uid,
                                              'advice_type': u'positive',
                                              'advice_comment': RichTextValue(u'My comment vendors')})
         # no more advice to give
@@ -277,7 +279,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                                    'proposeToDirector', ])
         # advice could be asked again
         self.assertTrue(item.adapted().mayAskAdviceAgain(advice))
-        item.setOptionalAdvisers(('vendors', 'developers'))
+        item.setOptionalAdvisers((self.vendors_uid, self.developers_uid))
         item._update_after_edit()
         # now that there is an advice to give (developers)
         # internal reviewer may ask it
@@ -290,7 +292,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmAdviser1')
         createContentInContainer(item,
                                  'meetingadvice',
-                                 **{'advice_group': 'developers',
+                                 **{'advice_group': self.developers_uid,
                                     'advice_type': u'positive',
                                     'advice_comment': RichTextValue(u'My comment developers')})
         # item may be proposed directly to director
@@ -561,9 +563,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # the trick is that as item state is still in itemAdviceStates,
         # the advice is not 'advice_given' but in a state 'financial_advice_signed'
         # where nobody can change anything neither...
-        financeGrp = getattr(self.tool, financial_group_uids[0])
-        self.assertTrue('%s__state__validated' % cfgId in financeGrp.getItemAdviceStates())
-        self.assertTrue('%s__state__validated' % cfgId in financeGrp.getItemAdviceEditStates())
+        financeGrp = get_organization(financial_group_uids[0])
+        self.assertTrue('%s__state__validated' % cfgId in financeGrp.get_item_advice_states())
+        self.assertTrue('%s__state__validated' % cfgId in financeGrp.get_item_advice_edit_states())
         self.assertTrue(advice.queryState() == 'financial_advice_signed')
         # item.adviceIndex is coherent also, the 'addable'/'editable' data is correct
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_editable'])
@@ -635,7 +637,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # remove pmManager from 'developers' so he will not have the 'MeetingReviewer' role
         # managed by the meetingadviceliege_workflow and giving access to 'Access contents information'
         for group in self.portal.portal_membership.getMemberById('pmManager').getGroups():
-            if group.startswith('developers_'):
+            if group.startswith(self.developers_uid):
                 self._removePrincipalFromGroup('pmManager', group)
 
         self.changeUser('pmCreator1')
@@ -849,8 +851,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item2, 'accept_and_return')
         returned = item.getBRefs('ItemPredecessor')
         returned2 = item2.getBRefs('ItemPredecessor')
-        self.assertTrue(len(returned) == 1)
-        self.assertTrue(len(returned2) == 2)
+        self.assertEqual(len(returned), 1)
+        self.assertEqual(len(returned2), 2)
         returned = returned[0]
         duplicated1, duplicated2 = returned2
         # original creator was kept
@@ -1356,13 +1358,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         cfgId = cfg.getId()
         cfg.setUseGroupsAsCategories(False)
         pg = self.portal.portal_groups
-        darGroup = pg.getGroupById('developers_administrativereviewers')
+        darGroup = pg.getGroupById(self.developers_administrativereviewers)
         darMembers = darGroup.getMemberIds()
-        dirGroup = pg.getGroupById('developers_internalreviewers')
+        dirGroup = pg.getGroupById(self.developers_internalreviewers)
         dirMembers = dirGroup.getMemberIds()
         # Give the creator role to all reviewers as they will have to create items.
         self.changeUser('admin')
-        dcGroup = pg.getGroupById('developers_creators')
+        dcGroup = pg.getGroupById(self.developers_creators)
         dcGroup.addMember('pmAdminReviewer1')
         dcGroup.addMember('pmInternalReviewer1')
         dcGroup.addMember('pmReviewer1')
@@ -1393,7 +1395,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # A creator can ask for advices if an advice is required.
         vendors = self.tool.vendors
         vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToAdministrativeReviewer', ])
@@ -1447,7 +1449,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToItemCreated')
 
         # An administrative reviewer can ask for advices if an advice is required.
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToInternalReviewer', ])
@@ -1475,7 +1477,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # An internal reviewer can ask for advices if an advice is required.
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToDirector'])
@@ -1494,7 +1496,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # item is in creation.
         developers = self.tool.developers
         developers.setItemAdviceStates(('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, ))
-        item.setOptionalAdvisers(('developers', ))
+        item.setOptionalAdvisers((self.developers_uid, ))
         item._update_after_edit()
         self.changeUser('pmInternalReviewer1')
         self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
@@ -1515,7 +1517,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # A reviewer can ask for advices if an advice is required.
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
                                                    'proposeToDirector', ])
@@ -1742,7 +1744,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
         # change proposingGroup to 'vendors' so we test that item is correctly validated
         # even if it is not accessible during the process when in it 'itemcreated'
-        councilItem.setProposingGroup('vendors')
+        councilItem.setProposingGroup(self.vendors_uid)
         councilItem._update_after_edit()
         self.do(councilItem, 'return')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
@@ -1869,7 +1871,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                 'proposed_to_internal_reviewer_waiting_advices')
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         # for now this advice may be asked
         vendors = self.tool.vendors
@@ -1881,13 +1883,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # if another advice is asked, then the transition shows up
         developers = self.tool.developers
         self.assertFalse(developers.getItemAdviceStates())
-        item.setOptionalAdvisers(('vendors', 'developers'))
+        item.setOptionalAdvisers((self.vendors_uid, self.developers_uid))
         item._update_after_edit()
         self.assertIn('askAdvicesByItemCreator', self.transitions(item))
 
         # now test when item is 'proposed_to_internal_reviewer_waiting_advices'
         self.changeUser('pmReviewer1')
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.changeUser('siteadmin')
         self.do(item, 'proposeToAdministrativeReviewer')
@@ -2008,7 +2010,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                           'backToProposedToInternalReviewer',
                           'proposeToGeneralManager'])
         # ask advices
-        item.setOptionalAdvisers(('vendors', ))
+        item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue('askAdvicesByDirector' in self.transitions(item))
         self.do(item, 'askAdvicesByDirector')
@@ -2276,31 +2278,43 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item = self.create('MeetingItem')
         self.create('Meeting', date=DateTime('2018/01/30'))
 
+        sc_uid = org_id_to_uid('sc')
+        bg_uid = org_id_to_uid('bourgmestre')
         # check reviewProcessInfo
         self.changeUser('pmManager')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__itemcreated')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__itemcreated'.format(self.developers_uid))
         self.do(item, 'proposeToAdministrativeReviewer')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__proposed_to_administrative_reviewer')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid))
         self.do(item, 'proposeToInternalReviewer')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__proposed_to_internal_reviewer')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid))
         self.do(item, 'proposeToDirector')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__proposed_to_director')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__proposed_to_director'.format(self.developers_uid))
         self.do(item, 'proposeToGeneralManager')
-        self.assertEqual(reviewProcessInfo(item)(), 'sc__reviewprocess__proposed_to_general_manager')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid))
         self.changeUser('generalManager')
         self.do(item, 'proposeToCabinetManager')
-        self.assertEqual(reviewProcessInfo(item)(), 'bourgmestre__reviewprocess__proposed_to_cabinet_manager')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid))
         self.changeUser('bourgmestreManager')
         self.do(item, 'proposeToCabinetReviewer')
-        self.assertEqual(reviewProcessInfo(item)(), 'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid))
         self.changeUser('bourgmestreReviewer')
         self.do(item, 'validate')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__validated')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__validated'.format(self.developers_uid))
         self.changeUser('pmManager')
         self.do(item, 'present')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__presented')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__presented'.format(self.developers_uid))
         self.do(item, 'accept')
-        self.assertEqual(reviewProcessInfo(item)(), 'developers__reviewprocess__accepted')
+        self.assertEqual(reviewProcessInfo(item)(),
+                         '{0}__reviewprocess__accepted'.format(self.developers_uid))
 
         my_reviewer_groups = getAdapter(
             cfg, ICompoundCriterionFilter, name='items-to-validate-of-my-reviewer-groups')
@@ -2316,13 +2330,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_administrative_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_administrative_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid)]}})
         # the every_reviewer_levels_and_lower will also search for
         # 'developers__reviewprocess__proposed_to_cabinet_manager'
         # but this will not match any item as when an item is 'proposed_to_cabinet_manager'
@@ -2332,8 +2346,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_administrative_reviewer',
-                          'developers__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid)]}})
 
         # internal reviewer
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2345,21 +2359,21 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_internal_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_internal_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_internal_reviewer',
-                          'developers__reviewprocess__proposed_to_administrative_reviewer',
-                          'developers__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid)]}})
 
         # director
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2376,28 +2390,28 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_director',
-                          'developers__reviewprocess__proposed_to_general_manager',
-                          'developers__reviewprocess__proposed_to_cabinet_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_director',
-                          'developers__reviewprocess__proposed_to_general_manager',
-                          'developers__reviewprocess__proposed_to_cabinet_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['developers__reviewprocess__proposed_to_director',
-                          'developers__reviewprocess__proposed_to_general_manager',
-                          'developers__reviewprocess__proposed_to_cabinet_reviewer',
-                          'developers__reviewprocess__proposed_to_internal_reviewer',
-                          'developers__reviewprocess__proposed_to_administrative_reviewer',
-                          'developers__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid)]}})
 
         # general manager
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2409,28 +2423,28 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['sc__reviewprocess__proposed_to_director',
-                          'sc__reviewprocess__proposed_to_general_manager',
-                          'sc__reviewprocess__proposed_to_cabinet_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['sc__reviewprocess__proposed_to_director',
-                          'sc__reviewprocess__proposed_to_general_manager',
-                          'sc__reviewprocess__proposed_to_cabinet_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['sc__reviewprocess__proposed_to_director',
-                          'sc__reviewprocess__proposed_to_general_manager',
-                          'sc__reviewprocess__proposed_to_cabinet_reviewer',
-                          'sc__reviewprocess__proposed_to_internal_reviewer',
-                          'sc__reviewprocess__proposed_to_administrative_reviewer',
-                          'sc__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_internal_reviewer'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(sc_uid)]}})
 
         # cabinet manager
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2442,19 +2456,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['bourgmestre__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['bourgmestre__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['bourgmestre__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid)]}})
 
         # cabinet reviewer
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2466,28 +2480,28 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['bourgmestre__reviewprocess__proposed_to_director',
-                          'bourgmestre__reviewprocess__proposed_to_general_manager',
-                          'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['bourgmestre__reviewprocess__proposed_to_director',
-                          'bourgmestre__reviewprocess__proposed_to_general_manager',
-                          'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['bourgmestre__reviewprocess__proposed_to_director',
-                          'bourgmestre__reviewprocess__proposed_to_general_manager',
-                          'bourgmestre__reviewprocess__proposed_to_cabinet_reviewer',
-                          'bourgmestre__reviewprocess__proposed_to_internal_reviewer',
-                          'bourgmestre__reviewprocess__proposed_to_administrative_reviewer',
-                          'bourgmestre__reviewprocess__proposed_to_cabinet_manager']}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_general_manager'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_internal_reviewer'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid)]}})
 
     def _check_confidential_annex_access(self, item, userIds=[], access=True):
         """ """

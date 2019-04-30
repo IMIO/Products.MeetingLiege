@@ -591,21 +591,21 @@ class CustomMeetingItem(MeetingItem):
 
     def is_general_manager(self):
         """Is current user a general manager?"""
-        group_id = '{0}_reviewers'.format(GENERAL_MANAGER_GROUP_ID)
+        group_id = '{0}_reviewers'.format(org_id_to_uid(GENERAL_MANAGER_GROUP_ID))
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
         return group_id in userGroups
 
     def is_cabinet_manager(self):
         """Is current user a cabinet manager?"""
-        group_id = '{0}_creators'.format(BOURGMESTRE_GROUP_ID)
+        group_id = '{0}_creators'.format(org_id_to_uid(BOURGMESTRE_GROUP_ID))
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
         return group_id in userGroups
 
     def is_cabinet_reviewer(self):
         """Is current user a cabinet reviewer?"""
-        group_id = '{0}_reviewers'.format(BOURGMESTRE_GROUP_ID)
+        group_id = '{0}_reviewers'.format(org_id_to_uid(BOURGMESTRE_GROUP_ID))
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
         return group_id in userGroups
@@ -1325,13 +1325,12 @@ class CustomMeetingItem(MeetingItem):
     def getGroupInCharge(self, theObject=False, **kwargs):
         '''Redefine getGroupInCharge to return the group in charge of matter.'''
         item = self.getSelf()
-        tool = api.portal.get_tool('portal_plonemeeting')
         category = item.getCategory(theObject=True)
         if category and category.meta_type == 'MeetingCategory':
             for groupOfMatter in category.getGroupsOfMatter():
                 res = groupOfMatter
                 if theObject:
-                    res = getattr(tool, groupOfMatter)
+                    res = get_organization(groupOfMatter)
                 return res
         return ''
 
@@ -1342,12 +1341,11 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         res = [item.getProposingGroup(True)]
         if item.portal_type == 'MeetingItemBourgmestre':
-            tool = api.portal.get_tool('portal_plonemeeting')
             review_state = item.queryState()
             if review_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES:
-                res.append(tool.get(GENERAL_MANAGER_GROUP_ID))
+                res.append(get_organization(org_id_to_uid(GENERAL_MANAGER_GROUP_ID)))
                 if review_state not in ['proposed_to_general_manager']:
-                    res.append(tool.get(BOURGMESTRE_GROUP_ID))
+                    res.append(get_organization(org_id_to_uid(BOURGMESTRE_GROUP_ID)))
         return res
 
     def _getGroupManagingItem(self, review_state=None):
@@ -1356,16 +1354,15 @@ class CustomMeetingItem(MeetingItem):
         if item.portal_type != 'MeetingItemBourgmestre':
             return item.getProposingGroup(True)
         else:
-            tool = api.portal.get_tool('portal_plonemeeting')
             # administrative states or item presented to a meeting,
             # proposingGroup is managing the item
             if review_state in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['validated'] or item.hasMeeting():
                 return item.getProposingGroup(True)
             # general manager, we take the _reviewers group
             elif review_state in ['proposed_to_general_manager']:
-                return tool.get(GENERAL_MANAGER_GROUP_ID)
+                return get_organization(org_id_to_uid(GENERAL_MANAGER_GROUP_ID))
             else:
-                return tool.get(BOURGMESTRE_GROUP_ID)
+                return get_organization(org_id_to_uid(BOURGMESTRE_GROUP_ID))
 
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group

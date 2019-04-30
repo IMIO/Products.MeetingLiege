@@ -22,12 +22,14 @@
 # 02110-1301, USA.
 #
 
+from imio.helpers.cache import cleanVocabularyCacheFor
+from plone.memoize.instance import Memojito
+from Products.MeetingLiege.vocabularies import IGNORED_GROUP_IDS
+from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from Products.PloneMeeting.utils import org_id_to_uid
 from zope.component import queryUtility
 from zope.schema.interfaces import IVocabularyFactory
-from plone.memoize.instance import Memojito
 
-from imio.helpers.cache import cleanVocabularyCacheFor
-from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 memPropName = Memojito.propname
 
@@ -38,13 +40,16 @@ class testCustomFaceted(MeetingLiegeTestCase):
     def _setupGroupsOfMatter(self):
         """ """
         self.changeUser('siteadmin')
+        for org_id in IGNORED_GROUP_IDS:
+            org = self.create('organization', id=org_id, title=unicode(org_id))
+            self._select_organization(org.UID())
         self.create('MeetingCategory', id='maintenance', title='Maintenance', categoryId='maintenance')
         pmFolder = self.getMeetingFolder()
         cfg = self.meetingConfig
         cfg.useGroupsAsCategories = False
-        cfg.categories.development.setGroupsOfMatter(('vendors', ))
-        cfg.categories.research.setGroupsOfMatter(('vendors', 'developers', ))
-        cfg.categories.maintenance.setGroupsOfMatter(('developers', ))
+        cfg.categories.development.setGroupsOfMatter((self.vendors_uid, ))
+        cfg.categories.research.setGroupsOfMatter((self.vendors_uid, self.developers_uid, ))
+        cfg.categories.maintenance.setGroupsOfMatter((self.developers_uid, ))
         return cfg, pmFolder, queryUtility(IVocabularyFactory,
                                            "Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
 
@@ -85,16 +90,15 @@ class testCustomFaceted(MeetingLiegeTestCase):
         """Returns groupsOfMatter defined on categories."""
         cfg, pmFolder, vocab = self._setupGroupsOfMatter()
         self.assertEquals([term.token for term in vocab(pmFolder)._terms],
-                          ['developers', 'vendors'])
+                          [self.developers_uid, self.vendors_uid])
 
         # some groupIds are ignored, like "scc"
-        self.tool.invokeFactory('MeetingGroup', id='scc', title='SCC')
-        cfg.categories.maintenance.setGroupsOfMatter(('developers', 'scc'))
+        scc_uid = org_id_to_uid('scc')
+        cfg.categories.maintenance.setGroupsOfMatter((self.developers_uid, scc_uid))
         cfg.categories.maintenance.at_post_edit_script()
-        self.assertFalse('scc' in [term.token for term in vocab(pmFolder)._terms])
+        self.assertFalse(scc_uid in [term.token for term in vocab(pmFolder)._terms])
 
         # clean cache and test when cfg.useGroupsAsCategories is True, vocab will be empty
         cfg.setUseGroupsAsCategories(True)
         cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
-        self.assertEquals([term.token for term in vocab(pmFolder)._terms],
-                          [])
+        self.assertEquals([term.token for term in vocab(pmFolder)._terms], [])

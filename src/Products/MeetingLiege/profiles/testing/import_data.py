@@ -13,6 +13,17 @@ pmFinControllerCompta = UserDescriptor('pmFinControllerCompta', [])
 pmFinReviewer = UserDescriptor('pmFinReviewer', [])
 pmFinManager = UserDescriptor('pmFinManager', [])
 pmMeetingManagerBG = UserDescriptor('pmMeetingManagerBG', [], email="pm_mm_bg@plone.org", fullname='M. PMMMBG')
+pmAdminReviewer1 = UserDescriptor('pmAdminReviewer1', [])
+pmInternalReviewer1 = UserDescriptor('pmInternalReviewer1', [])
+
+developers = pm_import_data.developers
+pmManager = pm_import_data.pmManager
+pmReviewerLevel1 = pm_import_data.pmReviewerLevel1
+developers.administrativereviewers.append(pmAdminReviewer1)
+developers.administrativereviewers.append(pmManager)
+developers.administrativereviewers.append(pmReviewerLevel1)
+developers.internalreviewers.append(pmInternalReviewer1)
+developers.internalreviewers.append(pmManager)
 
 # Meeting configurations -------------------------------------------------------
 collegeMeeting = deepcopy(pm_import_data.meetingPma)
@@ -23,6 +34,17 @@ collegeMeeting.shortName = 'meeting-config-college'
 collegeMeeting.id = 'meeting-config-college'
 collegeMeeting.isDefault = True
 collegeMeeting.shortName = 'College'
+collegeMeeting.usedItemAttributes = ['budgetInfos',
+                                     'detailedDescription',
+                                     'observations',
+                                     'toDiscuss',
+                                     'completeness',
+                                     'labelForCouncil',
+                                     'otherMeetingConfigsClonableToPrivacy',
+                                     'archivingRef',
+                                     'motivation',
+                                     'textCheckList',
+                                     'itemIsSigned']
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
@@ -34,6 +56,10 @@ collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewe
                                                  'proposeToDirector',
                                                  'validate',
                                                  'present', )
+collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency',
+                                              'accepted',
+                                              'accepted_but_modified',
+                                              'accepted_and_returned',)
 collegeMeeting.itemDecidedStates = ['accepted', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.itemPositiveDecidedStates = ['accepted', 'accepted_but_modified']
 collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
@@ -64,6 +90,12 @@ councilMeeting.shortName = 'meeting-config-council'
 councilMeeting.id = 'meeting-config-council'
 councilMeeting.isDefault = False
 councilMeeting.shortName = 'Council'
+councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'labelForCouncil',
+                                     'observations',
+                                     'privacy',
+                                     'motivation',
+                                     'itemIsSigned']
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
 councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'
@@ -116,9 +148,9 @@ bourgmestreMeeting.certifiedSignatures = [
      'date_from': '',
      'date_to': '',
      }]
-bourgmestreMeeting.categories = collegeMeeting.categories
+bourgmestreMeeting.categories = councilMeeting.categories
 bourgmestreMeeting.shortName = 'Bourgmestre'
-bourgmestreMeeting.annexTypes = collegeMeeting.annexTypes
+bourgmestreMeeting.annexTypes = councilMeeting.annexTypes
 bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
     'configgroup_budgetimpacteditors',
     'reader_advices',
@@ -157,6 +189,7 @@ bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
 bourgmestreMeeting.transitionsToConfirm = []
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )
+bourgmestreMeeting.itemAdviceStates = ('proposed_to_director_waiting_advices', )
 bourgmestreMeeting.recordItemHistoryStates = []
 bourgmestreMeeting.maxShownMeetings = 5
 bourgmestreMeeting.maxDaysDecisions = 60
@@ -182,7 +215,6 @@ bourgmestreMeeting.itemPowerObserversStates = (
 bourgmestreMeeting.itemRestrictedPowerObserversStates = (
     'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
 bourgmestreMeeting.useCopies = True
-bourgmestreMeeting.itemCopyGroupsStates = ['validated']
 bourgmestreMeeting.useVotes = False
 bourgmestreMeeting.recurringItems = []
 bourgmestreMeeting.itemTemplates = []

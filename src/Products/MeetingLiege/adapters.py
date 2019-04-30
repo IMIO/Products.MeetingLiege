@@ -1348,21 +1348,23 @@ class CustomMeetingItem(MeetingItem):
                     res.append(get_organization(org_id_to_uid(BOURGMESTRE_GROUP_ID)))
         return res
 
-    def _getGroupManagingItem(self, review_state=None):
+    def _getGroupManagingItem(self, review_state, theObject=True):
         """ """
         item = self.getSelf()
         if item.portal_type != 'MeetingItemBourgmestre':
-            return item.getProposingGroup(True)
+            return item.getProposingGroup(theObject=theObject)
         else:
             # administrative states or item presented to a meeting,
             # proposingGroup is managing the item
             if review_state in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['validated'] or item.hasMeeting():
-                return item.getProposingGroup(True)
+                return item.getProposingGroup(theObject=theObject)
             # general manager, we take the _reviewers group
             elif review_state in ['proposed_to_general_manager']:
-                return get_organization(org_id_to_uid(GENERAL_MANAGER_GROUP_ID))
+                gm_uid = org_id_to_uid(GENERAL_MANAGER_GROUP_ID)
+                return theObject and get_organization(gm_uid) or gm_uid
             else:
-                return get_organization(org_id_to_uid(BOURGMESTRE_GROUP_ID))
+                bg_uid = org_id_to_uid(BOURGMESTRE_GROUP_ID)
+                return theObject and get_organization(bg_uid) or bg_uid
 
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group

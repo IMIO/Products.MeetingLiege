@@ -11,7 +11,7 @@
   <dependency step="installMeetingLiege"/>
   Initialize portal_plonemeeting folders for MeetingLiege.
  </import-step>
- <import-step id="finalizeInstanceMeetingLiege" version="20140207-01"
+ <import-step id="finalizeInstanceMeetingLiege" version="20140210-01"
               handler="Products.MeetingLiege.setuphandlers.finalizeInstance"
               title="Finalize instance.">
   <dependency step="initializetool-MeetingLiege"/>

@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <import-steps>
 
- <import-step id="installMeetingLiege" version="20170123-01" 
+ <import-step id="installMeetingLiege" version="20140210-01" 
               handler="Products.MeetingLiege.setuphandlers.installMeetingLiege" 
               title="Install MeetingLiege."> 
    Install MeetingLiege. 
  </import-step>
 
- <import-step id="initializetool-MeetingLiege" version="20170123-01"
+ <import-step id="initializetool-MeetingLiege" version="20140210-01"
               handler="Products.MeetingLiege.setuphandlers.initializeTool"
               title="Initialize MeetingLiege with Bourgmestre.">
    Initialize portal_plonemeeting folders.

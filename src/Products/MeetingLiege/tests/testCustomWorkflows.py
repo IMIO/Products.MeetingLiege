@@ -1946,7 +1946,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # advice may be given again
         self.changeUser('pmCreator2')
         self.assertEqual(item.getAdvicesGroupsInfosForUser(),
-                         ([], [(treasury_org_uid, treasury_org.Title())]))
+                         ([], [(treasury_org_uid, treasury_org.get_full_title())]))
         advice.advice_type = 'positive'
         advice.advice_comment = RichTextValue(u'My positive comment')
         notify(ObjectModifiedEvent(advice))

@@ -1832,15 +1832,6 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
             res = True
         return res
 
-    security.declarePublic('mayCorrect')
-
-    def mayCorrect(self, destinationState=None):
-        '''See docstring in interfaces.py'''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            return True
-        return res
-
 
 class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -2643,6 +2634,8 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
     def query(self):
         '''Queries all items for which there is completeness to evaluate, so where completeness
            is not 'completeness_complete'.'''
+        if not self.cfg:
+            return {}
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
@@ -2668,6 +2661,8 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
            We only return items for which completeness has been evaluated to 'complete'.'''
+        if not self.cfg:
+            return {}
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
@@ -2687,6 +2682,8 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
     @property
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
+        if not self.cfg:
+            return {}
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()
@@ -2704,6 +2701,8 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
     @property
     def query(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
+        if not self.cfg:
+            return {}
         groupIds = []
         tool = api.portal.get_tool('portal_plonemeeting')
         userGroups = tool.get_plone_groups_for_user()

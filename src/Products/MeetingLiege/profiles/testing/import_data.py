@@ -129,6 +129,11 @@ councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'label': 'Addendum',
                                                   'used_in_inserting_method': ''}, ]
 councilMeeting.itemCopyGroupsStates = ['validated']
+councilMeeting.powerObservers[0]['item_states'] = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
+councilMeeting.powerObservers[1]['item_states'] = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
+councilMeeting.powerObservers[1]['item_access_on'] = \
+    u"python: item.getListType() not in ('late', ) or " \
+    u"item.queryState() not in ('presented', 'itemfrozen', 'returned_to_proposing_group')"
 
 # Bourgmestre
 bourgmestreMeeting = MeetingConfigDescriptor(

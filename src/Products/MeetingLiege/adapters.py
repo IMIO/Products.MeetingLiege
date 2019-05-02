@@ -27,8 +27,10 @@ from AccessControl import ClassSecurityInfo
 from appy.gen import No
 from collections import OrderedDict
 from collective.contact.plonegroup.config import get_registry_organizations
+from collective.contact.plonegroup.utils import get_all_suffixes
 from collective.contact.plonegroup.utils import get_organization
 from collective.contact.plonegroup.utils import get_organizations
+from collective.contact.plonegroup.utils import get_own_organization
 from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
@@ -895,8 +897,8 @@ class CustomMeetingItem(MeetingItem):
             return False
         if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID) and \
            self.context.queryState() in ('accepted', 'accepted_but_modified'):
-            mGroup = self.context.getProposingGroup(theObject=True)
-            if mGroup.userPloneGroups(suffixes=['internalreviewers', 'reviewers']):
+            org = self.context.getProposingGroup(theObject=True)
+            if org in tool.get_orgs_for_user(suffixes=['internalreviewers', 'reviewers']):
                 return True
         return self.context.mayAskAdviceAgain(advice)
 
@@ -1371,26 +1373,34 @@ class CustomMeetingItem(MeetingItem):
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
         item = self.getSelf()
         item_state = item.queryState()
-        # give 'Reader' role for every suffixes except 'observers' that
-        # only gets access when item is positively decided
+        own_org = get_own_organization()
         item_managing_group = item.adapted()._getGroupManagingItem(item_state)
         proposingGroup = item.getProposingGroup(theObject=True)
         # when proposingGroup is no more the managing group, it means item is at least
         # proposed to general manager, give read access to proposingGroup and to general manager
         # if it is not the managing group
         if item_managing_group != proposingGroup:
-            item._assign_roles_to_group_suffixes(proposingGroup, ignored_suffixes=['observers'])
+            # give 'Reader' role for every suffix except 'observers' that
+            # only get access when item is positively decided
+            roles = {suffix: 'Reader' for suffix in get_all_suffixes(proposingGroup.UID()) if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(proposingGroup, roles=roles)
         # access for GENERAL_MANAGER_GROUP_ID groups
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['proposed_to_general_manager']:
-            gm_org = get_organization(org_id_to_uid(GENERAL_MANAGER_GROUP_ID))
-            item._assign_roles_to_group_suffixes(gm_org, ignored_suffixes=['observers'])
+            gm_org = own_org.get(GENERAL_MANAGER_GROUP_ID)
+            # give 'Reader' role for every suffix except 'observers' that
+            # only get access when item is positively decided
+            roles = {suffix: 'Reader' for suffix in get_all_suffixes(gm_org.UID()) if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(gm_org, roles=roles)
         # access for BOURGMESTRE_GROUP_ID groups
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + \
                 ['proposed_to_general_manager',
                  'proposed_to_cabinet_manager',
                  'proposed_to_cabinet_reviewer']:
-            bg_org = get_organization(org_id_to_uid(BOURGMESTRE_GROUP_ID))
-            item._assign_roles_to_group_suffixes(bg_org, ignored_suffixes=['observers'])
+            bg_org = own_org.get(BOURGMESTRE_GROUP_ID)
+            # give 'Reader' role for every suffix except 'observers' that
+            # only get access when item is positively decided
+            roles = {suffix: 'Reader' for suffix in get_all_suffixes(bg_org.UID()) if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(bg_org, roles=roles)
 
     def _findCustomOneLevelFor(self, insertMethod):
         '''Manage our custom inserting method 'on_decision_first_word'.'''

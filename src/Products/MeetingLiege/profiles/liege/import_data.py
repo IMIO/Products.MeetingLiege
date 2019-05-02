@@ -94,12 +94,10 @@ emetteuravisPers = UserDescriptor('emetteuravisPers', [], email="test@test.be", 
 
 # add finance groups
 dfcontrol = OrgDescriptor('df-contrale', u'DF - Contrôle', u'DF')
-dfcontrol.item_advice_states = ['meeting-config-college__state__itemfrozen',
-                                'meeting-config-college__state__proposed_to_finance',
+dfcontrol.item_advice_states = ['meeting-config-college__state__proposed_to_finance',
                                 'meeting-config-college__state__presented',
                                 'meeting-config-college__state__validated']
-dfcontrol.item_advice_edit_states = ['meeting-config-college__state__itemfrozen',
-                                     'meeting-config-college__state__proposed_to_finance',
+dfcontrol.item_advice_edit_states = ['meeting-config-college__state__proposed_to_finance',
                                      'meeting-config-college__state__presented',
                                      'meeting-config-college__state__validated']
 dfcontrol.item_advice_view_states = ['meeting-config-college__state__accepted',
@@ -114,12 +112,10 @@ dfcontrol.item_advice_view_states = ['meeting-config-college__state__accepted',
 dfcompta = OrgDescriptor('df-comptabilita-c-et-audit-financier',
                          u'DF - Comptabilité et Audit financier',
                          u'DF')
-dfcompta.item_advice_states = ['meeting-config-college__state__itemfrozen',
-                               'meeting-config-college__state__proposed_to_finance',
+dfcompta.item_advice_states = ['meeting-config-college__state__proposed_to_finance',
                                'meeting-config-college__state__presented',
                                'meeting-config-college__state__validated']
-dfcompta.item_advice_edit_states = ['meeting-config-college__state__itemfrozen',
-                                    'meeting-config-college__state__proposed_to_finance',
+dfcompta.item_advice_edit_states = ['meeting-config-college__state__proposed_to_finance',
                                     'meeting-config-college__state__presented',
                                     'meeting-config-college__state__validated']
 dfcompta.item_advice_view_states = ['meeting-config-college__state__accepted',

@@ -25,6 +25,7 @@
 from AccessControl import Unauthorized
 from collective.compoundcriterion.interfaces import ICompoundCriterionFilter
 from collective.contact.plonegroup.utils import get_organization
+from collective.contact.plonegroup.utils import get_plone_group
 from collective.contact.plonegroup.utils import get_plone_group_id
 from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_config_root
@@ -223,6 +224,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
     def test_CollegeProcessWithNormalAdvices(self):
         '''How does the process behave when some 'normal' advices,
            aka not 'finances' advices are aksed.'''
+        self.changeUser('admin')
+        self._createFinanceGroups()
         cfg = self.meetingConfig
         # normal advices can be given when item in state 'itemcreated_waiting_advices',
         # asked by item creator and when item in state 'proposed_to_internal_reviewer_waiting_advices',
@@ -586,7 +589,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # if the advice is no more editable, it's state switched to 'advice_given'
         self.changeUser('pmManager')
         meeting = self.create('Meeting', date='2014/01/01 09:00:00')
-        # close the meeting, the advice will be set to 'advice_given'
+        # freeze the meeting, the advice will be set to 'advice_given'
         # the advice could still be given if not already in state 'presented' and 'itemfrozen'
         self.presentItem(item)
         self.freezeMeeting(meeting)
@@ -1393,8 +1396,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self._addAllMembers(dirGroup, dirMembers)
 
         # A creator can ask for advices if an advice is required.
-        vendors = self.tool.vendors
-        vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
+        self.vendors.item_advice_states = ('%s__state__itemcreated_waiting_advices' % cfgId, )
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertTrue(self.transitions(item) == ['askAdvicesByItemCreator',
@@ -1494,8 +1496,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # An internal reviewer can ask an advice to internal reviewer when the
         # item is in creation.
-        developers = self.tool.developers
-        developers.setItemAdviceStates(('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, ))
+        self.developers.item_advice_states = ('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, )
         item.setOptionalAdvisers((self.developers_uid, ))
         item._update_after_edit()
         self.changeUser('pmInternalReviewer1')
@@ -1874,15 +1875,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         # for now this advice may be asked
-        vendors = self.tool.vendors
-        self.assertFalse(vendors.getItemAdviceStates())
+        self.assertFalse(self.vendors.item_advice_states)
         self.assertIn('askAdvicesByItemCreator', self.transitions(item))
-        # now restrict 'vendors' itemAdviceStates to 'proposed_to_internal_reviewer_waiting_advices'
-        vendors.setItemAdviceStates(('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, ))
+        # now restrict 'vendors' item_advice_states to 'proposed_to_internal_reviewer_waiting_advices'
+        self.vendors.item_advice_states = ('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, )
         self.assertNotIn('askAdvicesByItemCreator', self.transitions(item))
         # if another advice is asked, then the transition shows up
-        developers = self.tool.developers
-        self.assertFalse(developers.getItemAdviceStates())
+        self.assertFalse(self.developers.item_advice_states)
         item.setOptionalAdvisers((self.vendors_uid, self.developers_uid))
         item._update_after_edit()
         self.assertIn('askAdvicesByItemCreator', self.transitions(item))
@@ -1897,7 +1896,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmInternalReviewer1')
         # advice may be asked
         self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
-        vendors.setItemAdviceStates(('%s__state__itemcreated_waiting_advices' % cfgId, ))
+        self.vendors.item_advice_states = ('%s__state__itemcreated_waiting_advices' % cfgId, )
         # advice may not be asked anymore
         self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
 
@@ -1906,19 +1905,15 @@ class testCustomWorkflows(MeetingLiegeTestCase):
            item is accepted/accepted_but_modified.  Internal reviewer and directors
            of the proposing group may ask this advice again."""
         self.changeUser('siteadmin')
+        self._createFinanceGroups()
         cfg = self.meetingConfig
-        cfgId = cfg.getId()
-        self.create('MeetingGroup',
-                    id=TREASURY_GROUP_ID,
-                    itemAdviceStates=('{0}__state__accepted'.format(cfgId),
-                                      '{0}__state__accepted_but_modified'.format(cfgId),),
-                    itemAdviceEditStates=('{0}__state__accepted'.format(cfgId),
-                                          '{0}__state__accepted_but_modified'.format(cfgId),))
         # add pmCreator2 to the TREASURY_GROUP_ID_advisers group
-        group = self.portal.portal_groups.getGroupById('{0}_advisers'.format(TREASURY_GROUP_ID))
+        treasury_org = self.own_org.get(TREASURY_GROUP_ID)
+        treasury_org_uid = treasury_org.UID()
+        group = get_plone_group(treasury_org_uid, 'advisers')
         group.addMember('pmCreator2')
         # make TREASURY_GROUP_ID a power adviser group
-        cfg.setPowerAdvisersGroups((TREASURY_GROUP_ID, ))
+        cfg.setPowerAdvisersGroups((treasury_org_uid, ))
 
         # create an item and make it 'accepted'
         self.changeUser('pmCreator1')
@@ -1931,7 +1926,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator2')
         advice = createContentInContainer(item,
                                           'meetingadvice',
-                                          **{'advice_group': TREASURY_GROUP_ID,
+                                          **{'advice_group': treasury_org_uid,
                                              'advice_type': u'negative',
                                              'advice_comment': RichTextValue(u'My negative comment')})
         # ask advice again
@@ -1951,11 +1946,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # advice may be given again
         self.changeUser('pmCreator2')
         self.assertEqual(item.getAdvicesGroupsInfosForUser(),
-                         ([], [(TREASURY_GROUP_ID, '')]))
+                         ([], [(treasury_org_uid, treasury_org.Title())]))
         advice.advice_type = 'positive'
         advice.advice_comment = RichTextValue(u'My positive comment')
         notify(ObjectModifiedEvent(advice))
-        self.assertEqual(item.adviceIndex[TREASURY_GROUP_ID]['type'], 'positive')
+        self.assertEqual(item.adviceIndex[treasury_org_uid]['type'], 'positive')
 
     def test_BourgmestreAdministrativeProcess(self):
         '''This test the Bourgmestre workflows administrative part :

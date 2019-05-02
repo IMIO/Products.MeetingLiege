@@ -101,7 +101,7 @@ import unicodedata
 
 
 # disable every wfAdaptations but 'return_to_proposing_group'
-customWfAdaptations = ('return_to_proposing_group', )
+customWfAdaptations = ('return_to_proposing_group')
 MeetingConfig.wfAdaptations = customWfAdaptations
 
 # use the 'itemcreated' state from college item WF to patch council item WF

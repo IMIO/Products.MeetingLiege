@@ -37,6 +37,7 @@
   <permission-map name="Review portal content"
                   acquired="False">
    <permission-role>Manager</permission-role>
+   <permission-role>MeetingManager</permission-role>
   </permission-map>
   <permission-map name="View"
                   acquired="False">

@@ -98,7 +98,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setToDiscuss(False)
         # send College item to Council and compare
         new_item = item.cloneToOtherMeetingConfig(cfg2Id)
-        self.assertTrue(new_item.portal_type == 'MeetingItemCouncil')
+        self.assertEqual(new_item.portal_type, 'MeetingItemCouncil')
         self.assertEqual(item.getLabelForCouncil(),
                          new_item.getLabelForCouncil())
         self.assertEqual(item.getDecisionSuite(),
@@ -118,20 +118,20 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # create an item with relevant adviceFinance
         item = self.create('MeetingItem')
         # by default, no adviceFinance asked
-        self.assertTrue(item.getFinanceAdvice() == '_none_')
+        self.assertEqual(item.getFinanceAdvice(), '_none_')
         item._update_after_edit()
-        self.assertTrue(item.adviceIndex == {})
+        self.assertEqual(item.adviceIndex, {})
         # ask finance advice
         financial_group_uids = self.tool.financialGroupUids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)
-        self.assertTrue(len(item.adviceIndex) == 1)
+        self.assertEqual(len(item.adviceIndex), 1)
         # now ask another advice finance
         item.setFinanceAdvice(financial_group_uids[1])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[1] in item.adviceIndex)
-        self.assertTrue(len(item.adviceIndex) == 1)
+        self.assertEqual(len(item.adviceIndex), 1)
 
     def test_GroupsOfMatter(self):
         '''Once an item is 'validated' (and after in the WF), group selected on the used MeetingCategory as
@@ -156,24 +156,24 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # validate the item
         self.validateItem(item)
         # now local_roles are correct
-        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
+        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
         # going back to 'proposed' will remove given local roles
         self.backToState(item, self._stateMappingFor('proposed'))
         self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
         self.validateItem(item)
-        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
+        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
 
         # editing item keeps correct local roles
         self.changeUser('pmManager')
         item._update_after_edit()
-        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
+        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
 
         # functionnality is for validated items and for items in a meeting
         # so present the item and check that it still works
         self.create('Meeting', date='2015/01/01')
         self.presentItem(item)
         self.assertTrue(item.queryState() != 'validated')
-        self.assertTrue(item.__ac_local_roles__[self.vendors_observers] == ['Reader', ])
+        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
 
         # if we use another category, local roles are removed
         item.setCategory('projects')
@@ -219,66 +219,66 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(devItem2)
         self.presentItem(maintItem1)
         # no itemReference until meeting is frozen
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['', '', '', '', ''])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['', '', '', '', ''])
         self.freezeMeeting(meeting)
         # check that item references are correct
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o4', 'o1', 'o2', 'o5'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o4', 'o1', 'o2', 'o5'])
         # change position of items 1 and 2, itemReference is changed too
         changeOrder = resItem1.restrictedTraverse('@@change-item-order')
         changeOrder(moveType='down')
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o4', 'o2', 'o1', 'o5'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o4', 'o2', 'o1', 'o5'])
         # move depItem2 to last position
         changeOrder = resItem2.restrictedTraverse('@@change-item-order')
         changeOrder('number', '5')
         # now depItem1 reference is back to 'deployment1' and depItem2 in last position
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'research1', 'maintenance_cat_id1', 'research2'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o4', 'o1', 'o5', 'o2'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'research1', 'maintenance_cat_id1', 'research2'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o4', 'o1', 'o5', 'o2'])
 
         # if we insert a new item, references are updated
         newItem = self.create('MeetingItem')
         newItem.setCategory('development')
         self.presentItem(newItem)
         # item is inserted at the end
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'development3',
-                           'research1', 'maintenance_cat_id1', 'research2'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o4', 'o7', 'o1', 'o5', 'o2'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'development3',
+                          'research1', 'maintenance_cat_id1', 'research2'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o4', 'o7', 'o1', 'o5', 'o2'])
 
         # now if we remove an item from the meeting, reference are still correct
         # remove item with ref 'research1', the first item, the item that had 'research2' will get 'research1'
         self.backToState(resItem1, 'validated')
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'development3', 'maintenance_cat_id1', 'research1'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o4', 'o7', 'o5', 'o2'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'development3', 'maintenance_cat_id1', 'research1'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o4', 'o7', 'o5', 'o2'])
 
         # delete item having reference 'development2'
         # only Manager may delete an item
         self.changeUser('admin')
         self.deleteAsManager(devItem2.UID())
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'maintenance_cat_id1', 'research1'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o7', 'o5', 'o2'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'maintenance_cat_id1', 'research1'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o7', 'o5', 'o2'])
 
         # if we change the category used for an item, reference are updated accordingly
         # change category for resItem1 from 'research' to 'development'
         resItem2.setCategory('development')
         resItem2._update_after_edit()
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True)],
-                          ['development1', 'development2', 'maintenance_cat_id1', 'development3'])
-        self.assertEquals([item.getId() for item in meeting.getItems(ordered=True)],
-                          ['o3', 'o7', 'o5', 'o2'])
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+                         ['development1', 'development2', 'maintenance_cat_id1', 'development3'])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         ['o3', 'o7', 'o5', 'o2'])
 
         # test late items, reference is HOJ.1, HOJ.2, ...
         self.changeUser('pmManager')
@@ -290,36 +290,36 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         lateItem2.setPreferredMeeting(meeting.UID())
         self.presentItem(lateItem1)
         self.presentItem(lateItem2)
-        self.assertEquals(lateItem1.getItemReference(), 'HOJ.1')
-        self.assertEquals(lateItem2.getItemReference(), 'HOJ.2')
+        self.assertEqual(lateItem1.getItemReference(), 'HOJ.1')
+        self.assertEqual(lateItem2.getItemReference(), 'HOJ.2')
 
         # right now test if the getItemNumsForActe has to be generated by a user
         # that only have access to some items of the meeting.  Indeed, let's say
         # a MeetingManager is on an item and removes it from the meeting, getItemNumsForActe
         # is not recomputed as not called on the item view, if another user access an
         # item or the meeting, this time it will be recomputed
-        self.assertEquals(lateItem1.getItemReference(), 'HOJ.1')
-        self.assertEquals(newItem.getItemReference(), 'development2')
+        self.assertEqual(lateItem1.getItemReference(), 'HOJ.1')
+        self.assertEqual(newItem.getItemReference(), 'development2')
         self.backToState(lateItem1, 'validated')
         self.backToState(newItem, 'validated')
         self.changeUser('pmCreator1')
         # no more reference for lateItem1 and depItem2
-        self.assertEquals(lateItem1.getItemReference(), '')
-        self.assertEquals(newItem.getItemReference(), '')
+        self.assertEqual(lateItem1.getItemReference(), '')
+        self.assertEqual(newItem.getItemReference(), '')
         # pmCreator1 is not able to access every items of the meeting
         # if we get the reference of other items, it is correct,
         # make meeting modified so we are sure that item reference are recomputed
         # with pmCreator1 as current user
         meeting.notifyModified()
         meeting.updateItemReferences()
-        self.assertEquals([item.getItemReference() for item in meeting.getItems(ordered=True,
-                                                                                unrestricted=True)],
-                          ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
-        self.assertEquals(devItem1.getItemReference(), 'development1')
+        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True,
+                                                                               unrestricted=True)],
+                         ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
+        self.assertEqual(devItem1.getItemReference(), 'development1')
         # no more in the meeting
-        self.assertEquals(resItem1.getItemReference(), '')
-        self.assertEquals(resItem2.getItemReference(), 'development2')
-        self.assertEquals(lateItem2.getItemReference(), 'HOJ.1')
+        self.assertEqual(resItem1.getItemReference(), '')
+        self.assertEqual(resItem2.getItemReference(), 'development2')
+        self.assertEqual(lateItem2.getItemReference(), 'HOJ.1')
 
     def test_InsertingMethodOnDecisionFirstWord(self):
         '''
@@ -375,10 +375,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                             {'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
         cfg.setInsertingMethodsOnAddItem(insertingMethods)
         for item in item1, item2, item3, item4, item5, item6, item7:
-            self.assertTrue(item.getProposingGroup() == self.developers_uid)
-        self.assertTrue(item1._findOrderFor('on_proposing_groups') == 0)
+            self.assertEqual(item.getProposingGroup(), self.developers_uid)
+        self.assertEqual(item1._findOrderFor('on_proposing_groups'), 0)
         item1.setProposingGroup(self.vendors_uid)
-        self.assertTrue(item1._findOrderFor('on_proposing_groups') == 1)
+        self.assertEqual(item1._findOrderFor('on_proposing_groups'), 1)
         # now order of item1 is higher than order of item6
         self.assertTrue(item1._getInsertOrder(cfg) > item6._getInsertOrder(cfg))
 
@@ -387,8 +387,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         for item in item1, item2, item3, item4, item5, item6, item7:
             self.presentItem(item)
         # items should have been added respecting following order item3, item2, item5, item4, item6, item1
-        self.assertTrue([item.getId() for item in meeting.getItems(ordered=True)] ==
-                        [item3Id, item2Id, item5Id, item7Id, item4Id, item6Id, item1Id, ])
+        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+                         [item3Id, item2Id, item5Id, item7Id, item4Id, item6Id, item1Id, ])
 
     def test_GetItemWithFinanceAdvice(self):
         '''Test the custom getItemWithFinanceAdvice method.
@@ -417,7 +417,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)
-        self.assertTrue(item.adapted().getItemWithFinanceAdvice() == item)
+        self.assertEqual(item.adapted().getItemWithFinanceAdvice(), item)
         # give advice
         self.proposeItem(item)
         self.do(item, 'proposeToFinance')
@@ -431,7 +431,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                     'advice_comment': RichTextValue(u'My positive comment finance')})
         # finance group has read access to the item
         financeGroupAdvisersId = "{0}_advisers".format(item.getFinanceAdvice())
-        self.assertTrue(item.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(item.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
 
         self.changeUser('pmManager')
         # duplicate and keep link will not consider original finance advice
@@ -439,12 +439,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item.onDuplicateAndKeepLink()
         duplicatedItem = item.getBRefs()[0]
         # the duplicatedItem advice referent is the duplicatedItem...
-        self.assertTrue(duplicatedItem.adapted().getItemWithFinanceAdvice() == duplicatedItem)
+        self.assertEqual(duplicatedItem.adapted().getItemWithFinanceAdvice(), duplicatedItem)
         # the finance advice is asked on the duplicatedItem
-        self.assertTrue(duplicatedItem.getFinanceAdvice() == financial_group_uids[0])
+        self.assertEqual(duplicatedItem.getFinanceAdvice(), financial_group_uids[0])
         self.assertTrue(financial_group_uids[0] in duplicatedItem.adviceIndex)
         # finance group get automatically access to the duplicatedItem as it is linked manually
-        self.assertTrue(duplicatedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(duplicatedItem.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
 
         # delaying an item will not make original item the item holder
         # the finance advice is asked on the delayed item too
@@ -455,9 +455,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
         clonedDelayedItem = [newItem for newItem in item.getBRefs('ItemPredecessor')
                              if not newItem == duplicatedItem][0]
-        self.assertTrue(clonedDelayedItem.adapted().getItemWithFinanceAdvice() == clonedDelayedItem)
+        self.assertEqual(clonedDelayedItem.adapted().getItemWithFinanceAdvice(), clonedDelayedItem)
         # the finance advice is asked on the clonedDelayedItem
-        self.assertTrue(clonedDelayedItem.getFinanceAdvice() == financial_group_uids[0])
+        self.assertEqual(clonedDelayedItem.getFinanceAdvice(), financial_group_uids[0])
         self.assertTrue(financial_group_uids[0] in clonedDelayedItem.adviceIndex)
         # finance group did not get automatically access to the clonedDelayedItem
         self.assertTrue(financeGroupAdvisersId not in clonedDelayedItem.__ac_local_roles__)
@@ -471,30 +471,30 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                               if newItem not in (duplicatedItem, clonedDelayedItem)][0]
         # this time, the item with finance advice is the 'returned' item
         itemWithFinanceAdvice = clonedReturnedItem.adapted().getItemWithFinanceAdvice()
-        self.assertTrue(itemWithFinanceAdvice == item)
-        self.assertTrue(itemWithFinanceAdvice.queryState() == 'returned')
+        self.assertEqual(itemWithFinanceAdvice, item)
+        self.assertEqual(itemWithFinanceAdvice.queryState(), 'returned')
         # the info is kept in the financeAdvice attribute
         # nevertheless, the advice is not asked automatically anymore
-        self.assertTrue(clonedReturnedItem.getFinanceAdvice() == financial_group_uids[0])
-        self.assertTrue(not financial_group_uids[0] in clonedReturnedItem.adviceIndex)
+        self.assertEqual(clonedReturnedItem.getFinanceAdvice(), financial_group_uids[0])
+        self.assertTrue(financial_group_uids[0] not in clonedReturnedItem.adviceIndex)
         # finance group gets automatically access to the clonedReturnedItem
-        self.assertTrue(clonedReturnedItem.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(clonedReturnedItem.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
 
         # send the clonedReturnedItem to Council and check with the council item
         clonedReturnedItem.setOtherMeetingConfigsClonableTo('meeting-config-council')
         self.presentItem(clonedReturnedItem)
-        self.assertEquals(clonedReturnedItem.queryState(), 'itemfrozen')
+        self.assertEqual(clonedReturnedItem.queryState(), 'itemfrozen')
         # still right, including sent item
-        self.assertEquals(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
-        self.assertEquals(
+        self.assertEqual(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
+        self.assertEqual(
             clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
             item)
         # now test if setting an optional finance advice does not break getItemWithFinanceAdvice
         clonedReturnedItem.setOptionalAdvisers((financial_group_uids[0], ))
         clonedReturnedItem.updateLocalRoles()
         self.assertTrue(financial_group_uids[0] in clonedReturnedItem.adviceIndex)
-        self.assertEquals(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
-        self.assertEquals(
+        self.assertEqual(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
+        self.assertEqual(
             clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
             item)
 
@@ -519,40 +519,40 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # accept itemToCouncil1 and check
         self.do(itemToCouncil1, 'accept')
         itemInCouncil1 = itemToCouncil1.getItemClonedToOtherMC('meeting-config-council')
-        self.assertEquals(itemInCouncil1.getFinanceAdvice(), financial_group_uids[0])
-        self.assertTrue(itemInCouncil1.adapted().getItemWithFinanceAdvice() == itemToCouncil1)
+        self.assertEqual(itemInCouncil1.getFinanceAdvice(), financial_group_uids[0])
+        self.assertEqual(itemInCouncil1.adapted().getItemWithFinanceAdvice(), itemToCouncil1)
         # finance group gets automatically access to the itemInCouncil1
-        self.assertTrue(itemInCouncil1.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(itemInCouncil1.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
         # accept_and_return itemToCouncil2 and check
         self.do(itemToCouncil2, 'accept_and_return')
         itemInCouncil2 = itemToCouncil2.getItemClonedToOtherMC('meeting-config-council')
-        self.assertEquals(itemInCouncil2.getFinanceAdvice(), financial_group_uids[0])
-        self.assertTrue(itemInCouncil2.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
+        self.assertEqual(itemInCouncil2.getFinanceAdvice(), financial_group_uids[0])
+        self.assertEqual(itemInCouncil2.adapted().getItemWithFinanceAdvice(), itemToCouncil2)
         # when college item was accepted_and_returned, it was cloned, the finance advice
         # is also found for this cloned item
         clonedAcceptedAndReturnedItem = [newItem for newItem in itemToCouncil2.getBRefs('ItemPredecessor')
                                          if newItem.portal_type == 'MeetingItemCollege'][0]
-        self.assertTrue(clonedAcceptedAndReturnedItem.adapted().getItemWithFinanceAdvice() == itemToCouncil2)
+        self.assertEqual(clonedAcceptedAndReturnedItem.adapted().getItemWithFinanceAdvice(), itemToCouncil2)
         # finance group gets automatically access to the itemInCouncil2
-        self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
         # roles are kept after edit or transition
         itemInCouncil2._update_after_edit()
-        self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
         # only available transition is 'present', so create a meeting in council to test...
         self.setMeetingConfig(self.meetingConfig2.getId())
         self.meetingConfig2.setUseGroupsAsCategories(True)
         self.meetingConfig2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},))
         self.create('Meeting', date='2015/01/01')
         self.do(itemInCouncil2, 'present')
-        self.assertTrue(itemInCouncil2.queryState() == 'presented')
-        self.assertTrue(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId] == ['Reader'])
+        self.assertEqual(itemInCouncil2.queryState(), 'presented')
+        self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
 
         # duplicate and keep link an 'accepted_and_return' college item,
         # the financeAdvice will not follow
         duplicatedItemUrl = itemToCouncil2.onDuplicateAndKeepLink()
         duplicatedItemId = duplicatedItemUrl.split('/')[-1]
         duplicatedItem2 = getattr(itemToCouncil2.getParentNode(), duplicatedItemId)
-        self.assertEquals(duplicatedItem2.adapted().getItemWithFinanceAdvice(), duplicatedItem2)
+        self.assertEqual(duplicatedItem2.adapted().getItemWithFinanceAdvice(), duplicatedItem2)
 
     def test_GetLegalTextForFDAdvice(self):
         self.changeUser('admin')
@@ -649,7 +649,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         financialStuff1 = item1.adapted().getFinancialAdviceStuff()
         financialStuff1a = item1a.adapted().getFinancialAdviceStuff()
         # positive_with_remarks 'advice_type' is printed like 'positive'
-        self.assertEquals(financialStuff1['advice_type'], financialStuff1a['advice_type'])
+        self.assertEqual(financialStuff1['advice_type'], financialStuff1a['advice_type'])
         financialStuff2 = item2.adapted().getFinancialAdviceStuff()
         advice1 = item1.getAdviceDataFor(item1, item1.getFinanceAdvice())
         advice1a = item1a.getAdviceDataFor(item1a, item1a.getFinanceAdvice())
@@ -828,13 +828,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertFalse(item.adapted().maySignItem())
         # ok, now present the item, it will be signable
         self.presentItem(item)
-        self.assertEquals(item.queryState(), 'presented')
+        self.assertEqual(item.queryState(), 'presented')
         self.assertTrue(item.maySignItem())
         self.freezeMeeting(meeting)
-        self.assertEquals(item.queryState(), 'itemfrozen')
+        self.assertEqual(item.queryState(), 'itemfrozen')
         self.assertTrue(item.maySignItem())
         self.closeMeeting(meeting)
-        self.assertEquals(item.queryState(), 'accepted')
+        self.assertEqual(item.queryState(), 'accepted')
         self.assertTrue(item.maySignItem())
 
     def test_ItemSetToAddendum(self):
@@ -852,23 +852,23 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # and subcall to "change item number" breaks and listType is not changed
         view = item.restrictedTraverse('@@change-item-listtype')
         view('addendum')
-        self.assertEquals(item.getListType(), 'normal')
+        self.assertEqual(item.getListType(), 'normal')
         item2 = self.create('MeetingItem')
         self.presentItem(item2)
         # first item of the meeting may not be set to 'addendum'
-        self.assertEquals(item.getItemNumber(), 100)
+        self.assertEqual(item.getItemNumber(), 100)
         view('addendum')
-        self.assertEquals(item.getListType(), 'normal')
+        self.assertEqual(item.getListType(), 'normal')
 
         # set second item to 'addendum'
         view = item2.restrictedTraverse('@@change-item-listtype')
         view('addendum')
         # now it is addendum and itemNumber as been set to a subnumber
-        self.assertEquals(item2.getListType(), 'addendum')
-        self.assertEquals(item2.getItemNumber(), 101)
+        self.assertEqual(item2.getListType(), 'addendum')
+        self.assertEqual(item2.getItemNumber(), 101)
         # back to 'normal', itemNumber is set back to an integer
         view('normal')
-        self.assertEquals(item2.getItemNumber(), 200)
+        self.assertEqual(item2.getItemNumber(), 200)
 
     def test_SentenceAppendedToCouncilItemDecisionEndWhenPresented(self):
         """When a council item is presented, it's decisionEnd field is adapted,
@@ -881,23 +881,22 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         FIRST_SENTENCE = '<p>A first sentence.</p>'
         item = self.create('MeetingItem')
         item.setDecisionEnd(FIRST_SENTENCE)
-        self.assertEquals(item.getDecisionEnd(), FIRST_SENTENCE)
+        self.assertEqual(item.getDecisionEnd(), FIRST_SENTENCE)
         # present item, special sentence will be appended
         self.presentItem(item)
-        self.assertEquals(item.getDecisionEnd(),
-                          FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE)
+        self.assertEqual(item.getDecisionEnd(),
+                         FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE)
         # not appended twice, create an item that already ends with sentence
         # more over add an extra empty <p></p> at the end
         item2 = self.create('MeetingItem')
         item2.setDecisionEnd(FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
-        self.assertEquals(item2.getDecisionEnd(),
-                          FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
+        self.assertEqual(item2.getDecisionEnd(),
+                         FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
         self.presentItem(item2)
-        self.assertEquals(item2.getDecisionEnd(),
-                          FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
+        self.assertEqual(item2.getDecisionEnd(),
+                         FIRST_SENTENCE + COUNCILITEM_DECISIONEND_SENTENCE + '<p>&nbsp;</p>')
 
     def test_PrintFDStats(self):
-
         self.changeUser('admin')
         # add finance groups
         self._createFinanceGroups()
@@ -1173,125 +1172,125 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         catalog = api.portal.get_tool('portal_catalog')
         results = view.printFDStats(catalog(portal_type='MeetingItemCollege', sort_on='id'))
 
-        self.assertEquals(results[0]['title'], "Item1 with advice")
-        self.assertEquals(results[0]['meeting_date'], "")
-        self.assertEquals(results[0]['group'], "Developers")
-        self.assertEquals(results[0]['end_advice'], "OUI")
-        self.assertEquals(results[0]['comments'], "")
-        self.assertEquals(results[0]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[0]['advice_type'], "Avis finance favorable")
+        self.assertEqual(results[0]['title'], "Item1 with advice")
+        self.assertEqual(results[0]['meeting_date'], "")
+        self.assertEqual(results[0]['group'], "Developers")
+        self.assertEqual(results[0]['end_advice'], "OUI")
+        self.assertEqual(results[0]['comments'], "")
+        self.assertEqual(results[0]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[0]['advice_type'], "Avis finance favorable")
 
-        self.assertEquals(results[1]['title'], "Item1 with advice")
-        self.assertEquals(results[1]['meeting_date'], "")
-        self.assertEquals(results[1]['group'], "Developers")
-        self.assertEquals(results[1]['end_advice'], "")
-        self.assertEquals(results[1]['comments'], "Go back to the abyssYou are not complete")
-        self.assertEquals(results[1]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[1]['advice_type'], 'Renvoy\xc3\xa9 au validateur interne pour incompl\xc3\xa9tude')
+        self.assertEqual(results[1]['title'], "Item1 with advice")
+        self.assertEqual(results[1]['meeting_date'], "")
+        self.assertEqual(results[1]['group'], "Developers")
+        self.assertEqual(results[1]['end_advice'], "")
+        self.assertEqual(results[1]['comments'], "Go back to the abyssYou are not complete")
+        self.assertEqual(results[1]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[1]['advice_type'], 'Renvoy\xc3\xa9 au validateur interne pour incompl\xc3\xa9tude')
 
-        self.assertEquals(results[2]['title'], "Item1 with advice")
-        self.assertEquals(results[2]['meeting_date'], "")
-        self.assertEquals(results[2]['group'], "Developers")
-        self.assertEquals(results[2]['end_advice'], "NON")
-        self.assertEquals(results[2]['comments'], "My bad comment finance")
-        self.assertEquals(results[2]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[2]['advice_type'], 'Avis finance d\xc3\xa9favorable')
+        self.assertEqual(results[2]['title'], "Item1 with advice")
+        self.assertEqual(results[2]['meeting_date'], "")
+        self.assertEqual(results[2]['group'], "Developers")
+        self.assertEqual(results[2]['end_advice'], "NON")
+        self.assertEqual(results[2]['comments'], "My bad comment finance")
+        self.assertEqual(results[2]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[2]['advice_type'], 'Avis finance d\xc3\xa9favorable')
 
-        self.assertEquals(results[3]['title'], "Item1 with advice")
-        self.assertEquals(results[3]['meeting_date'], "")
-        self.assertEquals(results[3]['group'], "Developers")
-        self.assertEquals(results[3]['end_advice'], "")
-        self.assertEquals(results[3]['comments'], "")
-        self.assertEquals(results[3]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[3]['advice_type'], 'Compl\xc3\xa9tude')
+        self.assertEqual(results[3]['title'], "Item1 with advice")
+        self.assertEqual(results[3]['meeting_date'], "")
+        self.assertEqual(results[3]['group'], "Developers")
+        self.assertEqual(results[3]['end_advice'], "")
+        self.assertEqual(results[3]['comments'], "")
+        self.assertEqual(results[3]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[3]['advice_type'], 'Compl\xc3\xa9tude')
 
-        self.assertEquals(results[4]['title'], "Item2 with advice")
-        self.assertEquals(results[4]['meeting_date'], "19/09/2019")
-        self.assertEquals(results[4]['group'], "Developers")
-        self.assertEquals(results[4]['end_advice'], "OUI")
-        self.assertEquals(results[4]['comments'], "")
-        self.assertEquals(results[4]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[4]['advice_type'], "Avis finance favorable")
+        self.assertEqual(results[4]['title'], "Item2 with advice")
+        self.assertEqual(results[4]['meeting_date'], "19/09/2019")
+        self.assertEqual(results[4]['group'], "Developers")
+        self.assertEqual(results[4]['end_advice'], "OUI")
+        self.assertEqual(results[4]['comments'], "")
+        self.assertEqual(results[4]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[4]['advice_type'], "Avis finance favorable")
 
-        self.assertEquals(results[5]['title'], "Item2 with advice")
-        self.assertEquals(results[5]['meeting_date'], "19/09/2019")
-        self.assertEquals(results[5]['group'], "Developers")
-        self.assertEquals(results[5]['end_advice'], "")
-        self.assertEquals(results[5]['comments'], "")
-        self.assertEquals(results[5]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[5]['advice_type'], 'Compl\xc3\xa9tude')
+        self.assertEqual(results[5]['title'], "Item2 with advice")
+        self.assertEqual(results[5]['meeting_date'], "19/09/2019")
+        self.assertEqual(results[5]['group'], "Developers")
+        self.assertEqual(results[5]['end_advice'], "")
+        self.assertEqual(results[5]['comments'], "")
+        self.assertEqual(results[5]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[5]['advice_type'], 'Compl\xc3\xa9tude')
 
-        self.assertEquals(results[6]['title'], "Item3 with advice timed out")
-        self.assertEquals(results[6]['meeting_date'], "")
-        self.assertEquals(results[6]['group'], "Developers")
-        self.assertEquals(results[6]['end_advice'], "OUI")
-        self.assertEquals(results[6]['comments'], "")
-        self.assertEquals(results[6]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[6]['advice_type'], 'Avis finance expir\xc3\xa9')
+        self.assertEqual(results[6]['title'], "Item3 with advice timed out")
+        self.assertEqual(results[6]['meeting_date'], "")
+        self.assertEqual(results[6]['group'], "Developers")
+        self.assertEqual(results[6]['end_advice'], "OUI")
+        self.assertEqual(results[6]['comments'], "")
+        self.assertEqual(results[6]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[6]['advice_type'], 'Avis finance expir\xc3\xa9')
 
-        self.assertEquals(results[7]['title'], "Item3 with advice timed out")
-        self.assertEquals(results[7]['meeting_date'], "")
-        self.assertEquals(results[7]['group'], "Developers")
-        self.assertEquals(results[7]['end_advice'], "NON")
-        self.assertEquals(results[7]['comments'], "")
-        self.assertEquals(results[7]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[7]['advice_type'], 'Avis finance d\xc3\xa9favorable')
+        self.assertEqual(results[7]['title'], "Item3 with advice timed out")
+        self.assertEqual(results[7]['meeting_date'], "")
+        self.assertEqual(results[7]['group'], "Developers")
+        self.assertEqual(results[7]['end_advice'], "NON")
+        self.assertEqual(results[7]['comments'], "")
+        self.assertEqual(results[7]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[7]['advice_type'], 'Avis finance d\xc3\xa9favorable')
 
-        self.assertEquals(results[8]['title'], "Item3 with advice timed out")
-        self.assertEquals(results[8]['meeting_date'], "")
-        self.assertEquals(results[8]['group'], "Developers")
-        self.assertEquals(results[8]['end_advice'], "")
-        self.assertEquals(results[8]['comments'], "")
-        self.assertEquals(results[8]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[8]['advice_type'], 'Compl\xc3\xa9tude')
+        self.assertEqual(results[8]['title'], "Item3 with advice timed out")
+        self.assertEqual(results[8]['meeting_date'], "")
+        self.assertEqual(results[8]['group'], "Developers")
+        self.assertEqual(results[8]['end_advice'], "")
+        self.assertEqual(results[8]['comments'], "")
+        self.assertEqual(results[8]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[8]['advice_type'], 'Compl\xc3\xa9tude')
 
-        self.assertEquals(results[9]['title'], "Item4 timed out without advice")
-        self.assertEquals(results[9]['meeting_date'], "")
-        self.assertEquals(results[9]['group'], "Developers")
-        self.assertEquals(results[9]['end_advice'], "")
-        self.assertEquals(results[9]['comments'], "")
-        self.assertEquals(results[9]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[9]['advice_type'], 'Avis finance expir\xc3\xa9')
+        self.assertEqual(results[9]['title'], "Item4 timed out without advice")
+        self.assertEqual(results[9]['meeting_date'], "")
+        self.assertEqual(results[9]['group'], "Developers")
+        self.assertEqual(results[9]['end_advice'], "")
+        self.assertEqual(results[9]['comments'], "")
+        self.assertEqual(results[9]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[9]['advice_type'], 'Avis finance expir\xc3\xa9')
 
-        self.assertEquals(results[10]['title'], "Item4 timed out without advice")
-        self.assertEquals(results[10]['meeting_date'], "")
-        self.assertEquals(results[10]['group'], "Developers")
-        self.assertEquals(results[10]['end_advice'], "")
-        self.assertEquals(results[10]['comments'], "")
-        self.assertEquals(results[10]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[10]['advice_type'], 'Compl\xc3\xa9tude')
+        self.assertEqual(results[10]['title'], "Item4 timed out without advice")
+        self.assertEqual(results[10]['meeting_date'], "")
+        self.assertEqual(results[10]['group'], "Developers")
+        self.assertEqual(results[10]['end_advice'], "")
+        self.assertEqual(results[10]['comments'], "")
+        self.assertEqual(results[10]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[10]['advice_type'], 'Compl\xc3\xa9tude')
 
-        self.assertEquals(results[11]['title'], "Item5 with advice")
-        self.assertEquals(results[11]['meeting_date'], "")
-        self.assertEquals(results[11]['group'], "Developers")
-        self.assertEquals(results[11]['end_advice'], "OUI")
-        self.assertEquals(results[11]['comments'], "Bad comment finance")
-        self.assertEquals(results[11]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[11]['advice_type'], 'Avis finance d\xc3\xa9favorable')
+        self.assertEqual(results[11]['title'], "Item5 with advice")
+        self.assertEqual(results[11]['meeting_date'], "")
+        self.assertEqual(results[11]['group'], "Developers")
+        self.assertEqual(results[11]['end_advice'], "OUI")
+        self.assertEqual(results[11]['comments'], "Bad comment finance")
+        self.assertEqual(results[11]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[11]['advice_type'], 'Avis finance d\xc3\xa9favorable')
 
-        self.assertEquals(results[12]['title'], "Item5 with advice")
-        self.assertEquals(results[12]['meeting_date'], "")
-        self.assertEquals(results[12]['group'], "Developers")
-        self.assertEquals(results[12]['end_advice'], "")
-        self.assertEquals(results[12]['comments'], "")
-        self.assertEquals(results[12]['adviser'], u'DF - Contr\xf4le')
-        self.assertEquals(results[12]['advice_type'], 'Compl\xc3\xa9tude')
+        self.assertEqual(results[12]['title'], "Item5 with advice")
+        self.assertEqual(results[12]['meeting_date'], "")
+        self.assertEqual(results[12]['group'], "Developers")
+        self.assertEqual(results[12]['end_advice'], "")
+        self.assertEqual(results[12]['comments'], "")
+        self.assertEqual(results[12]['adviser'], u'DF - Contr\xf4le')
+        self.assertEqual(results[12]['advice_type'], 'Compl\xc3\xa9tude')
 
-        self.assertEquals(results[13]['title'], "Item6 with positive advice with remarks")
-        self.assertEquals(results[13]['meeting_date'], "")
-        self.assertEquals(results[13]['group'], "Developers")
-        self.assertEquals(results[13]['end_advice'], "OUI")
-        self.assertEquals(results[13]['comments'], "A remark")
-        self.assertEquals(results[13]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[13]['advice_type'], 'Avis finance favorable avec remarques')
+        self.assertEqual(results[13]['title'], "Item6 with positive advice with remarks")
+        self.assertEqual(results[13]['meeting_date'], "")
+        self.assertEqual(results[13]['group'], "Developers")
+        self.assertEqual(results[13]['end_advice'], "OUI")
+        self.assertEqual(results[13]['comments'], "A remark")
+        self.assertEqual(results[13]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[13]['advice_type'], 'Avis finance favorable avec remarques')
 
-        self.assertEquals(results[14]['title'], "Item6 with positive advice with remarks")
-        self.assertEquals(results[14]['meeting_date'], "")
-        self.assertEquals(results[14]['group'], "Developers")
-        self.assertEquals(results[14]['end_advice'], "")
-        self.assertEquals(results[14]['comments'], "")
-        self.assertEquals(results[14]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
-        self.assertEquals(results[14]['advice_type'], 'Compl\xc3\xa9tude')
+        self.assertEqual(results[14]['title'], "Item6 with positive advice with remarks")
+        self.assertEqual(results[14]['meeting_date'], "")
+        self.assertEqual(results[14]['group'], "Developers")
+        self.assertEqual(results[14]['end_advice'], "")
+        self.assertEqual(results[14]['comments'], "")
+        self.assertEqual(results[14]['adviser'], u'DF - Comptabilit\xe9 et Audit financier')
+        self.assertEqual(results[14]['advice_type'], 'Compl\xc3\xa9tude')
 
     def test_ShowOtherMeetingConfigsClonableToEmergency(self):
         """Condition method to restrict use of field
@@ -1346,11 +1345,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.tool.get_plone_groups_for_user()
         view = item.restrictedTraverse('@@toggle_item_taken_over_by')
         view.toggle(takenOverByFrom=item.getTakenOverBy())
-        self.assertTrue(item.getTakenOverBy() == 'pmFinController')
+        self.assertEqual(item.getTakenOverBy(), 'pmFinController')
         self.do(item, 'backToProposedToInternalReviewer')
-        self.assertTrue(item.getTakenOverBy() == '')
+        self.assertEqual(item.getTakenOverBy(), '')
         # login as director and send item back to finances
         self.changeUser('pmReviewer1')
         self.do(item, 'proposeToDirector')
         self.do(item, 'proposeToFinance')
-        self.assertTrue(item.getTakenOverBy() == 'pmFinController')
+        self.assertEqual(item.getTakenOverBy(), 'pmFinController')

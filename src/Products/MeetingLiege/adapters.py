@@ -1662,8 +1662,9 @@ class CustomMeetingConfig(MeetingConfig):
         )
 
         infos.update(extra_infos)
-        # add the 'searchitemswithfinanceadvice' for 'meeting-config-college'
-        if cfg.getId() in ('meeting-config-college'):
+        # add the 'searchitemswithfinanceadvice' for 'College'
+        # use shortName because in test, id is generated to avoid multiple same id
+        if cfg.getShortName() in ('College'):
             finance_infos = OrderedDict(
                 [
                     # Items for finance advices synthesis

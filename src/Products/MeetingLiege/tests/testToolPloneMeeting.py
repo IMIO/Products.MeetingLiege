@@ -29,6 +29,13 @@ from Products.PloneMeeting.tests.testToolPloneMeeting import testToolPloneMeetin
 class testToolPloneMeeting(MeetingLiegeTestCase, pmtt):
     '''Tests the ToolPloneMeeting class methods.'''
 
+    def test_pm_get_orgs_for_user(self):
+        """Do not break test with financial suffixes."""
+        self.changeUser('siteadmin')
+        # creating finance groups will restrict use of financial suffixes
+        self._createFinanceGroups()
+        super(testToolPloneMeeting, self).test_pm_get_orgs_for_user()
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

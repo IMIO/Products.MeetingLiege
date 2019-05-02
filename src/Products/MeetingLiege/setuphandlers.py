@@ -140,8 +140,8 @@ def createArchivingReferences(context, site):
        Create some MeetingConfig.archivingRefs if empty.
     """
     logStep("createArchivingReferences", context)
-    cfg = getattr(site.portal_plonemeeting, 'meeting-config-college')
-    if not cfg.getArchivingRefs():
+    cfg = getattr(site.portal_plonemeeting, 'meeting-config-college', None)
+    if cfg and not cfg.getArchivingRefs():
         cfg.setArchivingRefs(
             (
                 {'code': '1.1',
@@ -271,8 +271,8 @@ def finalizeInstance(context):
 def _configureCollegeCustomAdvisers(site):
     '''
     '''
-    college = getattr(site.portal_plonemeeting, 'meeting-config-college')
-    if not college.getCustomAdvisers():
+    college = getattr(site.portal_plonemeeting, 'meeting-config-college', None)
+    if college and not college.getCustomAdvisers():
         college.setCustomAdvisers((
             {'delay_label': 'Incidence financi\xc3\xa8re',
              'for_item_created_until': '',

@@ -153,7 +153,7 @@ bourgmestreMeeting.certifiedSignatures = [
      'date_from': '',
      'date_to': '',
      }]
-bourgmestreMeeting.categories = councilMeeting.categories
+bourgmestreMeeting.categories = []
 bourgmestreMeeting.shortName = 'Bourgmestre'
 bourgmestreMeeting.annexTypes = councilMeeting.annexTypes
 bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (

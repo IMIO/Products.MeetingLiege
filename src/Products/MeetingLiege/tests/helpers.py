@@ -183,7 +183,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         return item, advice
 
-    def _setUpGroupInCharge(self, item, group=None):
+    def _setUpGroupInCharge(self, item=None, group=None):
         """Override from PloneMeeting, define groupsOfMatter on category used by p_item."""
         if not group:
             group = self.vendors_uid
@@ -192,8 +192,9 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         cfg.setUseGroupsAsCategories(False)
         cat = cfg.categories.development
         cat.setGroupsOfMatter((group, ))
-        item.setCategory('development')
-        item.updateLocalRoles()
+        if item:
+            item.setCategory('development')
+            item.updateLocalRoles()
 
     def _tearDownGroupInCharge(self, item):
         """As group in charge is an adaptable method, it may be setup differently."""

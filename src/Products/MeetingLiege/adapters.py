@@ -895,7 +895,8 @@ class CustomMeetingItem(MeetingItem):
         financial_group_uids = tool.financialGroupUids()
         if advice.advice_group in financial_group_uids:
             return False
-        if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID) and \
+        # raise_on_error=False for tests
+        if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID, raise_on_error=False) and \
            self.context.queryState() in ('accepted', 'accepted_but_modified'):
             org = self.context.getProposingGroup(theObject=True)
             if org in tool.get_orgs_for_user(suffixes=['internalreviewers', 'reviewers']):

@@ -27,12 +27,11 @@ from Products.PloneMeeting.tests.testWFAdaptations import testWFAdaptations as p
 
 
 class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
-    '''Tests various aspects of votes management.'''
 
     def test_pm_WFA_availableWFAdaptations(self):
-        '''Most of wfAdaptations makes no sense, just make sure most are disabled.'''
-        self.assertEquals(set(self.meetingConfig.listWorkflowAdaptations()),
-                          set(('return_to_proposing_group', )))
+        '''Most of wfAdaptations make no sense, we just use 'return_to_proposing_group'.'''
+        self.assertEquals(sorted(self.meetingConfig.listWorkflowAdaptations()),
+                          ['return_to_proposing_group'])
 
 
 def test_suite():

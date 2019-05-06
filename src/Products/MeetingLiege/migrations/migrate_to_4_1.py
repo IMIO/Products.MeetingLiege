@@ -19,6 +19,8 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
            - MeetingConfig.archivingRefs.restrict_to_groups;
            - MeetingCategory.groupsOfMatter;
            - MeetingItem.financeAdvice."""
+        own_org = get_own_organization()
+        own_org_ids = own_org.objectIds()
         for cfg in self.tool.objectValues('MeetingConfig'):
             # MeetingConfig.archivingRefs
             archivingRefs = deepcopy(cfg.getArchivingRefs())
@@ -27,7 +29,8 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 migratedArchivingRef = archivingRef.copy()
                 migratedArchivingRef['restrict_to_groups'] = [
                     org_id_to_uid(mGroupId)
-                    for mGroupId in migratedArchivingRef['restrict_to_groups']]
+                    for mGroupId in migratedArchivingRef['restrict_to_groups']
+                    if mGroupId in own_org_ids]
                 migratedArchivingRefs.append(migratedArchivingRef)
             cfg.setArchivingRefs(migratedArchivingRefs)
             # MeetingCategory.groupsOfMatter
@@ -36,7 +39,8 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 migratedGroupsOfMatter = [org_id_to_uid(mGroupId) for mGroupId in groupsOfMatter]
                 category.setGroupsOfMatter(migratedGroupsOfMatter)
         own_org = get_own_organization()
-        for item in self.portal.portal_catalog(meta_type='MeetingItem'):
+        for brain in self.portal.portal_catalog(meta_type='MeetingItem'):
+            item = brain.getObject()
             financeAdvice = item.getFinanceAdvice()
             if financeAdvice != '_none_':
                 finance_org_uid = own_org.get(financeAdvice).UID()

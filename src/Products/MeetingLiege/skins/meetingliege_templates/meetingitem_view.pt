@@ -530,25 +530,9 @@
               </fieldset>
           </td>
         </tr>
-        <tr tal:condition="python: 'textCheckList' in usedAttrs and context.getTextCheckList()">
-            <td colspan="2">
-                <tal:comment replace="nothing">XXX added by MeetingLiege, text check list</tal:comment>
-                <dl id="textCheckList"
-                    class="collapsible inline collapsedOnLoad discreet">
-                    <dt class="collapsibleHeader" style="font-size: 100%;">
-                        <span i18n:translate="MeetingLiege_label_textCheckList">
-                            Check list
-                        </span>
-                    </dt>
-                    <dd class="collapsibleContent">
-                        <span tal:replace="structure context/getTextCheckList">Text check list</span>
-                    </dd>
-                </dl><br /><br />
-            </td>
-        </tr>
     </table>
 
-    <tal:textCheckList condition="python: 'textCheckList' in usedAttrs">
+    <tal:textCheckList condition="python: 'textCheckList' in usedAttrs and context.getTextCheckList()">
       <div id="textCheckList" class="collapsible discreet" onclick="toggleDoc('collapsible-text-checklist');">
         <span class="item_attribute_label" i18n:translate="PloneMeeting_label_textCheckList">
             Text check list

@@ -1,24 +1,21 @@
-from Products.Archetypes.atapi import Schema
+from collective.datagridcolumns.MultiSelectColumn import MultiSelectColumn
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import LinesField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import RichWidget
+from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import TextAreaWidget
-
-from Products.DataGridField import DataGridField
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import TextField
 from Products.DataGridField import Column
+from Products.DataGridField import DataGridField
 from Products.DataGridField import SelectColumn
-
-from collective.datagridcolumns.MultiSelectColumn import MultiSelectColumn
-
+from Products.PloneMeeting.config import registerClasses
 from Products.PloneMeeting.config import WriteRiskyConfig
 from Products.PloneMeeting.Meeting import Meeting
-from Products.PloneMeeting.MeetingItem import MeetingItem
-from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingCategory import MeetingCategory
+from Products.PloneMeeting.MeetingConfig import MeetingConfig
+from Products.PloneMeeting.MeetingItem import MeetingItem
 
 
 def update_item_schema(baseSchema):
@@ -71,22 +68,6 @@ def update_item_schema(baseSchema):
             optional=True,
             vocabulary='listArchivingRefs',
             default='_none_',
-        ),
-        TextField(
-            name='textCheckList',
-            allowable_content_types=('text/plain',),
-            optional=True,
-            widget=TextAreaWidget(
-                condition="python: here.attributeIsUsed('textCheckList')",
-                description="Enter elements that are necessary for this kind of item",
-                description_msgid="MeetingLiege_descr_textCheckList",
-                label='TextCheckList',
-                label_msgid='MeetingLiege_label_textCheckList',
-                i18n_domain='PloneMeeting',
-            ),
-            write_permission="Manage portal",
-            default_output_type="text/x-html-safe",
-            default_content_type="text/plain",
         ),
         TextField(
             name='decisionSuite',
@@ -234,9 +215,4 @@ def update_category_schema(baseSchema):
 MeetingCategory.schema = update_category_schema(MeetingCategory.schema)
 
 
-# Classes have already been registered, but we register them again here
-# because we have potentially applied some schema adaptations (see above).
-# Class registering includes generation of accessors and mutators, for
-# example, so this is why we need to do it again now.
-from Products.PloneMeeting.config import registerClasses
 registerClasses()

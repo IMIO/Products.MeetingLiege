@@ -31,7 +31,7 @@
     <tal:field define="fieldName python: 'description'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
-    <tal:field define="fieldName python: 'detailedDescription';"    >
+    <tal:field define="fieldName python: 'detailedDescription';">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
     <tal:comment replace="nothing">Proposing group, category, classifier, toDiscuss</tal:comment>

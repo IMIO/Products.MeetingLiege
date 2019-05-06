@@ -144,4 +144,5 @@ bourgmestreMeeting.itemTemplates = []
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(bourgmestreMeeting, ),
                                  orgs=orgs)
+data.forceAddUsersAndGroups = True
 # ------------------------------------------------------------------------------

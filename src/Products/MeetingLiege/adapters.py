@@ -1505,23 +1505,6 @@ class CustomMeetingConfig(MeetingConfig):
     def __init__(self, item):
         self.context = item
 
-    security.declarePrivate('listArchivingReferenceFinanceAdvices')
-
-    def listArchivingReferenceFinanceAdvices(self):
-        tool = api.portal.get_tool('portal_plonemeeting')
-        res = []
-        res.append(("no_finance_advice",
-                    translate('no_finance_advice',
-                              domain='PloneMeeting',
-                              context=self.REQUEST,
-                              default='No finance advice')))
-        tool = api.portal.get_tool('portal_plonemeeting')
-        financial_group_uids = tool.financialGroupUids()
-        for org_uid in financial_group_uids:
-            res.append((org_uid, get_organization(org_uid).Title()))
-        return DisplayList(res)
-    MeetingConfig.listArchivingReferenceFinanceAdvices = listArchivingReferenceFinanceAdvices
-
     security.declarePrivate('listActiveOrgsForArchivingRefs')
 
     def listActiveOrgsForArchivingRefs(self):

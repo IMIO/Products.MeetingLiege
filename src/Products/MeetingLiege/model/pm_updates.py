@@ -163,8 +163,6 @@ def update_config_schema(baseSchema):
                 columns={'row_id': Column("Archiving reference row id", visible=False),
                          'code': Column("Archiving reference code"),
                          'label': Column("Archiving reference label"),
-                         'finance_advice': SelectColumn("Archiving reference finance advice",
-                                                        vocabulary="listArchivingReferenceFinanceAdvices"),
                          'restrict_to_groups': MultiSelectColumn("Archiving reference restrict to selected groups",
                                                                  vocabulary="listActiveOrgsForArchivingRefs"),
                          'active': SelectColumn("Archiving reference active?",

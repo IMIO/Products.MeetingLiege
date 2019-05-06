@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
+
+from collective.contact.plonegroup.utils import get_own_organization
 from copy import deepcopy
 from Products.PloneMeeting.migrations.migrate_to_4_1 import Migrate_To_4_1 as PMMigrate_To_4_1
 from Products.PloneMeeting.utils import org_id_to_uid
@@ -15,7 +17,8 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
     def _hook_after_mgroups_to_orgs(self):
         """Migrate attributes that were using MeetingGroups :
            - MeetingConfig.archivingRefs.restrict_to_groups;
-           - MeetingCategory.groupsOfMatter."""
+           - MeetingCategory.groupsOfMatter;
+           - MeetingItem.financeAdvice."""
         for cfg in self.tool.objectValues('MeetingConfig'):
             # MeetingConfig.archivingRefs
             archivingRefs = deepcopy(cfg.getArchivingRefs())
@@ -32,6 +35,12 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 groupsOfMatter = category.getGroupsOfMatter()
                 migratedGroupsOfMatter = [org_id_to_uid(mGroupId) for mGroupId in groupsOfMatter]
                 category.setGroupsOfMatter(migratedGroupsOfMatter)
+        own_org = get_own_organization()
+        for item in self.portal.portal_catalog(meta_type='MeetingItem'):
+            financeAdvice = item.getFinanceAdvice()
+            if financeAdvice != '_none_':
+                finance_org_uid = own_org.get(financeAdvice).UID()
+                item.setFinanceAdvice(finance_org_uid)
 
     def run(self):
         # change self.profile_name everything is right before launching steps

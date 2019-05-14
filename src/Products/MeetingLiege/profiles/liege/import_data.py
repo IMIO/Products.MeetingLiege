@@ -275,7 +275,7 @@ collegeMeeting.usedMeetingAttributes = ['signatures',
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
 collegeMeeting.xhtmlTransformTypes = ('removeBlanks',)
-collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'meeting-config-council',
+collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'cfg2',
                                            'trigger_workflow_transitions_until': '__nothing__'},)
 collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency', 'accepted',
                                               'accepted_but_modified', 'accepted_and_returned')

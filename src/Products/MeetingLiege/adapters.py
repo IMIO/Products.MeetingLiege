@@ -56,6 +56,8 @@ from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
 from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
 from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
 from Products.MeetingLiege.config import TREASURY_GROUP_ID
+from Products.MeetingLiege.interfaces import IMeetingAdviceFinancesWorkflowActions
+from Products.MeetingLiege.interfaces import IMeetingAdviceFinancesWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingCollegeLiegeWorkflowActions
@@ -75,6 +77,8 @@ from Products.PloneMeeting.config import PMMessageFactory as _
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.content.advice import MeetingAdvice
+from Products.PloneMeeting.content.advice import MeetingAdviceWorkflowActions
+from Products.PloneMeeting.content.advice import MeetingAdviceWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingCategoryCustom
 from Products.PloneMeeting.interfaces import IMeetingConfigCustom
 from Products.PloneMeeting.interfaces import IMeetingCustom
@@ -1689,9 +1693,23 @@ class CustomMeetingConfig(MeetingConfig):
         return ("positive_finance", "positive_with_remarks_finance",
                 "negative_finance", "not_required_finance")
 
+    def _adviceConditionsInterfaceFor(self, advice_obj):
+        '''See doc in interfaces.py.'''
+        if advice_obj.portal_type == 'meetingadvicefinances':
+            return IMeetingAdviceFinancesWorkflowConditions.__identifier__
+        else:
+            return super(CustomMeetingConfig, self)._adviceConditionsInterfaceFor(advice_obj)
+
+    def _adviceActionsInterfaceFor(self, advice_obj):
+        '''See doc in interfaces.py.'''
+        if advice_obj.portal_type == 'meetingadvicefinances':
+            return IMeetingAdviceFinancesWorkflowActions.__identifier__
+        else:
+            return super(CustomMeetingConfig, self)._adviceActionsInterfaceFor(advice_obj)
+
     def extraInsertingMethods(self):
         '''See doc in interfaces.py.'''
-        return ['on_decision_first_word']
+        return OrderedDict((('on_decision_first_word', None), ))
 
 
 class CustomMeetingCategory(MeetingCategory):
@@ -2577,6 +2595,73 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemCollegeLiegeWorkflowCo
         return res
 
 
+class MeetingAdviceFinancesWorkflowActions(MeetingAdviceWorkflowActions):
+    ''' '''
+
+    implements(IMeetingAdviceFinancesWorkflowActions)
+    security = ClassSecurityInfo()
+
+    security.declarePrivate('doProposeToFinancialReviewer')
+
+    def doProposeToFinancialReviewer(self, stateChange):
+        ''' '''
+        pass
+
+    security.declarePrivate('doProposeToFinancialManager')
+
+    def doProposeToFinancialManager(self, stateChange):
+        ''' '''
+        pass
+
+    security.declarePrivate('doSignFinancialAdvice')
+
+    def doSignFinancialAdvice(self, stateChange):
+        ''' '''
+        pass
+
+
+class MeetingAdviceFinancesWorkflowConditions(MeetingAdviceWorkflowConditions):
+    ''' '''
+
+    implements(IMeetingAdviceFinancesWorkflowConditions)
+    security = ClassSecurityInfo()
+
+    security.declarePublic('mayProposeToFinancialReviewer')
+
+    def mayProposeToFinancialReviewer(self):
+        '''
+        '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('mayProposeToFinancialManager')
+
+    def mayProposeToFinancialManager(self):
+        ''' '''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+        return res
+
+    security.declarePublic('maySignFinancialAdvice')
+
+    def maySignFinancialAdvice(self):
+        '''A financial reviewer may sign the advice if it is 'positive_finance'
+           or 'not_required_finance', if not this will be the financial manager
+           that will be able to sign it.'''
+        res = False
+        if _checkPermission(ReviewPortalContent, self.context):
+            res = True
+            # if 'negative_finance', only finance manager can sign,
+            # aka advice must be in state 'proposed_to_finance_manager'
+            if self.context.advice_type == 'negative_finance' and not \
+               self.context.queryState() == 'proposed_to_financial_manager':
+                res = False
+        return res
+
+
 old_get_advice_given_on = MeetingAdvice.get_advice_given_on
 
 
@@ -2601,6 +2686,8 @@ InitializeClass(CustomMeetingCategory)
 InitializeClass(CustomMeetingConfig)
 InitializeClass(CustomMeetingItem)
 InitializeClass(CustomToolPloneMeeting)
+InitializeClass(MeetingAdviceFinancesWorkflowActions)
+InitializeClass(MeetingAdviceFinancesWorkflowConditions)
 InitializeClass(MeetingBourgmestreWorkflowActions)
 InitializeClass(MeetingBourgmestreWorkflowConditions)
 InitializeClass(MeetingItemBourgmestreWorkflowActions)

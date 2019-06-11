@@ -6,6 +6,7 @@ Products.MeetingLiege Changelog
 
 - Products.PloneMeeting.utils.getLastEvent was removed, use imio.history.utils.getLastWFAction.
 - Adapted profile regarding changes about integration of collective.contact.* in Products.PloneMeeting.
+- Adapted finances advice WF to use WF Actions/Conditions adapters and regarding use of dexterity.localrolesfield for meetingadvice.advice_group field
 
 4.1b9 (2018-07-13)
 ------------------

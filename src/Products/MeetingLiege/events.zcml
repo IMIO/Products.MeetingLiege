@@ -5,8 +5,8 @@
            i18n_domain="PloneMeeting">
 
   <subscriber for="Products.PloneMeeting.content.advice.IMeetingAdvice
-                   Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-              handler=".events.onAdviceTransition"/>
+                   Products.PloneMeeting.interfaces.IAdviceAfterTransitionEvent"
+              handler=".events.onAdviceAfterTransition"/>
 
   <subscriber for="Products.PloneMeeting.content.advice.IMeetingAdvice
                    Products.PloneMeeting.interfaces.IAdviceAfterAddEvent"

@@ -18,24 +18,6 @@
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow"/>
  <object name="meetingitemcouncilliege_workflow" meta_type="Workflow"/>
  <bindings>
-  <!--type type_id="MeetingCollege">
-     <bound-workflow workflow_id="meetingcollegeliege_workflow" />
-  </type>
-  <type type_id="MeetingCouncil">
-     <bound-workflow workflow_id="meetingcouncilliege_workflow" />
-  </type>
-  <type type_id="MeetingBourgmestre">
-     <bound-workflow workflow_id="meetingbourgmestre_workflow" />
-  </type>
-  <type type_id="MeetingItemCollege">
-     <bound-workflow workflow_id="meetingitemcollegeliege_workflow" />
-  </type>
-  <type type_id="MeetingItemCouncil">
-     <bound-workflow workflow_id="meetingitemcouncilliege_workflow" />
-  </type>
-  <type type_id="MeetingItemBourgmestre">
-     <bound-workflow workflow_id="meetingitembourgmestre_workflow" />
-  </type-->
   <type type_id="meetingadvicefinances">
      <bound-workflow workflow_id="meetingadviceliege_workflow" />
   </type>

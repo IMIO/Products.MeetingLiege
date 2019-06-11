@@ -9,7 +9,7 @@
 # GNU General Public License (GPL)
 #
 
-
+from dexterity.localroles.utils import add_fti_configuration
 from imio.helpers.catalog import addOrUpdateColumns
 from imio.helpers.catalog import addOrUpdateIndexes
 from Products.CMFCore.utils import getToolByName
@@ -49,6 +49,8 @@ def postInstall(context):
     reinstallPloneMeeting(context, site)
     # reorder skins so we are sure that the meetingliege_xxx skins are just under custom
     reorderSkinsLayers(context, site)
+    # configure localroles field for meetingadvicefinances
+    _configureDexterityLocalRolesField()
     # add getAdoptsNextCouncilAgenda and category_id metadata
     addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', 'category_id'))
     # add the groupsOfMatter index
@@ -133,6 +135,29 @@ def addFacetedCriteria(context, site):
         tool._enableFacetedDashboardFor(cfg.searches.searches_items,
                                         os.path.dirname(__file__) +
                                         '/faceted_conf/meetingliege_dashboard_items_widgets.xml')
+
+
+def _configureDexterityLocalRolesField():
+    """Configure field meetingadvice.advice_group for meetingadvicefinances."""
+    # meetingadvicefinances
+    roles_config = {
+        'advice_group': {
+            'advice_given': {
+                'advisers': {'roles': [], 'rel': ''}},
+            'proposed_to_financial_controller': {
+                u'financialcontrollers': {'roles': [u'Editor', u'Reviewer'], 'rel': ''}},
+            'proposed_to_financial_manager': {
+                u'financialmanagers': {'roles': [u'Editor', u'Reviewer'], 'rel': ''}},
+            'financial_advice_signed': {
+                u'financialmanagers': {'roles': [u'Reviewer'], 'rel': ''}},
+        }
+    }
+    msg = add_fti_configuration(portal_type='meetingadvicefinances',
+                                configuration=roles_config['advice_group'],
+                                keyname='advice_group',
+                                force=True)
+    if msg:
+        logger.warn(msg)
 
 
 def createArchivingReferences(context, site):

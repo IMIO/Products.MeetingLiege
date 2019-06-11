@@ -88,7 +88,7 @@ def onAdviceModified(advice, event):
     _sendItemBackInWFIfNecessary(item)
 
 
-def onAdviceTransition(advice, event):
+def onAdviceAfterTransition(advice, event):
     '''Called whenever a transition has been fired on an advice.'''
     # pass if we are pasting items as advices are not kept
     if advice != event.object or advice.REQUEST.get('currentlyPastingItems', False):
@@ -105,10 +105,6 @@ def onAdviceTransition(advice, event):
     itemState = item.queryState()
     tool = api.portal.get_tool('portal_plonemeeting')
     cfg = tool.getMeetingConfig(item)
-    adviserGroupId = '%s_advisers' % advice.advice_group
-    stateToGroupSuffixMappings = {'proposed_to_financial_controller': 'financialcontrollers',
-                                  'proposed_to_financial_reviewer': 'financialreviewers',
-                                  'proposed_to_financial_manager': 'financialmanagers', }
 
     # when the finance advice state change, we have to reinitialize
     # item.takenOverBy to nothing if advice is not at the finance controller state
@@ -123,13 +119,6 @@ def onAdviceTransition(advice, event):
         wf_state = "%s__wfstate__%s" % (cfg.getItemWorkflow(), itemState)
         item.setHistorizedTakenOverBy(wf_state)
     item.reindexObject(idxs=['getTakenOverBy', ])
-
-    # onAdviceTransition is called before onAdviceAdded...
-    # so the advice_row_id is still not set wich is very bad because
-    # when we updateAdvices, it does not find the advice_row_id and adviceIndex is wrong
-    # so we call it here...
-    if not advice.advice_row_id:
-        advice._updateAdviceRowId()
 
     wfTool = api.portal.get_tool('portal_workflow')
     oldStateId = event.old_state.id
@@ -160,52 +149,14 @@ def onAdviceTransition(advice, event):
                 item.REQUEST.set('mayBackToProposedToDirector', True)
                 wfTool.doActionFor(item, 'backToProposedToDirector', comment='item_wf_changed_finance_advice_negative')
                 item.REQUEST.set('mayBackToProposedToDirector', False)
-        else:
-            # we need to _updateAdvices so change to
-            # 'advice_hide_during_redaction' is taken into account
-            item.updateLocalRoles()
-
-    # when going to an end state, aka a state where advice can not be edited anymore, we
-    # give the 'MeetingFinanceEditor' to the _advisers finance group
-    # so they have read access for the 'advice_substep_number' field, the workflow
-    # will not give any permission to this role but we need the finance group to have this
-    # role on the advice
-    # nevertheless, we remove roles given to the localRoledGroupId
-    if newStateId in ('advice_given', 'financial_advice_signed', ) and \
-       oldStateId not in ('advice_given', 'financial_advice_signed', ):
-        localRoledGroupId = '%s_%s' % (advice.advice_group,
-                                       stateToGroupSuffixMappings[oldStateId])
-        advice.manage_delLocalRoles((localRoledGroupId, adviserGroupId))
-        if newStateId in ('advice_given', 'financial_advice_signed', ):
-            advice.manage_addLocalRoles(adviserGroupId, ('MeetingFinanceEditor', 'Reader', ))
-        return
 
     # in some corner case, we could be here and we are actually already updating advices,
     # this is the case if we validate an item and it triggers the fact that advice delay is exceeded
     # this should never be the case as advice delay should have been updated during nightly cron...
     # but if we are in a '_updateAdvices', do not _updateAdvices again...
-    if newStateId not in stateToGroupSuffixMappings:
-        if not item.REQUEST.get('currentlyUpdatingAdvice', False):
-            item.updateLocalRoles()
-        return
-
-    # give 'Reader' role to every members of the _advisers and
-    # give 'MeetingFinanceEditor' role to the relevant finance sub-group depending on new advice state
-    # we use a specific 'MeetingFinanceEditor' role because the 'Editor' role is given to entire
-    # _advisers group by default in PloneMeeting and it is used for non finance advices
-    advice.manage_delLocalRoles((adviserGroupId, ))
-    advice.manage_addLocalRoles(adviserGroupId, ('Reader', ))
-    advice.manage_addLocalRoles('%s_%s' % (advice.advice_group, stateToGroupSuffixMappings[newStateId]),
-                                ('MeetingFinanceEditor', ))
-    # finally remove 'MeetingFinanceEditor' given in previous state except if it is initial_state
-    if oldStateId in stateToGroupSuffixMappings and event.transition:
-        localRoledGroupId = '%s_%s' % (advice.advice_group,
-                                       stateToGroupSuffixMappings[oldStateId])
-        advice.manage_delLocalRoles((localRoledGroupId, ))
-
-    # need to updateLocalRoles, and especially _updateAdvices to finish work :
-    # timed_out advice is no more giveable
-    item.updateLocalRoles()
+    # also bypass if we are creating the advice as onAdviceAdded is called after onAdviceTransition
+    if event.transition and not item.REQUEST.get('currentlyUpdatingAdvice', False):
+        item.updateLocalRoles()
 
 
 def onAdvicesUpdated(item, event):
@@ -226,6 +177,7 @@ def onAdvicesUpdated(item, event):
 
         # if item is decided, we need to give the _advisers, the 'MeetingFinanceEditor'
         # role on the item so he is able to add decision annexes
+        # XXX to move to the onItemLocalRolesUpdated event handler !!!
         if itemState in cfg.getItemDecidedStates():
             item.manage_addLocalRoles(adviserGroupId, ('MeetingFinanceEditor', ))
         else:

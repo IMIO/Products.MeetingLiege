@@ -20,7 +20,9 @@
 # 02110-1301, USA.
 #
 
-# ------------------------------------------------------------------------------
+
+from Products.PloneMeeting.content.advice import IMeetingAdviceWorkflowActions
+from Products.PloneMeeting.content.advice import IMeetingAdviceWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingItemWorkflowActions
 from Products.PloneMeeting.interfaces import IMeetingItemWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingWorkflowActions
@@ -30,7 +32,6 @@ __author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'
 
 
-# ------------------------------------------------------------------------------
 class IMeetingItemBourgmestreWorkflowActions(IMeetingItemWorkflowActions):
     ''' '''
 
@@ -47,7 +48,14 @@ class IMeetingBourgmestreWorkflowConditions(IMeetingWorkflowConditions):
     ''' '''
 
 
-# ------------------------------------------------------------------------------
+class IMeetingAdviceFinancesWorkflowActions(IMeetingAdviceWorkflowActions):
+    ''' '''
+
+
+class IMeetingAdviceFinancesWorkflowConditions(IMeetingAdviceWorkflowConditions):
+    ''' '''
+
+
 class IMeetingItemCollegeLiegeWorkflowActions(IMeetingItemWorkflowActions):
     '''This interface represents a meeting item as viewed by the specific
        item workflow that is defined in this MeetingLiege product.'''

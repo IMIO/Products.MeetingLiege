@@ -30,6 +30,14 @@
            factory="Products.MeetingLiege.adapters.MeetingCollegeLiegeWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions"/>
 
+  <adapter for="Products.PloneMeeting.content.advice.IMeetingAdvice"
+           factory="Products.MeetingLiege.adapters.MeetingAdviceFinancesWorkflowActions"
+           provides="Products.MeetingLiege.interfaces.IMeetingAdviceFinancesWorkflowActions"/>
+
+  <adapter for="Products.PloneMeeting.content.advice.IMeetingAdvice"
+           factory="Products.MeetingLiege.adapters.MeetingAdviceFinancesWorkflowConditions"
+           provides="Products.MeetingLiege.interfaces.IMeetingAdviceFinancesWorkflowConditions"/>
+
   <!-- WF actions and conditions for Meeting and MeetingItem for Council -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem"
            factory="Products.MeetingLiege.adapters.MeetingItemCouncilLiegeWorkflowActions"

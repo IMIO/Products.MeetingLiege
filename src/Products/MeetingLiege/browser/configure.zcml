@@ -3,13 +3,10 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone">
 
-    <!-- the meetingadvice workflow conditions view -->
-    <browser:view
-        for="Products.PloneMeeting.content.advice.IMeetingAdvice"
-        name="advice-wf-conditions"
-        class=".views.AdviceWFConditionsView"
-        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer"
-        permission="zope2.View" />
+    <browser:resourceDirectory
+        name="collective.iconifiedcategory.images"
+        directory="overrides/images"
+        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
 
     <browser:page
         name="iconified-signed"
@@ -18,11 +15,6 @@
         class=".overrides.MLSignedChangeView"
         permission="zope2.View" />
   
-    <browser:resourceDirectory
-        name="collective.iconifiedcategory.images"
-        directory="overrides/images"
-        layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
-
     <browser:page
         name="main_infos_history_view"
         for="Products.PloneMeeting.interfaces.IMeetingItem"

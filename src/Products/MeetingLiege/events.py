@@ -186,15 +186,6 @@ def onAdvicesUpdated(item, event):
                 localRoles.remove('MeetingFinanceEditor')
                 item.__ac_local_roles__[adviserGroupId] = localRoles
 
-        # double check if it is really editable...
-        # to be editable, the advice has to be in an editable wf state
-        if adviceInfo['advice_editable']:
-            advice = getattr(item, adviceInfo['advice_id'])
-            if not advice.queryState() in ('proposed_to_financial_controller',
-                                           'proposed_to_financial_reviewer',
-                                           'proposed_to_financial_manager'):
-                # advice is no more editable, adapt adviceIndex
-                item.adviceIndex[org_uid]['advice_editable'] = False
         # when a finance has accessed an item, he will always be able to access it after
         if not adviceInfo['item_viewable_by_advisers'] and \
            getLastWFAction(item, 'proposeToFinance'):

@@ -146,10 +146,12 @@ def _configureDexterityLocalRolesField():
                 'advisers': {'roles': [], 'rel': ''}},
             'proposed_to_financial_controller': {
                 u'financialcontrollers': {'roles': [u'Editor', u'Reviewer'], 'rel': ''}},
+            'proposed_to_financial_reviewer': {
+                u'financialreviewers': {'roles': [u'Editor', u'Reviewer'], 'rel': ''}},
             'proposed_to_financial_manager': {
                 u'financialmanagers': {'roles': [u'Editor', u'Reviewer'], 'rel': ''}},
             'financial_advice_signed': {
-                u'financialmanagers': {'roles': [u'Reviewer'], 'rel': ''}},
+                u'financialmanagers': {'roles': [], 'rel': ''}},
         }
     }
     msg = add_fti_configuration(portal_type='meetingadvicefinances',

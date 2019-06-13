@@ -748,10 +748,7 @@ class CustomMeetingItem(MeetingItem):
         '''See doc in interfaces.py.'''
         item = self.getSelf()
         advice = item.getAdviceObj(org_uid)
-        if advice.queryState() not in ('advice_under_edit',
-                                       'proposed_to_financial_controller',
-                                       'proposed_to_financial_reviewer',
-                                       'proposed_to_financial_manager'):
+        if advice.queryState() in ('financial_advice_signed', ):
             return False
         return True
 

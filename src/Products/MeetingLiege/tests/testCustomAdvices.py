@@ -98,7 +98,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # even the finance manager may no more edit advice delay
         self.do(advice, 'signFinancialAdvice')
         self.assertFalse(item.adviceIndex[financial_group_uids[0]]['advice_editable'])
-        self.assertTrue(not delayView._mayEditDelays(isAutomatic=isAutomatic))
+        self.assertFalse(delayView._mayEditDelays(isAutomatic=isAutomatic))
 
     def test_ItemSentBackToAskerWhenEveryAdvicesGiven(self):
         '''Check that, when every advices are given, the item is automatically sent back to 'itemcreated'

@@ -744,18 +744,14 @@ class CustomMeetingItem(MeetingItem):
                     return advice_uid
         return None
 
-    def _adviceIsEditableByCurrentUser(self, org_uid):
-        '''Depending on advice WF state, it is only editable by relevant level.
-           This is used by MeetingItem.getAdvicesGroupsInfosForUser.'''
+    def _adviceIsEditable(self, org_uid):
+        '''See doc in interfaces.py.'''
         item = self.getSelf()
-        tool = api.portal.get_tool('portal_plonemeeting')
-        financial_group_uids = tool.financialGroupUids()
-
-        if org_uid in financial_group_uids:
-            member = api.user.get_current()
-            adviceObj = item.getAdviceObj(org_uid)
-            if not member.has_role('MeetingFinanceEditor', adviceObj):
-                return False
+        advice = item.getAdviceObj(org_uid)
+        if advice.queryState() not in ('proposed_to_financial_controller',
+                                       'proposed_to_financial_reviewer',
+                                       'proposed_to_financial_manager'):
+            return False
         return True
 
     def _advicePortalTypeForAdviser(self, org_uid):

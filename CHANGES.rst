@@ -7,6 +7,11 @@ Products.MeetingLiege Changelog
 - Products.PloneMeeting.utils.getLastEvent was removed, use imio.history.utils.getLastWFAction.
 - Adapted profile regarding changes about integration of collective.contact.* in Products.PloneMeeting.
 - Adapted finances advice WF to use WF Actions/Conditions adapters and regarding use of dexterity.localrolesfield for meetingadvice.advice_group field
+- Get rid of the 'MeetingFinanceEditor' role, we use dexterity.localrolesfield
+- Moved the code that gives ability to add annex decision to finances advisers from events.onAdvicesUpdated to
+  events.onItemLocalRolesUpdated, the correct place.  Do not use remove role 'MeetingFinanceEditor' but give role
+  'MeetingMember' to finances advisers
+- Fixed tests as finances advice is only giveable when item is in state 'proposed_to_finance' and no more when item is 'validated/presented'
 
 4.1b9 (2018-07-13)
 ------------------

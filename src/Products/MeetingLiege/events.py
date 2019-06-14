@@ -72,8 +72,19 @@ def onItemLocalRolesUpdated(item, event):
        - access of finance advisers."""
     if item.portal_type == "MeetingItemBourgmestre":
         item.adapted()._setBourgmestreGroupsReadAccess()
+
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     item.adapted().updateFinanceAdvisersAccess(old_local_roles=event.old_local_roles)
+
+    # give ability to finance adviser to add decision annexes
+    tool = api.portal.get_tool('portal_plonemeeting')
+    cfg = tool.getMeetingConfig(item)
+    org_uid = item.adapted().getFinanceGroupUIDForItem()
+    if org_uid and item.queryState() in cfg.getItemDecidedStates():
+        adviserGroupId = '%s_advisers' % org_uid
+        # if item is decided, we give the _advisers, the 'MeetingMember'
+        # role on the item so he is able to add decision annexes
+        item.manage_addLocalRoles(adviserGroupId, ('MeetingMember', ))
 
 
 def onAdviceAdded(advice, event):
@@ -169,22 +180,6 @@ def onAdvicesUpdated(item, event):
         # special behaviour for finance advice
         if not org_uid == item.adapted().getFinanceGroupUIDForItem():
             continue
-
-        itemState = item.queryState()
-        tool = api.portal.get_tool('portal_plonemeeting')
-        cfg = tool.getMeetingConfig(item)
-        adviserGroupId = '%s_advisers' % org_uid
-
-        # if item is decided, we need to give the _advisers, the 'MeetingFinanceEditor'
-        # role on the item so he is able to add decision annexes
-        # XXX to move to the onItemLocalRolesUpdated event handler !!!
-        if itemState in cfg.getItemDecidedStates():
-            item.manage_addLocalRoles(adviserGroupId, ('MeetingFinanceEditor', ))
-        else:
-            localRoles = item.__ac_local_roles__.get(adviserGroupId, ())
-            if 'MeetingFinanceEditor' in localRoles:
-                localRoles.remove('MeetingFinanceEditor')
-                item.__ac_local_roles__[adviserGroupId] = localRoles
 
         # when a finance has accessed an item, he will always be able to access it after
         if not adviceInfo['item_viewable_by_advisers'] and \

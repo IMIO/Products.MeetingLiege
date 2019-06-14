@@ -51,7 +51,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -153,7 +152,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -255,7 +253,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -356,7 +353,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -729,7 +725,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -1533,7 +1528,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -1630,7 +1624,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">
@@ -1727,7 +1720,6 @@
    <permission-role>Manager</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>MeetingMember</permission-role>
-   <permission-role>MeetingFinanceEditor</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read budget infos"
                   acquired="False">

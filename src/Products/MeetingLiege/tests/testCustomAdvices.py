@@ -49,7 +49,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
-        # ask finance advice and ask advice (set item to 'proposed_to_finances')
+        # ask finance advice and ask advice (set item to 'proposed_to_finance')
         # not need a finances advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
@@ -211,7 +211,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                     'advice_hide_during_redaction': False,
                                     'advice_comment': RichTextValue(u'My comment')})
         # directly sent back to service
-        self.assertTrue(item.queryState() == returnState)
+        self.assertEqual(item.queryState(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
         # now add advice as vendors and hide it, advice is considered not given
@@ -226,28 +226,28 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                              'advice_hide_during_redaction': True,
                                              'advice_comment': RichTextValue(u'My comment')})
         # still waiting advices
-        self.assertTrue(item.queryState() == '{0}_waiting_advices'.format(returnState))
+        self.assertEqual(item.queryState(), '{0}_waiting_advices'.format(returnState))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
         # if we just change 'advice_hide_during_redaction', advice is given and item's sent back
         advice.advice_hide_during_redaction = False
         notify(ObjectModifiedEvent(advice))
-        self.assertTrue(item.queryState() == returnState)
+        self.assertEqual(item.queryState(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
         # now test with 'asked_again'
         self.changeUser(adviceAskerUserId)
         advice.restrictedTraverse('@@change-advice-asked-again')()
-        self.assertTrue(advice.advice_type == 'asked_again')
+        self.assertEqual(advice.advice_type, 'asked_again')
         self.do(item, askAdvicesTr)
         self.changeUser('pmReviewer2')
         notify(ObjectModifiedEvent(advice))
         # still waiting advices
-        self.assertTrue(item.queryState() == '{0}_waiting_advices'.format(returnState))
+        self.assertEqual(item.queryState(), '{0}_waiting_advices'.format(returnState))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
         # change advice_type, it will be sent back then
         advice.advice_type = u'positive'
         notify(ObjectModifiedEvent(advice))
-        self.assertTrue(item.queryState() == returnState)
+        self.assertEqual(item.queryState(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
     def test_AdviceTypeVocabulary(self):

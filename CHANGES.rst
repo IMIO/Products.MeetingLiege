@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1b10 (unreleased)
+4.1rc1 (unreleased)
 -------------------
 
 - Products.PloneMeeting.utils.getLastEvent was removed, use imio.history.utils.getLastWFAction.

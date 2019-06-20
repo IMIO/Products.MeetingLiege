@@ -1577,6 +1577,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setCategory('')
         item._update_after_edit()
         self.assertTrue(not self.transitions(item))
+        actions_panel._transitions = None
         no_category_rendered_actions_panel = actions_panel()
         self.assertNotEqual(no_category_rendered_actions_panel, rendered_actions_panel)
         item.setCategory(originalCategory)

@@ -34,7 +34,7 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 migratedArchivingRefs.append(migratedArchivingRef)
             cfg.setArchivingRefs(migratedArchivingRefs)
             # MeetingCategory.groupsOfMatter
-            for category in cfg.getCategories(onlySelectable=True, caching=False):
+            for category in cfg.getCategories(onlySelectable=False, caching=False):
                 groupsOfMatter = category.getGroupsOfMatter()
                 migratedGroupsOfMatter = [org_id_to_uid(mGroupId) for mGroupId in groupsOfMatter]
                 category.setGroupsOfMatter(migratedGroupsOfMatter)

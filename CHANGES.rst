@@ -6,6 +6,7 @@ Products.MeetingLiege Changelog
 
 - Fixed migration, while migrating MeetingCategory.groupsOfMatter, consider every categories (getCategories(onlySelectable=False), or some
   categories end not migrated.
+- Fixed MeetingItem.getGroupsInCharge that was MeetingItem.getGroupInCharge before
 
 4.1rc1 (2019-06-14)
 -------------------

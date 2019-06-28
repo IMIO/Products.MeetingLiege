@@ -564,7 +564,7 @@ class CustomMeeting(Meeting):
         return categsId
 
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
-old_getGroupInCharge = MeetingItem.getGroupInCharge
+old_getGroupsInCharge = MeetingItem.getGroupsInCharge
 
 
 class CustomMeetingItem(MeetingItem):
@@ -1323,19 +1323,26 @@ class CustomMeetingItem(MeetingItem):
             groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
             item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
-    def getGroupInCharge(self, theObject=False, **kwargs):
-        '''Redefine getGroupInCharge to return the group in charge of matter.'''
+    def getGroupsInCharge(self, theObjects=False, fromOrgIfEmpty=False, first=False, **kwargs):
+        '''Redefine getGroupsInCharge to return the group in charge of matter.'''
         item = self.getSelf()
         category = item.getCategory(theObject=True)
+        res = ''
         if category and category.meta_type == 'MeetingCategory':
-            for groupOfMatter in category.getGroupsOfMatter():
-                res = groupOfMatter
-                if theObject:
-                    res = get_organization(groupOfMatter)
-                return res
-        return ''
+            res = category.getGroupsOfMatter()
+            # avoid getting every organizations if first=True
+            if res and first and theObjects:
+                res = [res[0]]
 
-    MeetingItem.getGroupInCharge = getGroupInCharge
+            if theObjects:
+                res = [get_organization(org_uid) for org_uid in res]
+
+            if res and first:
+                res = res[0]
+
+        return res
+
+    MeetingItem.getGroupsInCharge = getGroupsInCharge
 
     def _getAllGroupsManagingItem(self):
         """ """

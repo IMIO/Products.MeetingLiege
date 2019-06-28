@@ -34,6 +34,10 @@ class testMeeting(MeetingLiegeTestCase, pmtm):
            use another implementation, moreover we do not use this inserting method."""
         pass
 
+    def test_pm_InsertItemOnSeveralGroupsInCharge(self):
+        """Bypass as MeetingItem.getGroupsIsCharge is overrided."""
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

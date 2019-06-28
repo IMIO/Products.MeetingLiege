@@ -140,7 +140,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # so we select a group in it's groupsOfMatter
         cfg = self.meetingConfig
         cfg.setUseGroupsAsCategories(False)
-        cfg.setItemGroupInChargeStates(ml_import_data.collegeMeeting.itemGroupInChargeStates)
+        cfg.setItemGroupsInChargeStates(ml_import_data.collegeMeeting.itemGroupsInChargeStates)
         development = cfg.categories.development
         development.setGroupsOfMatter((self.vendors_uid, ))
 
@@ -376,9 +376,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         cfg.setInsertingMethodsOnAddItem(insertingMethods)
         for item in item1, item2, item3, item4, item5, item6, item7:
             self.assertEqual(item.getProposingGroup(), self.developers_uid)
-        self.assertEqual(item1._findOrderFor('on_proposing_groups'), 0)
-        item1.setProposingGroup(self.vendors_uid)
         self.assertEqual(item1._findOrderFor('on_proposing_groups'), 1)
+        item1.setProposingGroup(self.vendors_uid)
+        self.assertEqual(item1._findOrderFor('on_proposing_groups'), 2)
         # now order of item1 is higher than order of item6
         self.assertTrue(item1._getInsertOrder(cfg) > item6._getInsertOrder(cfg))
 

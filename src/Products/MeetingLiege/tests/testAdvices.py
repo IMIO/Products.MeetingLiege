@@ -42,7 +42,7 @@ class testAdvices(MeetingLiegeTestCase, pmta):
 
     def test_pm_AdviceAskedAutomaticallyWithGroupsInCharge(self):
         """ """
-        self._setUpGroupInCharge()
+        self._setUpGroupsInCharge(None)
         super(testAdvices, self).test_pm_AdviceAskedAutomaticallyWithGroupsInCharge()
 
 

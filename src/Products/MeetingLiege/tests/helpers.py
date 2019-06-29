@@ -192,8 +192,9 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         cfg.setUseGroupsAsCategories(False)
         cat = cfg.categories.development
         cat.setGroupsOfMatter(groups)
-        item.setCategory('development')
-        item.updateLocalRoles()
+        if item is not None:
+            item.setCategory('development')
+            item.updateLocalRoles()
 
     def _tearDownGroupsInCharge(self, item):
         """As group in charge is an adaptable method, it may be setup differently."""

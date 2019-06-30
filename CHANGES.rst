@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1rc2 (unreleased)
+4.1rc2 (2019-06-30)
 -------------------
 
 - Fixed migration, while migrating MeetingCategory.groupsOfMatter, consider every categories (getCategories(onlySelectable=False), or some

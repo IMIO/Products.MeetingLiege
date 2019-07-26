@@ -38,6 +38,14 @@ class testMeeting(MeetingLiegeTestCase, pmtm):
         """Bypass as MeetingItem.getGroupsIsCharge is overrided."""
         pass
 
+    def test_pm_GetItemInsertOrderByOrderedGroupsInCharge(self):
+        """Bypass as MeetingItem.getGroupsIsCharge is overrided."""
+        pass
+
+    def test_pm_InsertItemOnSeveralMethods(self):
+        """Bypass as MeetingItem.getGroupsIsCharge is overrided."""
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

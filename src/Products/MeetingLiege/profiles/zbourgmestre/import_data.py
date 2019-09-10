@@ -126,9 +126,10 @@ bourgmestreMeeting.onTransitionFieldTransforms = (
     ({'transition': 'delay',
       'field_name': 'MeetingItem.decision',
       'tal_expression': "string:<p>Le bourgmestre décide de reporter le point.</p>"},))
-bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
+bourgmestreMeeting.onMeetingTransitionItemActionToExecute = (
     {'meeting_transition': 'close',
-     'item_transition': 'accept'},)
+     'item_action': 'accept',
+     'tal_expression': ''}, )
 bourgmestreMeeting.meetingPowerObserversStates = ('closed', 'created', )
 bourgmestreMeeting.powerAdvisersGroups = ()
 bourgmestreMeeting.itemBudgetInfosStates = ()

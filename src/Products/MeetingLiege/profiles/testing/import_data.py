@@ -62,19 +62,32 @@ collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency',
                                               'accepted_and_returned',)
 collegeMeeting.itemDecidedStates = ['accepted', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.itemPositiveDecidedStates = ['accepted', 'accepted_but_modified']
-collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
-                                                              'item_transition': 'itemfreeze'},
+collegeMeeting.onMeetingTransitionItemActionToExecute = (
+    {'meeting_transition': 'freeze',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
 
-                                                             {'meeting_transition': 'decide',
-                                                              'item_transition': 'itemfreeze'},
+    {'meeting_transition': 'decide',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
 
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'itemfreeze'},
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'accept'},
+    {'meeting_transition': 'publish_decisions',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
+    {'meeting_transition': 'publish_decisions',
+     'item_action': 'accept',
+     'tal_expression': ''},
 
-                                                             {'meeting_transition': 'backToCreated',
-                                                              'item_transition': 'backToPresented'},)
+    {'meeting_transition': 'close',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
+    {'meeting_transition': 'close',
+     'item_action': 'accept',
+     'tal_expression': ''},
+
+    {'meeting_transition': 'backToCreated',
+     'item_action': 'backToPresented',
+     'tal_expression': ''}, )
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
 collegeMeeting.itemCopyGroupsStates = ['validated']
@@ -105,19 +118,8 @@ councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeet
 councilMeeting.transitionsForPresentingAnItem = ('present', )
 councilMeeting.itemDecidedStates = collegeMeeting.itemDecidedStates
 councilMeeting.itemPositiveDecidedStates = collegeMeeting.itemPositiveDecidedStates
-councilMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
-                                                              'item_transition': 'itemfreeze'},
-
-                                                             {'meeting_transition': 'decide',
-                                                              'item_transition': 'itemfreeze'},
-
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'itemfreeze'},
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'accept'},
-
-                                                             {'meeting_transition': 'backToCreated',
-                                                              'item_transition': 'backToPresented'},)
+councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
+    collegeMeeting.onMeetingTransitionItemActionToExecute)
 councilMeeting.onTransitionFieldTransforms = (
     {'transition': 'present',
      'field_name': 'MeetingItem.decisionEnd',
@@ -190,9 +192,10 @@ bourgmestreMeeting.transitionsForPresentingAnItem = (
     u'proposeToCabinetReviewer',
     u'validate',
     u'present')
-bourgmestreMeeting.onMeetingTransitionItemTransitionToTrigger = (
+bourgmestreMeeting.onMeetingTransitionItemActionToExecute = (
     {'meeting_transition': 'close',
-     'item_transition': 'accept'}, )
+     'item_action': 'accept',
+     'tal_expression': ''}, )
 bourgmestreMeeting.transitionsToConfirm = []
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )

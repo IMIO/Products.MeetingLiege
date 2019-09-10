@@ -4,8 +4,7 @@ Products.MeetingLiege Changelog
 4.1rc3 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- MeetingConfig.onMeetingTransitionItemTransitionToTrigger was moved to MeetingConfig.onMeetingTransitionItemActionToExecute, adapted code accordingly
 
 4.1rc2 (2019-06-30)
 -------------------

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
 from DateTime import DateTime
 from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
@@ -283,16 +284,21 @@ collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewe
                                                  'proposeToDirector',
                                                  'validate',
                                                  'present', )
-collegeMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
-                                                              'item_transition': 'itemfreeze'},
+collegeMeeting.onMeetingTransitionItemActionToExecute = (
+    {'meeting_transition': 'freeze',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
 
-                                                             {'meeting_transition': 'decide',
-                                                              'item_transition': 'itemfreeze'},
+    {'meeting_transition': 'decide',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
 
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'itemfreeze'},
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'accept'},)
+    {'meeting_transition': 'close',
+     'item_action': 'itemfreeze',
+     'tal_expression': ''},
+    {'meeting_transition': 'close',
+     'item_action': 'accept',
+     'tal_expression': ''}, )
 collegeMeeting.itemDecidedStates = ('accepted', 'accepted_but_modified', 'pre_accepted', 'refused', 'delayed',
                                     'accepted_and_returned', 'returned', 'marked_not_applicable',
                                     'sent_to_council_emergency')
@@ -507,16 +513,8 @@ councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeeting
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
 councilMeeting.transitionsForPresentingAnItem = ('present', )
-councilMeeting.onMeetingTransitionItemTransitionToTrigger = ({'meeting_transition': 'freeze',
-                                                              'item_transition': 'itemfreeze'},
-
-                                                             {'meeting_transition': 'decide',
-                                                              'item_transition': 'itemfreeze'},
-
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'itemfreeze'},
-                                                             {'meeting_transition': 'close',
-                                                              'item_transition': 'accept'},)
+councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
+    collegeMeeting.onMeetingTransitionItemActionToExecute)
 councilMeeting.onTransitionFieldTransforms = (
     {'transition': 'present',
      'field_name': 'MeetingItem.decisionEnd',

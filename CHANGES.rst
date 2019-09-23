@@ -5,6 +5,7 @@ Products.MeetingLiege Changelog
 -------------------
 
 - MeetingConfig.onMeetingTransitionItemTransitionToTrigger was moved to MeetingConfig.onMeetingTransitionItemActionToExecute, adapted code accordingly
+- Updated meetingitem_view.pt regarding changes in Products.PloneMeeting ase meetingitem_view.pt
 
 4.1rc2 (2019-06-30)
 -------------------

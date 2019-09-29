@@ -29,6 +29,9 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
     def test_pm_GetCertifiedSignaturesFromGroupInCharge(self):
         '''Bypass as getGroupsInCharge is overrided and defined on the category.'''
 
+    def test_pm_ItemOrderedGroupsInChargeVocabulary(self):
+        '''Bypass as getGroupsInCharge is overrided and defined on the category.'''
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

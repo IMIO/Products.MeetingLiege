@@ -4,8 +4,7 @@ Products.MeetingLiege Changelog
 4.1rc4 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Updated templates regarding changes in Products.PloneMeeting
 
 4.1rc3 (2019-09-23)
 -------------------

@@ -86,6 +86,7 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                     cfg.setPowerObservers(deepcopy(collegeMeeting.powerObservers))
                 elif cfg.getId() in ['meeting-config-bourgmestre']:
                     cfg.setPowerObservers(deepcopy(bourgmestreMeeting.powerObservers))
+                cfg._createOrUpdateAllPloneGroups(force_update_access=True)
 
     def _removeEmptyParagraphs(self):
         """Remove every <p>&nbsp;</p> from RichText fields of items."""

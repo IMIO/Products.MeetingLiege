@@ -216,10 +216,6 @@ msgstr "Accepté avec modifications"
 msgid "icon_help_adopts_next_council_agenda"
 msgstr "Arrête l'ordre du jour du prochain Conseil communal"
 
-#. Default: "Advices asked by creator"
-msgid "icon_help_waiting_advices_from_itemcreated"
-msgstr "Avis demandés par le créateur"
-
 #. Default: "Pre accepted"
 msgid "icon_help_pre_accepted"
 msgstr "Accepté sous réserve"
@@ -268,9 +264,17 @@ msgstr "Retour Collège"
 msgid "icon_help_sent_to_council_emergency"
 msgstr "Envoyé au Conseil Communal en urgence"
 
+#. Default: "Advices asked by creator"
+msgid "icon_help_waiting_advices_from_itemcreated"
+msgstr "Avis demandés par le créateur"
+
 #. Default: "This item is down the workflow from finances"
 msgid "icon_help_wf_down_finances"
 msgstr "Ce point redescend le workflow depuis les finances"
+
+#. Default: "In copy"
+msgid "incopy"
+msgstr "En copie"
 
 #. Default: "You can not select 'Follow to discuss order' inserting method as the field 'To discuss ?' is not selected in the field 'Attributes used for characterizing an item' of this meeting configuration."
 msgid "inserting_methods_not_using_to_discuss_error"

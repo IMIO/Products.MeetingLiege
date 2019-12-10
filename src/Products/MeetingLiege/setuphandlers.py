@@ -51,8 +51,8 @@ def postInstall(context):
     reorderSkinsLayers(context, site)
     # configure localroles field for meetingadvicefinances
     _configureDexterityLocalRolesField()
-    # add getAdoptsNextCouncilAgenda and category_id metadata
-    addOrUpdateColumns(site, ('getAdoptsNextCouncilAgenda', 'category_id'))
+    # add category_id metadata
+    addOrUpdateColumns(site, ('category_id', ))
     # add the groupsOfMatter index
     addOrUpdateIndexes(site, {'groupsOfMatter': ('KeywordIndex', {})})
     # add our own faceted advanced criteria

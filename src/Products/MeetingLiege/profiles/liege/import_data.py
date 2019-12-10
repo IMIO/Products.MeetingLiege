@@ -309,10 +309,113 @@ collegeMeeting.decisionTopicStates = ('decided', 'closed')
 # done in setuphandlers._configureCollegeCustomAdvisers
 collegeMeeting.customAdvisers = []
 collegeMeeting.powerAdvisersGroups = ('dirgen', 'dirfin')
-collegeMeeting.itemPowerObserversStates = ('accepted', 'accepted_but_modified', 'accepted_and_returned',
-                                           'pre_accepted', 'delayed', 'itemfrozen', 'marked_not_applicable',
-                                           'validated', 'presented', 'refused', 'returned')
-collegeMeeting.meetingPowerObserversStates = ('closed', 'created', 'decided', 'frozen')
+collegeMeeting.powerObservers = (
+    {'item_access_on': '',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'accepted_and_returned',
+                     'pre_accepted',
+                     'delayed',
+                     'returned',
+                     'itemfrozen',
+                     'refused',
+                     'returned_to_proposing_group',
+                     'marked_not_applicable',
+                     'validated'],
+     'label': 'Super observateurs',
+     'meeting_access_on': '',
+     'meeting_states': ('closed', 'created', 'decided', 'frozen'),
+     'row_id': 'powerobservers'},
+    {'item_access_on': '',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'accepted_and_returned',
+                     'pre_accepted',
+                     'delayed',
+                     'returned',
+                     'itemfrozen',
+                     'refused',
+                     'returned_to_proposing_group',
+                     'marked_not_applicable',
+                     'validated'],
+     'label': 'Super observateurs restreints',
+     'meeting_access_on': '',
+     'meeting_states': ('closed', 'decided', 'frozen'),
+     'row_id': 'restrictedpowerobservers'},
+    # police administrative
+    {'item_access_on': 'python:item.getProposingGroup() in [pm_utils.org_id_to_uid("bpa-arraata-c-s")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'accepted_and_returned'],
+     'label': 'Super observateurs Police administrative',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'adminpolicepowerobservers'},
+    # gestionnaires infrastructure
+    {'item_access_on': 'python:item.getProposingGroup() in ' \
+        '[pm_utils.org_id_to_uid("urba-gestion-administrative"), ' \
+        'pm_utils.org_id_to_uid("urba-service-de-lurbanisme")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'pre_accepted'],
+     'label': 'Super observateurs Gestionnaires infrastructure',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'gestinfrapowerobservers'},
+    # Juristes MP
+    {'item_access_on': 'python:item.getProposingGroup() in [pm_utils.org_id_to_uid("bat-marcha-c-s-publics")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'pre_accepted'],
+     'label': 'Super observateurs Juristes Marchés publics',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'jurmppowerobservers'},
+    # Juristes Urbanisme
+    {'item_access_on': 'python:item.getProposingGroup() in ' \
+        '[pm_utils.org_id_to_uid("urba-gestion-administrative"), ' \
+        'pm_utils.org_id_to_uid("urba-service-de-lurbanisme"), ' \
+        'pm_utils.org_id_to_uid("bpa-permis-environnement")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'pre_accepted'],
+     'label': 'Super observateurs Juristes Urbanisme',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'jururbapowerobservers'},
+    # Juristes Sécurité publique
+    {'item_access_on': 'python:item.getProposingGroup() in [pm_utils.org_id_to_uid("bpa-sa-c-curita-c-publique")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'pre_accepted'],
+     'label': 'Super observateurs Juristes Sécurité publique',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'jursecpubpowerobservers'},
+    # Cabinet
+    {'item_access_on': 'python:item.getProposingGroup() not in ' \
+        '[pm_utils.org_id_to_uid("rh-direction"), ' \
+        'pm_utils.org_id_to_uid("rh-gestion-administrative"), ' \
+        'pm_utils.org_id_to_uid("rh-juridique"), ' \
+        'pm_utils.org_id_to_uid("rh-recrutement"), ' \
+        'pm_utils.org_id_to_uid("rh-pension"), ' \
+        'pm_utils.org_id_to_uid("ip-personnel")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'accepted_and_returned',
+                     'pre_accepted',
+                     'delayed',
+                     'returned',
+                     'itemfrozen',
+                     'refused',
+                     'returned_to_proposing_group',
+                     'marked_not_applicable'],
+     'label': 'Super observateurs Cabinet',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'cabinetpowerobservers'},
+)
+
 collegeMeeting.meetingAppDefaultView = 'searchmyitems'
 collegeMeeting.useAdvices = True
 collegeMeeting.usedAdviceTypes = ('positive_finance', 'positive_with_remarks_finance',
@@ -540,6 +643,7 @@ councilMeeting.selectableCopyGroups = [orgs[0].getIdSuffixed('reviewers'),
 councilMeeting.itemCopyGroupsStates = ('accepted', 'accepted_but_modified',
                                        'pre_accepted', 'itemfrozen',
                                        'refused', 'delayed')
+councilMeeting.powerObservers = deepcopy(collegeMeeting.powerObservers)
 councilMeeting.podTemplates = councilTemplates
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},)

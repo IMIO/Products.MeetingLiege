@@ -148,6 +148,10 @@ msgstr ""
 msgid "internalreviewers"
 msgstr ""
 
+#. Default: "In copy"
+msgid "incopy"
+msgstr ""
+
 #. Default: "Reviewers"
 msgid "reviewers"
 msgstr ""

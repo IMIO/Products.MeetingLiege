@@ -4,8 +4,11 @@ Products.MeetingLiege Changelog
 4.1rc5 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added new collective.contact.plonegroup suffix '_incopy' (In copy) to manage users that will be set in copy of items
+- Adapted migration to handle new power observers configuration
+- Added migration step to remove empty paragraphs on every items (including recurring items and item templates)
+- Adapted item WFs to use normal behavior for '_observers' suffix, that is to have View access to the item frim the beginning (itemcreated)
+- Removed the 'getAdoptsNextCouncilAgenda' portal_catalog metadata, seems it was not used anymore
 
 4.1rc4 (2019-10-14)
 -------------------

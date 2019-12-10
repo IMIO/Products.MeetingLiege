@@ -34,6 +34,7 @@ PMconfig.MEETINGROLES.update(LIEGEROLES)
 PMconfig.EXTRA_GROUP_SUFFIXES = [
     {'fct_title': u'administrativereviewers', 'fct_id': u'administrativereviewers', 'fct_orgs': []},
     {'fct_title': u'internalreviewers', 'fct_id': u'internalreviewers', 'fct_orgs': []},
+    {'fct_title': u'incopy', 'fct_id': u'incopy', 'fct_orgs': []},
     {'fct_title': u'financialcontrollers',
      'fct_id': u'financialcontrollers',
      'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier']},

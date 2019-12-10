@@ -114,9 +114,59 @@ bourgmestreMeeting.usedAdviceTypes = ['positive', 'positive_with_remarks', 'nega
 bourgmestreMeeting.enableAdviceInvalidation = False
 bourgmestreMeeting.itemAdviceInvalidateStates = []
 bourgmestreMeeting.customAdvisers = []
-bourgmestreMeeting.itemPowerObserversStates = (
-    'validated', 'presented',
-    'accepted', 'refused', 'delayed', 'marked_not_applicable')
+bourgmestreMeeting.powerObservers = (
+    {'item_access_on': '',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'delayed',
+                     'itemfrozen',
+                     'refused',
+                     'validated'],
+     'label': 'Super observateurs',
+     'meeting_access_on': '',
+     'meeting_states': ('created', ),
+     'row_id': 'powerobservers'},
+    {'item_access_on': '',
+     'item_states': ['accepted',
+                     'accepted_but_modified',
+                     'delayed',
+                     'itemfrozen',
+                     'refused',
+                     'returned_to_proposing_group',
+                     'marked_not_applicable',
+                     'validated'],
+     'label': 'Super observateurs restreints',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'restrictedpowerobservers'},
+    # police administrative
+    {'item_access_on': 'python:item.getProposingGroup() in [pm_utils.org_id_to_uid("bpa-arraata-c-s")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified'],
+     'label': 'Super observateurs Police administrative',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'adminpolicepowerobservers'},
+    # Juristes Urbanisme
+    {'item_access_on': 'python:item.getProposingGroup() in ' \
+        '[pm_utils.org_id_to_uid("urba-gestion-administrative"), ' \
+        'pm_utils.org_id_to_uid("urba-service-de-lurbanisme"), ' \
+        'pm_utils.org_id_to_uid("bpa-permis-environnement")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified'],
+     'label': 'Super observateurs Juristes Urbanisme',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'jururbapowerobservers'},
+    # Juristes Sécurité publique
+    {'item_access_on': 'python:item.getProposingGroup() in [pm_utils.org_id_to_uid("bpa-sa-c-curita-c-publique")]',
+     'item_states': ['accepted',
+                     'accepted_but_modified'],
+     'label': 'Super observateurs Juristes Sécurité publique',
+     'meeting_access_on': '',
+     'meeting_states': (),
+     'row_id': 'jursecpubpowerobservers'},
+)
 bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'marked_not_applicable']
 bourgmestreMeeting.workflowAdaptations = []
 bourgmestreMeeting.transitionsForPresentingAnItem = (

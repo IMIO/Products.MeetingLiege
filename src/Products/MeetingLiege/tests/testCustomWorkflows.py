@@ -1959,18 +1959,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToAdministrativeReviewer')
         # pmCreator1 can no more edit item but can still view it
         self._check_access(item, write=False)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         self.changeUser('pmAdminReviewer1')
         # pmAdminReviewer1 may access item and edit it
         self._check_access(item)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         # he may send the item back to the pmCreator1 or send it to the internal reviewer
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated', 'proposeToInternalReviewer', ])
         self.do(item, 'proposeToInternalReviewer')
         # pmAdminReviewer1 can no more edit item but can still view it
         self._check_access(item, write=False)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         # pmInternalReviewer1 may access item and edit it
         self.changeUser('pmInternalReviewer1')
         self._check_access(item)
@@ -1982,11 +1982,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToDirector')
         # pmInternalReviewer1 can no more edit item but can still view it
         self._check_access(item, write=False)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         # pmReviewer1 (director) may access item and edit it
         self.changeUser('pmReviewer1')
         self._check_access(item)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         # he may send the item back to the internal reviewer, or send it to
         # general manager (proposeToGeneralManager).  askAdvicesByDirector is only available
         # if advices are asked
@@ -2003,7 +2003,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.queryState(), 'proposed_to_director_waiting_advices')
         # director may take item back
         self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
 
     def test_BourgmestreDirectionProcess(self):
         """ """
@@ -2115,7 +2115,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             write=False)
         self.changeUser('pmMeetingManagerBG')
         self._check_access(item)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         self.assertEqual(
             self.transitions(item),
             ['backToProposedToCabinetReviewer', 'backToProposedToDirector'])
@@ -2128,7 +2128,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'bourgmestreReviewer'),
             write=False)
         self._check_access(item)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
 
         # only MeetingManager may decide
         for userId in (
@@ -2149,16 +2149,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                    'pmReviewer1', 'generalManager', 'bourgmestreManager',
                    'bourgmestreReviewer', 'pmMeetingManagerBG'),
             write=False)
-        self._check_access(item, userIds=['pmObserver1'], read=False, write=False)
+        self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         self.assertEqual(item.queryState(), 'delayed')
         cloned_item = item.getBRefs('ItemPredecessor')[0]
         self.assertEqual(cloned_item.queryState(), 'itemcreated')
-        # only viewable by proposingGroup MeetingMember
+        # only viewable by proposingGroup members
         self._check_access(
             cloned_item, ('generalManager', 'bourgmestreManager', 'bourgmestreReviewer',
-                          'pmAdminReviewer1', 'pmInternalReviewer1', 'pmReviewer1'),
+                          'pmAdminReviewer1', 'pmInternalReviewer1'),
             read=False, write=False)
         self._check_access(cloned_item, userIds=('pmCreator1', ))
+        self._check_access(cloned_item, userIds=('pmReviewer1', ), read=True, write=False)
 
     def test_BourgmestreItemDataHistorizedWhenProposedToCabinetManager(self):
         """ """

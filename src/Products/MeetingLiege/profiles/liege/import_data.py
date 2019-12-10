@@ -272,7 +272,7 @@ collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'cfg2',
                                            'trigger_workflow_transitions_until': '__nothing__'},)
 collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency', 'accepted',
                                               'accepted_but_modified', 'accepted_and_returned')
-collegeMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
+collegeMeeting.hideCssClassesTo = ('powerobservers', 'restrictedpowerobservers')
 collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
 collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
@@ -607,7 +607,7 @@ councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'label': 'Addendum',
                                                   'used_in_inserting_method': ''}, ]
 councilMeeting.itemAutoSentToOtherMCStates = ('delayed', 'returned')
-councilMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
+councilMeeting.hideCssClassesTo = ('powerobservers', 'restrictedpowerobservers')
 councilMeeting.enableItemDuplication = False
 councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
 councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'

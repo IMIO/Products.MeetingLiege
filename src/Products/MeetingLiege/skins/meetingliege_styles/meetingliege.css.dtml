@@ -14,6 +14,21 @@ ul#portal-globalnav li a {
 
 /* Colors on states */
 /* Items */
+.state-proposed_to_administrative_reviewer,
+.state-proposed_to_internal_reviewer,
+.state-proposed_to_internal_reviewer_waiting_advices,
+.state-proposed_to_director,
+.state-proposed_to_director_waiting_advices,
+.state-proposed_to_finance,
+.state-proposed_to_financial_controller,
+.state-proposed_to_financial_reviewer,
+.state-proposed_to_financial_manager,
+.state-proposed_to_general_manager,
+.state-proposed_to_cabinet_manager,
+.state-proposed_to_cabinet_reviewer {
+    color: DarkOrange;
+}
+
 .state-accepted_and_returned, .label-state-accepted_and_returned {
     color: green;
 }

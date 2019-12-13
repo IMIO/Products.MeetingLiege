@@ -54,6 +54,7 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 item.setFinanceAdvice(finance_org_uid)
 
         # remove users from Plone groups ending with _observers
+        logger.info('Removing every users from observers groups...')
         pGroups = api.group.get_groups()
         for pGroup in pGroups:
             if pGroup.getId().endswith('_observers'):

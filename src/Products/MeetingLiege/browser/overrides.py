@@ -148,7 +148,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
                     "transmises aux Autorités de Tutelle.</p>"
         return body
 
-    def printActeContentForCouncil(self):
+    def printActeContentForCouncil(self, include_decisionEnd=True, include_observations=True):
         """Printed on a Council item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation() and self.context.getMotivation() + '<p>&nbsp;</p>' or ''
         if self.context.adapted().getLegalTextForFDAdvice():
@@ -156,14 +156,26 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         body += self.printCollegeProposalInfos().encode("utf-8") + '<p>&nbsp;</p>'
         body += self.context.getDecision() + '<p>&nbsp;</p>'
         body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p>&nbsp;</p>' or ''
-        body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
+        if include_decisionEnd:
+            body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
         if self.context.getSendToAuthority():
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
                     "du Code de la démocratie locale et de la décentralisation relatifs "\
                     "à la Tutelle, la présente décision et ses pièces justificatives sont "\
                     "transmises aux Autorités de Tutelle.<br/></p>"
-        body += self.context.getObservations() and self.context.getObservations() or ''
+        if include_observations:
+            body += self.context.getObservations() and self.context.getObservations() or ''
         return body
+
+    def print_deliberation(self):
+        """ """
+        return self.printXhtml(self.context, xhtmlContents=[self.printActeContentForCouncil()])
+
+    def print_public_deliberation(self):
+        """ """
+        content = self.printActeContentForCouncil(
+            include_decisionEnd=False, include_observations=False)
+        return self.printXhtml(self.context, xhtmlContents=[content])
 
 
 class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):

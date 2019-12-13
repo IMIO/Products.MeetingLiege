@@ -9,6 +9,7 @@ Products.MeetingLiege Changelog
 - Added migration step to remove empty paragraphs on every items (including recurring items and item templates)
 - Adapted item WFs to use normal behavior for '_observers' suffix, that is to have View access to the item frim the beginning (itemcreated)
 - Removed the 'getAdoptsNextCouncilAgenda' portal_catalog metadata, seems it was not used anymore
+- Implemented print_deliberation and print_public_deliberation that will be used by plonemeeting.restapi
 
 4.1rc4 (2019-10-14)
 -------------------

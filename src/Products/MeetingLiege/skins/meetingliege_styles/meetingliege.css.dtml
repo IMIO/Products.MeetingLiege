@@ -14,80 +14,12 @@ ul#portal-globalnav li a {
 
 /* Colors on states */
 /* Items */
-.state-itemcreated, .label-state-itemcreated,
-.state-itemcreated_waiting_advices, .label-state-itemcreated_waiting_advices {
-    color: red !important;
-}
-
-.state-proposed_to_administrative_reviewer, .label-state-proposed_to_administrative_reviewer,
-.state-proposed_to_internal_reviewer, .label-state-proposed_to_internal_reviewer,
-.state-proposed_to_internal_reviewer_waiting_advices, .label-state-proposed_to_internal_reviewer_waiting_advices,
-.state-proposed_to_director, .label-state-proposed_to_director,
-.state-proposed_to_director_waiting_advices, .label-state-proposed_to_director_waiting_advices,
-.state-proposed_to_finance, .label-state-proposed_to_finance,
-.state-proposed_to_financial_controller, .label-state-proposed_to_financial_controller,
-.state-proposed_to_financial_reviewer, .label-state-proposed_to_financial_reviewer,
-.state-proposed_to_financial_manager, .label-state-proposed_to_financial_manager,
-.state-proposed_to_general_manager, .label-state-proposed_to_general_manager,
-.state-proposed_to_cabinet_manager, .label-state-proposed_to_cabinet_manager,
-.state-proposed_to_cabinet_reviewer, .label-state-cabinet_reviewer {
-    color: DarkOrange !important;
-}
-
-.state-validated, .label-state-validated,
-.state-financial_advice_signed, .label-state-financial_advice_signed {
-    color: blue !important;
-}
-
-.state-presented, .label-state-presented {
-    color: brown !important;
-}
-
-.state-accepted, .label-state-accepted,
-.state-sent_to_council_emergency, .label-state-sent_to_council_emergency {
-    color: green !important;
-}
-
-.state-accepted_but_modified, .label-state-accepted_but_modified {
-    color: green !important;
-}
-
-.state-pre_accepted, .label-state-pre_accepted,
 .state-accepted_and_returned, .label-state-accepted_and_returned {
-    color: green !important;
+    color: green;
 }
 
-.state-delayed, .label-state-delayed,
-.state-returned_to_proposing_group, .label-state-returned_to_proposing_group,
-.state-returned, .label-state-returned,
-.state-marked_not_applicable, .label-state-marked_not_applicable {
-    color: grey !important;
-}
-
-.state-refused, .label-state-refused {
-    color: violet !important;
-}
-
-/* Colors on states */
-/* Meetings */
-.state-created, .label-state-created {
-    color: red !important;
-}
-
-.state-frozen, .label-state-frozen {
-    color: cornflowerBlue !important;
-}
-
-.state-decided, .label-state-decided {
-    color: black !important;
-}
-
-.state-decisions_published, .label-state-decisions_published {
-    color: #436976 !important;
-}
-
-.state-closed, .label-state-closed {
-    color: grey !important;
+.state-returned, .label-state-returned {
+    color: grey;
 }
 
 /* do the field 'titleForCouncil' take 100% width */

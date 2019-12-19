@@ -7,7 +7,13 @@ from plone import api
 from Products.MeetingLiege.profiles.liege.import_data import collegeMeeting
 from Products.MeetingLiege.profiles.zbourgmestre.import_data import bourgmestreMeeting
 from Products.PloneMeeting.migrations.migrate_to_4_1 import Migrate_To_4_1 as PMMigrate_To_4_1
+from Products.PloneMeeting.migrations.migrate_to_4100 import Migrate_To_4100
+from Products.PloneMeeting.migrations.migrate_to_4101 import Migrate_To_4101
+from Products.PloneMeeting.migrations.migrate_to_4102 import Migrate_To_4102
+from Products.PloneMeeting.migrations.migrate_to_4103 import Migrate_To_4103
+from Products.PloneMeeting.migrations.migrate_to_4104 import Migrate_To_4104
 from Products.PloneMeeting.utils import org_id_to_uid
+
 import logging
 
 
@@ -117,8 +123,17 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
         # change self.profile_name everything is right before launching steps
         self.profile_name = u'profile-Products.MeetingLiege:default'
         self.removeUnusedColumns(columns=['getAdoptsNextCouncilAgenda'])
+
         # call steps from Products.PloneMeeting
         PMMigrate_To_4_1.run(self)
+
+        # execute upgrade steps in PM that were added after main upgrade to 4.1
+        Migrate_To_4100(self.portal).run()
+        Migrate_To_4101(self.portal).run(from_migration_to_41=True)
+        Migrate_To_4102(self.portal).run()
+        Migrate_To_4103(self.portal).run()
+        Migrate_To_4104(self.portal).run(from_migration_to_41=True)
+
         # now MeetingLiege specific steps
         logger.info('Migrating to MeetingLiege 4.1...')
         self._removeEmptyParagraphs()

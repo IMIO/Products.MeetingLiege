@@ -10,6 +10,8 @@ Products.MeetingLiege Changelog
 - Adapted item WFs to use normal behavior for '_observers' suffix, that is to have View access to the item frim the beginning (itemcreated)
 - Removed the 'getAdoptsNextCouncilAgenda' portal_catalog metadata, seems it was not used anymore
 - Implemented print_deliberation and print_public_deliberation that will be used by plonemeeting.restapi
+- Adapted templates regarding changes in PloneMeeting (ToolPloneMeeting.modelAdaptations was removed)
+- In migration to MeetingLiege 4.1, call PloneMeeting upgrade steps (up to 4104)
 
 4.1rc4 (2019-10-14)
 -------------------

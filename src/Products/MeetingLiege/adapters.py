@@ -34,7 +34,6 @@ from collective.contact.plonegroup.utils import get_own_organization
 from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
-from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.adapters import BaseImioHistoryAdapter
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
@@ -79,7 +78,6 @@ from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.content.advice import MeetingAdvice
 from Products.PloneMeeting.content.advice import MeetingAdviceWorkflowActions
 from Products.PloneMeeting.content.advice import MeetingAdviceWorkflowConditions
-from Products.PloneMeeting.interfaces import IMeetingCategoryCustom
 from Products.PloneMeeting.interfaces import IMeetingConfigCustom
 from Products.PloneMeeting.interfaces import IMeetingCustom
 from Products.PloneMeeting.interfaces import IMeetingItemCustom
@@ -87,7 +85,6 @@ from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
 from Products.PloneMeeting.Meeting import Meeting
 from Products.PloneMeeting.Meeting import MeetingWorkflowActions
 from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
-from Products.PloneMeeting.MeetingCategory import MeetingCategory
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
@@ -564,7 +561,6 @@ class CustomMeeting(Meeting):
         return categsId
 
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
-old_getGroupsInCharge = MeetingItem.getGroupsInCharge
 
 
 class CustomMeetingItem(MeetingItem):
@@ -1323,27 +1319,6 @@ class CustomMeetingItem(MeetingItem):
             groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
             item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
-    def getGroupsInCharge(self, theObjects=False, fromOrgIfEmpty=False, first=False, **kwargs):
-        '''Redefine getGroupsInCharge to return the group in charge of matter.'''
-        item = self.getSelf()
-        category = item.getCategory(theObject=True)
-        res = ''
-        if category and category.meta_type == 'MeetingCategory':
-            res = category.getGroupsOfMatter()
-            # avoid getting every organizations if first=True
-            if res and first and theObjects:
-                res = [res[0]]
-
-            if theObjects:
-                res = [get_organization(org_uid) for org_uid in res]
-
-            if res and first:
-                res = res[0]
-
-        return res
-
-    MeetingItem.getGroupsInCharge = getGroupsInCharge
-
     def _getAllGroupsManagingItem(self):
         """ """
         item = self.getSelf()
@@ -1711,49 +1686,6 @@ class CustomMeetingConfig(MeetingConfig):
     def extraInsertingMethods(self):
         '''See doc in interfaces.py.'''
         return OrderedDict((('on_decision_first_word', None), ))
-
-
-class CustomMeetingCategory(MeetingCategory):
-    '''Adapter that adapts a meetingCategory implementing IMeetingCategory to the
-       interface IMeetingCategoryCustom.'''
-
-    implements(IMeetingCategoryCustom)
-    security = ClassSecurityInfo()
-
-    def __init__(self, item):
-        self.context = item
-
-    security.declarePrivate('listGroupsOfMatter')
-
-    def listGroupsOfMatter(self):
-        """
-          Vocabulary for the MeetingCategory.groupsOfMatter field.
-          It returns every active organizations.
-        """
-        res = []
-        for org in get_organizations():
-            res.append((org.UID(), org.Title()))
-        # make sure that if a configuration was defined for an organization
-        # that is now inactive, it is still displayed
-        storedGroupsOfMatter = self.getGroupsOfMatter()
-        if storedGroupsOfMatter:
-            orgsInVocab = [org[0] for org in res]
-            for org_uid in storedGroupsOfMatter:
-                if org_uid not in orgsInVocab:
-                    org = get_organization(org_uid)
-                    if org:
-                        res.append((org_uid, org.Title()))
-                    else:
-                        res.append((org_uid, org_uid))
-        return DisplayList(res).sortedByValue()
-    MeetingCategory.listGroupsOfMatter = listGroupsOfMatter
-
-    security.declareProtected('Modify portal content', 'onEdit')
-
-    def onEdit(self, isCreated):
-        '''Clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary",
-           no matter category is created or edited.'''
-        cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
 
 
 class CustomToolPloneMeeting(ToolPloneMeeting):
@@ -2683,7 +2615,6 @@ MeetingAdvice.get_advice_given_on = get_advice_given_on
 
 # ------------------------------------------------------------------------------
 InitializeClass(CustomMeeting)
-InitializeClass(CustomMeetingCategory)
 InitializeClass(CustomMeetingConfig)
 InitializeClass(CustomMeetingItem)
 InitializeClass(CustomToolPloneMeeting)

@@ -26,12 +26,6 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
         '''Bypass as we changed behavior, we do not keep decision annexes.'''
         pass
 
-    def test_pm_GetCertifiedSignaturesFromGroupInCharge(self):
-        '''Bypass as getGroupsInCharge is overrided and defined on the category.'''
-
-    def test_pm_ItemOrderedGroupsInChargeVocabulary(self):
-        '''Bypass as getGroupsInCharge is overrided and defined on the category.'''
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

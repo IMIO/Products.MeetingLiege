@@ -87,11 +87,6 @@
            factory="Products.MeetingLiege.adapters.CustomMeetingConfig"
            provides="Products.PloneMeeting.interfaces.IMeetingConfigCustom"/>
 
-  <!-- Customizations for every MeetingCategories -->
-  <adapter for="Products.PloneMeeting.interfaces.IMeetingCategory"
-           factory="Products.MeetingLiege.adapters.CustomMeetingCategory"
-           provides="Products.PloneMeeting.interfaces.IMeetingCategoryCustom"/>
-
   <!-- Customizations for ToolPlonemeeting -->
   <adapter for="Products.PloneMeeting.interfaces.IToolPloneMeeting"
            factory="Products.MeetingLiege.adapters.CustomToolPloneMeeting"
@@ -135,12 +130,7 @@
            name="items-with-advice-proposed-to-financial-manager" />
 
   <!-- Indexes -->
-  <adapter name="groupsOfMatter" factory=".indexes.groupsOfMatter" />
   <adapter name="category_id" factory=".indexes.category_id" />
-
-  <!-- Vocabularies -->
-  <utility component=".vocabularies.GroupsOfMatterVocabularyFactory"
-           name="Products.MeetingLiege.vocabularies.groupsofmattervocabulary" />
 
   <i18n:registerTranslations directory="locales" />
 

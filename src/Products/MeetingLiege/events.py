@@ -263,16 +263,9 @@ def onItemAfterTransition(item, event):
             extra_infos={'historized_data': data})
 
 
-def onCategoryRemoved(category, event):
-    '''Called when a MeetingCategory is removed.'''
-    # clean cache for "Products.MeetingLiege.vocabularies.groupsofmattervocabulary"
-    cleanVocabularyCacheFor("Products.MeetingLiege.vocabularies.groupsofmattervocabulary")
-
-
 def onOrgWillBeRemoved(current_org, event):
     '''Checks if the current organization can be deleted:
-      - it can not be used in MeetingConfig.archivingRefs;
-      - it can not be used in MeetingCategory.groupsOfMatter.'''
+      - it can not be used in MeetingConfig.archivingRefs.'''
     if event.object.meta_type == 'Plone Site':
         return
 

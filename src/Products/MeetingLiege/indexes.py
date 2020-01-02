@@ -12,18 +12,6 @@ from Products.PloneMeeting.interfaces import IMeetingItem
 
 
 @indexer(IMeetingItem)
-def groupsOfMatter(obj):
-    """
-      Indexes the groupsOfMatter defined on the selected MeetingItem.category
-    """
-    category = obj.getCategory(theObject=True)
-    if not category.meta_type == 'MeetingCategory':
-        return []
-    else:
-        return category.getGroupsOfMatter()
-
-
-@indexer(IMeetingItem)
 def category_id(obj):
     """
       Indexes the getCategoryId defined on the selected MeetingItem.category

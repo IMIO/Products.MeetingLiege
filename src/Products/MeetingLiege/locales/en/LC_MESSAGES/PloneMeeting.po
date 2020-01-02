@@ -55,10 +55,6 @@ msgstr " "
 msgid "MeetingLiege_descr_textCheckList"
 msgstr "Enter elements that are necessary for this kind of item to be considered as 'complete'."
 
-#. Default: "Groups of matter"
-msgid "MeetingLiege_label_GroupsOfMatter"
-msgstr "Groups of matter"
-
 #. Default: "This meeting adopts next council agenda"
 msgid "MeetingLiege_label_adoptsNextCouncilAgenda"
 msgstr "This meeting adopts next council agenda"
@@ -199,10 +195,6 @@ msgstr "Financial reviewers"
 #. Default: "Front page body"
 msgid "front_page_body"
 msgstr "Front page body"
-
-#. Default: "Select groups that are in charge of this matter.  Observers of this group will be able to access items using this category once it will be in state 'validated' and after."
-msgid "groups_of_matter_descr"
-msgstr "Select groups that are in charge of this matter.  Observers of this group will be able to access items using this category once it will be in state 'validated' and after."
 
 #. Default: "Accepted and returned"
 msgid "icon_help_accepted_and_returned"

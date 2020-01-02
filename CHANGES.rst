@@ -12,6 +12,7 @@ Products.MeetingLiege Changelog
 - Implemented print_deliberation and print_public_deliberation that will be used by plonemeeting.restapi
 - Adapted templates regarding changes in PloneMeeting (ToolPloneMeeting.modelAdaptations was removed)
 - In migration to MeetingLiege 4.1, call PloneMeeting upgrade steps (up to 4104)
+- Removed custom MeetingCategory.groupsOfMatter, use default functionnality MeetingCategory.groupsInCharge instead
 
 4.1rc4 (2019-10-14)
 -------------------

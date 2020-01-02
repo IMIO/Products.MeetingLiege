@@ -11,7 +11,6 @@
 
 from dexterity.localroles.utils import add_fti_configuration
 from imio.helpers.catalog import addOrUpdateColumns
-from imio.helpers.catalog import addOrUpdateIndexes
 from Products.CMFCore.utils import getToolByName
 from Products.MeetingLiege.config import PROJECTNAME
 from Products.PloneMeeting.exportimport.content import ToolInitializer
@@ -53,10 +52,6 @@ def postInstall(context):
     _configureDexterityLocalRolesField()
     # add category_id metadata
     addOrUpdateColumns(site, ('category_id', ))
-    # add the groupsOfMatter index
-    addOrUpdateIndexes(site, {'groupsOfMatter': ('KeywordIndex', {})})
-    # add our own faceted advanced criteria
-    # addFacetedCriteria(context, site)
 
 
 def logStep(method, context):

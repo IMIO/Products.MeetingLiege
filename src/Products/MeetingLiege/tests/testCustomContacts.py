@@ -33,8 +33,7 @@ class testCustomContacts(MeetingLiegeTestCase):
 
     def test_OrgNotRemovableIfUsed(self):
         """An organization may not be removed if used in :
-           - MeetingConfig.archivingRefs;
-           - MeetingCategory.groupsOfMatter."""
+           - MeetingConfig.archivingRefs."""
         self.changeUser('siteadmin')
         cfg = self.meetingConfig
         own_org = get_own_organization()

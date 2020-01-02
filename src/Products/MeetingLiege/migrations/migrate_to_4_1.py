@@ -3,6 +3,7 @@
 
 from collective.contact.plonegroup.utils import get_own_organization
 from copy import deepcopy
+from eea.facetednavigation.interfaces import ICriteria
 from plone import api
 from Products.MeetingLiege.profiles.liege.import_data import collegeMeeting
 from Products.MeetingLiege.profiles.zbourgmestre.import_data import bourgmestreMeeting
@@ -119,9 +120,50 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
             i = i + 1
         logger.info('Done.')
 
+    def _removeGroupsOfMatter(self):
+        """Remove MeetingCategory.groupsOfMatter field and related."""
+        logger.info('Removing MeetingCategory.groupsOfMatter...')
+        brains = self.portal.portal_catalog(meta_type='MeetingCategory')
+        for brain in brains:
+            cat = brain.getObject()
+            if hasattr(cat, 'groupsOfMatter'):
+                cat.setGroupsInCharge(cat.groupsOfMatter)
+                delattr(cat, 'groupsOfMatter')
+            else:
+                self._already_migrated()
+                return
+        # remove portal_catalog index 'groupsOfMatter'
+        self.removeUnusedIndexes(indexes=['groupsOfMatter'])
+
+        # remove faceted filter
+        for cfg in self.tool.objectValues('MeetingConfig'):
+            obj = cfg.searches.searches_items
+            # update vocabulary for relevant filters
+            criteria = ICriteria(obj)
+            if criteria.get('c50'):
+                criteria.delete('c50')
+            # unselect 'c50' from dashboard filters and select 'c23'
+            dashboardItemsListingsFilters = list(cfg.getDashboardItemsListingsFilters())
+            if 'c50' in dashboardItemsListingsFilters:
+                dashboardItemsListingsFilters.remove('c50')
+                dashboardItemsListingsFilters.append('c23')
+                cfg.setDashboardItemsListingsFilters(dashboardItemsListingsFilters)
+            dashboardMeetingAvailableItemsFilters = list(cfg.getDashboardMeetingAvailableItemsFilters())
+            if 'c50' in dashboardMeetingAvailableItemsFilters:
+                dashboardMeetingAvailableItemsFilters.remove('c50')
+                dashboardMeetingAvailableItemsFilters.append('c23')
+                cfg.setDashboardMeetingAvailableItemsFilters(dashboardMeetingAvailableItemsFilters)
+            dashboardMeetingLinkedItemsFilters = list(cfg.getDashboardMeetingLinkedItemsFilters())
+            if 'c50' in dashboardMeetingLinkedItemsFilters:
+                dashboardMeetingLinkedItemsFilters.remove('c50')
+                dashboardMeetingLinkedItemsFilters.append('c23')
+                cfg.setDashboardMeetingLinkedItemsFilters(dashboardMeetingLinkedItemsFilters)
+        logger.info('Done.')
+
     def run(self):
         # change self.profile_name everything is right before launching steps
         self.profile_name = u'profile-Products.MeetingLiege:default'
+        self._removeGroupsOfMatter()
         self.removeUnusedColumns(columns=['getAdoptsNextCouncilAgenda'])
 
         # call steps from Products.PloneMeeting
@@ -143,9 +185,10 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
 # The migration function -------------------------------------------------------
 def migrate(context):
     '''This migration function will:
-       1) Runs the PloneMeeting migration to 4.1;
-       2) Overrides the _hook_after_mgroups_to_orgs;
-       3) Removes empty paragraphs from RichText fields of every items.
+       1) Remove useless indexes and MeetingCategory.groupsOfMatter functionnality;
+       2) Runs the PloneMeeting migration to 4.1;
+       3) Overrides the _hook_after_mgroups_to_orgs;
+       4) Removes empty paragraphs from RichText fields of every items.
     '''
     Migrate_To_4_1(context).run()
 # ------------------------------------------------------------------------------

@@ -32,10 +32,6 @@
                    Products.PloneMeeting.interfaces.IItemLocalRolesUpdatedEvent"
               handler=".events.onItemLocalRolesUpdated"/>
 
-  <subscriber for="Products.PloneMeeting.interfaces.IMeetingCategory
-                   zope.container.interfaces.IObjectRemovedEvent"
-              handler=".events.onCategoryRemoved"/>
-
   <subscriber for="Products.PloneMeeting.interfaces.IMeetingItem
                    Products.PloneMeeting.interfaces.IItemListTypeChangedEvent"
               handler=".events.onItemListTypeChanged"/>

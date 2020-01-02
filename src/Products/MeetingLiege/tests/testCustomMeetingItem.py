@@ -133,53 +133,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(financial_group_uids[1] in item.adviceIndex)
         self.assertEqual(len(item.adviceIndex), 1)
 
-    def test_GroupsOfMatter(self):
-        '''Once an item is 'validated' (and after in the WF), group selected on the used MeetingCategory as
-           responsible of this category (groupsOfMatter) will get 'Reader' access to this item.'''
-        # configure so we use categories, and adapt category 'development'
-        # so we select a group in it's groupsOfMatter
-        cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(False)
-        cfg.setItemGroupsInChargeStates(ml_import_data.collegeMeeting.itemGroupsInChargeStates)
-        development = cfg.categories.development
-        development.setGroupsOfMatter((self.vendors_uid, ))
-
-        # create an item for the 'developers' group
-        self.changeUser('pmCreator1')
-        item = self.create('MeetingItem')
-        # select the right category
-        item.setCategory(development.getId())
-        item._update_after_edit()
-        # right category is selected by item must be at least validated
-        self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
-
-        # validate the item
-        self.validateItem(item)
-        # now local_roles are correct
-        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
-        # going back to 'proposed' will remove given local roles
-        self.backToState(item, self._stateMappingFor('proposed'))
-        self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
-        self.validateItem(item)
-        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
-
-        # editing item keeps correct local roles
-        self.changeUser('pmManager')
-        item._update_after_edit()
-        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
-
-        # functionnality is for validated items and for items in a meeting
-        # so present the item and check that it still works
-        self.create('Meeting', date='2015/01/01')
-        self.presentItem(item)
-        self.assertTrue(item.queryState() != 'validated')
-        self.assertEqual(item.__ac_local_roles__[self.vendors_observers], ['Reader', ])
-
-        # if we use another category, local roles are removed
-        item.setCategory('projects')
-        item._update_after_edit()
-        self.assertTrue(self.vendors_observers not in item.__ac_local_roles__)
-
     def test_ItemReference(self):
         '''Test item reference generation. It uses CustomMeeting.getItemNumsForActe.'''
         # use categories

@@ -40,11 +40,6 @@ class testAdvices(MeetingLiegeTestCase, pmta):
         self.assertEqual(self.tool.getMeetingConfig(item2), self.meetingConfig2)
         self.assertTrue(item2.adapted().showAdvices())
 
-    def test_pm_AdviceAskedAutomaticallyWithGroupsInCharge(self):
-        """ """
-        self._setUpGroupsInCharge(None)
-        super(testAdvices, self).test_pm_AdviceAskedAutomaticallyWithGroupsInCharge()
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

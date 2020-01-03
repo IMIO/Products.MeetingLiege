@@ -31,7 +31,6 @@ from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
-from Products.MeetingLiege.profiles.liege import import_data as ml_import_data
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from zope.event import notify

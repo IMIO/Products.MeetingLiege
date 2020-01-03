@@ -183,26 +183,6 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.do(advice, 'signFinancialAdvice', comment='My financial manager comment')
         return item, advice
 
-    def _setUpGroupsInCharge(self, item, groups=[]):
-        """Override from PloneMeeting, define groupsInCharge on category used by p_item."""
-        if not groups:
-            groups = [self.vendors_uid]
-
-        cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(False)
-        cfg.setIncludeGroupsInChargeDefinedOnCategory(True)
-        cat = cfg.categories.development
-        cat.setGroupsInCharge(groups)
-        if item is not None:
-            item.setCategory('development')
-            item.updateLocalRoles()
-
-    def _tearDownGroupsInCharge(self, item):
-        """As group in charge is an adaptable method, it may be setup differently."""
-        cfg = self.meetingConfig
-        cat = cfg.categories.development
-        cat.setGroupsInCharge(())
-
     def _createFinanceGroups(self):
         """
            Create the finance groups.

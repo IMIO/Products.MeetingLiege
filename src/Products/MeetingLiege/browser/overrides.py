@@ -126,14 +126,14 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
 
     def printActeContentForCollege(self):
         """Printed on a College item, get the whole body of the acte in one shot."""
-        body = self.context.getMotivation() and self.context.getMotivation() + '<p>&nbsp;</p>' or ''
+        body = self.context.getMotivation()
         if self.context.adapted().getLegalTextForFDAdvice():
-            body += self.context.adapted().getLegalTextForFDAdvice() + '<p>&nbsp;</p>'
+            body += self.context.adapted().getLegalTextForFDAdvice()
         representative = self.context.getCategory(theObject=True).Description().split('|')[1]
         body += "<p>Sur proposition de %s,<br/></p>" % representative
-        body += self.context.getDecision() + '<p>&nbsp;</p>'
-        body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p>&nbsp;</p>' or ''
-        body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
+        body += self.context.getDecision()
+        body += self.context.getDecisionSuite()
+        body += self.context.getDecisionEnd()
         if self.context.getSendToAuthority():
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
                     "du Code de la démocratie locale et de la décentralisation relatifs "\
@@ -143,12 +143,12 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
 
     def printActeContentForCouncil(self, include_decisionEnd=True, include_observations=True):
         """Printed on a Council item, get the whole body of the acte in one shot."""
-        body = self.context.getMotivation() and self.context.getMotivation() + '<p>&nbsp;</p>' or ''
+        body = self.context.getMotivation() or ''
         if self.context.adapted().getLegalTextForFDAdvice():
-            body += self.context.adapted().getLegalTextForFDAdvice() + '<p>&nbsp;</p>'
-        body += self.printCollegeProposalInfos().encode("utf-8") + '<p>&nbsp;</p>'
-        body += self.context.getDecision() + '<p>&nbsp;</p>'
-        body += self.context.getDecisionSuite() and self.context.getDecisionSuite() + '<p>&nbsp;</p>' or ''
+            body += self.context.adapted().getLegalTextForFDAdvice()
+        body += self.printCollegeProposalInfos().encode("utf-8")
+        body += self.context.getDecision()
+        body += self.context.getDecisionSuite()
         if include_decisionEnd:
             body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
         if self.context.getSendToAuthority():

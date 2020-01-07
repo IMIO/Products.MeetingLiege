@@ -112,7 +112,7 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 content = field.getRaw(item)
                 # only remove if the previous element ends with </p>, so a paragraph
                 # so we keep spaces added after a <table>, <ul>, ...
-                if content.find('<p>&nbsp;</p>') != -1:
+                if content.find('>&nbsp;</p>') != -1:
                     for prefix in ('</ol>', '</ul>', '</p>'):
                         for pre_prefix in ('', '\n', '\n\n', '\r\n', '\r\n\r\n', '\n\r\n\r\n', '\r\n\r\n\r\n'):
                             for suffix in (

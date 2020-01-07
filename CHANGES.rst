@@ -14,6 +14,7 @@ Products.MeetingLiege Changelog
 - In migration to MeetingLiege 4.1, call PloneMeeting upgrade steps (up to 4104)
 - Removed custom MeetingCategory.groupsOfMatter, use default functionnality MeetingCategory.groupsInCharge instead
 - Increase padding-bottom of <p> in RichText fields
+- Removed <p>énbsp;</p> that were used in RichText fields between each paragraphs (migration + methods rendering XHTML)
 
 4.1rc4 (2019-10-14)
 -------------------

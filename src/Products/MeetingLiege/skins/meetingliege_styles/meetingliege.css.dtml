@@ -12,6 +12,11 @@ ul#portal-globalnav li a {
     color: white;
 }
 
+/* increase space under <p> in RichText fields */
+#content div p {
+    margin-bottom: 1em;
+}
+
 /* Colors on states */
 /* Items */
 .state-proposed_to_administrative_reviewer,

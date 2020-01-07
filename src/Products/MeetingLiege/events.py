@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
-#
-# File: events.py
-#
-# Copyright (c) 2014 by Imio.be
-#
-# GNU General Public License (GPL)
-#
 
-from imio.helpers.cache import cleanVocabularyCacheFor
 from imio.history.utils import add_event_to_history
 from imio.history.utils import getLastWFAction
 from OFS.ObjectManager import BeforeDeleteException

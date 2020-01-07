@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from DateTime import DateTime
 from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
 from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID

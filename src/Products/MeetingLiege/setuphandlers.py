@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# File: setuphandlers.py
-#
-# Copyright (c) 2017 by Imio.be
-# Generator: ArchGenXML Version 2.7
-#            http://plone.org/products/archgenxml
-#
-# GNU General Public License (GPL)
-#
 
 from dexterity.localroles.utils import add_fti_configuration
 from imio.helpers.catalog import addOrUpdateColumns

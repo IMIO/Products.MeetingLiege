@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# ------------------------------------------------------------------------------
 
 from collective.contact.plonegroup.utils import get_own_organization
 from copy import deepcopy
@@ -114,8 +113,24 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 # only remove if the previous element ends with </p>, so a paragraph
                 # so we keep spaces added after a <table>, <ul>, ...
                 if content.find('<p>&nbsp;</p>') != -1:
-                    content = content.replace('</p>\n\n<p>&nbsp;</p>', '</p>\n\n')
-                    content = content.replace('</p>\n<p>&nbsp;</p>', '</p>\n')
+                    for prefix in ('</ol>', '</ul>', '</p>'):
+                        for pre_prefix in ('', '\n', '\n\n', '\r\n', '\r\n\r\n'):
+                            for suffix in (
+                                    '<p>',
+                                    '<p style="margin-right:0cm">',
+                                    '<p style="margin-right:0px">',
+                                    '<p style="margin-left:0cm">',
+                                    '<p style="margin-left:0px">',
+                                    '<p style="text-align:justify">',
+                                    '<p style="text-align:start">',
+                                    '<p style="margin-left:0cm; margin-right:0cm">',
+                                    '<p style="margin-left:0px; margin-right:0px">',
+                                    '<p style="margin-left:0cm; margin-right:0cm; text-align:justify">',
+                                    '<p style="margin-left:0cm; margin-right:0cm; text-align:start">',
+                                    '<p style="margin-left:0px; margin-right:0px; text-align:justify">',
+                                    '<p style="margin-left:0px; margin-right:0px; text-align:start">'):
+                                to_replace = prefix + pre_prefix + suffix + "&nbsp;</p>"
+                                content = content.replace(to_replace, '</p>\n')
                     field.set(item, content)
             i = i + 1
         logger.info('Done.')

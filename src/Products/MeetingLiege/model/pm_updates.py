@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from collective.datagridcolumns.MultiSelectColumn import MultiSelectColumn
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import RichWidget

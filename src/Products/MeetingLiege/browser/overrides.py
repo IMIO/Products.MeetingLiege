@@ -131,7 +131,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         if legalTextForFDAdvice:
             body += legalTextForFDAdvice
         representative = self.context.getCategory(theObject=True).Description().split('|')[1]
-        body += "<p>Sur proposition de %s<br />,</p>" % representative
+        body += "<p>Sur proposition de %s,<br></p>" % representative
         body += self.context.getDecision()
         body += self.context.getDecisionSuite()
         body += self.context.getDecisionEnd()
@@ -157,7 +157,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
                     "du Code de la démocratie locale et de la décentralisation relatifs "\
                     "à la Tutelle, la présente décision et ses pièces justificatives sont "\
-                    "transmises aux Autorités de Tutelle.<br/></p>"
+                    "transmises aux Autorités de Tutelle.</p>"
         if include_observations:
             body += self.context.getObservations() and self.context.getObservations() or ''
         return body

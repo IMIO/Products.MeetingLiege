@@ -117,20 +117,21 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         if collegeItem and collegeItem.hasMeeting():
             tool = api.portal.get_tool('portal_plonemeeting')
             date = tool.formatMeetingDate(collegeItem.getMeeting())
-            sentence = u"<p>Sur proposition du Collège Communal, en sa séance du %s, et " \
+            sentence = u"<p>Sur proposition du Collège communal, en sa séance du %s, et " \
                 u"après examen du dossier par la Commission compétente ;</p>" % date
         else:
-            sentence = u"<p>Sur proposition du Collège Communal, " \
+            sentence = u"<p>Sur proposition du Collège communal, " \
                 u"et après examen du dossier par la Commission compétente ;</p>"
         return sentence
 
     def printActeContentForCollege(self):
         """Printed on a College item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation()
-        if self.context.adapted().getLegalTextForFDAdvice():
-            body += self.context.adapted().getLegalTextForFDAdvice()
+        legalTextForFDAdvice = self.context.adapted().getLegalTextForFDAdvice().strip()
+        if legalTextForFDAdvice:
+            body += legalTextForFDAdvice
         representative = self.context.getCategory(theObject=True).Description().split('|')[1]
-        body += "<p>Sur proposition de %s,<br/></p>" % representative
+        body += "<p>Sur proposition de %s<br />,</p>" % representative
         body += self.context.getDecision()
         body += self.context.getDecisionSuite()
         body += self.context.getDecisionEnd()
@@ -144,8 +145,9 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
     def printActeContentForCouncil(self, include_decisionEnd=True, include_observations=True):
         """Printed on a Council item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation() or ''
-        if self.context.adapted().getLegalTextForFDAdvice():
-            body += self.context.adapted().getLegalTextForFDAdvice()
+        legalTextForFDAdvice = self.context.adapted().getLegalTextForFDAdvice().strip()
+        if legalTextForFDAdvice:
+            body += legalTextForFDAdvice
         body += self.printCollegeProposalInfos().encode("utf-8")
         body += self.context.getDecision()
         body += self.context.getDecisionSuite()

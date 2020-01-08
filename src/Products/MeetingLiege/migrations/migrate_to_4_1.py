@@ -113,7 +113,7 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                 # only remove if the previous element ends with </p>, so a paragraph
                 # so we keep spaces added after a <table>, <ul>, ...
                 if content.find('>&nbsp;</p>') != -1:
-                    for prefix in ('</ol>', '</ul>', '</p>'):
+                    for prefix in ('</p>', ):
                         for pre_prefix in ('', '\n', '\n\n', '\r\n', '\r\n\r\n', '\n\r\n\r\n', '\r\n\r\n\r\n'):
                             for suffix in (
                                     '<p>',
@@ -152,6 +152,8 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
 
         # remove faceted filter
         for cfg in self.tool.objectValues('MeetingConfig'):
+            # enable includeGroupsInChargeDefinedOnCategory so indexed groupsInCharge is correct
+            cfg.setIncludeGroupsInChargeDefinedOnCategory(True)
             obj = cfg.searches.searches_items
             # update vocabulary for relevant filters
             criteria = ICriteria(obj)
@@ -180,6 +182,9 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
         self.profile_name = u'profile-Products.MeetingLiege:default'
         self._removeGroupsOfMatter()
         self.removeUnusedColumns(columns=['getAdoptsNextCouncilAgenda'])
+        # enable 'publishable_activated' in Council so when the upgradestep
+        # of collective.iconifiedcategory to 2101 update annexes, it is correct
+        self.tool.get('meeting-config-council').annexes_types.item_annexes.publishable_activated = True
 
         # call steps from Products.PloneMeeting
         PMMigrate_To_4_1.run(self)
@@ -194,6 +199,8 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
         # now MeetingLiege specific steps
         logger.info('Migrating to MeetingLiege 4.1...')
         self._removeEmptyParagraphs()
+        # enableScanDocs
+        self.tool.setEnableScanDocs(True)
         self.finish()
 
 

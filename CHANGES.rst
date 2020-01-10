@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1rc5 (unreleased)
+4.1rc5 (2020-01-10)
 -------------------
 
 - Added new collective.contact.plonegroup suffix '_incopy' (In copy) to manage users that will be set in copy of items

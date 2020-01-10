@@ -12,9 +12,9 @@ setup(
     classifiers=[
         "Programming Language :: Python",
         ],
-    keywords='',
-    author='',
-    author_email='',
+    keywords='plone official meetings management egov communesplone imio plonegov',
+    author='Gauthier Bastien',
+    author_email='gauthier@imio.be',
     url='http://www.imio.be/produits/gestion-des-deliberations',
     license='GPL',
     packages=find_packages('src'),

@@ -26,7 +26,7 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
     def _hook_after_mgroups_to_orgs(self):
         """Migrate attributes that were using MeetingGroups :
            - MeetingConfig.archivingRefs.restrict_to_groups;
-           - MeetingCategory.groupsOfMatter;
+           - MeetingCategory.groupsInCharge;
            - MeetingItem.financeAdvice.
            Remove every users from _observers Plone groups.
            Then manage copyGroups and powerObservers at the end."""
@@ -46,11 +46,11 @@ class Migrate_To_4_1(PMMigrate_To_4_1):
                     if mGroupId in own_org_ids]
                 migratedArchivingRefs.append(migratedArchivingRef)
             cfg.setArchivingRefs(migratedArchivingRefs)
-            # MeetingCategory.groupsOfMatter
+            # MeetingCategory.groupsInCharge
             for category in cfg.getCategories(onlySelectable=False, caching=False):
-                groupsOfMatter = category.getGroupsOfMatter()
-                migratedGroupsOfMatter = [org_id_to_uid(mGroupId) for mGroupId in groupsOfMatter]
-                category.setGroupsOfMatter(migratedGroupsOfMatter)
+                groupsInCharge = category.getGroupsInCharge()
+                migratedGroupsInCharge = [org_id_to_uid(mGroupId) for mGroupId in groupsInCharge]
+                category.setGroupsInCharge(migratedGroupsInCharge)
         own_org = get_own_organization()
         for brain in self.portal.portal_catalog(meta_type='MeetingItem'):
             item = brain.getObject()

@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.1rc6 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Fixed MeetingItem.listArchivingRefs now that values are restricted to organizations UIDs and no more group ids.
+  Optimized to be more efficient in view mode
 
 4.1rc5 (2020-01-10)
 -------------------

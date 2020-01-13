@@ -892,29 +892,36 @@ class CustomMeetingItem(MeetingItem):
     security.declarePrivate('listArchivingRefs')
 
     def listArchivingRefs(self):
-        '''Vocabulary for the 'archivingRef' field.'''
+        '''Vocabulary for the 'archivingRef' field.
+           In view mode, just find corresponding record.'''
+        storedArchivingRef = self.getArchivingRef()
         res = []
         tool = api.portal.get_tool('portal_plonemeeting')
         cfg = tool.getMeetingConfig(self)
-        userGroups = set([group.getId() for group in tool.get_orgs_for_user()])
-        isManager = tool.isManager(self)
-        storedArchivingRef = self.getArchivingRef()
-        for ref in cfg.getArchivingRefs():
-            # if ref is not active, continue
-            if ref['active'] == '0':
-                continue
-            # only keep an active archiving ref if :
-            # current user isManager
-            # it is the currently selected archiving ref
-            # if ref is restricted to some groups and current member of this group
-            if not isManager and \
-               not ref['row_id'] == storedArchivingRef and \
-               (ref['restrict_to_groups'] and not set(ref['restrict_to_groups']).intersection(userGroups)):
-                continue
-            res.append((ref['row_id'], ref['label']))
-        res.insert(0, ('_none_', translate('make_a_choice',
-                                           domain='PloneMeeting',
-                                           context=self.REQUEST)))
+        if self.REQUEST.getURL().endswith('/meetingitem_view'):
+            for ref in cfg.getArchivingRefs():
+                if ref['row_id'] == storedArchivingRef:
+                    res.append((ref['row_id'], ref['label']))
+                    break
+        else:
+            userGroups = set([group.UID() for group in tool.get_orgs_for_user()])
+            isManager = tool.isManager(self)
+            for ref in cfg.getArchivingRefs():
+                # if ref is not active, continue
+                if ref['active'] == '0':
+                    continue
+                # only keep an active archiving ref if :
+                # current user isManager
+                # it is the currently selected archiving ref
+                # if ref is restricted to some groups and current member of this group
+                if not isManager and \
+                   not ref['row_id'] == storedArchivingRef and \
+                   (ref['restrict_to_groups'] and not set(ref['restrict_to_groups']).intersection(userGroups)):
+                    continue
+                res.append((ref['row_id'], ref['label']))
+            res.insert(0, ('_none_', translate('make_a_choice',
+                                               domain='PloneMeeting',
+                                               context=self.REQUEST)))
         return DisplayList(tuple(res))
     MeetingItem.listArchivingRefs = listArchivingRefs
 

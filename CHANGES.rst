@@ -7,6 +7,7 @@ Products.MeetingLiege Changelog
 - Fixed MeetingItem.listArchivingRefs now that values are restricted to organizations UIDs and no more group ids.
   Optimized to be more efficient in view mode
 - In ItemWfHistoryAdapter._userIsInProposingGroup, avoid to check if an object is in a list of object because the method uses @memoize
+- Adapted meetingitemcollegeliege_workflow and meetingitemcouncilliege_workflow to give view access to role MeetingObserverLocal in every states
 
 4.1rc5 (2020-01-10)
 -------------------

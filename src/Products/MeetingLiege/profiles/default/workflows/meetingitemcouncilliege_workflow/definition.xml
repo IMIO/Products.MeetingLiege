@@ -234,6 +234,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -262,6 +263,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -272,6 +274,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -282,6 +285,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -315,6 +319,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <state state_id="itemfrozen"
@@ -337,6 +342,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -366,6 +372,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -376,6 +383,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -386,6 +394,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -422,6 +431,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <state state_id="marked_not_applicable"
@@ -437,6 +447,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -465,6 +476,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -475,6 +487,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -485,6 +498,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -518,6 +532,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <state state_id="pre_accepted"
@@ -641,6 +656,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -670,6 +686,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -680,6 +697,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -690,6 +708,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -725,6 +744,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <state state_id="refused"
@@ -740,6 +760,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -768,6 +789,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -778,6 +800,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -788,6 +811,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -821,6 +845,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <state state_id="returned"
@@ -836,6 +861,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -864,6 +890,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -874,6 +901,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -884,6 +912,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -917,6 +946,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <state state_id="validated"
@@ -932,6 +962,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="Delete objects"
                   acquired="False">
@@ -961,6 +992,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read decision"
                   acquired="False">
@@ -971,6 +1003,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Read item observations"
                   acquired="False">
@@ -981,6 +1014,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
   <permission-map name="PloneMeeting: Write budget infos"
                   acquired="False">
@@ -1016,6 +1050,7 @@
    <permission-role>MeetingReviewer</permission-role>
    <permission-role>MeetingManager</permission-role>
    <permission-role>Reader</permission-role>
+   <permission-role>MeetingObserverLocal</permission-role>
   </permission-map>
  </state>
  <transition transition_id="accept"

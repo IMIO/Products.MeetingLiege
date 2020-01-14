@@ -79,9 +79,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertEqual(self.transitions(item),
                          ['proposeToAdministrativeReviewer', ])
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
 
         # a MeetingManager is able to validate an item immediatelly, bypassing
         # the entire validation workflow.
@@ -100,9 +100,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmCreator1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
 
         self.changeUser('pmAdminReviewer1')
         # pmAdminReviewer1 may access item and edit it
@@ -116,9 +116,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmAdminReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
 
         # pmInternalReviewer1 may access item and edit it
         self.changeUser('pmInternalReviewer1')
@@ -132,9 +132,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmInternalReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
 
         # pmReviewer1 (director) may access item and edit it
         self.changeUser('pmReviewer1')
@@ -150,9 +150,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
         self.assertTrue(not self.hasPermission(ModifyPortalContent, item))
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
 
         # create a meeting, a MeetingManager will manage it now
         self.changeUser('pmManager')
@@ -166,18 +166,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         availableItemUids = [brain.UID for brain in self.portal.portal_catalog(availableItemsQuery)]
         self.assertTrue(item.UID() in availableItemUids)
         self.do(item, 'present')
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
         self.changeUser('pmManager')
         self.assertEqual(item.queryState(), 'presented')
         # the item can be removed from the meeting or sent back in 'itemcreated'
         self.assertEqual(self.transitions(item), ['backToValidated', ])
         # the meeting can now be frozen then decided
         self.do(meeting, 'freeze')
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
         self.changeUser('pmManager')
         # the item has been automatically frozen
         self.assertEqual(item.queryState(), 'itemfrozen')
@@ -800,9 +800,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'return')
         self.assertEqual(item.queryState(), 'returned')
 
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, item))
+        self.assertTrue(self.hasPermission(View, item))
 
         # now that the item is 'returned', it has been duplicated
         # and the new item has been validated
@@ -1709,9 +1709,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         collegeItem, councilItem, collegeMeeting, councilMeeting = self._setupCollegeItemSentToCouncil()
         self.do(councilItem, 'delay')
 
-        # no access for observer
+        # access for observer
         self.changeUser('pmObserver1')
-        self.assertFalse(self.hasPermission(View, councilItem))
+        self.assertTrue(self.hasPermission(View, councilItem))
 
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
         self.assertEqual(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)

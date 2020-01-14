@@ -6,6 +6,7 @@ Products.MeetingLiege Changelog
 
 - Fixed MeetingItem.listArchivingRefs now that values are restricted to organizations UIDs and no more group ids.
   Optimized to be more efficient in view mode
+- In ItemWfHistoryAdapter._userIsInProposingGroup, avoid to check if an object is in a list of object because the method uses @memoize
 
 4.1rc5 (2020-01-10)
 -------------------
@@ -20,7 +21,7 @@ Products.MeetingLiege Changelog
 - In migration to MeetingLiege 4.1, call PloneMeeting upgrade steps (up to 4104)
 - Removed custom MeetingCategory.groupsOfMatter, use default functionnality MeetingCategory.groupsInCharge instead
 - Increase padding-bottom of <p> in RichText fields
-- Removed <p>énbsp;</p> that were used in RichText fields between each paragraphs (migration + methods rendering XHTML)
+- Removed <p>&nbsp;</p> that were used in RichText fields between each paragraphs (migration + methods rendering XHTML)
 
 4.1rc4 (2019-10-14)
 -------------------

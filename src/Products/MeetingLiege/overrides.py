@@ -84,7 +84,7 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
     def _userIsInProposingGroup(self):
         """ """
         tool = api.portal.get_tool('portal_plonemeeting')
-        return self.context.getProposingGroup(theObject=True) in tool.get_orgs_for_user()
+        return self.context.getProposingGroup() in tool.get_orgs_for_user(the_objects=False)
 
     @memoize
     def _is_general_manager(self):

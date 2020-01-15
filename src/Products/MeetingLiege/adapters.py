@@ -647,6 +647,18 @@ class CustomMeetingItem(MeetingItem):
         self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
 
+    security.declareProtected(ModifyPortalContent, 'setListType')
+
+    def setListType(self, value, **kwargs):
+        '''Overrides the field 'listType' mutator to be able to
+           updateItemReferences if value changed.'''
+        current_listType = self.getField('listType').getRaw(self, **kwargs)
+        if not value == current_listType:
+            # add a value in the REQUEST to specify that updateItemReferences is needed
+            self.REQUEST.set('need_Meeting_updateItemReferences', True)
+        self.getField('listType').set(self, value, **kwargs)
+    MeetingItem.setListType = setListType
+
     security.declarePublic('showAdvices')
 
     def showAdvices(self):

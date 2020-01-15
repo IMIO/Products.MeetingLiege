@@ -8,6 +8,7 @@ Products.MeetingLiege Changelog
   Optimized to be more efficient in view mode
 - In ItemWfHistoryAdapter._userIsInProposingGroup, avoid to check if an object is in a list of object because the method uses @memoize
 - Adapted meetingitemcollegeliege_workflow and meetingitemcouncilliege_workflow to give view access to role MeetingObserverLocal in every states
+- Override MeetingItem.setListType to set 'need_Meeting_updateItemReferences' in the REQUEST so changing it when item is in a meeting will recompute item references
 
 4.1rc5 (2020-01-10)
 -------------------

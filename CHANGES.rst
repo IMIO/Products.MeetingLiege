@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1rc6 (unreleased)
+4.1rc6 (unreleased) 
 -------------------
 
 - Fixed MeetingItem.listArchivingRefs now that values are restricted to organizations UIDs and no more group ids.

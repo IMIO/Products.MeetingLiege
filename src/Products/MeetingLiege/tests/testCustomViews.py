@@ -24,50 +24,19 @@
 
 from AccessControl import Unauthorized
 from collective.iconifiedcategory.utils import get_categorized_elements
-from collective.iconifiedcategory.utils import get_category_object
-from Products.CMFCore.permissions import ModifyPortalContent
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
 class testCustomViews(MeetingLiegeTestCase):
     """Tests the Meeting adapted methods."""
 
-    def test_MLSignedChangeView(self):
-        """SignedChangeView was overrided so only MeetingManagers may set
-           an element as 'to_sign' or 'signed'."""
-        self.changeUser('pmCreator1')
-        item = self.create('MeetingItem')
-        annex = self.addAnnex(item)
-        view = annex.restrictedTraverse('@@iconified-signed')
-        category = get_category_object(annex, annex.content_category)
-        group = category.get_category_group()
-        group.signed_activated = True
-
-        # for non (Meeting)Managers, nothing doable even if annex editable
-        self.assertTrue(self.hasPermission(ModifyPortalContent, annex))
-        self.assertFalse(view._may_set_values({}))
-
-        # (Meeting)Managers are able to set an element as signed
-        self.changeUser('pmManager')
-        self.assertTrue(self.hasPermission(ModifyPortalContent, annex))
-        self.assertTrue(view._may_set_values({}))
-        # 'loop between possibilities'not to sign' to 'to sign'
-        self.assertEqual(
-            view._get_next_values({'to_sign': False, 'signed': False}),
-            (0, {'to_sign': True, 'signed': False}))
-        # 'to sign' to 'signed'
-        self.assertEqual(
-            view._get_next_values({'to_sign': True, 'signed': False}),
-            (1, {'to_sign': True, 'signed': True}))
-        # 'signed' to 'not to sign'
-        self.assertEqual(
-            view._get_next_values({'to_sign': True, 'signed': True}),
-            (-1, {'to_sign': False, 'signed': False}))
-
     def test_DecisionAnnexToSignOnlyViewableByMeetingManagers(self):
         '''When the 'deliberation' is added as decision annex 'to sign', nobody else
            but (Meeting)Managers may see the annex.'''
         cfg = self.meetingConfig
+        # hide annex confidentiality, make signed only editable by MeetingManagers
+        cfg.setAnnexRestrictShownAndEditableAttributes(
+            ('confidentiality_display', 'confidentiality_edit', 'signed_edit'))
         self._setupStorePodAsAnnex()
         # create an item
         self.changeUser('pmCreator1')

@@ -147,7 +147,7 @@
                 define="redefinedItemAssemblies python: context.redefinedItemAssemblies();
                         redefinedItemSignatures python: context.getItemSignatures(real=True) or context.getItemSignatories(real=True);
                         mayQuickEditItemAssembly context/mayQuickEditItemAssembly;
-                        mayQuickEditItemSignatures python: 'signatures' in usedMeetingAttrs and context.mayQuickEdit('itemSignatures', bypassWritePermissionCheck=True);">
+                        mayQuickEditItemSignatures context/mayQuickEditItemSignatures;">
               <div id="assembly-and-signatures"
                   onclick="togglePersonsCookie();;toggleDoc('collapsible-assembly-and-signatures');"
                   class="collapsible discreet">
@@ -202,12 +202,12 @@
                         </div>
                       </tal:defines>
                   </tal:item_assembly>
-    
+
                   <div tal:condition="python: ('attendees' in usedMeetingAttrs or meeting.getAttendees()) and not meeting.getAssembly()">
                     <tal:comment replace="nothing">People (item attendees, signers and votes)</tal:comment>
                     <metal:people use-macro="here/@@pm-macros/itemPeople"/>
                   </div>
-  
+
                   <tal:item_assembly_common_fields>
                     <div tal:condition="python: 'assemblyGuests' in usedMeetingAttrs or 'assemblyGuests' in redefinedItemAssemblies">
                         <span class="item_attribute_label"
@@ -216,7 +216,7 @@
                         <span tal:replace="structure python: context.getItemAssemblyGuests() or '-'">Assembly guests</span>
                     </div>
                   </tal:item_assembly_common_fields>
-  
+
                   <tal:comment replace="nothing">Item signatures</tal:comment>
                   <tal:item_signatures tal:condition="python: ('signatures' in usedMeetingAttrs or context.getItemSignatures()) and not meeting.getSignatories()">
                       <tal:defines define="class_if_highlighted python: redefinedItemSignatures and 'highlightValue' or '';
@@ -384,6 +384,7 @@
                       i18n:translate="PloneMeeting_label_otherMeetingConfigsClonableTo"></span>:&nbsp;&nbsp;
                 <tal:displayOtherMeetingConfigsClonableTo tal:condition="otherMCs">
                     <span tal:replace="structure context/displayOtherMeetingConfigsClonableTo">Other mc clonable to (Emergency, privacy)</span>
+                    <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
                     <tal:to_clone_to_council_data condition="python: 'meeting-config-council' in otherMCs">
                         <img src="show_council_data.png"
                              id="showDataForCouncil"
@@ -474,8 +475,8 @@
     </tal:field>
 
     <tal:comment replace="nothing">Budgetary informations, manage fields budgetRelated and budgetInfos</tal:comment>
+    <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
     <tal:block condition="python: 'budgetInfos' in usedAttrs and not isRestrictedPowerObserver and member.has_permission('PloneMeeting: Read budget infos', context)">
-
     <fieldset>
       <legend i18n:translate="">Budget</legend>
         <p class="item-before-budget-related"></p>
@@ -493,6 +494,7 @@
     </fieldset>
     </tal:block>
 
+    <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
     <tal:comment replace="nothing">Label for Council</tal:comment>
     <tal:field define="fieldName python: 'labelForCouncil'; ajaxEdit python:True"
                condition="python: context.portal_type == 'MeetingItemCouncil'">

@@ -7,13 +7,6 @@
         name="collective.iconifiedcategory.images"
         directory="overrides/images"
         layer="Products.PloneMeeting.interfaces.IPloneMeetingLayer" />
-
-    <browser:page
-        name="iconified-signed"
-        for="imio.annex.content.annex.IAnnex"
-        layer="collective.iconifiedcategory.interfaces.ICollectiveIconifiedCategoryLayer"
-        class=".overrides.MLSignedChangeView"
-        permission="zope2.View" />
   
     <browser:page
         name="main_infos_history_view"

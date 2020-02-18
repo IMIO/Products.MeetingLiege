@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from collective.iconifiedcategory.browser.actionview import SignedChangeView
 from DateTime import DateTime
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastWFAction
@@ -62,18 +61,6 @@ class MLAdviceDelaysView(AdviceDelaysView):
                 return False
 
         return True
-
-
-class MLSignedChangeView(SignedChangeView):
-    """ """
-
-    def _may_set_values(self, values):
-        """ """
-        res = super(MLSignedChangeView, self)._may_set_values(values)
-        if res:
-            tool = api.portal.get_tool('portal_plonemeeting')
-            res = bool(tool.isManager(self.context))
-        return res
 
 
 class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):

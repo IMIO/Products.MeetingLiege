@@ -149,14 +149,20 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
             body += self.context.getObservations() and self.context.getObservations() or ''
         return body
 
-    def print_deliberation(self):
+    def print_deliberation(self, xhtmlContents=[], **kwargs):
         """ """
         return self.printXhtml(self.context, xhtmlContents=[self.printActeContentForCouncil()])
 
-    def print_public_deliberation(self):
+    def print_public_deliberation(self, xhtmlContents=[], **kwargs):
         """ """
         content = self.printActeContentForCouncil(
             include_decisionEnd=False, include_observations=False)
+        return self.printXhtml(self.context, xhtmlContents=[content])
+
+    def print_public_deliberation_decided(self, xhtmlContents=[], **kwargs):
+        """ """
+        content = self.printActeContentForCouncil(
+            include_decisionEnd=True, include_observations=False)
         return self.printXhtml(self.context, xhtmlContents=[content])
 
 

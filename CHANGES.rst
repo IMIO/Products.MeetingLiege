@@ -11,6 +11,7 @@ Products.MeetingLiege Changelog
 - Override MeetingItem.setListType to set 'need_Meeting_updateItemReferences' in the REQUEST so changing it when item is in a meeting will recompute item references
 - Adapted page templates regarding changes in PloneMeeting
 - Removed override of SignedChangeView._may_set_values as it is now managed in PloneMeeting by MeetingConfig.annexRestrictShownAndEditableAttributes
+- Override MLItemDocumentGenerationHelperView.print_public_deliberation_decided to include decisionEnd field
 
 4.1rc5 (2020-01-10)
 -------------------

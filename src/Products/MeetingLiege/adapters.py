@@ -2184,12 +2184,17 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
           If the item is 'validated', a MeetingManager can send it back to the director.
         '''
         res = False
+        item_state = self.context.queryState()
+        if self.context.REQUEST.get('mayBackToProposedToDirector', False):
+            res = True
+        # avoid being able for directors to take back an complete item when sent to finances
+        elif item_state == 'proposed_to_finance' and self.context.adapted()._is_complete():
+            res = False
         # special case when automatically sending back an item to 'proposed_to_director'
         # when every advices are given (coming from waiting_advices)
-        if (self.context.REQUEST.get('everyAdvicesAreGiven', False) and
-            self.context.queryState() == 'proposed_to_director_waiting_advices') or \
-           self.context.REQUEST.get('mayBackToProposedToDirector', False) or \
-           _checkPermission(ReviewPortalContent, self.context):
+        elif (self.context.REQUEST.get('everyAdvicesAreGiven', False) and
+              item_state == 'proposed_to_director_waiting_advices') or \
+                _checkPermission(ReviewPortalContent, self.context):
             res = True
         return res
 
@@ -2255,14 +2260,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if there is an internal reviewer.
         '''
         res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-            if not self._groupIsNotEmpty('internalreviewers'):
-                res = False
         # special case for financial controller that can send an item back to
         # the internal reviewer if it is in state 'proposed_to_finance' and
         # item is incomplete
-        elif self.context.queryState() == 'proposed_to_finance':
+        item_state = self.context.queryState()
+        if item_state == 'proposed_to_finance' and not self.tool.isManager(self.context):
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupUIDForItem()
             tool = api.portal.get_tool('portal_plonemeeting')
@@ -2272,10 +2274,14 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 if financeSubGroupId in memberGroups:
                     res = True
                     break
+        elif _checkPermission(ReviewPortalContent, self.context):
+            res = True
+            if not self._groupIsNotEmpty('internalreviewers'):
+                res = False
         # special case when automatically sending back an item to 'proposed_to_internal_reviewer'
         # when every advices are given (coming from waiting_advices)
         elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
-                self.context.queryState() == 'proposed_to_internal_reviewer_waiting_advices':
+                item_state == 'proposed_to_internal_reviewer_waiting_advices':
             return True
         return res
 

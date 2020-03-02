@@ -12,9 +12,11 @@ ul#portal-globalnav li a {
     color: white;
 }
 
-/* increase space under <p> in RichText fields */
-#content div p {
-    margin-bottom: 1em;
+/* space under paragraphs in rich text zones */
+#content div.pmMoreInfo div p,
+#content div[id^='hook_'] p,
+body#content.cke_editable p {
+   line-height: 3em;
 }
 
 /* Colors on states */

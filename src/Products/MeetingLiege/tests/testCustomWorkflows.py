@@ -435,9 +435,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.getCompleteness(), 'completeness_evaluation_not_required')
         # if item is sent back to the finance, it will not be enabled as
         # completeness was set automatically to 'completeness_evaluation_asked_again'
-        self.changeUser('pmManager')
+        self.changeUser('pmReviewer1')
         self.do(item, 'proposeToDirector')
         self.do(item, 'proposeToFinance')
+        # item may be taken back when it is not complete
+        self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
         self.changeUser('pmFinController')
         # delay did not start
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
@@ -452,8 +454,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
         self.assertTrue(item.adviceIndex[financial_group_uids[0]]['advice_editable'])
         self.assertTrue(item.adviceIndex[financial_group_uids[0]]['delay_started_on'])
+        # item may not be taken back anymore
+        self.changeUser('pmReviewer1')
+        self.assertEqual(self.transitions(item), [])
 
         # the advice can be proposed to the financial reviewer
+        self.changeUser('pmFinController')
         self.assertEqual(self.transitions(advice), ['proposeToFinancialReviewer'])
         self.do(advice, 'proposeToFinancialReviewer')
         # can no more edit, but still view
@@ -527,8 +533,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # completeness was 'completeness_evaluation_asked_again'
         self.assertEqual(item.getCompleteness(), 'completeness_evaluation_asked_again')
         self.assertEqual(item.queryState(), 'proposed_to_finance')
-        self.assertEqual(self.transitions(item), ['backToProposedToDirector',
-                                                  'backToProposedToInternalReviewer'])
+        self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
         # a reviewer can send the item back to the director
         self.do(item, 'backToProposedToDirector')
         # ok now the director can send it again to the finance

@@ -16,7 +16,7 @@ ul#portal-globalnav li a {
 #content div.pmMoreInfo div p,
 #content div[id^='hook_'] p,
 body#content.cke_editable p {
-   line-height: 3em;
+   line-height: 2.5em;
 }
 
 /* Colors on states */

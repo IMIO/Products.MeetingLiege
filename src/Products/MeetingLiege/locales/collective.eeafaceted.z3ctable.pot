@@ -24,3 +24,7 @@ msgstr ""
 #. Default: "Item with act?"
 msgid "header_toDiscuss"
 msgstr ""
+
+#. Default: "Item is signed?"
+msgid "header_getItemIsSigned"
+msgstr ""

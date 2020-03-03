@@ -103,6 +103,10 @@ msgstr "Precise"
 msgid "PloneMeeting_label_itemDescription"
 msgstr "Purpose"
 
+#. Default: "Item is signed ?"
+msgid "PloneMeeting_label_itemIsSigned"
+msgstr ""
+
 #. Default: "Summary of the purpose"
 msgid "PloneMeeting_label_itemTitle"
 msgstr "Summary of the purpose"
@@ -300,6 +304,22 @@ msgstr " "
 #. Default: " "
 msgid "item_detailed_description_descr"
 msgstr " "
+
+#. Default: "The item is not signed."
+msgid "item_is_signed_no"
+msgstr ""
+
+#. Default: "The item is not signed. Click on the image to apply signature."
+msgid "item_is_signed_no_edit"
+msgstr ""
+
+#. Default: "The item is signed."
+msgid "item_is_signed_yes"
+msgstr ""
+
+#. Default: "The item is signed. Click on the image to remove signature."
+msgid "item_is_signed_yes_edit"
+msgstr ""
 
 #. Default: " "
 msgid "item_motivation_descr"

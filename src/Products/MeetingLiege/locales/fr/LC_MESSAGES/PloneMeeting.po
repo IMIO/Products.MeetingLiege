@@ -104,6 +104,10 @@ msgstr "Précis"
 msgid "PloneMeeting_label_itemDescription"
 msgstr "Objet"
 
+#. Default: "Item is signed ?"
+msgid "PloneMeeting_label_itemIsSigned"
+msgstr "Point visé?"
+
 #. Default: "Summary of the purpose"
 msgid "PloneMeeting_label_itemTitle"
 msgstr "Résumé de l'objet"
@@ -299,6 +303,22 @@ msgstr "Exposé relativement concis de la teneur de la décision et qui est repr
 #. Default: " "
 msgid "item_detailed_description_descr"
 msgstr "Renseignements complémentaires relatifs à la décision et qui ne sont pas repris sur l’acte"
+
+#. Default: "The item is not signed."
+msgid "item_is_signed_no"
+msgstr "Le point est visé."
+
+#. Default: "The item is not signed. Click on the image to apply signature."
+msgid "item_is_signed_no_edit"
+msgstr "Le point n'est pas visé. Cliquez pour apposer le visa."
+
+#. Default: "The item is signed."
+msgid "item_is_signed_yes"
+msgstr "Le point est visé."
+
+#. Default: "The item is signed. Click on the image to remove signature."
+msgid "item_is_signed_yes_edit"
+msgstr "Le point est visé. Cliquez pour enlever le visa."
 
 #. Default: " "
 msgid "item_motivation_descr"

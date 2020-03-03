@@ -461,3 +461,23 @@ msgstr ""
 #. Default: "Historized data"
 msgid "Historized data"
 msgstr ""
+
+#. Default: "Item is signed ?"
+msgid "PloneMeeting_label_itemIsSigned"
+msgstr ""
+
+#. Default: "The item is not signed."
+msgid "item_is_signed_no"
+msgstr ""
+
+#. Default: "The item is not signed. Click on the image to apply signature."
+msgid "item_is_signed_no_edit"
+msgstr ""
+
+#. Default: "The item is signed."
+msgid "item_is_signed_yes"
+msgstr ""
+
+#. Default: "The item is signed. Click on the image to remove signature."
+msgid "item_is_signed_yes_edit"
+msgstr ""

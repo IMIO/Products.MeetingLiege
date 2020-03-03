@@ -13,6 +13,7 @@ Products.MeetingLiege Changelog
 - Removed override of SignedChangeView._may_set_values as it is now managed in PloneMeeting by MeetingConfig.annexRestrictShownAndEditableAttributes
 - Override MLItemDocumentGenerationHelperView.print_public_deliberation_decided to include decisionEnd field
 - When an item is proposed_to_finance and is complete (MeetingItem.completeness), it can not be taken back by director or internal reviewer
+- Renamed 'Point signé?' to 'Point visé?'
 
 4.1rc5 (2020-01-10)
 -------------------

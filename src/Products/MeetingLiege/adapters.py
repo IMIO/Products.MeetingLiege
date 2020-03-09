@@ -8,6 +8,7 @@ from collective.contact.plonegroup.utils import get_all_suffixes
 from collective.contact.plonegroup.utils import get_organization
 from collective.contact.plonegroup.utils import get_organizations
 from collective.contact.plonegroup.utils import get_own_organization
+from collective.contact.plonegroup.utils import get_plone_group_id
 from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
@@ -49,6 +50,7 @@ from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowCon
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
+from Products.PloneMeeting.adapters import query_user_groups_cachekey
 from Products.PloneMeeting.config import PMMessageFactory as _
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
@@ -184,7 +186,6 @@ class CustomMeeting(Meeting):
 
         if withCollege:
             meetingDate = self.context.getDate()
-            tool = api.portal.get_tool('portal_plonemeeting')
             cfg = tool.getMeetingConfig(self.context)
             insertMethods = cfg.getInsertingMethodsOnAddItem()
             catalog = api.portal.get_tool('portal_catalog')
@@ -687,18 +688,19 @@ class CustomMeetingItem(MeetingItem):
            advice['delay'] and \
            not advice['delay_started_on']:
             # item in state giveable but item not complete
-            if item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
+            item_state = item.queryState()
+            if item_state in FINANCE_GIVEABLE_ADVICE_STATES:
                 return {'displayDefaultComplementaryMessage': False,
                         'customAdviceMessage':
                         translate('finance_advice_not_giveable_because_item_not_complete',
                                   domain="PloneMeeting",
                                   context=item.REQUEST)}
             elif getLastWFAction(item, 'proposeToFinance') and \
-                item.queryState() in ('itemcreated',
-                                      'itemcreated_waiting_advices',
-                                      'proposed_to_internal_reviewer',
-                                      'proposed_to_internal_reviewer_waiting_advices',
-                                      'proposed_to_director',):
+                item_state in ('itemcreated',
+                               'itemcreated_waiting_advices',
+                               'proposed_to_internal_reviewer',
+                               'proposed_to_internal_reviewer_waiting_advices',
+                               'proposed_to_director',):
                 # advice was already given but item was returned back to the service
                 return {'displayDefaultComplementaryMessage': False,
                         'customAdviceMessage': translate(
@@ -776,9 +778,9 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if item.isDefinedInTool():
             return
-        member = api.user.get_current()
         # bypass for Managers
-        if member.has_role('Manager'):
+        tool = api.portal.get_tool('portal_plonemeeting')
+        if tool.isManager(item, realManagers=True):
             return True
 
         financeGroupId = item.adapted().getFinanceGroupUIDForItem()
@@ -809,13 +811,13 @@ class CustomMeetingItem(MeetingItem):
         if item.isDefinedInTool():
             return
         tool = api.portal.get_tool('portal_plonemeeting')
-        member = api.user.get_current()
         # user must be able to edit the item and must have 'MeetingInternalReviewer'
         # or 'MeetingReviewer' role
+        isReviewer, isInternalReviewer, isAdminReviewer = \
+            self.context._roles_in_context()
         if not item.getCompleteness() == 'completeness_incomplete' or \
-           not member.has_permission(ModifyPortalContent, item) or \
-           not (member.has_role('MeetingInternalReviewer', item) or
-                member.has_role('MeetingReviewer', item) or tool.isManager(item)):
+           not _checkPermission(ModifyPortalContent, item) or \
+           not (isInternalReviewer or isReviewer or tool.isManager(item)):
             return False
         return True
 
@@ -824,9 +826,11 @@ class CustomMeetingItem(MeetingItem):
     def mayAskEmergency(self):
         '''Only directors may ask emergency.'''
         item = self.getSelf()
-        member = api.user.get_current()
-        if (item.queryState() == 'proposed_to_director' and member.has_role('MeetingReviewer', item)) or \
-           member.has_role('Manager', item):
+        isReviewer, isInternalReviewer, isAdminReviewer = \
+            self.context._roles_in_context()
+        tool = api.portal.get_tool('portal_plonemeeting')
+        if (item.queryState() == 'proposed_to_director' and isReviewer) or \
+           tool.isManager(item):
             return True
         return False
 
@@ -881,8 +885,9 @@ class CustomMeetingItem(MeetingItem):
         # raise_on_error=False for tests
         if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID, raise_on_error=False) and \
            self.context.queryState() in ('accepted', 'accepted_but_modified'):
-            org = self.context.getProposingGroup(theObject=True)
-            if org in tool.get_orgs_for_user(suffixes=['internalreviewers', 'reviewers']):
+            org_uid = self.context.getProposingGroup()
+            if org_uid in tool.get_orgs_for_user(
+                    suffixes=['internalreviewers', 'reviewers'], the_objects=False):
                 return True
         return self.context.mayAskAdviceAgain(advice)
 
@@ -916,7 +921,7 @@ class CustomMeetingItem(MeetingItem):
                     res.append((ref['row_id'], ref['label']))
                     break
         else:
-            userGroups = set([group.UID() for group in tool.get_orgs_for_user()])
+            userGroups = set(tool.get_orgs_for_user(the_objects=False))
             isManager = tool.isManager(self)
             for ref in cfg.getArchivingRefs():
                 # if ref is not active, continue
@@ -1009,18 +1014,12 @@ class CustomMeetingItem(MeetingItem):
             res = '%s (TG)' % res
         return res
 
-    def isCurrentUserInFDGroup(self, finance_group_id):
+    def _isCurrentUserInFDGroup(self, finance_group_id):
         '''
           Returns True if the current user is in the given p_finance_group_id.
         '''
         tool = api.portal.get_tool('portal_plonemeeting')
-        userGroups = tool.get_plone_groups_for_user()
-        suffixedGroups = []
-        for suffix in FINANCE_GROUP_SUFFIXES:
-            suffixedGroups.append("{0}_{1}".format(finance_group_id, suffix))
-        if set(userGroups).intersection(suffixedGroups):
-            return True
-        return False
+        return bool(tool.get_plone_groups_for_user(org_uid=finance_group_id))
 
     def mayGenerateFDAdvice(self):
         '''
@@ -1031,7 +1030,7 @@ class CustomMeetingItem(MeetingItem):
 
         if adviceHolder.getFinanceAdvice() != '_none_' and \
             (adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['hidden_during_redaction'] is False or
-             self.isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True or
+             self._isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True or
              adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['advice_editable'] is False):
             return True
         return False
@@ -1447,17 +1446,6 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         return ('presented', 'itemfrozen') + item._itemIsSignedStates()
 
-    def _isViewableByPowerObservers(self, restrictedPowerObservers=False):
-        """Restricted power observers may not have access to 'late' items in Council
-           until it is decided."""
-        item = self.getSelf()
-        if restrictedPowerObservers and \
-           item.portal_type == 'MeetingItemCouncil' and \
-           item.getListType() in ('late', ) and \
-           item.queryState() in ('presented', 'itemfrozen', 'returned_to_proposing_group'):
-            return False
-        return True
-
     def treasuryCopyGroup(self):
         """Manage fact that group TREASURY_GROUP_ID _observers must be automatically
            set as copyGroup of items for which the finances advice was asked.
@@ -1470,6 +1458,23 @@ class CustomMeetingItem(MeetingItem):
             return ['observers']
         else:
             return []
+
+    def _roles_in_context_cachekey(method, self):
+        '''cachekey method for self._roles_in_context.'''
+        tool = api.portal.get_tool('portal_plonemeeting')
+        return (self, tool._users_groups_value())
+
+    @ram.cache(_roles_in_context_cachekey)
+    def _roles_in_context(self):
+        ''' '''
+        tool = api.portal.get_tool('portal_plonemeeting')
+        user_plone_groups = tool.get_plone_groups_for_user()
+        proposingGroupUID = self.getProposingGroup()
+        isReviewer = get_plone_group_id(proposingGroupUID, 'reviewers') in user_plone_groups
+        isInternalReviewer = get_plone_group_id(proposingGroupUID, 'internalreviewers') in user_plone_groups
+        isAdminReviewer = get_plone_group_id(proposingGroupUID, 'administrativereviewers') in user_plone_groups
+        return isReviewer, isInternalReviewer, isAdminReviewer
+    MeetingItem._roles_in_context = _roles_in_context
 
 
 old_listAdviceTypes = MeetingConfig.listAdviceTypes
@@ -1699,11 +1704,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         '''Is current user a financial user, so in groups 'financialcontrollers',
            'financialreviewers' or 'financialmanagers'.'''
         tool = api.portal.get_tool('portal_plonemeeting')
-        for groupId in tool.get_plone_groups_for_user():
-            for suffix in FINANCE_GROUP_SUFFIXES:
-                if groupId.endswith('_%s' % suffix):
-                    return True
-        return False
+        return tool.userIsAmong(FINANCE_GROUP_SUFFIXES)
     ToolPloneMeeting.isFinancialUser = isFinancialUser
 
     def financialGroupUids_cachekey(method, self):
@@ -1732,7 +1733,7 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         'urbanisme-et-ama-c-nagement-du-territoire',
         'echevinat-de-la-culture-et-de-lurbanisme' or 'urba'
         '''
-        userGroups = set([gr.getId() for gr in self.context.get_orgs_for_user()])
+        userGroups = set(self.context.get_orgs_for_user(the_objects=False))
         allowedGroups = set(['urba-gestion-administrative',
                              'urba-affaires-ga-c-na-c-rales',
                              'urba-service-de-lurbanisme',
@@ -1930,16 +1931,14 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToAdministrativeReviewer(self):
         res = False
         item_state = self.context.queryState()
-        member = api.user.get_current()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to administrative
             # reviewer.
             if self.tool.isManager(self.context):
                 return True
-            isReviewer = member.has_role('MeetingReviewer', self.context)
-            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
-            isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
+            isReviewer, isInternalReviewer, isAdminReviewer = \
+                self.context._roles_in_context()
             # Item in creation, or in creation waiting for advice can only
             # be sent to administrative reviewer by creators.
             if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and \
@@ -1947,7 +1946,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = False
             # If there is no administrative reviewer, do not show the
             # transition.
-            if not self._groupIsNotEmpty('administrativereviewers'):
+            if not self.tool.group_is_not_empty(self.context.getProposingGroup(), 'administrativereviewers'):
                 res = False
             if not self.context.getCategory() and res:
                 return No(_('required_category_ko'))
@@ -1958,7 +1957,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def mayProposeToInternalReviewer(self):
         res = False
         item_state = self.context.queryState()
-        member = api.user.get_current()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to internal reviewer.
@@ -1967,17 +1965,16 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # Only administrative reviewers might propose to internal reviewer,
             # but creators can do it too if there is no administrative
             # reviewer.
-            isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
+            isReviewer, isInternalReviewer, isAdminReviewer = \
+                self.context._roles_in_context()
+            proposingGroup = self.context.getProposingGroup()
             if not isAdminReviewer:
-                aRNotEmpty = self._groupIsNotEmpty('administrativereviewers')
-                if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and\
-                   aRNotEmpty:
+                aRNotEmpty = self.group_is_not_empty(proposingGroup, 'administrativereviewers')
+                if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and aRNotEmpty:
                     res = False
             # If there is no internal reviewer or if the current user
             # is internal reviewer or director, do not show the transition.
-            isReviewer = member.has_role('MeetingReviewer', self.context)
-            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
-            iRNotEmpty = self._groupIsNotEmpty('internalreviewers')
+            iRNotEmpty = self.group_is_not_empty(proposingGroup, 'internalreviewers')
             if not iRNotEmpty or isReviewer or isInternalReviewer:
                 res = False
             if not self.context.getCategory() and res:
@@ -1998,21 +1995,19 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         '''
         res = False
         item_state = self.context.queryState()
-        member = api.user.get_current()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to director.
             if self.tool.isManager(self.context):
                 return True
-            isReviewer = member.has_role('MeetingReviewer', self.context)
-            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
+            isReviewer, isInternalReviewer, isAdminReviewer = \
+                self.context._roles_in_context()
             # Director and internal reviewer can propose items to director in
             # any state.
             if not (isReviewer or isInternalReviewer):
-                aRNotEmpty = self._groupIsNotEmpty('administrativereviewers')
-                iRNotEmpty = self._groupIsNotEmpty('internalreviewers')
-                isAdminReviewer = member.has_role('MeetingAdminReviewer', self.context)
-
+                proposingGroup = self.context.getProposingGroup()
+                aRNotEmpty = self.group_is_not_empty(proposingGroup, 'administrativereviewers')
+                iRNotEmpty = self.group_is_not_empty(proposingGroup, 'internalreviewers')
                 # An administrative reviewer can propose to director if there
                 # is no internal reviewer and a creator can do it too if there
                 # is neither administrative nor internal reviewers.
@@ -2087,8 +2082,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if res:
             # double check that current user isInternalReviewer as this
             # transition may be triggered from the 'itemcreated' state
-            member = api.user.get_current()
-            isInternalReviewer = member.has_role('MeetingInternalReviewer', self.context)
+            isReviewer, isInternalReviewer, isAdminReviewer = \
+                self.context._roles_in_context()
             if not isInternalReviewer and not self.tool.isManager(self.context):
                 res = False
         return res
@@ -2213,19 +2208,20 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # A director can directly send back to creation an item which is
             # proposed to director if there are neither administrative nor
             # internal reviewers.
+            proposingGroup = self.context.getProposingGroup()
             if item_state == 'proposed_to_director' and \
-                    (self._groupIsNotEmpty('administrativereviewers') or
-                     self._groupIsNotEmpty('internalreviewers')):
+                    (self.tool.group_is_not_empty(proposingGroup, 'administrativereviewers') or
+                     self.tool.group_is_not_empty(proposingGroup, 'internalreviewers')):
                 res = False
             # An internal reviewer can send back to creation if there is
             # no administrative reviewer.
             elif item_state == 'proposed_to_internal_reviewer' and \
-                    self._groupIsNotEmpty('administrativereviewers'):
+                    self.tool.group_is_not_empty(proposingGroup, 'administrativereviewers'):
                 res = False
         # special case when automatically sending back an item to 'itemcreated' or
         # 'proposed_to_internal_reviewer' when every advices are given (coming from waiting_advices)
         elif self.context.REQUEST.get('everyAdvicesAreGiven', False) and \
-                self.context.queryState() == 'itemcreated_waiting_advices':
+                item_state == 'itemcreated_waiting_advices':
             res = True
         return res
 
@@ -2245,9 +2241,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # do not show the transition if there is no administrative reviewer
             # or if the item is proposed to director and there is an internal
             # reviewer.
+            proposingGroup = self.context.getProposingGroup()
             if (item_state == 'proposed_to_director' and
-                self._groupIsNotEmpty('internalreviewers')) or \
-               not self._groupIsNotEmpty('administrativereviewers'):
+                self.tool.group_is_not_empty(proposingGroup, 'internalreviewers')) or \
+               not self.tool.group_is_not_empty(proposingGroup, 'administrativereviewers'):
                 res = False
         return res
 
@@ -2267,16 +2264,15 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if item_state == 'proposed_to_finance' and not self.tool.isManager(self.context):
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupUIDForItem()
-            tool = api.portal.get_tool('portal_plonemeeting')
-            memberGroups = tool.get_plone_groups_for_user()
+            memberGroups = self.tool.get_plone_groups_for_user()
             for suffix in FINANCE_GROUP_SUFFIXES:
-                financeSubGroupId = '%s_%s' % (financeGroupId, suffix)
+                financeSubGroupId = get_plone_group_id(financeGroupId, suffix)
                 if financeSubGroupId in memberGroups:
                     res = True
                     break
         elif _checkPermission(ReviewPortalContent, self.context):
             res = True
-            if not self._groupIsNotEmpty('internalreviewers'):
+            if not self.tool.group_is_not_empty(self.context.getProposingGroup(), 'internalreviewers'):
                 res = False
         # special case when automatically sending back an item to 'proposed_to_internal_reviewer'
         # when every advices are given (coming from waiting_advices)
@@ -2640,7 +2636,8 @@ InitializeClass(MeetingItemCouncilLiegeWorkflowConditions)
 class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
 
     @property
-    def query(self):
+    @ram.cache(query_user_groups_cachekey)
+    def query_itemstocontrollcompletenessof(self):
         '''Queries all items for which there is completeness to evaluate, so where completeness
            is not 'completeness_complete'.'''
         if not self.cfg:
@@ -2663,11 +2660,15 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
                 'indexAdvisers': {'query': groupIds},
                 'review_state': {'query': 'proposed_to_finance'}}
 
+    # we may not ram.cache methods in same file with same name...
+    query = query_itemstocontrollcompletenessof
+
 
 class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseAdapter):
 
     @property
-    def query(self):
+    @ram.cache(query_user_groups_cachekey)
+    def query_itemswithadviceproposedtofinancialcontroller(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_controller'.
            We only return items for which completeness has been evaluated to 'complete'.'''
         if not self.cfg:
@@ -2685,11 +2686,15 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
                 'getCompleteness': {'query': 'completeness_complete'},
                 'indexAdvisers': {'query': groupIds}}
 
+    # we may not ram.cache methods in same file with same name...
+    query = query_itemswithadviceproposedtofinancialcontroller
+
 
 class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAdapter):
 
     @property
-    def query(self):
+    @ram.cache(query_user_groups_cachekey)
+    def query_itemswithadviceproposedtofinancialreviewer(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_reviewer'.'''
         if not self.cfg:
             return {}
@@ -2704,11 +2709,15 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
         return {'portal_type': {'query': self.cfg.getItemTypeName()},
                 'indexAdvisers': {'query': groupIds}}
 
+    # we may not ram.cache methods in same file with same name...
+    query = query_itemswithadviceproposedtofinancialreviewer
+
 
 class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdapter):
 
     @property
-    def query(self):
+    @ram.cache(query_user_groups_cachekey)
+    def query_itemswithadviceproposedtofinancialmanager(self):
         '''Queries all items for which there is an advice in state 'proposed_to_financial_manager'.'''
         if not self.cfg:
             return {}
@@ -2722,6 +2731,9 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
                 groupIds.append('delay__%s_proposed_to_financial_manager' % financeGroup)
         return {'portal_type': {'query': self.cfg.getItemTypeName()},
                 'indexAdvisers': {'query': groupIds}}
+
+    # we may not ram.cache methods in same file with same name...
+    query = query_itemswithadviceproposedtofinancialmanager
 
 
 class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):

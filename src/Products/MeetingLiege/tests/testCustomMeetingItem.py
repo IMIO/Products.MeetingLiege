@@ -253,12 +253,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
     def test_InsertingMethodOnDecisionFirstWord(self):
         '''
-          Test our custom inserting method 'on_decision_first_word'.
+          Test our custom inserting method 'on_item_decision_first_words'.
         '''
         cfg = self.meetingConfig
         self.changeUser('pmManager')
         self._removeConfigObjectsFor(cfg)
-        insertingMethods = ({'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
+        insertingMethods = ({'insertingMethod': 'on_item_decision_first_words', 'reverse': '0'},)
         cfg.setInsertingMethodsOnAddItem(insertingMethods)
         # no decision, it will get minimum possible index value
         item1 = self.create('MeetingItem')
@@ -302,7 +302,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # every items use proposingGroup 'developers' that is in position 1
         # if we use 'vendors' for item1, item1_order will become higher than item6_order
         insertingMethods = ({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},
-                            {'insertingMethod': 'on_decision_first_word', 'reverse': '0'},)
+                            {'insertingMethod': 'on_item_decision_first_words', 'reverse': '0'},)
         cfg.setInsertingMethodsOnAddItem(insertingMethods)
         for item in item1, item2, item3, item4, item5, item6, item7:
             self.assertEqual(item.getProposingGroup(), self.developers_uid)

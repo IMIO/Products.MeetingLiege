@@ -14,6 +14,7 @@ Products.MeetingLiege Changelog
 - Override MLItemDocumentGenerationHelperView.print_public_deliberation_decided to include decisionEnd field
 - When an item is proposed_to_finance and is complete (MeetingItem.completeness), it can not be taken back by director or internal reviewer
 - Renamed 'Point signé?' to 'Point visé?'
+- Optimized code to use ram.cached methods
 
 4.1rc5 (2020-01-10)
 -------------------

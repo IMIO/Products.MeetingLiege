@@ -748,25 +748,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(itemReturnedTwice.adapted().getOfficeManager()['phone'], '0497/696969')
         self.assertEqual(itemReturnedTwice.adapted().getOfficeManager()['email'], 'pmmanager@plonemeeting.org')
 
-    def test_ItemSignableSooner(self):
-        """itemIsSigned can be changed when item is 'presented' or 'itemfrozen'."""
-        self.changeUser('pmManager')
-        item = self.create('MeetingItem')
-        meeting = self.create('Meeting', date='2015/05/05')
-        self.assertFalse(item.adapted().maySignItem())
-        self.validateItem(item)
-        self.assertFalse(item.adapted().maySignItem())
-        # ok, now present the item, it will be signable
-        self.presentItem(item)
-        self.assertEqual(item.queryState(), 'presented')
-        self.assertTrue(item.maySignItem())
-        self.freezeMeeting(meeting)
-        self.assertEqual(item.queryState(), 'itemfrozen')
-        self.assertTrue(item.maySignItem())
-        self.closeMeeting(meeting)
-        self.assertEqual(item.queryState(), 'accepted')
-        self.assertTrue(item.maySignItem())
-
     def test_ItemSetToAddendum(self):
         """When an item is set to/from 'addendum', it's itemNumber
            is automatically adapted accordingly.  An 'addendum' item

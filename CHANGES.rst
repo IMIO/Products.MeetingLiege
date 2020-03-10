@@ -15,6 +15,7 @@ Products.MeetingLiege Changelog
 - When an item is proposed_to_finance and is complete (MeetingItem.completeness), it can not be taken back by director or internal reviewer
 - Renamed 'Point signé?' to 'Point visé?'
 - Optimized code to use ram.cached methods
+- Removed override of MeetingItem._itemIsSignedStates as there is a new default behavior where field may be managed by MeetingManagers as soon as item is validated
 
 4.1rc5 (2020-01-10)
 -------------------

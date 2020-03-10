@@ -17,11 +17,6 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
         '''Already tested in testWorkflows.'''
         pass
 
-    def test_pm_ItemIsSigned(self):
-        '''Bypass as we changed states in which itemIsSigned may
-           be changed, tested in testCustomMeetingItem.test_ItemSignableSooner.'''
-        pass
-
     def test_pm_SendItemToOtherMCWithoutDefinedAnnexType(self):
         '''Bypass as we changed behavior, we do not keep decision annexes.'''
         pass

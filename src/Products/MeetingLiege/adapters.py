@@ -1014,7 +1014,7 @@ class CustomMeetingItem(MeetingItem):
             res = '%s (TG)' % res
         return res
 
-    def _isCurrentUserInFDGroup(self, finance_group_id):
+    def isCurrentUserInFDGroup(self, finance_group_id):
         '''
           Returns True if the current user is in the given p_finance_group_id.
         '''
@@ -1030,7 +1030,7 @@ class CustomMeetingItem(MeetingItem):
 
         if adviceHolder.getFinanceAdvice() != '_none_' and \
             (adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['hidden_during_redaction'] is False or
-             self._isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True or
+             self.isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True or
              adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['advice_editable'] is False):
             return True
         return False
@@ -1440,12 +1440,6 @@ class CustomMeetingItem(MeetingItem):
         user['email'] = memberInfos.getProperty('email')
         return user
 
-    def _itemIsSignedStates(self):
-        """In which states must we show the itemIsSigned widget?
-           Default (item is decided) and presented/itemfrozen."""
-        item = self.getSelf()
-        return ('presented', 'itemfrozen') + item._itemIsSignedStates()
-
     def treasuryCopyGroup(self):
         """Manage fact that group TREASURY_GROUP_ID _observers must be automatically
            set as copyGroup of items for which the finances advice was asked.
@@ -1462,7 +1456,8 @@ class CustomMeetingItem(MeetingItem):
     def _roles_in_context_cachekey(method, self):
         '''cachekey method for self._roles_in_context.'''
         tool = api.portal.get_tool('portal_plonemeeting')
-        return (self, tool._users_groups_value())
+        member = api.user.get_current(),
+        return (self, member, tool._users_groups_value())
 
     @ram.cache(_roles_in_context_cachekey)
     def _roles_in_context(self):

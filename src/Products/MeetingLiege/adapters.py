@@ -1969,12 +1969,12 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 self.context._roles_in_context()
             proposingGroup = self.context.getProposingGroup()
             if not isAdminReviewer:
-                aRNotEmpty = self.group_is_not_empty(proposingGroup, 'administrativereviewers')
+                aRNotEmpty = self.tool.group_is_not_empty(proposingGroup, 'administrativereviewers')
                 if item_state in ['itemcreated', 'itemcreated_waiting_advices'] and aRNotEmpty:
                     res = False
             # If there is no internal reviewer or if the current user
             # is internal reviewer or director, do not show the transition.
-            iRNotEmpty = self.group_is_not_empty(proposingGroup, 'internalreviewers')
+            iRNotEmpty = self.tool.group_is_not_empty(proposingGroup, 'internalreviewers')
             if not iRNotEmpty or isReviewer or isInternalReviewer:
                 res = False
             if not self.context.getCategory() and res:
@@ -2006,8 +2006,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # any state.
             if not (isReviewer or isInternalReviewer):
                 proposingGroup = self.context.getProposingGroup()
-                aRNotEmpty = self.group_is_not_empty(proposingGroup, 'administrativereviewers')
-                iRNotEmpty = self.group_is_not_empty(proposingGroup, 'internalreviewers')
+                aRNotEmpty = self.tool.group_is_not_empty(proposingGroup, 'administrativereviewers')
+                iRNotEmpty = self.tool.group_is_not_empty(proposingGroup, 'internalreviewers')
                 # An administrative reviewer can propose to director if there
                 # is no internal reviewer and a creator can do it too if there
                 # is neither administrative nor internal reviewers.

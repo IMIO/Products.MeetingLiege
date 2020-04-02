@@ -8,3 +8,4 @@ pmPipeline {
   solrHttp = '34000'
   rebaseMaster = true
 }
+

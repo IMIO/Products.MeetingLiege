@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<object name="portal_actions" meta_type="Plone Actions Tool"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <action-provider name="portal_actions" />
- <object name="document_actions" meta_type="CMF Action Category">
-  <object name="cdld-document-generate" meta_type="CMF Action" i18n:domain="PloneMeeting" remove="True">
-  </object>
- </object>
-</object>

@@ -47,9 +47,6 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
     TRANSITIONS_FOR_CLOSING_MEETING_1 = ('freeze', 'decide', 'close', )
     TRANSITIONS_FOR_CLOSING_MEETING_2 = ('freeze', 'decide', 'close', )
     BACK_TO_WF_PATH_1 = {
-        # Meeting
-        'created': ('backToFrozen',
-                    'backToCreated',),
         # MeetingItem
         'itemcreated': ('backToItemFrozen',
                         'backToPresented',

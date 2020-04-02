@@ -1677,6 +1677,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         cfg2.setItemAutoSentToOtherMCStates(('delayed', 'returned', ))
 
         self.changeUser('pmCreator1')
+        # create meetingFolder so item may be sent to Council
+        self.getMeetingFolder(cfg2)
         # send a college item to council and delay this council item
         # in the college
         data = {'labelForCouncil': COUNCIL_LABEL,

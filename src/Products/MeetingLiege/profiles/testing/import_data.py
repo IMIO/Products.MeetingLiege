@@ -220,10 +220,6 @@ bourgmestreMeeting.itemAdviceEditStates = []
 bourgmestreMeeting.itemAdviceViewStates = []
 bourgmestreMeeting.itemDecidedStates = [
     'accepted', 'refused', 'delayed', 'marked_not_applicable']
-bourgmestreMeeting.itemPowerObserversStates = (
-    'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
-bourgmestreMeeting.itemRestrictedPowerObserversStates = (
-    'presented', 'accepted', 'refused', 'delayed', 'marked_not_applicable')
 bourgmestreMeeting.useCopies = True
 bourgmestreMeeting.useVotes = False
 bourgmestreMeeting.recurringItems = []

@@ -6,6 +6,5 @@ pmPipeline {
   activateSolr = true
   solrHost = '127.0.0.1'
   solrHttp = '34000'
-  rebaseMaster = true
+  useMaster = true
 }
-

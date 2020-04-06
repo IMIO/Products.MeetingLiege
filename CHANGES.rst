@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1rc7 (unreleased)
+4.1rc7 (2020-04-06)
 -------------------
 
 - Fixed some tests regarding changes in PloneMeeting

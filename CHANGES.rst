@@ -5,6 +5,7 @@ Products.MeetingLiege Changelog
 -------------------
 
 - Fixed some tests regarding changes in PloneMeeting
+- Adapted code as custom field MeetingItem.decisionSuite is now in Products.PloneMeeting
 
 4.1rc6 (2020-03-12)
 -------------------

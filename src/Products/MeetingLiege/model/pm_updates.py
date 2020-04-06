@@ -69,25 +69,6 @@ def update_item_schema(baseSchema):
             default='_none_',
         ),
         TextField(
-            name='decisionSuite',
-            widget=RichWidget(
-                rows=15,
-                condition="python: here.attributeIsUsed('decisionSuite')",
-                label='DecisionSuite',
-                label_msgid='MeetingLiege_label_decisionSuite',
-                description="Decision suite descr",
-                description_msgid="item_decision_suite_descr",
-                i18n_domain='PloneMeeting',
-            ),
-            read_permission="PloneMeeting: Read decision",
-            searchable=True,
-            allowable_content_types=('text/html',),
-            default_content_type="text/html",
-            default_output_type="text/x-html-safe",
-            write_permission="PloneMeeting: Write decision",
-            optional=True,
-        ),
-        TextField(
             name='decisionEnd',
             widget=RichWidget(
                 rows=15,
@@ -116,6 +97,7 @@ def update_item_schema(baseSchema):
     completeItemSchema['proposingGroup'].widget.description_msgid = 'item_proposing_group_descr'
     completeItemSchema['motivation'].widget.description_msgid = 'item_motivation_descr'
     completeItemSchema['decision'].widget.description_msgid = 'item_decision_descr'
+    completeItemSchema['decisionSuite'].widget.description_msgid = 'item_decision_suite_descr'
     completeItemSchema['observations'].widget.description_msgid = 'item_observations_descr'
     # use a specific condition to show field 'otherMeetingConfigsClonableToEmergency'
     completeItemSchema['otherMeetingConfigsClonableToEmergency'].widget.condition = \

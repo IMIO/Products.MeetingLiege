@@ -511,12 +511,12 @@
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
-    <tal:comment replace="nothing">XXX added by MeetingLiege, decisionSuite and decisionEnd</tal:comment>
     <tal:comment replace="nothing">Decision suite</tal:comment>
     <tal:field define="fieldName python: 'decisionSuite'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
+    <tal:comment replace="nothing">XXX added by MeetingLiege decisionEnd</tal:comment>
     <tal:comment replace="nothing">Decision end</tal:comment>
     <tal:field define="fieldName python: 'decisionEnd'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>

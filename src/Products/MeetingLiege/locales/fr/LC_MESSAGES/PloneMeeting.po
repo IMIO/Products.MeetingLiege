@@ -77,7 +77,7 @@ msgid "MeetingLiege_label_decisionEnd"
 msgstr "Fin du dispositif"
 
 #. Default: "Decision (suite)"
-msgid "MeetingLiege_label_decisionSuite"
+msgid "PloneMeeting_label_decisionSuite"
 msgstr "Suite du dispositif"
 
 #. Default: "Financial advice"

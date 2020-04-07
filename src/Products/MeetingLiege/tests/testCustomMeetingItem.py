@@ -84,7 +84,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(new_item.portal_type, 'MeetingItemCouncil')
         self.assertEqual(item.getLabelForCouncil(),
                          new_item.getLabelForCouncil())
-        import ipdb; ipdb.set_trace()
         self.assertEqual(item.getDecisionSuite(),
                          new_item.getDecisionSuite())
         self.assertEqual(item.getDecisionEnd(),

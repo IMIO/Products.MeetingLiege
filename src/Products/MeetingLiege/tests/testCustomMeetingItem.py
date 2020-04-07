@@ -56,7 +56,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # make item sendable to Council when 'itemcreated'
         cfg = self.meetingConfig
+        usedItemAttrs = cfg.getUsedItemAttributes()
+        if 'decisionSuite' not in usedItemAttrs:
+            cfg.setUsedItemAttributes(usedItemAttrs + ('decisionSuite', ))
         cfg2 = self.meetingConfig2
+        usedItemAttrs2 = cfg2.getUsedItemAttributes()
+        if 'decisionSuite' not in usedItemAttrs2:
+            cfg2.setUsedItemAttributes(usedItemAttrs2 + ('decisionSuite', ))
         cfg2Id = cfg2.getId()
         cfg.setItemManualSentToOtherMCStates(self._initial_state(item))
         cfg.setToDiscussSetOnItemInsert(False)
@@ -78,6 +84,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(new_item.portal_type, 'MeetingItemCouncil')
         self.assertEqual(item.getLabelForCouncil(),
                          new_item.getLabelForCouncil())
+        import ipdb; ipdb.set_trace()
         self.assertEqual(item.getDecisionSuite(),
                          new_item.getDecisionSuite())
         self.assertEqual(item.getDecisionEnd(),

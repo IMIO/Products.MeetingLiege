@@ -1381,36 +1381,6 @@ class CustomMeetingItem(MeetingItem):
             roles = {suffix: 'Reader' for suffix in get_all_suffixes(bg_org.UID()) if suffix != 'observers'}
             item._assign_roles_to_group_suffixes(bg_org, roles=roles)
 
-    def _findCustomOneLevelFor(self, insertMethod):
-        '''Manage our custom inserting method 'on_decision_first_word'.'''
-        if insertMethod == 'on_decision_first_word':
-            return 262626262626
-        raise NotImplementedError
-
-    def _findCustomOrderFor(self, insertMethod):
-        '''Manage our custom inserting method 'on_decision_first_word'.'''
-        item = self.getSelf()
-        if insertMethod == 'on_decision_first_word':
-            decision = item.getDecision(mimetype='text/plain').strip()
-            # make sure we do not have accents anymore and a lowerized string
-            if not isinstance(decision, unicode):
-                decision = unicode(decision, 'utf-8')
-            decision = ''.join(x for x in unicodedata.normalize('NFKD', decision) if x in string.ascii_letters).lower()
-            word = decision.split(' ')[0]
-            word = word[0:6]
-            # make sure first is a 6 characters long word
-            word = word.ljust(6, 'a')
-            # now that we have a 6 characters long string, we will build index by
-            # computing ord() for each char and making a long integer with it
-            index = []
-            for char in word:
-                # translate received value to less integer
-                # in theory, we have only lowercased chars in word
-                # ord('a') is 97, and ord('z') is 122, so remove 96...
-                index.append(str(ord(char) - 96).zfill(2))
-            return int(''.join(index))
-        raise NotImplementedError
-
     def getOfficeManager(self):
         '''
         Allows to get the office manager's name, even if the item is
@@ -1677,10 +1647,6 @@ class CustomMeetingConfig(MeetingConfig):
             return IMeetingAdviceFinancesWorkflowActions.__identifier__
         else:
             return super(CustomMeetingConfig, self)._adviceActionsInterfaceFor(advice_obj)
-
-    def extraInsertingMethods(self):
-        '''See doc in interfaces.py.'''
-        return OrderedDict((('on_decision_first_word', None), ))
 
 
 class CustomToolPloneMeeting(ToolPloneMeeting):

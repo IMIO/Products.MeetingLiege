@@ -4,8 +4,7 @@ Products.MeetingLiege Changelog
 4.1rc8 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Removed custom inserting method `on_decision_first_word`, now using the default `on_item_decision_first_words` that is doing the same
 
 4.1rc7 (2020-04-06)
 -------------------

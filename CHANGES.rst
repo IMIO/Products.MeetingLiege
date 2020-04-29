@@ -1,6 +1,12 @@
 Products.MeetingLiege Changelog
 ===============================
 
+4.1rc9 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 4.1rc8 (2020-04-29)
 -------------------
 

@@ -938,9 +938,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(self.portal.Members, 'publish')
 
         self.changeUser('pmManager')
-        # onDuplicateAndKeepLink returns the URL of the duplicated item
-        dupLinkedItemURL = duplicatedLocally.onDuplicateAndKeepLink().replace('http://nohost', '')
-        dupLinkedItem = self.portal.restrictedTraverse(dupLinkedItemURL)
+        # duplicate and keep link
+        form = duplicatedLocally.restrictedTraverse('@@item_duplicate_form').form_instance
+        data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
+        dupLinkedItem = form._doApply(data)
         self.assertEqual(dupLinkedItem.getRawManuallyLinkedItems(), [duplicatedLocally.UID()])
         self.assertTrue(getLastWFAction(dupLinkedItem, 'Duplicate and keep link'))
         self.assertEqual(dupLinkedItem.getOtherMeetingConfigsClonableTo(), (cfg2Id,))
@@ -1774,9 +1775,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(item.getItemClonedToOtherMC(cfg2Id))
 
         # now check that a duplicatedAndKeepLink item is sent also
-        duplicatedItemURL = item.onDuplicateAndKeepLink()
-        duplicatedItem = getattr(item.getParentNode(),
-                                 duplicatedItemURL.split('/')[-1])
+        form = item.restrictedTraverse('@@item_duplicate_form').form_instance
+        data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
+        duplicatedItem = form._doApply(data)
         linkedItems = duplicatedItem.getManuallyLinkedItems()
         self.assertEqual(len(linkedItems), 1)
         self.assertEqual(linkedItems[0].queryState(), 'accepted_and_returned')

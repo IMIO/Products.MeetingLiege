@@ -372,8 +372,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         # duplicate and keep link will not consider original finance advice
         # as advice for the duplicated item
-        item.onDuplicateAndKeepLink()
-        duplicatedItem = item.getBRefs()[0]
+        form = item.restrictedTraverse('@@item_duplicate_form').form_instance
+        data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
+        duplicatedItem = form._doApply(data)
         # the duplicatedItem advice referent is the duplicatedItem...
         self.assertEqual(duplicatedItem.adapted().getItemWithFinanceAdvice(), duplicatedItem)
         # the finance advice is asked on the duplicatedItem
@@ -485,9 +486,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # duplicate and keep link an 'accepted_and_return' college item,
         # the financeAdvice will not follow
-        duplicatedItemUrl = itemToCouncil2.onDuplicateAndKeepLink()
-        duplicatedItemId = duplicatedItemUrl.split('/')[-1]
-        duplicatedItem2 = getattr(itemToCouncil2.getParentNode(), duplicatedItemId)
+        form = itemToCouncil2.restrictedTraverse('@@item_duplicate_form').form_instance
+        data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
+        duplicatedItem2 = form._doApply(data)
         self.assertEqual(duplicatedItem2.adapted().getItemWithFinanceAdvice(), duplicatedItem2)
 
     def test_GetLegalTextForFDAdvice(self):

@@ -5,6 +5,8 @@ Products.MeetingLiege Changelog
 -------------------
 
 - Removed custom inserting method `on_decision_first_word`, now using the default `on_item_decision_first_words` that is doing the same
+- Fixed `test_GetItemWithFinanceAdvice`, `test_AcceptAndReturnCollege` and `test_ItemSentToCouncilWhenDuplicatedAndLinkKept` as `MeetingItem.onDuplicate`
+  and `MeetingItem.onDuplicateAndKeepLink` were removed and replaced by the `@@item_duplicate_form`
 
 4.1rc7 (2020-04-06)
 -------------------

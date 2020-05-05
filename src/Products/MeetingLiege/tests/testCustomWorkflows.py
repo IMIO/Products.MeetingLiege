@@ -940,6 +940,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         # duplicate and keep link
         form = duplicatedLocally.restrictedTraverse('@@item_duplicate_form').form_instance
+        form.update()
         data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
         dupLinkedItem = form._doApply(data)
         self.assertEqual(dupLinkedItem.getRawManuallyLinkedItems(), [duplicatedLocally.UID()])
@@ -1776,6 +1777,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # now check that a duplicatedAndKeepLink item is sent also
         form = item.restrictedTraverse('@@item_duplicate_form').form_instance
+        form.update()
         data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
         duplicatedItem = form._doApply(data)
         linkedItems = duplicatedItem.getManuallyLinkedItems()

@@ -373,6 +373,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # duplicate and keep link will not consider original finance advice
         # as advice for the duplicated item
         form = item.restrictedTraverse('@@item_duplicate_form').form_instance
+        form.update()
         data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
         duplicatedItem = form._doApply(data)
         # the duplicatedItem advice referent is the duplicatedItem...
@@ -487,6 +488,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # duplicate and keep link an 'accepted_and_return' college item,
         # the financeAdvice will not follow
         form = itemToCouncil2.restrictedTraverse('@@item_duplicate_form').form_instance
+        form.update()
         data = {'keep_link': True, 'annex_ids': [], 'annex_decision_ids': []}
         duplicatedItem2 = form._doApply(data)
         self.assertEqual(duplicatedItem2.adapted().getItemWithFinanceAdvice(), duplicatedItem2)

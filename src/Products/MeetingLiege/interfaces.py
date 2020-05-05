@@ -59,10 +59,6 @@ class IMeetingItemCollegeLiegeWorkflowConditions(IMeetingItemWorkflowConditions)
         """
           Guard for the 'decide' transition
         """
-    def isLateFor():
-        """
-          is the MeetingItem considered as late
-        """
     def mayFreeze():
         """
           Guard for the 'freeze' transition
@@ -181,10 +177,6 @@ class IMeetingItemCouncilLiegeWorkflowConditions(IMeetingItemWorkflowConditions)
     def mayDecide():
         """
           Guard for the 'decide' transition
-        """
-    def isLateFor():
-        """
-          is the MeetingItem considered as late
         """
     def mayFreeze():
         """

@@ -4,8 +4,7 @@ Products.MeetingLiege Changelog
 4.1rc9 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Removed field `MeetingItem.itemIsSigned` from `meetingitem_edit`, it is managed thru the `meetingitem_view`
 
 4.1rc8 (2020-04-29)
 -------------------

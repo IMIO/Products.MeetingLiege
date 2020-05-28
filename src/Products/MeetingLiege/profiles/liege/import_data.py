@@ -120,7 +120,10 @@ dfcompta.item_advice_view_states = ['meeting-config-college__state__accepted',
                                     'meeting-config-college__state__presented',
                                     'meeting-config-college__state__refused',
                                     'meeting-config-college__state__validated']
-dftresor = OrgDescriptor(TREASURY_GROUP_ID, u'DF - Contrôle (Trésorerie)', u'DFCT')
+dftresor = OrgDescriptor(TREASURY_GROUP_ID,
+                         u'DF - Contrôle (Trésorerie)',
+                         u'DFCT',
+                         as_copy_group_on=u'python: item.adapted().treasuryCopyGroup()')
 dftresor.item_advice_states = ['meeting-config-college__state__accepted',
                                'meeting-config-college__state__accepted_but_modified']
 dftresor.item_advice_edit_states = ['meeting-config-college__state__accepted',

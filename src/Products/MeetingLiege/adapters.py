@@ -76,9 +76,6 @@ from zope.component import getAdapter
 from zope.i18n import translate
 from zope.interface import implements
 
-import string
-import unicodedata
-
 
 # disable every wfAdaptations but 'return_to_proposing_group'
 customWfAdaptations = ('return_to_proposing_group', )
@@ -1418,7 +1415,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         if item.getFinanceAdvice() != '_none_' and \
            (item.queryState() in ('validated', 'sent_to_council_emergency') or item.hasMeeting()):
-            return ['observers']
+            return ['incopy']
         else:
             return []
 

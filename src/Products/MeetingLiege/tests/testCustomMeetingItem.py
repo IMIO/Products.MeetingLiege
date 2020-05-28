@@ -9,8 +9,10 @@ from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
+from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from Products.PloneMeeting.utils import org_id_to_uid
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 
@@ -1302,3 +1304,26 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(item.listArchivingRefs().keys(), ['1'])
         item.setArchivingRef('2')
         self.assertEqual(item.listArchivingRefs().keys(), ['2'])
+
+    def test_TreasuryCopyGroup(self):
+        """TREASURY_GROUP_ID 'incopy' suffix is set in copy of items
+           having finances advice when at least validated."""
+        cfg = self.meetingConfig
+        cfg.setUseCopies(True)
+        self.changeUser('admin')
+        self._createFinanceGroups()
+        _configureCollegeCustomAdvisers(self.portal)
+        self.changeUser('pmManager')
+        item = self.create('MeetingItem')
+        # bypass finances advice
+        item.setEmergency('emergency_asked')
+        # ask finance advice
+        financial_group_uids = self.tool.financialGroupUids()
+        item.setFinanceAdvice(financial_group_uids[0])
+        item._update_after_edit()
+        self.assertTrue(financial_group_uids[0] in item.adviceIndex)
+        # no copyGroups
+        self.assertEqual(item.getAllCopyGroups(), ())
+        self.validateItem(item)
+        self.assertEqual(item.getAllCopyGroups(),
+                         ('auto__%s_incopy' % org_id_to_uid(TREASURY_GROUP_ID), ))

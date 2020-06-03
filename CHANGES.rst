@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1rc10 (unreleased)
+4.1rc10 (2020-06-03)
 --------------------
 
 - `TREASURY_GROUP_ID` suffixed Plone group `incopy` is now set in copy of items having finances advice in place of `observers` suffixed Plone group.

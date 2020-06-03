@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '4.1rc10.dev0'
+version = '4.1rc10'
 
 setup(
     name='Products.MeetingLiege',

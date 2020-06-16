@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.1rc11 (unreleased)
 --------------------
 
-- Nothing changed yet.
-
+- Adapted `meetingitem_view.pt` regarding changes in `Products.PloneMeeting` (`groupsInCharge`).
+  [gbastien]
 
 4.1rc10 (2020-06-03)
 --------------------

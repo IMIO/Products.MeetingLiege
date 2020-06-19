@@ -6,6 +6,8 @@ Products.MeetingLiege Changelog
 
 - Adapted `meetingitem_view.pt` regarding changes in `Products.PloneMeeting` (`groupsInCharge`).
   [gbastien]
+- Adapted item transitions guards to use `MeetingItemWorkflowConditions._check_required_data`.
+  [gbastien]
 
 4.1rc10 (2020-06-03)
 --------------------

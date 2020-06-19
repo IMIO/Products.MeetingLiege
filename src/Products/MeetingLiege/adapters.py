@@ -1905,8 +1905,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # transition.
             if not self.tool.group_is_not_empty(self.context.getProposingGroup(), 'administrativereviewers'):
                 res = False
-            if not self.context.getCategory() and res:
-                return No(_('required_category_ko'))
+            if res is True:
+                msg = self._check_required_data()
+                if msg is not None:
+                    res = msg
         return res
 
     security.declarePublic('mayProposeToInternalReviewer')
@@ -1934,8 +1936,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             iRNotEmpty = self.tool.group_is_not_empty(proposingGroup, 'internalreviewers')
             if not iRNotEmpty or isReviewer or isInternalReviewer:
                 res = False
-            if not self.context.getCategory() and res:
-                return No(_('required_category_ko'))
+            if res is True:
+                msg = self._check_required_data()
+                if msg is not None:
+                    res = msg
         return res
 
     security.declarePublic('mayProposeToDirector')
@@ -1978,8 +1982,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 elif item_state == 'proposed_to_administrative_reviewer' and \
                         (not isAdminReviewer or iRNotEmpty):
                     res = False
-            if not self.context.getCategory() and res:
-                return No(_('required_category_ko'))
+            if res is True:
+                msg = self._check_required_data()
+                if msg is not None:
+                    res = msg
         return res
 
     security.declarePublic('mayProposeToFinance')
@@ -2013,16 +2019,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         """ """
         res = False
         if _checkPermission(ReviewPortalContent, self.context):
-            # check if asked advices are giveable in state item_state
-            hasAdvicesToGive = self._hasAdvicesToGive(item_state)
-
-            if hasAdvicesToGive:
-                res = True
-                if not self.context.getCategory():
-                    return No(_('required_category_ko'))
-            else:
-                # return a 'No' instance explaining that no askable advice is selected on this item
-                res = No(_('advice_required_to_ask_advices'))
+            res = True
+        msg = self._check_required_data()
+        if msg is not None:
+            res = msg
+        elif not self._hasAdvicesToGive(item_state):
+            # check if there are advices to give in destination state
+            res = No(_('advice_required_to_ask_advices'))
         return res
 
     security.declarePublic('mayAskAdvicesByItemCreator')
@@ -2086,8 +2089,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             elif item_state == 'proposed_to_finance' and self.context.getEmergency() == 'no_emergency':
                 res = False
 
-            if res and not self.context.getCategory():
-                return No(_('required_category_ko'))
+            if res is True:
+                msg = self._check_required_data()
+                if msg is not None:
+                    res = msg
         return res
 
     security.declarePublic('maySendToCouncilEmergency')

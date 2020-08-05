@@ -205,8 +205,8 @@ class CustomMeeting(Meeting):
                         collegeItem._checkAlreadyClonedToOtherMC('meeting-config-council'):
                     itemPrivacy = collegeItem.getPrivacyForCouncil()
                     itemProposingGroup = collegeItem.getProposingGroup()
-                    councilCategoryId = collegeItem.getCategory(theObject=True).\
-                        getCategoryMappingsWhenCloningToOtherMC()
+                    collegeCat = collegeItem.getCategory(theObject=True)
+                    councilCategoryId = collegeCat.category_mapping_when_cloning_to_other_mc
                     itemCategory = getattr(tool.getMeetingConfig(self.context).categories,
                                            councilCategoryId[0].split('.')[1])
                     meeting = self.context.getSelf()
@@ -1000,7 +1000,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         item_num = item.getMeeting().getItemNumsForActe()[item.UID()]
         if not item.isLate():
-            res = '%s' % item.getCategory(True).getCategoryId()
+            res = '%s' % item.getCategory(True).category_id
             res = '%s%s' % (res, item_num)
         else:
             res = 'HOJ.%s' % item_num

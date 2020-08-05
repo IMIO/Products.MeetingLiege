@@ -4,8 +4,10 @@ Products.MeetingLiege Changelog
 4.1rc12 (unreleased)
 --------------------
 
-- Nothing changed yet.
-
+- Adapted code and tests regarding DX `meetingcategory`.
+  [gbastien]
+- Adapted templates regarding last changes in `Products.PloneMeeting`.
+  [gbastien]
 
 4.1rc11 (2020-06-24)
 --------------------

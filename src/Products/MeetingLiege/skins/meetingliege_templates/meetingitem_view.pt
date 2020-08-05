@@ -46,8 +46,10 @@
               <div class="discreet">
                   <span class="item_attribute_label"
                         i18n:translate="PloneMeeting_label_proposingGroup"></span>:&nbsp;&nbsp;
-                  <span tal:condition="nocall:proposingGroup"
-                        tal:content="proposingGroup/Title" />
+                  <tal:hasProposingGroup condition="nocall:proposingGroup">
+                    <span tal:content="proposingGroup/Title" />
+                    <metal:people use-macro="here/@@pm-macros/proposingGroupUsers"/>
+                  </tal:hasProposingGroup>
                   <span tal:condition="not:nocall:proposingGroup">-</span>
               </div>
               <tal:comment replace="nothing">Groups in charge</tal:comment>
@@ -66,10 +68,13 @@
             <div class="discreet" tal:condition="python: 'proposingGroupWithGroupInCharge' in usedAttrs">
                 <span class="item_attribute_label"
                       i18n:translate="PloneMeeting_label_proposingGroupWithGroupInCharge"></span>:&nbsp;&nbsp;
-                <span tal:condition="nocall:proposingGroup"
-                      tal:content="proposingGroup/Title" />&nbsp;(<span tal:define="gic python: context.getGroupsInCharge(theObjects=True, first=True)"
-                                                                        tal:condition="nocall:gic"
-                                                                        tal:content="gic/Title" />)
+                <tal:hasProposingGroup condition="nocall:proposingGroup">
+                  <span tal:condition="nocall:proposingGroup"
+                        tal:content="proposingGroup/Title" />&nbsp;(<span tal:define="gic python: context.getGroupsInCharge(theObjects=True, first=True)"
+                                                                          tal:condition="nocall:gic"
+                                                                          tal:content="gic/Title" />)
+                  <metal:people use-macro="here/@@pm-macros/proposingGroupUsers"/>
+                </tal:hasProposingGroup>
                 <span tal:condition="not:nocall:proposingGroup">-</span>
             </div>
 
@@ -96,26 +101,27 @@
                 <span tal:condition="not: associatedGroups">-</span>
             </div>
 
-            <tal:comment replace="nothing">Classifier</tal:comment>
-            <div class="discreet"
-                 tal:condition="python: 'classifier' in usedAttrs"
-                 tal:define="classifier context/getClassifier">
-                <span class="item_attribute_label"
-                      i18n:translate="PloneMeeting_label_classifier"></span>:&nbsp;&nbsp;
-                <span tal:condition="nocall:classifier" tal:content="classifier/Title">-</span>
-                <span tal:condition="not:nocall:classifier">-</span>
-            </div>
-
             <tal:comment replace="nothing">Category</tal:comment>
             <tal:category condition="not:meetingConfig/getUseGroupsAsCategories">
             <div class="discreet"
                  tal:define="cat python: context.getCategory(True)">
                 <span class="item_attribute_label"
                       tal:condition="not: meetingConfig/getUseGroupsAsCategories"
-                      i18n:translate="MeetingCategory"></span>:&nbsp;&nbsp;
+                      i18n:translate="PloneMeeting_label_category"></span>:&nbsp;&nbsp;
                 <span tal:condition="nocall:cat" tal:content="cat/Title"></span>
+                <span tal:condition="not:nocall:cat">-</span>
             </div>
             </tal:category>
+
+            <tal:comment replace="nothing">Classifier</tal:comment>
+            <div class="discreet"
+                 tal:condition="python: 'classifier' in usedAttrs"
+                 tal:define="classifier python: context.getClassifier(theObject=True)">
+                <span class="item_attribute_label"
+                      i18n:translate="PloneMeeting_label_classifier"></span>:&nbsp;&nbsp;
+                <span tal:condition="nocall:classifier" tal:content="classifier/Title">-</span>
+                <span tal:condition="not:nocall:classifier">-</span>
+            </div>
 
             <tal:comment replace="nothing">Advices</tal:comment>
             <div class="discreet" tal:condition="showAdvices"
@@ -150,7 +156,7 @@
                         mayQuickEditItemAssembly context/mayQuickEditItemAssembly;
                         mayQuickEditItemSignatures context/mayQuickEditItemSignatures;">
               <div id="assembly-and-signatures"
-                  onclick="togglePersonsCookie();;toggleDoc('collapsible-assembly-and-signatures');"
+                  onclick="togglePersonsCookie();;toggleDetails('collapsible-assembly-and-signatures');"
                   class="collapsible discreet">
                   <span class="meeting_attribute_label" i18n:translate="redefinable_assembly_and_signatures">
                       <span i18n:name="assembly" tal:define="class_to_use python: redefinedItemAssemblies and 'highlightValue' or ''"
@@ -257,7 +263,7 @@
                                  linkedItems python: context.getManuallyLinkedItems(only_viewable=True);
                                  showManuallyLinkedItems python: 'manuallyLinkedItems' in usedAttrs or linkedItems;
                                  class_to_use python: (predecessors or linkedItems) and 'item_attribute_label highlightValue' or 'item_attribute_label';">
-                <div id="linkedItems" class="collapsible discreet" onclick="toggleDoc('collapsible-linked-items', toggle_parent_active=true, parent_elem=null, load_view='@@load_linked_items');">
+                <div id="linkedItems" class="collapsible discreet" onclick="toggleDetails('collapsible-linked-items', toggle_parent_active=true, parent_tag=null, load_view='@@load_linked_items');">
                   <span tal:condition="showManuallyLinkedItems"
                         class="item_attribute_label"
                         tal:attributes="class class_to_use"
@@ -431,7 +437,7 @@
                 <tal:displayPollTypeObservations tal:condition="python: 'pollTypeObservations' in usedAttrs">
                     <span class="fa fa-question-circle help-doc"
                        id="showPollTypeObservations"
-                       onclick="toggleDoc('dataPollTypeObservations', toggle_parent_active=false);"
+                       onclick="toggleDetails('dataPollTypeObservations', toggle_parent_active=false);"
                        i18n:attributes="title" title="show_or_hide_pollTypeObservations"></span>
                     <fieldset id="dataPollTypeObservations" style="display: none; margin-top: 0;">
                         <legend i18n:translate="PloneMeeting_label_pollTypeObservations">Poll type observations</legend>
@@ -512,7 +518,7 @@
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
-    <tal:comment replace="nothing">Decision suite</tal:comment>
+    <tal:comment replace="nothing">DecisionSuite</tal:comment>
     <tal:field define="fieldName python: 'decisionSuite'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
@@ -560,7 +566,7 @@
     </table>
 
     <tal:textCheckList condition="python: 'textCheckList' in usedAttrs and context.getTextCheckList()">
-      <div id="textCheckList" class="collapsible discreet" onclick="toggleDoc('collapsible-text-checklist');">
+      <div id="textCheckList" class="collapsible discreet" onclick="toggleDetails('collapsible-text-checklist');">
         <span class="item_attribute_label" i18n:translate="PloneMeeting_label_textCheckList">
             Text check list
         </span>

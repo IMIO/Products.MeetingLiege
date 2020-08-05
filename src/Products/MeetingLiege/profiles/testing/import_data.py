@@ -157,7 +157,7 @@ bourgmestreMeeting.certifiedSignatures = [
      }]
 bourgmestreMeeting.categories = deepcopy(councilMeeting.categories)
 # remove usingGroups for subproducts category
-bourgmestreMeeting.categories[-1].usingGroups = ()
+bourgmestreMeeting.categories[-1].using_groups = ()
 bourgmestreMeeting.shortName = 'Bourgmestre'
 bourgmestreMeeting.annexTypes = councilMeeting.annexTypes
 bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (

@@ -5,6 +5,7 @@ from datetime import datetime
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
+from plone.indexer.wrapper import IndexableObjectWrapper
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
@@ -123,7 +124,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # use categories
         self.changeUser('siteadmin')
         cfg = self.meetingConfig
-        self.create('MeetingCategory', id='maintenance', title='Maintenance', categoryId='maintenance_cat_id')
+        self.create('meetingcategory',
+                    id='maintenance',
+                    title='Maintenance',
+                    category_id='maintenance_cat_id')
         cfg.setUseGroupsAsCategories(False)
         cfg.setInsertingMethodsOnAddItem((
             {'insertingMethod': 'on_list_type', 'reverse': '0'},
@@ -1327,3 +1331,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.validateItem(item)
         self.assertEqual(item.getAllCopyGroups(),
                          ('auto__%s_incopy' % org_id_to_uid(TREASURY_GROUP_ID), ))
+
+    def test_Index_category_id(self):
+        """ """
+        cfg = self.meetingConfig
+        cfg.setUseGroupsAsCategories(False)
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', category='research')
+        indexable_wrapper = IndexableObjectWrapper(item, self.catalog)
+        self.assertEqual(indexable_wrapper.category_id, 'research')

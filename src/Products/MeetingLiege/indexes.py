@@ -10,7 +10,7 @@ def category_id(obj):
       Indexes the getCategoryId defined on the selected MeetingItem.category
     """
     category = obj.getCategory(theObject=True)
-    if not category.meta_type == 'MeetingCategory':
+    if not category.portal_type == 'meetingcategory':
         return []
     else:
-        return category.getCategoryId()
+        return category.category_id

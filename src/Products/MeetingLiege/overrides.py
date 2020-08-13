@@ -167,8 +167,8 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
             return res
 
         # annexDecision marked as 'to_sign' are only viewable to (Meeting)Managers
-        if self.brain.portal_type == 'annexDecision':
-            infos = self.context.categorized_elements[self.brain.UID]
+        infos = self.context.categorized_elements[self.categorized_obj.UID()]
+        if infos['portal_type'] == 'annexDecision':
             if infos['signed_activated'] and \
                infos['to_sign'] and \
                not infos['signed'] and \

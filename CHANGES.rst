@@ -8,6 +8,8 @@ Products.MeetingLiege Changelog
   [gbastien]
 - Adapted templates regarding last changes in `Products.PloneMeeting`.
   [gbastien]
+- Adapted code regarding changes in `collective.iconifiedcategory` (`CategorizedObjectAdapter`).
+  [gbastien]
 
 4.1rc11 (2020-06-24)
 --------------------

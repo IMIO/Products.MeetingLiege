@@ -107,7 +107,7 @@
   <!-- Override CategorizedObjectAdapter.can_view for IMeetingItem -->
   <adapter for="Products.PloneMeeting.interfaces.IMeetingItem
                 zope.publisher.interfaces.browser.IBrowserRequest
-                Products.ZCatalog.interfaces.ICatalogBrain"
+                collective.iconifiedcategory.behaviors.iconifiedcategorization.IIconifiedCategorizationMarker"
            provides="collective.iconifiedcategory.interfaces.IIconifiedContent"
            factory=".overrides.MLItemCategorizedObjectAdapter" />
 

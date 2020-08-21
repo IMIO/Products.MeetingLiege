@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1 (unreleased)
+4.1 (2020-08-21)
 ----------------
 
 - Adapted code and tests regarding DX `meetingcategory`.

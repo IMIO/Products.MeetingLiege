@@ -1,8 +1,8 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1rc12 (unreleased)
---------------------
+4.1 (unreleased)
+----------------
 
 - Adapted code and tests regarding DX `meetingcategory`.
   [gbastien]

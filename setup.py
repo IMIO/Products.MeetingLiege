@@ -9,9 +9,17 @@ setup(
     description="PloneMeeting profile for city of Liege",
     long_description=open("README.rst").read() + "\n" +
     open("CHANGES.rst").read(),
-    classifiers=[
-        "Programming Language :: Python",
-        ],
+      classifiers=[
+          "Development Status :: 6 - Mature",
+          "Environment :: Web Environment",
+          "Framework :: Plone",
+          "Framework :: Plone :: 4.3",
+          "License :: OSI Approved :: GNU General Public License (GPL)",
+          "Operating System :: OS Independent",
+          "Programming Language :: Python",
+          "Programming Language :: Python :: 2.7",
+          "Topic :: Office/Business",
+      ],
     keywords='plone official meetings management egov communesplone imio plonegov',
     author='Gauthier Bastien',
     author_email='gauthier@imio.be',

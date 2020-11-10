@@ -1,7 +1,7 @@
-from setuptools import setup, find_packages
-import os
+from setuptools import find_packages
+from setuptools import setup
 
-version = '4.2.dev0'
+version = '4.1.1.dev0'
 
 setup(
     name='Products.MeetingLiege',
@@ -9,17 +9,17 @@ setup(
     description="PloneMeeting profile for city of Liege",
     long_description=open("README.rst").read() + "\n" +
     open("CHANGES.rst").read(),
-      classifiers=[
-          "Development Status :: 6 - Mature",
-          "Environment :: Web Environment",
-          "Framework :: Plone",
-          "Framework :: Plone :: 4.3",
-          "License :: OSI Approved :: GNU General Public License (GPL)",
-          "Operating System :: OS Independent",
-          "Programming Language :: Python",
-          "Programming Language :: Python :: 2.7",
-          "Topic :: Office/Business",
-      ],
+    classifiers=[
+        "Development Status :: 6 - Mature",
+        "Environment :: Web Environment",
+        "Framework :: Plone",
+        "Framework :: Plone :: 4.3",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Topic :: Office/Business",
+    ],
     keywords='plone official meetings management egov communesplone imio plonegov',
     author='Gauthier Bastien',
     author_email='gauthier@imio.be',
@@ -40,4 +40,4 @@ setup(
         'Pillow',
         'Products.PloneMeeting'],
     entry_points={},
-    )
+)

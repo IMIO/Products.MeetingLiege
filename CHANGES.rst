@@ -1,11 +1,11 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2 (unreleased)
-----------------
+4.1.1 (unreleased)
+------------------
 
-- Nothing changed yet.
-
+- Make `reviewers` able to `ask advices` when item is `proposed_to_internal_reviewer`.
+  [gbastien]
 
 4.1 (2020-08-21)
 ----------------

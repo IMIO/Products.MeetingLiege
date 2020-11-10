@@ -2044,7 +2044,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # transition may be triggered from the 'itemcreated' state
             isReviewer, isInternalReviewer, isAdminReviewer = \
                 self.context._roles_in_context()
-            if not isInternalReviewer and not self.tool.isManager(self.context):
+            if not (isReviewer or isInternalReviewer or self.tool.isManager(self.context)):
                 res = False
         return res
 

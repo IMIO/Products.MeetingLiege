@@ -285,10 +285,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item._update_after_edit()
         # now that there is an advice to give (developers)
         # internal reviewer may ask it
+        self.assertTrue(self.tool.userIsAmong(['internalreviewers']))
         self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
                                                   'backToProposedToAdministrativeReviewer',
                                                   'proposeToDirector', ])
-        # give advice
+        # it is the case for the director as well without being internal reviewer
+        self.changeUser('pmReviewer1')
+        self.assertFalse(self.tool.userIsAmong(['internalreviewers']))
+        self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
+                                                  'backToProposedToAdministrativeReviewer',
+                                                  'proposeToDirector', ])
+        # ask advice
         self.do(item, 'askAdvicesByInternalReviewer')
         # pmAdviser1 is adviser for developers
         self.changeUser('pmAdviser1')

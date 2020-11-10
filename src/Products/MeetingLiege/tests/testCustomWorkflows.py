@@ -1517,9 +1517,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                                   'proposeToDirector'])
         self.do(item, 'backToItemCreated')
 
-        # a reviewer can send an item to director.
+        # a reviewer can send an item to director, aka himself
         self.changeUser('pmReviewer1')
-        self.assertEqual(self.transitions(item), ['proposeToDirector', ])
+        self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
+                                                  'proposeToDirector', ])
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # A reviewer can ask for advices if an advice is required.

@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed overrided print methods used for `deliberation_for_restapi`.
+  Just change `xhtmlContents` and call `super()`.
+  [gbastien]
 
 4.1.1 (2020-11-13)
 ------------------

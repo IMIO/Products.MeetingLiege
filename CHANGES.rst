@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1.2 (unreleased)
+4.1.2 (2021-05-31)
 ------------------
 
 - Fixed overrided print methods used for `deliberation_for_restapi`.

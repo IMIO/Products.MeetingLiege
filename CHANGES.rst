@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1.3 (unreleased)
+4.1.3 (2021-11-05)
 ------------------
 
 - Optimized `CustomMeetingItem._updateFinanceAdvisersAccessToManuallyLinkedItems`.

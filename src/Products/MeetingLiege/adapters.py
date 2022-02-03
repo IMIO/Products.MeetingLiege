@@ -535,6 +535,7 @@ class CustomMeeting(Meeting):
                     if item.Title().split('.')[0] == numCateg]
         return categsId
 
+
 old_checkAlreadyClonedToOtherMC = MeetingItem._checkAlreadyClonedToOtherMC
 
 
@@ -1256,17 +1257,15 @@ class CustomMeetingItem(MeetingItem):
         financeInNewLocalRoles = potentialFinanceAccesses.intersection(set(item.__ac_local_roles__.keys()))
 
         itemsToUpdate = []
-        catalog = api.portal.get_tool('portal_catalog')
         if financeInOldLocalRoles != financeInNewLocalRoles:
             # we need to update every linked items
             itemsToUpdate = linkedItems
         else:
             # just need to update newly linked items
-            newLinkedUids = item.REQUEST.get('manuallyLinkedItems_newLinkedUids', [])
-            if newLinkedUids:
-                # newLinkedUids is a set(), it does not work with catalog, cast to list
-                brains = catalog.unrestrictedSearchResults(UID=list(newLinkedUids))
-                itemsToUpdate = [brain._unrestrictedGetObject() for brain in brains]
+            newUids = item.REQUEST.get('manuallyLinkedItems_newUids', [])
+            if newUids:
+                itemsToUpdate = [newItem for newItem in linkedItems
+                                 if newItem.UID() in newUids]
 
         for itemToUpdate in itemsToUpdate:
             itemToUpdate.updateLocalRoles()
@@ -1277,15 +1276,17 @@ class CustomMeetingItem(MeetingItem):
 
         # now we need removeUids to be updated too, we will call updateLocalRoles on removeUids
         removedUids = item.REQUEST.get('manuallyLinkedItems_removedUids', [])
-        for removeUid in removedUids:
-            removedBrain = catalog.unrestrictedSearchResults(UID=removeUid)
-            if removedBrain:
-                removedItem = removedBrain[0]._unrestrictedGetObject()
-                removedItem.updateLocalRoles()
+        if removedUids:
+            catalog = api.portal.get_tool('portal_catalog')
+            for removeUid in removedUids:
+                removedBrain = catalog.unrestrictedSearchResults(UID=removeUid)
+                if removedBrain:
+                    removedItem = removedBrain[0]._unrestrictedGetObject()
+                    removedItem.updateLocalRoles()
 
         # cancel manuallyLinkedItems_... values
-        item.REQUEST.set('manuallyLinkedItems_newLinkedUids', [])
-        item.REQUEST.set('manuallyLinkedItems_removedUids', [])
+        # item.REQUEST.set('manuallyLinkedItems_newUids', [])
+        # item.REQUEST.set('manuallyLinkedItems_removedUids', [])
         item.REQUEST.set('_updateFinanceAdvisersAccessToManuallyLinkedItems', False)
 
     def _updateFinanceAdvisersAccessToAutoLinkedItems(self):
@@ -2571,6 +2572,8 @@ def get_advice_given_on(self):
             return lastEvent['time']
     else:
         return old_get_advice_given_on(self)
+
+
 MeetingAdvice.get_advice_given_on = get_advice_given_on
 
 # ------------------------------------------------------------------------------

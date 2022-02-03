@@ -1,7 +1,25 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.1.1 (unreleased)
+4.2 (unreleased)
+----------------
+
+- Nothing changed yet.
+
+4.1.3 (2021-11-05)
+------------------
+
+- Optimized `CustomMeetingItem._updateFinanceAdvisersAccessToManuallyLinkedItems`.
+  [gbastien]
+
+4.1.2 (2021-05-31)
+------------------
+
+- Fixed overrided print methods used for `deliberation_for_restapi`.
+  Just change `xhtmlContents` and call `super()`.
+  [gbastien]
+
+4.1.1 (2020-11-13)
 ------------------
 
 - Make `reviewers` able to `ask advices` when item is `proposed_to_internal_reviewer`.

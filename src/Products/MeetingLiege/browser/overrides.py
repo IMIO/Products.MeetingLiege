@@ -151,19 +151,23 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
 
     def print_deliberation(self, xhtmlContents=[], **kwargs):
         """ """
-        return self.printXhtml(self.context, xhtmlContents=[self.printActeContentForCouncil()])
+        content = self.printActeContentForCouncil()
+        return super(MLItemDocumentGenerationHelperView, self).print_deliberation(
+            xhtmlContents=[content], **kwargs)
 
     def print_public_deliberation(self, xhtmlContents=[], **kwargs):
         """ """
         content = self.printActeContentForCouncil(
             include_decisionEnd=False, include_observations=False)
-        return self.printXhtml(self.context, xhtmlContents=[content])
+        return super(MLItemDocumentGenerationHelperView, self).print_deliberation(
+            xhtmlContents=[content], **kwargs)
 
     def print_public_deliberation_decided(self, xhtmlContents=[], **kwargs):
         """ """
         content = self.printActeContentForCouncil(
             include_decisionEnd=True, include_observations=False)
-        return self.printXhtml(self.context, xhtmlContents=[content])
+        return super(MLItemDocumentGenerationHelperView, self).print_deliberation(
+            xhtmlContents=[content], **kwargs)
 
 
 class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):

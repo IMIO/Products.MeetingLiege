@@ -15,37 +15,37 @@ PROJECTNAME = "MeetingLiege"
 DEFAULT_ADD_CONTENT_PERMISSION = "Add portal content"
 setDefaultRoles(DEFAULT_ADD_CONTENT_PERMISSION, ('Manager', 'Owner', 'Contributor'))
 
-# Roles
-LIEGEROLES = {}
-LIEGEROLES['administrativereviewers'] = 'MeetingAdminReviewer'
-LIEGEROLES['internalreviewers'] = 'MeetingInternalReviewer'
-PMconfig.MEETINGROLES.update(LIEGEROLES)
-
 # group suffixes
 PMconfig.EXTRA_GROUP_SUFFIXES = [
     {'fct_title': u'administrativereviewers',
      'fct_id': u'administrativereviewers',
      'fct_orgs': [],
+     'fct_management': False,
      'enabled': True},
     {'fct_title': u'internalreviewers',
      'fct_id': u'internalreviewers',
      'fct_orgs': [],
+     'fct_management': False,
      'enabled': True},
     {'fct_title': u'incopy',
      'fct_id': u'incopy',
      'fct_orgs': [],
+     'fct_management': False,
      'enabled': True},
     {'fct_title': u'financialcontrollers',
      'fct_id': u'financialcontrollers',
      'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier'],
+     'fct_management': False,
      'enabled': True},
     {'fct_title': u'financialreviewers',
      'fct_id': u'financialreviewers',
      'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier'],
+     'fct_management': False,
      'enabled': True},
     {'fct_title': u'financialmanagers',
      'fct_id': u'financialmanagers',
      'fct_orgs': ['df-contrale', 'df-comptabilita-c-et-audit-financier'],
+     'fct_management': False,
      'enabled': True},
 ]
 
@@ -53,18 +53,18 @@ FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
                           'financialreviewers',
                           'financialmanagers')
 
-LIEGEMEETINGREVIEWERS = {
-    'meetingitembourgmestre_workflow': OrderedDict(
-        [('reviewers', ['proposed_to_director', 'proposed_to_general_manager', 'proposed_to_cabinet_reviewer']),
-         ('internalreviewers', ['proposed_to_internal_reviewer']),
-         ('administrativereviewers', ['proposed_to_administrative_reviewer']),
-         ('creators', ['proposed_to_cabinet_manager'])]),
-    'meetingitemcollegeliege_workflow': OrderedDict(
-        [('reviewers', ['proposed_to_director']),
-         ('internalreviewers', ['proposed_to_internal_reviewer']),
-         ('administrativereviewers', ['proposed_to_administrative_reviewer'])]),
-}
-PMconfig.MEETINGREVIEWERS.update(LIEGEMEETINGREVIEWERS)
+# LIEGEMEETINGREVIEWERS = {
+#     'meetingitembourgmestre_workflow': OrderedDict(
+#         [('reviewers', ['proposed_to_director', 'proposed_to_general_manager', 'proposed_to_cabinet_reviewer']),
+#          ('internalreviewers', ['proposed_to_internal_reviewer']),
+#          ('administrativereviewers', ['proposed_to_administrative_reviewer']),
+#          ('creators', ['proposed_to_cabinet_manager'])]),
+#     'meetingitemcollegeliege_workflow': OrderedDict(
+#         [('reviewers', ['proposed_to_director']),
+#          ('internalreviewers', ['proposed_to_internal_reviewer']),
+#          ('administrativereviewers', ['proposed_to_administrative_reviewer'])]),
+# }
+# PMconfig.MEETINGREVIEWERS.update(LIEGEMEETINGREVIEWERS)
 
 LIEGE_ADVICE_STATES_ALIVE = ('advice_under_edit',
                              'proposed_to_financial_controller',
@@ -104,4 +104,4 @@ FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN = "<p>Attendu l'absence d'avis du "\
     "Directeur financier rendu dans le délai prescrit à l'article L1124-40 "\
     "du Code de la démocratie locale et de la décentralisation,</p>"
 
-COUNCILITEM_DECISIONEND_SENTENCE = u"<p>La présente décision a recueilli l'unanimité des suffrages.</p>".encode('utf-8')
+COUNCILITEM_DECISIONEND_SENTENCE = "<p>La présente décision a recueilli l'unanimité des suffrages.</p>"

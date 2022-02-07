@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from Products.PloneMeeting.content.advice import IMeetingAdviceWorkflowActions
-from Products.PloneMeeting.content.advice import IMeetingAdviceWorkflowConditions
+from Products.PloneMeeting.workflows.advice import IMeetingAdviceWorkflowActions
+from Products.PloneMeeting.workflows.advice import IMeetingAdviceWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingItemWorkflowActions
 from Products.PloneMeeting.interfaces import IMeetingItemWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingWorkflowActions

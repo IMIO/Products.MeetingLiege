@@ -55,15 +55,17 @@ from Products.PloneMeeting.config import PMMessageFactory as _
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import READER_USECASES
 from Products.PloneMeeting.content.advice import MeetingAdvice
-from Products.PloneMeeting.content.advice import MeetingAdviceWorkflowActions
-from Products.PloneMeeting.content.advice import MeetingAdviceWorkflowConditions
+from Products.PloneMeeting.workflows.advice import MeetingAdviceWorkflowActions
+from Products.PloneMeeting.workflows.advice import MeetingAdviceWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingConfigCustom
 from Products.PloneMeeting.interfaces import IMeetingCustom
 from Products.PloneMeeting.interfaces import IMeetingItemCustom
 from Products.PloneMeeting.interfaces import IToolPloneMeetingCustom
-from Products.PloneMeeting.Meeting import Meeting
-from Products.PloneMeeting.Meeting import MeetingWorkflowActions
-from Products.PloneMeeting.Meeting import MeetingWorkflowConditions
+from Products.PloneMeeting.model.adaptations import _addDecidedState
+from Products.PloneMeeting.model.adaptations import _addIsolatedState
+from Products.PloneMeeting.content.meeting import Meeting
+from Products.PloneMeeting.workflows.meeting import MeetingWorkflowActions
+from Products.PloneMeeting.workflows.meeting import MeetingWorkflowConditions
 from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.MeetingItem import MeetingItem
 from Products.PloneMeeting.MeetingItem import MeetingItemWorkflowActions
@@ -77,9 +79,9 @@ from zope.i18n import translate
 from zope.interface import implements
 
 
-# disable every wfAdaptations but 'return_to_proposing_group'
-customWfAdaptations = ('return_to_proposing_group', )
-MeetingConfig.wfAdaptations = customWfAdaptations
+# add our wfAdaptations
+customWfAdaptations = ('returned', 'accepted_and_returned', 'sent_to_council_emergency')
+MeetingConfig.wfAdaptations += customWfAdaptations
 
 # use the 'itemcreated' state from college item WF to patch council item WF
 RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = {'meetingitemcollegeliege_workflow':
@@ -89,6 +91,29 @@ RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = {'meetingitemcollegeliege_workflow':
                                             'meetingitembourgmestre_workflow':
                                             'meetingitembourgmestre_workflow.itemcreated'}
 adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
+
+LIEGE_WAITING_ADVICES_FROM_STATES = (
+    {'from_states': ('itemcreated', ),
+     'back_states': ('itemcreated',
+                     'proposed_to_administrative_reviewer',
+                     'proposed_to_internal_reviewer',
+                     'proposed_to_director', ),
+     'new_state_id': 'itemcreated_waiting_advices',
+     },
+    {'from_states': ('itemcreated',
+                     'proposed_to_administrative_reviewer',
+                     'proposed_to_internal_reviewer', ),
+     'back_states': ('proposed_to_internal_reviewer',
+                     'proposed_to_director', ),
+     'new_state_id': 'proposed_to_internal_reviewer_waiting_advices',
+     },
+    {'from_states': ('proposed_to_director', ),
+     'back_states': ('proposed_to_internal_reviewer',
+                     'proposed_to_director', ),
+     'new_state_id': 'proposed_to_finance_waiting_advices',
+     },
+)
+adaptations.WAITING_ADVICES_FROM_STATES
 
 
 class CustomMeeting(Meeting):
@@ -1702,6 +1727,31 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
             return True
         return False
 
+    def performCustomWFAdaptations(
+            self, meetingConfig, wfAdaptation, logger, itemWorkflow, meetingWorkflow):
+        ''' '''
+        if wfAdaptation == 'returned':
+            _addDecidedState(new_state_id='returned',
+                             transition_id='return',
+                             itemWorkflow=itemWorkflow)
+            return True
+        elif wfAdaptation == 'accepted_and_returned':
+            _addDecidedState(new_state_id='accepted_and_returned',
+                             transition_id='accept_and_return',
+                             itemWorkflow=itemWorkflow)
+            return True
+        elif wfAdaptation == 'sent_to_council_emergency':
+            _addIsolatedState(
+                new_state_id='sent_to_council_emergency',
+                origin_state_id='validated',
+                origin_transition_id='sendToCouncilEmergency',
+                origin_transition_guard_expr_name='maySendToCouncilEmergency()',
+                back_transition_guard_expr_name="mayCorrect('validated')",
+                back_transition_id='backToValidatedFromSentToCouncilEmergency',
+                itemWorkflow=itemWorkflow)
+            return True
+        return False
+
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -2260,23 +2310,6 @@ class MeetingCouncilLiegeWorkflowConditions(MeetingWorkflowConditions):
     implements(IMeetingCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    security.declarePublic('mayDecide')
-
-    def mayDecide(self):
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
-    security.declarePublic('mayCorrect')
-
-    def mayCorrect(self, destinationState=None):
-        '''See docstring in interfaces.py'''
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            return True
-        return res
-
 
 class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -2284,16 +2317,6 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
 
     implements(IMeetingItemCouncilLiegeWorkflowActions)
     security = ClassSecurityInfo()
-
-    security.declarePrivate('doAccept_pre_accept')
-
-    def doAccept_pre_accept(self, stateChange):
-        pass
-
-    security.declarePrivate('doAccept_but_modify')
-
-    def doAccept_but_modify(self, stateChange):
-        pass
 
     security.declarePrivate('doDelay')
 
@@ -2312,12 +2335,6 @@ class MeetingItemCouncilLiegeWorkflowActions(MeetingItemWorkflowActions):
         '''
         self.context.setOtherMeetingConfigsClonableTo(('meeting-config-college', ))
 
-    security.declarePrivate('doMark_not_applicable')
-
-    def doMark_not_applicable(self, stateChange):
-        ''' '''
-        pass
-
 
 class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -2328,13 +2345,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def __init__(self, item):
         self.context = item  # Implements IMeetingItem
-
-    security.declarePublic('mayCorrect')
-
-    def mayCorrect(self, destinationState=None):
-        '''See docstring in interfaces.py'''
-        res = super(MeetingItemCouncilLiegeWorkflowConditions, self).mayCorrect(destinationState)
-        return res
 
     security.declarePublic('mayDecide')
 

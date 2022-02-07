@@ -243,7 +243,6 @@ collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'reader_advices',
                                                   'reader_copy_groups',
                                                   'reader_groupsincharge',
-                                                  'suffix_proposing_group_prereviewers',
                                                   'suffix_proposing_group_internalreviewers',
                                                   'suffix_proposing_group_observers',
                                                   'suffix_proposing_group_reviewers',
@@ -266,7 +265,7 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'textCheckList', ]
 collegeMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
-                                        'assemblyExcused',
+                                        'assembly_excused',
                                         'observations', ]
 collegeMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
@@ -276,12 +275,66 @@ collegeMeeting.meetingConfigsToCloneTo = ({'meeting_config': 'cfg2',
 collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency', 'accepted',
                                               'accepted_but_modified', 'accepted_and_returned')
 collegeMeeting.hideCssClassesTo = ('powerobservers', 'restrictedpowerobservers')
-collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
-collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
+collegeMeeting.itemWorkflow = 'meetingitem_workflow'
+collegeMeeting.meetingWorkflow = 'meeting_workflow'
 collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
 collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
 collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
+collegeMeeting.workflowAdaptations = [
+    'no_publication',
+    'return_to_proposing_group',
+    'refused',
+    'returned',
+    'accepted_but_modified',
+    'pre_accepted',
+    'delayed',
+    'mark_not_applicable',
+    'only_creator_may_delete',
+    'waiting_advices',
+    'waiting_advices_adviser_send_back']
+collegeMeeting.itemWFValidationLevels = (
+    {'state': 'itemcreated',
+     'state_title': 'itemcreated',
+     'leading_transition': '-',
+     'leading_transition_title': '-',
+     'back_transition': 'backToItemCreated',
+     'back_transition_title': 'backToItemCreated',
+     'suffix': 'creators',
+     'extra_suffixes': [],
+     'enabled': '1',
+     },
+    {'state': 'proposed_to_administrative_reviewer',
+     'state_title': 'proposed_to_administrative_reviewer',
+     'leading_transition': 'propose_to_administrative_reviewer',
+     'leading_transition_title': 'proposeToAdministrativeReviewer',
+     'back_transition': 'backToProposedToAdministrativeReviewer',
+     'back_transition_title': 'backToProposedToAdministrativeReviewer',
+     'suffix': 'administrativereviewers',
+     'extra_suffixes': [],
+     'enabled': '1',
+     },
+    {'state': 'proposed_to_internal_reviewer',
+     'state_title': 'proposed_to_internal_reviewer',
+     'leading_transition': 'proposeToInternalReviewer',
+     'leading_transition_title': 'proposeToInternalReviewer',
+     'back_transition': 'backToProposedToInternalReviewer',
+     'back_transition_title': 'backToProposedToInternalReviewer',
+     'suffix': 'internalreviewers',
+     'enabled': '1',
+     'extra_suffixes': [],
+     },
+    {'state': 'proposed_to_director',
+     'state_title': 'proposed_to_director',
+     'leading_transition': 'proposeToDirector',
+     'leading_transition_title': 'proposeToDirector',
+     'back_transition': 'backToProposedToDirector',
+     'back_transition_title': 'backToProposedToDirector',
+     'suffix': 'reviewers',
+     'enabled': '1',
+     'extra_suffixes': [],
+     },
+)
 collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewer',
                                                  'proposeToInternalReviewer',
                                                  'proposeToDirector',
@@ -612,12 +665,23 @@ councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
 councilMeeting.itemAutoSentToOtherMCStates = ('delayed', 'returned')
 councilMeeting.hideCssClassesTo = ('powerobservers', 'restrictedpowerobservers')
 councilMeeting.enableItemDuplication = False
-councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
-councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
+councilMeeting.itemWorkflow = 'meetingitem_workflow'
+councilMeeting.meetingWorkflow = 'meeting_workflow'
 councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'
 councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions'
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
+councilMeeting.workflowAdaptations = [
+    'accepted_and_returned',
+    'accepted_but_modified',
+    'delayed',
+    'mark_not_applicable',
+    'no_publication',
+    'pre_accepted',
+    'refused',
+    'returned',
+    'sent_to_council_emergency']
+councilMeeting.itemWFValidationLevels = []
 councilMeeting.transitionsForPresentingAnItem = ('present', )
 councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
     collegeMeeting.onMeetingTransitionItemActionToExecute)

@@ -41,7 +41,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.closeMeeting(meeting)
         # the item has been sent, get it and test that relevant fields are correctly initialized
         newItem = item.getBRefs('ItemPredecessor')[0]
-        self.assertEqual(newItem.getPredecessor().UID(), item.UID())
+        self.assertEqual(newItem.get_predecessor().UID(), item.UID())
         self.assertEqual(newItem.getLabelForCouncil(), '<p>My label for council</p>')
         self.assertEqual(newItem.getPrivacy(), 'secret')
 
@@ -416,7 +416,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # this time, the item with finance advice is the 'returned' item
         itemWithFinanceAdvice = clonedReturnedItem.adapted().getItemWithFinanceAdvice()
         self.assertEqual(itemWithFinanceAdvice, item)
-        self.assertEqual(itemWithFinanceAdvice.queryState(), 'returned')
+        self.assertEqual(itemWithFinanceAdvice.query_state(), 'returned')
         # the info is kept in the financeAdvice attribute
         # nevertheless, the advice is not asked automatically anymore
         self.assertEqual(clonedReturnedItem.getFinanceAdvice(), financial_group_uids[0])
@@ -427,7 +427,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # send the clonedReturnedItem to Council and check with the council item
         clonedReturnedItem.setOtherMeetingConfigsClonableTo('meeting-config-council')
         self.presentItem(clonedReturnedItem)
-        self.assertEqual(clonedReturnedItem.queryState(), 'itemfrozen')
+        self.assertEqual(clonedReturnedItem.query_state(), 'itemfrozen')
         # still right, including sent item
         self.assertEqual(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
         self.assertEqual(
@@ -488,7 +488,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.meetingConfig2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},))
         self.create('Meeting', date='2015/01/01')
         self.do(itemInCouncil2, 'present')
-        self.assertEqual(itemInCouncil2.queryState(), 'presented')
+        self.assertEqual(itemInCouncil2.query_state(), 'presented')
         self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
 
         # duplicate and keep link an 'accepted_and_return' college item,

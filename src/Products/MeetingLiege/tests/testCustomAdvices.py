@@ -211,7 +211,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                     'advice_hide_during_redaction': False,
                                     'advice_comment': RichTextValue(u'My comment')})
         # directly sent back to service
-        self.assertEqual(item.queryState(), returnState)
+        self.assertEqual(item.query_state(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
         # now add advice as vendors and hide it, advice is considered not given
@@ -226,12 +226,12 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                              'advice_hide_during_redaction': True,
                                              'advice_comment': RichTextValue(u'My comment')})
         # still waiting advices
-        self.assertEqual(item.queryState(), '{0}_waiting_advices'.format(returnState))
+        self.assertEqual(item.query_state(), '{0}_waiting_advices'.format(returnState))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
         # if we just change 'advice_hide_during_redaction', advice is given and item's sent back
         advice.advice_hide_during_redaction = False
         notify(ObjectModifiedEvent(advice))
-        self.assertEqual(item.queryState(), returnState)
+        self.assertEqual(item.query_state(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
         # now test with 'asked_again'
@@ -242,12 +242,12 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmReviewer2')
         notify(ObjectModifiedEvent(advice))
         # still waiting advices
-        self.assertEqual(item.queryState(), '{0}_waiting_advices'.format(returnState))
+        self.assertEqual(item.query_state(), '{0}_waiting_advices'.format(returnState))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
         # change advice_type, it will be sent back then
         advice.advice_type = u'positive'
         notify(ObjectModifiedEvent(advice))
-        self.assertEqual(item.queryState(), returnState)
+        self.assertEqual(item.query_state(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
     def test_AdviceTypeVocabulary(self):

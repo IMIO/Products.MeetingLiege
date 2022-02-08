@@ -174,7 +174,7 @@ msgstr "La complétude a été remise automatiquement par l'application en 'Eval
 
 #. Default: " "
 msgid "copy_groups_item_descr"
-msgstr "Transmission d’un point à une Direction à titre d’information. Choisissez-en plusieurs en maintenant la touche 'Ctrl' enfoncée."
+msgstr "Transmission d’un point à une Direction à titre d’information."
 
 #. Default: "This advice can not be given because the item is still not considered complete by the finance group."
 msgid "finance_advice_not_giveable_because_item_not_complete"
@@ -370,7 +370,7 @@ msgstr "Par point à discuter (à discuter et ensuite pas à discuter)"
 
 #. Default: " "
 msgid "optional_advisers_item_descr"
-msgstr "Transmission du point à divers services en vue de demander leur avis sur celui-ci en fonction de la matière concernée. Choisissez-en plusieurs en maintenant la touche 'Ctrl' enfoncée.  <span style='color:red;'>Pour demander l'avis de légalité du Directeur financier, utiliser le zone 'Avis du Directeur financier' ci-contre.</span>"
+msgstr "Transmission du point à divers services en vue de demander leur avis sur celui-ci en fonction de la matière concernée. <span style='color:red;'>Pour demander l'avis de légalité du Directeur financier, utiliser le zone 'Avis du Directeur financier' ci-contre.</span>"
 
 #. Default: "Favorable opinion"
 msgid "positive_finance"

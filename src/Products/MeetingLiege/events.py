@@ -34,7 +34,7 @@ def _everyAdvicesAreGivenFor(item):
 def _sendItemBackInWFIfNecessary(item):
     '''Check if we need to send the item backToItemCreated
        or backToProposedToInternalReviewer.'''
-    itemState = item.queryState()
+    itemState = item.query_state()
     if itemState in ['itemcreated_waiting_advices',
                      'proposed_to_internal_reviewer_waiting_advices',
                      # MeetingItemBourgmestre
@@ -72,7 +72,7 @@ def onItemLocalRolesUpdated(item, event):
     tool = api.portal.get_tool('portal_plonemeeting')
     cfg = tool.getMeetingConfig(item)
     org_uid = item.adapted().getFinanceGroupUIDForItem()
-    if org_uid and item.queryState() in cfg.getItemDecidedStates():
+    if org_uid and item.query_state() in cfg.getItemDecidedStates():
         adviserGroupId = '%s_advisers' % org_uid
         # if item is decided, we give the _advisers, the 'MeetingMember'
         # role on the item so he is able to add decision annexes
@@ -105,7 +105,7 @@ def onAdviceAfterTransition(advice, event):
         return
 
     item = advice.getParentNode()
-    itemState = item.queryState()
+    itemState = item.query_state()
     tool = api.portal.get_tool('portal_plonemeeting')
     cfg = tool.getMeetingConfig(item)
 
@@ -192,7 +192,7 @@ def onAdvicesUpdated(item, event):
         if adviceInfo['delay_infos']['delay_status'] == 'timed_out' and \
            'delay_infos' in event.old_adviceIndex[org_uid] and not \
            event.old_adviceIndex[org_uid]['delay_infos']['delay_status'] == 'timed_out':
-            if item.queryState() == 'proposed_to_finance':
+            if item.query_state() == 'proposed_to_finance':
                 wfTool = api.portal.get_tool('portal_workflow')
                 item.REQUEST.set('mayValidate', True)
                 wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_timed_out')

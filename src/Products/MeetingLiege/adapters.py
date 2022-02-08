@@ -113,7 +113,14 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
      'new_state_id': 'proposed_to_finance_waiting_advices',
      },
 )
-adaptations.WAITING_ADVICES_FROM_STATES
+adaptations.WAITING_ADVICES_FROM_STATES = LIEGE_WAITING_ADVICES_FROM_STATES
+adaptations.WAITING_ADVICES_USE_CUSTOM_ICON = False
+adaptations.WAITING_ADVICES_USE_CUSTOM_TR_TITLE_FOR = (
+    'wait_advices_from_itemcreated__to__itemcreated_waiting_advices',
+    'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
+    'wait_advices_from_proposed_to_administrative_reviewer__to__proposed_to_internal_reviewer_waiting_advices',
+    'wait_advices_from_proposed_to_director__to__proposed_to_finance_waiting_advices',
+    'wait_advices_from_proposed_to_internal_reviewer__to__proposed_to_internal_reviewer_waiting_advices')
 
 
 class CustomMeeting(Meeting):
@@ -135,7 +142,7 @@ class CustomMeeting(Meeting):
           - 'decided' for MeetingCollege
         """
         meeting = self.getSelf()
-        return meeting.queryState() in ('in_council', 'decided', 'closed', 'archived')
+        return meeting.query_state() in ('in_council', 'decided', 'closed', 'archived')
 
     # Implements here methods that will be used by templates
     def _insertItemInCategory(self, categoryList, item, byProposingGroup, groupPrefixes, groups):
@@ -257,7 +264,7 @@ class CustomMeeting(Meeting):
         if items:
             for item in items:
                 # Check if the review_state has to be taken into account
-                if item.queryState() in ignore_review_states:
+                if item.query_state() in ignore_review_states:
                     continue
                 elif not withCollege and not (privacy == '*' or item.getPrivacy() == privacy):
                     continue
@@ -628,13 +635,14 @@ class CustomMeetingItem(MeetingItem):
         '''
         item = self.getSelf()
         # is used?
-        if not item.attributeIsUsed('otherMeetingConfigsClonableToEmergency'):
+        if not item.attribute_is_used('otherMeetingConfigsClonableToEmergency'):
             return False
 
         tool = api.portal.get_tool('portal_plonemeeting')
         hasStoredEmergencies = item.getOtherMeetingConfigsClonableToEmergency()
         return hasStoredEmergencies or \
-            (item.showClonableToOtherMeetingConfigs() and tool.isManager(item))
+            (item.showClonableToOtherMeetingConfigs() and
+             tool.isManager(tool.getMeetingConfig(item)))
 
     security.declarePrivate('validate_archivingRef')
 
@@ -710,7 +718,7 @@ class CustomMeetingItem(MeetingItem):
            advice['delay'] and \
            not advice['delay_started_on']:
             # item in state giveable but item not complete
-            item_state = item.queryState()
+            item_state = item.query_state()
             if item_state in FINANCE_GIVEABLE_ADVICE_STATES:
                 return {'displayDefaultComplementaryMessage': False,
                         'customAdviceMessage':
@@ -730,6 +738,7 @@ class CustomMeetingItem(MeetingItem):
                             domain="PloneMeeting",
                             context=item.REQUEST)}
         return {'displayDefaultComplementaryMessage': True,
+                'displayAdviceReviewState': True,
                 'customAdviceMessage': None}
 
     def getFinanceGroupUIDForItem(self, checkAdviceIndex=False):
@@ -757,7 +766,7 @@ class CustomMeetingItem(MeetingItem):
         '''See doc in interfaces.py.'''
         item = self.getSelf()
         advice = item.getAdviceObj(org_uid)
-        if advice.queryState() in ('financial_advice_signed', ):
+        if advice.query_state() in ('financial_advice_signed', ):
             return False
         return True
 
@@ -802,7 +811,7 @@ class CustomMeetingItem(MeetingItem):
             return
         # bypass for Managers
         tool = api.portal.get_tool('portal_plonemeeting')
-        if tool.isManager(item, realManagers=True):
+        if tool.isManager(realManagers=True):
             return True
 
         financeGroupId = item.adapted().getFinanceGroupUIDForItem()
@@ -816,7 +825,7 @@ class CustomMeetingItem(MeetingItem):
 
         # item must be still in a state where the advice can be given
         # and advice must still not have been given
-        if not item.queryState() in FINANCE_GIVEABLE_ADVICE_STATES:
+        if not item.query_state() in FINANCE_GIVEABLE_ADVICE_STATES:
             return False
         return True
 
@@ -839,7 +848,7 @@ class CustomMeetingItem(MeetingItem):
             self.context._roles_in_context()
         if not item.getCompleteness() == 'completeness_incomplete' or \
            not _checkPermission(ModifyPortalContent, item) or \
-           not (isInternalReviewer or isReviewer or tool.isManager(item)):
+           not (isInternalReviewer or isReviewer or tool.isManager(tool.getMeetingConfig(item))):
             return False
         return True
 
@@ -851,8 +860,8 @@ class CustomMeetingItem(MeetingItem):
         isReviewer, isInternalReviewer, isAdminReviewer = \
             self.context._roles_in_context()
         tool = api.portal.get_tool('portal_plonemeeting')
-        if (item.queryState() == 'proposed_to_director' and isReviewer) or \
-           tool.isManager(item):
+        if (item.query_state() == 'proposed_to_director' and isReviewer) or \
+           tool.isManager(tool.getMeetingConfig(item)):
             return True
         return False
 
@@ -862,9 +871,8 @@ class CustomMeetingItem(MeetingItem):
         '''Returns True if current user may accept or refuse emergency if asked for an item.
            Emergency can be accepted only by financial managers.'''
         # by default, only MeetingManagers can accept or refuse emergency
-        item = self.getSelf()
         tool = api.portal.get_tool('portal_plonemeeting')
-        if tool.isManager(item, realManagers=True) or \
+        if tool.isManager(realManagers=True) or \
            '%s_financialmanagers' % self.getFinanceGroupUIDForItem() in tool.get_plone_groups_for_user():
             return True
         return False
@@ -880,7 +888,7 @@ class CustomMeetingItem(MeetingItem):
            - add the advice;
            - change transition of already added advice.'''
         item = self.getSelf()
-        if item.queryState() == 'proposed_to_finance':
+        if item.query_state() == 'proposed_to_finance':
             # financial controller that may evaluate completeness?
             if item.adapted().mayEvaluateCompleteness():
                 return True
@@ -906,7 +914,7 @@ class CustomMeetingItem(MeetingItem):
             return False
         # raise_on_error=False for tests
         if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID, raise_on_error=False) and \
-           self.context.queryState() in ('accepted', 'accepted_but_modified'):
+           self.context.query_state() in ('accepted', 'accepted_but_modified'):
             org_uid = self.context.getProposingGroup()
             if org_uid in tool.get_orgs_for_user(
                     suffixes=['internalreviewers', 'reviewers'], the_objects=False):
@@ -944,7 +952,7 @@ class CustomMeetingItem(MeetingItem):
                     break
         else:
             userGroups = set(tool.get_orgs_for_user(the_objects=False))
-            isManager = tool.isManager(self)
+            isManager = tool.isManager(cfg)
             for ref in cfg.getArchivingRefs():
                 # if ref is not active, continue
                 if ref['active'] == '0':
@@ -1067,19 +1075,19 @@ class CustomMeetingItem(MeetingItem):
             # and another item is cloned with same informations.  Check also that if a predecessor
             # was already sent to the council, this item in the council is not 'delayed' or 'marked_not_applicable'
             # in this case, we will send it again
-            predecessor = self.getPredecessor()
+            predecessor = self.get_predecessor()
             while predecessor:
-                if predecessor.queryState() == 'accepted_and_returned' and \
+                if predecessor.query_state() == 'accepted_and_returned' and \
                    old_checkAlreadyClonedToOtherMC(predecessor, destMeetingConfigId):
                     # if item was sent to council, check that this item is not 'delayed' or 'returned'
                     councilClonedItem = predecessor.getItemClonedToOtherMC(destMeetingConfigId)
-                    if councilClonedItem and not councilClonedItem.queryState() in ('delayed', 'returned'):
+                    if councilClonedItem and not councilClonedItem.query_state() in ('delayed', 'returned'):
                         return True
                 # break the loop if we encounter an item that was 'Duplicated and keep link'
                 # and it is not an item that is 'accepted_and_returned'
                 if getLastWFAction(predecessor, 'Duplicate and keep link'):
                     return res
-                predecessor = predecessor.getPredecessor()
+                predecessor = predecessor.get_predecessor()
         return res
     MeetingItem._checkAlreadyClonedToOtherMC = _checkAlreadyClonedToOtherMC
 
@@ -1106,12 +1114,12 @@ class CustomMeetingItem(MeetingItem):
             # college item and predecessor council item in state 'returned'
             if current.portal_type == 'MeetingItemCollege' and \
                (predecessor.portal_type == 'MeetingItemCouncil' and
-                    predecessor.queryState() in ('returned', )):
+                    predecessor.query_state() in ('returned', )):
                 return True
             # college item and predecessor college item in state ('accepted_returned', 'returned')
             if current.portal_type == 'MeetingItemCollege' and \
                (predecessor.portal_type == 'MeetingItemCollege' and
-                    predecessor.queryState() in ('returned', 'accepted_and_returned')):
+                    predecessor.query_state() in ('returned', 'accepted_and_returned')):
                 return True
 
         item = self.context
@@ -1132,7 +1140,7 @@ class CustomMeetingItem(MeetingItem):
 
         # we will walk predecessors until we found a finance advice that has been given
         # if we do not find a given advice, we will return the oldest item (last predecessor)
-        predecessor = item.getPredecessor()
+        predecessor = item.get_predecessor()
         currentItem = item
         # consider only if predecessor is in state 'accepted_and_returned' or 'returned' (College or Council item)
         # otherwise, the predecessor could have been edited and advice is no longer valid
@@ -1145,15 +1153,15 @@ class CustomMeetingItem(MeetingItem):
                not predecessor.adviceIndex[current_finance_advice]['optional']:
                 return predecessor
             currentItem = predecessor
-            predecessor = predecessor.getPredecessor()
+            predecessor = predecessor.get_predecessor()
         # either we found a valid predecessor, or we return self.context
         return item
 
     def getItemCollege(self):
         """Called on a Council item, will return the linked College item."""
-        predecessor = self.context.getPredecessor()
+        predecessor = self.context.get_predecessor()
         while predecessor and not predecessor.portal_type == 'MeetingItemCollege':
-            predecessor = predecessor.getPredecessor()
+            predecessor = predecessor.get_predecessor()
         return predecessor
 
     def getLegalTextForFDAdvice(self, isMeeting=False):
@@ -1336,22 +1344,25 @@ class CustomMeetingItem(MeetingItem):
             groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
             item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
-    def _getAllGroupsManagingItem(self):
+    def _getAllGroupsManagingItem(self, theObjects=False):
         """ """
         item = self.getSelf()
-        res = [item.getProposingGroup(True)]
+        res = [item.getProposingGroup(theObject=theObjects)]
         if item.portal_type == 'MeetingItemBourgmestre':
-            review_state = item.queryState()
+            review_state = item.query_state()
             if review_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES:
-                own_org = get_own_organization()
-                gm_org = own_org.get(GENERAL_MANAGER_GROUP_ID)
-                res.append(gm_org)
+                org_ids = []
+                org_ids.append(GENERAL_MANAGER_GROUP_ID)
                 if review_state not in ['proposed_to_general_manager']:
-                    bg_org = own_org.get(BOURGMESTRE_GROUP_ID)
-                    res.append(bg_org)
+                    org_ids.append(BOURGMESTRE_GROUP_ID)
+                if theObjects:
+                    own_org = get_own_organization()
+                    res += [own_org.get(org_id) for org_id in org_ids]
+                else:
+                    res += org_ids
         return res
 
-    def _getGroupManagingItem(self, review_state, theObject=True):
+    def _getGroupManagingItem(self, review_state, theObject=False):
         """ """
         item = self.getSelf()
         if item.portal_type != 'MeetingItemBourgmestre':
@@ -1374,7 +1385,7 @@ class CustomMeetingItem(MeetingItem):
         """Depending on item's review_state, we need to give Reader role to the proposing group
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
         item = self.getSelf()
-        item_state = item.queryState()
+        item_state = item.query_state()
         own_org = get_own_organization()
         item_managing_group = item.adapted()._getGroupManagingItem(item_state)
         proposingGroup = item.getProposingGroup(theObject=True)
@@ -1413,14 +1424,14 @@ class CustomMeetingItem(MeetingItem):
         if getLastWFAction(self.context, 'proposeToDirector'):
             offMan = getLastWFAction(self.context, 'proposeToDirector')['actor']
         # Else we look for a predecessor which can have the intel.
-        elif self.context.getPredecessor():
+        elif self.context.get_predecessor():
             offMan = ''
-            predecessor = self.context.getPredecessor()
+            predecessor = self.context.get_predecessor()
             # loops while the item has no office manager
             while predecessor and not offMan:
                 if getLastWFAction(predecessor, 'proposeToDirector'):
                     offMan = getLastWFAction(predecessor, 'proposeToDirector')['actor']
-                predecessor = predecessor.getPredecessor()
+                predecessor = predecessor.get_predecessor()
         else:
             return ''
 
@@ -1440,7 +1451,7 @@ class CustomMeetingItem(MeetingItem):
            This is used in the MeetingGroup.asCopyGroupOn field."""
         item = self.getSelf()
         if item.getFinanceAdvice() != '_none_' and \
-           (item.queryState() in ('validated', 'sent_to_council_emergency') or item.hasMeeting()):
+           (item.query_state() in ('validated', 'sent_to_council_emergency') or item.hasMeeting()):
             return ['incopy']
         else:
             return []
@@ -1643,7 +1654,7 @@ class CustomMeetingConfig(MeetingConfig):
                             ],
                             'sort_on': u'created',
                             'sort_reversed': True,
-                            'tal_condition': "python: tool.isFinancialUser() or tool.isManager(here)",
+                            'tal_condition': "python: tool.isFinancialUser() or tool.isManager(cfg)",
                             'roles_bypassing_talcondition': ['Manager', ]
                         }
                      ),
@@ -1938,12 +1949,12 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayProposeToAdministrativeReviewer(self):
         res = False
-        item_state = self.context.queryState()
+        item_state = self.context.query_state()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to administrative
             # reviewer.
-            if self.tool.isManager(self.context):
+            if self.tool.isManager(self.cfg):
                 return True
             isReviewer, isInternalReviewer, isAdminReviewer = \
                 self.context._roles_in_context()
@@ -1954,10 +1965,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = False
             # If there is no administrative reviewer, do not show the
             # transition.
-            if not self.tool.group_is_not_empty(self.context.getProposingGroup(), 'administrativereviewers'):
+            if not self.tool.group_is_not_empty(
+                    self.context.getProposingGroup(), 'administrativereviewers'):
                 res = False
             if res is True:
-                msg = self._check_required_data()
+                msg = self._check_required_data('proposed_to_administrative_reviewer')
                 if msg is not None:
                     res = msg
         return res
@@ -1966,11 +1978,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     def mayProposeToInternalReviewer(self):
         res = False
-        item_state = self.context.queryState()
+        item_state = self.context.query_state()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to internal reviewer.
-            if self.tool.isManager(self.context):
+            if self.tool.isManager(self.cfg):
                 return True
             # Only administrative reviewers might propose to internal reviewer,
             # but creators can do it too if there is no administrative
@@ -1988,7 +2000,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             if not iRNotEmpty or isReviewer or isInternalReviewer:
                 res = False
             if res is True:
-                msg = self._check_required_data()
+                msg = self._check_required_data('proposed_to_internal_reviewer')
                 if msg is not None:
                     res = msg
         return res
@@ -2006,11 +2018,11 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         to "proposed to director" if there is no internal reviewer.
         '''
         res = False
-        item_state = self.context.queryState()
+        item_state = self.context.query_state()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # MeetingManager must be able to propose to director.
-            if self.tool.isManager(self.context):
+            if self.tool.isManager(self.cfg):
                 return True
             isReviewer, isInternalReviewer, isAdminReviewer = \
                 self.context._roles_in_context()
@@ -2034,7 +2046,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                         (not isAdminReviewer or iRNotEmpty):
                     res = False
             if res is True:
-                msg = self._check_required_data()
+                msg = self._check_required_data('proposed_to_director')
                 if msg is not None:
                     res = msg
         return res
@@ -2071,7 +2083,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
-        msg = self._check_required_data()
+        msg = self._check_required_data(item_state)
         if msg is not None:
             res = msg
         elif not self._hasAdvicesToGive(item_state):
@@ -2095,7 +2107,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             # transition may be triggered from the 'itemcreated' state
             isReviewer, isInternalReviewer, isAdminReviewer = \
                 self.context._roles_in_context()
-            if not (isReviewer or isInternalReviewer or self.tool.isManager(self.context)):
+            if not (isReviewer or isInternalReviewer or self.tool.isManager(self.cfg)):
                 res = False
         return res
 
@@ -2120,10 +2132,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # first of all, the use must have the 'Review portal content permission'
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
-            item_state = self.context.queryState()
+            item_state = self.context.query_state()
             finance_advice = self.context.adapted().getFinanceGroupUIDForItem()
             # if the current item state is 'itemcreated', only the MeetingManager can validate
-            if item_state == 'itemcreated' and not self.tool.isManager(self.context):
+            if item_state == 'itemcreated' and not self.tool.isManager(self.cfg):
                 res = False
             # special case for item having finance advice that was still under redaction when delay timed out
             # a MeetingManager mut be able to validate it
@@ -2141,7 +2153,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
                 res = False
 
             if res is True:
-                msg = self._check_required_data()
+                msg = self._check_required_data('validated')
                 if msg is not None:
                     res = msg
         return res
@@ -2164,7 +2176,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         meeting = self.context.getMeeting()
         if _checkPermission(ReviewPortalContent, self.context) and \
-           meeting and (meeting.queryState() in ['decided', 'closed', ]):
+           meeting and (meeting.query_state() in ['decided', 'closed', ]):
             res = True
         return res
 
@@ -2192,7 +2204,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
           If the item is 'validated', a MeetingManager can send it back to the director.
         '''
         res = False
-        item_state = self.context.queryState()
+        item_state = self.context.query_state()
         if self.context.REQUEST.get('mayBackToProposedToDirector', False):
             res = True
         # avoid being able for directors to take back an complete item when sent to finances
@@ -2215,7 +2227,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             administrative or internal reviewers.
         '''
         res = False
-        item_state = self.context.queryState()
+        item_state = self.context.query_state()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # A director can directly send back to creation an item which is
@@ -2248,7 +2260,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
             available if there is an administrative reviewer.
         '''
         res = False
-        item_state = self.context.queryState()
+        item_state = self.context.query_state()
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # do not show the transition if there is no administrative reviewer
@@ -2273,8 +2285,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # special case for financial controller that can send an item back to
         # the internal reviewer if it is in state 'proposed_to_finance' and
         # item is incomplete
-        item_state = self.context.queryState()
-        if item_state == 'proposed_to_finance' and not self.tool.isManager(self.context):
+        item_state = self.context.query_state()
+        if item_state == 'proposed_to_finance' and not self.tool.isManager(self.cfg):
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupUIDForItem()
             memberGroups = self.tool.get_plone_groups_for_user()
@@ -2353,7 +2365,7 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         meeting = self.context.getMeeting()
         if _checkPermission(ReviewPortalContent, self.context) and \
-           meeting and (meeting.queryState() in ['decided', 'closed', ]):
+           meeting and (meeting.query_state() in ['decided', 'closed', ]):
             res = True
         return res
 
@@ -2479,7 +2491,7 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemCollegeLiegeWorkflowCo
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             # if item is itemcreated, only Cabinet Manager may propose to cabinet reviewer directly
-            if self.context.queryState() == 'itemcreated' and not self.context.adapted().is_cabinet_manager():
+            if self.context.query_state() == 'itemcreated' and not self.context.adapted().is_cabinet_manager():
                 res = False
         return res
 
@@ -2561,7 +2573,7 @@ class MeetingAdviceFinancesWorkflowConditions(MeetingAdviceWorkflowConditions):
             # if 'negative_finance', only finance manager can sign,
             # aka advice must be in state 'proposed_to_finance_manager'
             if self.context.advice_type == 'negative_finance' and not \
-               self.context.queryState() == 'proposed_to_financial_manager':
+               self.context.query_state() == 'proposed_to_financial_manager':
                 res = False
         return res
 
@@ -2726,7 +2738,7 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         if self.context.isDefinedInTool():
             return icons
 
-        itemState = self.context.queryState()
+        itemState = self.context.query_state()
         # Add our icons for some review states
         if itemState == 'accepted_and_returned':
             icons.append(('accepted_and_returned.png',

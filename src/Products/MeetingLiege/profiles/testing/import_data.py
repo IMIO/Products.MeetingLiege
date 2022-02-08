@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
-from Products.PloneMeeting.profiles.testing import import_data as pm_import_data
+from Products.MeetingLiege.profiles.liege import import_data as ml_import_data
+from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import MeetingConfigDescriptor
 from Products.PloneMeeting.profiles import UserDescriptor
+from Products.PloneMeeting.profiles.testing import import_data as pm_import_data
 
 
 # Users and groups -------------------------------------------------------------
@@ -45,17 +47,12 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'motivation',
                                      'textCheckList',
                                      'itemIsSigned']
-collegeMeeting.itemWorkflow = 'meetingitemcollegeliege_workflow'
-collegeMeeting.meetingWorkflow = 'meetingcollegeliege_workflow'
-collegeMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions'
-collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowActions'
-collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
-collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
-collegeMeeting.transitionsForPresentingAnItem = ('proposeToAdministrativeReviewer',
-                                                 'proposeToInternalReviewer',
-                                                 'proposeToDirector',
-                                                 'validate',
-                                                 'present', )
+collegeMeeting.itemConditionsInterface = ml_import_data.collegeMeeting.itemConditionsInterface
+collegeMeeting.itemActionsInterface = ml_import_data.collegeMeeting.itemActionsInterface
+collegeMeeting.meetingConditionsInterface = ml_import_data.collegeMeeting.meetingConditionsInterface
+collegeMeeting.meetingActionsInterface = ml_import_data.collegeMeeting.meetingActionsInterface
+collegeMeeting.transitionsForPresentingAnItem = ml_import_data.collegeMeeting.transitionsForPresentingAnItem
+collegeMeeting.itemWFValidationLevels = ml_import_data.collegeMeeting.itemWFValidationLevels
 collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency',
                                               'accepted',
                                               'accepted_but_modified',
@@ -109,13 +106,13 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'privacy',
                                      'motivation',
                                      'itemIsSigned']
-councilMeeting.itemWorkflow = 'meetingitemcouncilliege_workflow'
-councilMeeting.meetingWorkflow = 'meetingcouncilliege_workflow'
-councilMeeting.itemConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions'
-councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowActions'
-councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
-councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
-councilMeeting.transitionsForPresentingAnItem = ('present', )
+
+councilMeeting.itemConditionsInterface = ml_import_data.collegeMeeting.itemConditionsInterface
+councilMeeting.itemActionsInterface = ml_import_data.collegeMeeting.itemActionsInterface
+councilMeeting.meetingConditionsInterface = ml_import_data.collegeMeeting.meetingConditionsInterface
+councilMeeting.meetingActionsInterface = ml_import_data.collegeMeeting.meetingActionsInterface
+councilMeeting.transitionsForPresentingAnItem = ml_import_data.collegeMeeting.transitionsForPresentingAnItem
+councilMeeting.itemWFValidationLevels = ml_import_data.collegeMeeting.itemWFValidationLevels
 councilMeeting.itemDecidedStates = collegeMeeting.itemDecidedStates
 councilMeeting.itemPositiveDecidedStates = collegeMeeting.itemPositiveDecidedStates
 councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
@@ -135,7 +132,7 @@ councilMeeting.powerObservers[0]['item_states'] = ('presented', 'itemfrozen', 'a
 councilMeeting.powerObservers[1]['item_states'] = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
 councilMeeting.powerObservers[1]['item_access_on'] = \
     u"python: item.getListType() not in ('late', ) or " \
-    u"item.queryState() not in ('presented', 'itemfrozen', 'returned_to_proposing_group')"
+    u"item.query_state() not in ('presented', 'itemfrozen', 'returned_to_proposing_group')"
 
 # Bourgmestre
 bourgmestreMeeting = MeetingConfigDescriptor(
@@ -173,25 +170,11 @@ bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
     'suffix_proposing_group_creators',
     'suffix_proposing_group_administrativereviewers')
 
-bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
-bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
-bourgmestreMeeting.itemConditionsInterface = \
-    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
-bourgmestreMeeting.itemActionsInterface = \
-    'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowActions'
-bourgmestreMeeting.meetingConditionsInterface = \
-    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
-bourgmestreMeeting.meetingActionsInterface = \
-    'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
-bourgmestreMeeting.transitionsForPresentingAnItem = (
-    u'proposeToAdministrativeReviewer',
-    u'proposeToInternalReviewer',
-    u'proposeToDirector',
-    u'proposeToGeneralManager',
-    u'proposeToCabinetManager',
-    u'proposeToCabinetReviewer',
-    u'validate',
-    u'present')
+bourgmestreMeeting.itemConditionsInterface = bg_import_data.bourgmestreMeeting.itemConditionsInterface
+bourgmestreMeeting.itemActionsInterface = bg_import_data.bourgmestreMeeting.itemActionsInterface
+bourgmestreMeeting.meetingConditionsInterface = bg_import_data.bourgmestreMeeting.meetingConditionsInterface
+bourgmestreMeeting.meetingActionsInterface = bg_import_data.bourgmestreMeeting.meetingActionsInterface
+bourgmestreMeeting.transitionsForPresentingAnItem = bg_import_data.bourgmestreMeeting.transitionsForPresentingAnItem
 bourgmestreMeeting.onMeetingTransitionItemActionToExecute = (
     {'meeting_transition': 'close',
      'item_action': 'accept',

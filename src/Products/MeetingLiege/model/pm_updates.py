@@ -26,7 +26,7 @@ def update_item_schema(baseSchema):
             name='labelForCouncil',
             widget=RichWidget(
                 rows=15,
-                condition="python: here.attributeIsUsed('labelForCouncil')",
+                condition="python: here.attribute_is_used('labelForCouncil')",
                 label='LabelForCouncil',
                 label_msgid='MeetingLiege_label_labelForCouncil',
                 description="Label of decision that will be used when the will be in the Council",
@@ -42,7 +42,7 @@ def update_item_schema(baseSchema):
         StringField(
             name='financeAdvice',
             widget=SelectionWidget(
-                condition="python: here.attributeIsUsed('financeAdvice')",
+                condition="python: here.attribute_is_used('financeAdvice')",
                 description="If necessary, select the financial service that will have to "
                             "give the legal financial advice on this item",
                 description_msgid="MeetingLiege_descr_financeAdvice",
@@ -57,7 +57,7 @@ def update_item_schema(baseSchema):
         StringField(
             name='archivingRef',
             widget=SelectionWidget(
-                condition="python: here.attributeIsUsed('archivingRef')",
+                condition="python: here.attribute_is_used('archivingRef')",
                 label='ArchivingRef',
                 label_msgid='MeetingLiege_label_archivingRef',
                 description=" ",
@@ -72,7 +72,7 @@ def update_item_schema(baseSchema):
             name='decisionEnd',
             widget=RichWidget(
                 rows=15,
-                condition="python: here.attributeIsUsed('decisionEnd')",
+                condition="python: here.attribute_is_used('decisionEnd')",
                 label='DecisionEnd',
                 label_msgid='MeetingLiege_label_decisionEnd',
                 description="Decision end descr",
@@ -115,7 +115,7 @@ def update_meeting_schema(baseSchema):
             name='adoptsNextCouncilAgenda',
             default=False,
             widget=BooleanField._properties['widget'](
-                condition="python: here.attributeIsUsed('adoptsNextCouncilAgenda')",
+                condition="python: here.attribute_is_used('adoptsNextCouncilAgenda')",
                 description="AdoptsNextCouncilAgenda",
                 description_msgid="adopts_next_council_agenda_descr",
                 label='Adoptsnextcouncilagenda',

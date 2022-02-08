@@ -22,11 +22,11 @@
            factory="Products.MeetingLiege.adapters.MeetingItemCollegeLiegeWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingItemCollegeLiegeWorkflowConditions"/>
 
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.MeetingCollegeLiegeWorkflowActions"
            provides="Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions"/>
 
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.MeetingCollegeLiegeWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions"/>
 
@@ -47,11 +47,11 @@
            factory="Products.MeetingLiege.adapters.MeetingItemCouncilLiegeWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingItemCouncilLiegeWorkflowConditions"/>
 
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.MeetingCouncilLiegeWorkflowActions"
            provides="Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions"/>
 
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.MeetingCouncilLiegeWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions"/>
 
@@ -64,16 +64,16 @@
            factory="Products.MeetingLiege.adapters.MeetingItemBourgmestreWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions"/>
 
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.MeetingBourgmestreWorkflowActions"
            provides="Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions"/>
 
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.MeetingBourgmestreWorkflowConditions"
            provides="Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions"/>
 
   <!-- Customizations for every Meetings -->
-  <adapter for="Products.PloneMeeting.interfaces.IMeeting"
+  <adapter for="Products.PloneMeeting.content.meeting.IMeeting"
            factory="Products.MeetingLiege.adapters.CustomMeeting"
            provides="Products.PloneMeeting.interfaces.IMeetingCustom"/>
 

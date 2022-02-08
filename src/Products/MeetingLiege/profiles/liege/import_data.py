@@ -48,13 +48,13 @@ agendaTemplate = PodTemplateDescriptor('oj', 'Ordre du jour')
 agendaTemplate.odt_file = 'college-oj.odt'
 agendaTemplate.pod_formats = ['odt', 'pdf', ]
 agendaTemplate.pod_portal_types = ['Meeting']
-agendaTemplate.tal_condition = u'python: tool.isManager(here)'
+agendaTemplate.tal_condition = u'python: tool.isManager(cfg)'
 
 decisionsTemplate = PodTemplateDescriptor('pv', 'Procès-verbal')
 decisionsTemplate.odt_file = 'college-pv.odt'
 decisionsTemplate.pod_formats = ['odt', 'pdf', ]
 decisionsTemplate.pod_portal_types = ['Meeting']
-decisionsTemplate.tal_condition = u'python: tool.isManager(here)'
+decisionsTemplate.tal_condition = u'python: tool.isManager(cfg)'
 
 itemTemplate = PodTemplateDescriptor('deliberation', 'Délibération')
 itemTemplate.odt_file = 'deliberation.odt'
@@ -145,6 +145,8 @@ orgs = [OrgDescriptor('dirgen', 'Directeur Général', u'DG'),
 
 # MeetingManager
 orgs[0].creators.append(dgen)
+orgs[0].administrativereviewers.append(dgen)
+orgs[0].internalreviewers.append(dgen)
 orgs[0].reviewers.append(dgen)
 orgs[0].observers.append(dgen)
 orgs[0].advisers.append(dgen)
@@ -282,15 +284,17 @@ collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeeting
 collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
 collegeMeeting.workflowAdaptations = [
-    'no_publication',
-    'return_to_proposing_group',
-    'refused',
-    'returned',
+    'accepted_and_returned',
     'accepted_but_modified',
-    'pre_accepted',
     'delayed',
     'mark_not_applicable',
+    'no_publication',
     'only_creator_may_delete',
+    'pre_accepted',
+    'refused',
+    'returned',
+    'return_to_proposing_group',
+    'sent_to_council_emergency',
     'waiting_advices',
     'waiting_advices_adviser_send_back']
 collegeMeeting.itemWFValidationLevels = (
@@ -306,7 +310,7 @@ collegeMeeting.itemWFValidationLevels = (
      },
     {'state': 'proposed_to_administrative_reviewer',
      'state_title': 'proposed_to_administrative_reviewer',
-     'leading_transition': 'propose_to_administrative_reviewer',
+     'leading_transition': 'proposeToAdministrativeReviewer',
      'leading_transition_title': 'proposeToAdministrativeReviewer',
      'back_transition': 'backToProposedToAdministrativeReviewer',
      'back_transition_title': 'backToProposedToAdministrativeReviewer',
@@ -638,12 +642,8 @@ councilMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'reader_advices',
                                                   'reader_copy_groups',
                                                   'reader_groupsincharge',
-                                                  'suffix_proposing_group_prereviewers',
-                                                  'suffix_proposing_group_internalreviewers',
                                                   'suffix_proposing_group_observers',
-                                                  'suffix_proposing_group_reviewers',
-                                                  'suffix_proposing_group_creators',
-                                                  'suffix_proposing_group_administrativereviewers')
+                                                  'suffix_proposing_group_creators', )
 councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'description',
                                      'labelForCouncil',
@@ -654,7 +654,7 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'decisionEnd']
 councilMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
-                                        'assemblyExcused',
+                                        'assembly_excused',
                                         'observations', ]
 councilMeeting.xhtmlTransformFields = ('MeetingItem.description', 'MeetingItem.detailedDescription',
                                        'MeetingItem.decision', 'MeetingItem.observations', )
@@ -672,16 +672,24 @@ councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeeting
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
 councilMeeting.workflowAdaptations = [
-    'accepted_and_returned',
     'accepted_but_modified',
     'delayed',
     'mark_not_applicable',
     'no_publication',
     'pre_accepted',
     'refused',
-    'returned',
-    'sent_to_council_emergency']
-councilMeeting.itemWFValidationLevels = []
+    'returned']
+councilMeeting.itemWFValidationLevels = (
+    {'state': 'itemcreated',
+     'state_title': 'itemcreated',
+     'leading_transition': '-',
+     'leading_transition_title': '-',
+     'back_transition': 'backToItemCreated',
+     'back_transition_title': 'backToItemCreated',
+     'suffix': 'creators',
+     'extra_suffixes': [],
+     'enabled': '0',
+     }, )
 councilMeeting.transitionsForPresentingAnItem = ('present', )
 councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
     collegeMeeting.onMeetingTransitionItemActionToExecute)

@@ -105,3 +105,4 @@ FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN = "<p>Attendu l'absence d'avis du "\
     "du Code de la démocratie locale et de la décentralisation,</p>"
 
 COUNCILITEM_DECISIONEND_SENTENCE = "<p>La présente décision a recueilli l'unanimité des suffrages.</p>"
+COUNCILITEM_DECISIONEND_SENTENCE_RAW = "La présente décision a recueilli l'unanimité des suffrages."

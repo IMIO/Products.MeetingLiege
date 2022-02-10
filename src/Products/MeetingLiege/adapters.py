@@ -24,6 +24,7 @@ from Products.CMFCore.permissions import ReviewPortalContent
 from Products.CMFCore.utils import _checkPermission
 from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
+from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE_RAW
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
@@ -90,7 +91,10 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
                      'proposed_to_internal_reviewer',
                      'proposed_to_director', ),
      'use_custom_icon': False,
+     # is translated to "Remove from meeting"
+     'use_custom_back_transition_title_for': ("validated", ),
      'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
+     'adviser_may_validate': False,
      'new_state_id': 'itemcreated_waiting_advices',
      },
     {'from_states': ('itemcreated',
@@ -99,17 +103,23 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
      'back_states': ('proposed_to_internal_reviewer',
                      'proposed_to_director', ),
      'use_custom_icon': False,
+     # is translated to "Remove from meeting"
+     'use_custom_back_transition_title_for': ("validated", ),
      'use_custom_transition_title_for': (
         'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
         'wait_advices_from_proposed_to_administrative_reviewer',
         'wait_advices_from_proposed_to_internal_reviewer', ),
+     'adviser_may_validate': False,
      'new_state_id': 'proposed_to_internal_reviewer_waiting_advices',
      },
     {'from_states': ('proposed_to_director', ),
      'back_states': ('proposed_to_internal_reviewer',
                      'proposed_to_director', ),
      'use_custom_icon': False,
+     # is translated to "Remove from meeting"
+     'use_custom_back_transition_title_for': ("validated", ),
      'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
+     'adviser_may_validate': True,
      'new_state_id': 'proposed_to_finance_waiting_advices',
      },
 )
@@ -125,17 +135,6 @@ class CustomMeeting(Meeting):
 
     def __init__(self, item):
         self.context = item
-
-    security.declarePublic('isDecided')
-
-    def isDecided(self):
-        """
-          The meeting is supposed 'decided', if at least in state :
-          - 'in_council' for MeetingCouncil
-          - 'decided' for MeetingCollege
-        """
-        meeting = self.getSelf()
-        return meeting.query_state() in ('in_council', 'decided', 'closed', 'archived')
 
     # Implements here methods that will be used by templates
     def _insertItemInCategory(self, categoryList, item, byProposingGroup, groupPrefixes, groups):
@@ -463,10 +462,8 @@ class CustomMeeting(Meeting):
             ann['MeetingLiege-getItemNumsForActe']['modified'] = self.modified()
 
         tmp_res = {}
-        brains = self.getItems(listTypes=['normal'],
-                               ordered=True,
-                               theObjects=False,
-                               unrestricted=True)
+        brains = self.get_items(
+            list_types=['normal'], ordered=True, the_objects=False, unrestricted=True)
 
         for brain in brains:
             cat = brain.category_id
@@ -484,10 +481,8 @@ class CustomMeeting(Meeting):
         [res.update(v) for v in tmp_res.values()]
 
         # for "late" items, item number is continuous (HOJ1, HOJ2, HOJ3,... HOJn)
-        brains = self.getItems(listTypes=['late'],
-                               ordered=True,
-                               theObjects=False,
-                               unrestricted=True)
+        brains = self.get_tems(
+            list_types=['late'], ordered=True, the_objects=False, unrestricted=True)
         item_num = 1
         for brain in brains:
             res[brain.UID] = item_num
@@ -569,20 +564,6 @@ class CustomMeetingItem(MeetingItem):
        interface IMeetingItemCustom.'''
     implements(IMeetingItemCustom)
     security = ClassSecurityInfo()
-
-    customItemDecidedStates = ('accepted',
-                               'accepted_but_modified',
-                               'delayed',
-                               'refused',
-                               'marked_not_applicable', )
-    MeetingItem.itemDecidedStates = customItemDecidedStates
-    customBeforePublicationStates = ('itemcreated',
-                                     'proposed_to_administrative_reviewer',
-                                     'proposed_to_internal_reviewer',
-                                     'proposed_to_director',
-                                     'proposed_to_finance',
-                                     'validated', )
-    MeetingItem.beforePublicationStates = customBeforePublicationStates
 
     BOURGMESTRE_PROPOSING_GROUP_STATES = [
         'itemcreated', 'proposed_to_administrative_reviewer',
@@ -1225,11 +1206,8 @@ class CustomMeetingItem(MeetingItem):
            to the 'decisionEnd' field, this is managed by MeetingConfig.onTransitionFieldTransforms
            that calls this method."""
         item = self.getSelf()
-        transforms = api.portal.get_tool('portal_transforms')
         rawDecisionEnd = item.getDecisionEnd(mimetype='text/plain').strip()
-        # COUNCILITEM_DECISIONEND_SENTENCE is HTML
-        rawSentence = transforms.convertTo('text/plain', COUNCILITEM_DECISIONEND_SENTENCE)._data.strip()
-        if rawSentence not in rawDecisionEnd:
+        if COUNCILITEM_DECISIONEND_SENTENCE_RAW not in rawDecisionEnd:
             return item.getDecisionEnd() + COUNCILITEM_DECISIONEND_SENTENCE
         else:
             return item.getDecisionEnd()
@@ -1772,14 +1750,6 @@ class MeetingCollegeLiegeWorkflowConditions(MeetingWorkflowConditions):
     implements(IMeetingCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-    security.declarePublic('mayDecide')
-
-    def mayDecide(self):
-        res = False
-        if _checkPermission(ReviewPortalContent, self.context):
-            res = True
-        return res
-
 
 class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     '''Adapter that adapts a meeting item implementing IMeetingItem to the
@@ -1788,59 +1758,34 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
     implements(IMeetingItemCollegeLiegeWorkflowActions)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('doAskAdvicesByItemCreator')
+    security.declarePrivate('doWait_advices_from')
 
-    def doAskAdvicesByItemCreator(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToAdministrativeReviewer')
-
-    def doProposeToAdministrativeReviewer(self, stateChange):
-        ''' '''
-        pass
-
-    security.declarePrivate('doProposeToInternalReviewer')
-
-    def doProposeToInternalReviewer(self, stateChange):
-        ''' '''
-        pass
-
-    security.declarePrivate('doAskAdvicesByInternalReviewer')
-
-    def doAskAdvicesByInternalReviewer(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToDirector')
-
-    def doProposeToDirector(self, stateChange):
-        pass
-
-    security.declarePrivate('doProposeToFinance')
-
-    def doProposeToFinance(self, stateChange):
+    def doWait_advices_from(self, stateChange):
         '''When an item is proposed to finance again, make sure the item
            completeness si no more in ('completeness_complete', 'completeness_evaluation_not_required')
            so advice is not addable/editable when item come back again to the finance.'''
-        # if we found an event 'proposeToFinance' in workflow_history, it means that item is
-        # proposed again to the finances and we need to ask completeness evaluation again
-        # current transition 'proposeToFinance' is already in workflow_history...
-        wfTool = api.portal.get_tool('portal_workflow')
-        # take history but leave last event apart
-        history = self.context.workflow_history[wfTool.getWorkflowsFor(self.context)[0].getId()][:-1]
-        # if we find 'proposeToFinance' in previous actions, then item is proposed to finance again
-        for event in history:
-            if event['action'] == 'proposeToFinance':
-                changeCompleteness = self.context.restrictedTraverse('@@change-item-completeness')
-                comment = translate('completeness_asked_again_by_app',
-                                    domain='PloneMeeting',
-                                    context=self.context.REQUEST)
-                # change completeness even if current user is not able to set it to
-                # 'completeness_evaluation_asked_again', here it is the application that set
-                # it automatically
-                changeCompleteness._changeCompleteness('completeness_evaluation_asked_again',
-                                                       bypassSecurityCheck=True,
-                                                       comment=comment)
-                break
+        if stateChange.new_state.id == 'proposed_to_finance_waiting_advices':
+            # if we found an event 'wait_advices_from_proposed_to_director' in workflow_history,
+            # it means that item is proposed again to the finances and we need to ask completeness
+            # evaluation again current transition 'proposeToFinance' is already in workflow_history...
+            wfTool = api.portal.get_tool('portal_workflow')
+            # take history but leave last event apart
+            history = self.context.workflow_history[wfTool.getWorkflowsFor(self.context)[0].getId()][:-1]
+            # if we find ' wait_advices_from_proposed_to_director' in previous actions,
+            # then item is proposed to finance again
+            for event in history:
+                if event['action'] == 'wait_advices_from_proposed_to_director':
+                    changeCompleteness = self.context.restrictedTraverse('@@change-item-completeness')
+                    comment = translate('completeness_asked_again_by_app',
+                                        domain='PloneMeeting',
+                                        context=self.context.REQUEST)
+                    # change completeness even if current user is not able to set it to
+                    # 'completeness_evaluation_asked_again', here it is the application that set
+                    # it automatically
+                    changeCompleteness._changeCompleteness('completeness_evaluation_asked_again',
+                                                           bypassSecurityCheck=True,
+                                                           comment=comment)
+                    break
 
     security.declarePrivate('doSendToCouncilEmergency')
 

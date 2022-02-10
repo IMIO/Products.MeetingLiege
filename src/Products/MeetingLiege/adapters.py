@@ -83,21 +83,14 @@ from zope.interface import implements
 customWfAdaptations = ('returned', 'accepted_and_returned', 'sent_to_council_emergency')
 MeetingConfig.wfAdaptations += customWfAdaptations
 
-# use the 'itemcreated' state from college item WF to patch council item WF
-RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = {'meetingitemcollegeliege_workflow':
-                                            'meetingitemcollegeliege_workflow.itemcreated',
-                                            'meetingitemcouncilliege_workflow':
-                                            'meetingitemcollegeliege_workflow.itemcreated',
-                                            'meetingitembourgmestre_workflow':
-                                            'meetingitembourgmestre_workflow.itemcreated'}
-adaptations.RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE = RETURN_TO_PROPOSING_GROUP_STATE_TO_CLONE
-
 LIEGE_WAITING_ADVICES_FROM_STATES = (
     {'from_states': ('itemcreated', ),
      'back_states': ('itemcreated',
                      'proposed_to_administrative_reviewer',
                      'proposed_to_internal_reviewer',
                      'proposed_to_director', ),
+     'use_custom_icon': False,
+     'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
      'new_state_id': 'itemcreated_waiting_advices',
      },
     {'from_states': ('itemcreated',
@@ -105,22 +98,22 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
                      'proposed_to_internal_reviewer', ),
      'back_states': ('proposed_to_internal_reviewer',
                      'proposed_to_director', ),
+     'use_custom_icon': False,
+     'use_custom_transition_title_for': (
+        'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
+        'wait_advices_from_proposed_to_administrative_reviewer',
+        'wait_advices_from_proposed_to_internal_reviewer', ),
      'new_state_id': 'proposed_to_internal_reviewer_waiting_advices',
      },
     {'from_states': ('proposed_to_director', ),
      'back_states': ('proposed_to_internal_reviewer',
                      'proposed_to_director', ),
+     'use_custom_icon': False,
+     'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
      'new_state_id': 'proposed_to_finance_waiting_advices',
      },
 )
 adaptations.WAITING_ADVICES_FROM_STATES = LIEGE_WAITING_ADVICES_FROM_STATES
-adaptations.WAITING_ADVICES_USE_CUSTOM_ICON = False
-adaptations.WAITING_ADVICES_USE_CUSTOM_TR_TITLE_FOR = (
-    'wait_advices_from_itemcreated__to__itemcreated_waiting_advices',
-    'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
-    'wait_advices_from_proposed_to_administrative_reviewer__to__proposed_to_internal_reviewer_waiting_advices',
-    'wait_advices_from_proposed_to_director__to__proposed_to_finance_waiting_advices',
-    'wait_advices_from_proposed_to_internal_reviewer__to__proposed_to_internal_reviewer_waiting_advices')
 
 
 class CustomMeeting(Meeting):

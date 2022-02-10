@@ -53,6 +53,7 @@ collegeMeeting.meetingConditionsInterface = ml_import_data.collegeMeeting.meetin
 collegeMeeting.meetingActionsInterface = ml_import_data.collegeMeeting.meetingActionsInterface
 collegeMeeting.transitionsForPresentingAnItem = ml_import_data.collegeMeeting.transitionsForPresentingAnItem
 collegeMeeting.itemWFValidationLevels = ml_import_data.collegeMeeting.itemWFValidationLevels
+collegeMeeting.workflowAdaptations = ml_import_data.collegeMeeting.workflowAdaptations
 collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency',
                                               'accepted',
                                               'accepted_but_modified',
@@ -107,12 +108,13 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'motivation',
                                      'itemIsSigned']
 
-councilMeeting.itemConditionsInterface = ml_import_data.collegeMeeting.itemConditionsInterface
-councilMeeting.itemActionsInterface = ml_import_data.collegeMeeting.itemActionsInterface
-councilMeeting.meetingConditionsInterface = ml_import_data.collegeMeeting.meetingConditionsInterface
-councilMeeting.meetingActionsInterface = ml_import_data.collegeMeeting.meetingActionsInterface
-councilMeeting.transitionsForPresentingAnItem = ml_import_data.collegeMeeting.transitionsForPresentingAnItem
-councilMeeting.itemWFValidationLevels = ml_import_data.collegeMeeting.itemWFValidationLevels
+councilMeeting.itemConditionsInterface = ml_import_data.councilMeeting.itemConditionsInterface
+councilMeeting.itemActionsInterface = ml_import_data.councilMeeting.itemActionsInterface
+councilMeeting.meetingConditionsInterface = ml_import_data.councilMeeting.meetingConditionsInterface
+councilMeeting.meetingActionsInterface = ml_import_data.councilMeeting.meetingActionsInterface
+councilMeeting.transitionsForPresentingAnItem = ml_import_data.councilMeeting.transitionsForPresentingAnItem
+councilMeeting.itemWFValidationLevels = ml_import_data.councilMeeting.itemWFValidationLevels
+councilMeeting.workflowAdaptations = ml_import_data.councilMeeting.workflowAdaptations
 councilMeeting.itemDecidedStates = collegeMeeting.itemDecidedStates
 councilMeeting.itemPositiveDecidedStates = collegeMeeting.itemPositiveDecidedStates
 councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
@@ -209,7 +211,7 @@ bourgmestreMeeting.recurringItems = []
 bourgmestreMeeting.itemTemplates = []
 
 data = deepcopy(pm_import_data.data)
-data.meetingConfigs = (collegeMeeting, councilMeeting, bourgmestreMeeting)
+data.meetingConfigs = (collegeMeeting, councilMeeting)  # , bourgmestreMeeting)
 # necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData
 data.restrictUsers = False
 data.usersOutsideGroups = data.usersOutsideGroups + [pmFinController, pmFinReviewer, pmFinManager, pmMeetingManagerBG]

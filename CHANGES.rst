@@ -4,7 +4,8 @@ Products.MeetingLiege Changelog
 4.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Updated meetingliege_restrictedpowerobservers.css - SUP-22174
+  [aduchene]
 
 4.1.3 (2021-11-05)
 ------------------

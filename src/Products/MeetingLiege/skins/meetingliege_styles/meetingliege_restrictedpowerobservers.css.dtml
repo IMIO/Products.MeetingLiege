@@ -4,6 +4,7 @@
 /* specific rules for restricted power observers, hide some elements... */
 /* hide some faceted filters */
 .faceted-widget.faceted-checkboxes-widget.faceted-checkbox-widget.section-advice,
+.faceted-widget.faceted-checkboxes-widget.faceted-checkbox-widget.section-has-annexes-to-sign,
 .faceted-widget.faceted-checkboxes-widget.faceted-checkbox-widget.section-created,
 .faceted-widget.faceted-checkboxes-widget.faceted-checkbox-widget.section-creator,
 .faceted-widget.faceted-checkboxes-widget.faceted-checkbox-widget.section-taken-over-by,

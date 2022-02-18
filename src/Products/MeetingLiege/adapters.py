@@ -93,6 +93,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
      'use_custom_icon': False,
      # is translated to "Remove from meeting"
      'use_custom_back_transition_title_for': ("validated", ),
+     # if () given, a custom transition icon is used for every back transitions
+     'only_use_custom_back_transition_icon_for': ("validated", ),
      'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
      'adviser_may_validate': False,
      'new_state_id': 'itemcreated_waiting_advices',
@@ -105,6 +107,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
      'use_custom_icon': False,
      # is translated to "Remove from meeting"
      'use_custom_back_transition_title_for': ("validated", ),
+     # if () given, a custom transition icon is used for every back transitions
+     'only_use_custom_back_transition_icon_for': ("validated", ),
      'use_custom_transition_title_for': (
         'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
         'wait_advices_from_proposed_to_administrative_reviewer',
@@ -118,6 +122,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = (
      'use_custom_icon': False,
      # is translated to "Remove from meeting"
      'use_custom_back_transition_title_for': ("validated", ),
+     # if () given, a custom transition icon is used for every back transitions
+     'only_use_custom_back_transition_icon_for': ("validated", ),
      'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
      'adviser_may_validate': True,
      'new_state_id': 'proposed_to_finance_waiting_advices',
@@ -2067,7 +2073,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # value is found to True in the REQUEST
         if self.context.REQUEST.get('mayValidate', False):
             return True
-        # first of all, the use must have the 'Review portal content permission'
+
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
             item_state = self.context.query_state()
@@ -2686,36 +2692,6 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         elif itemState == 'returned':
             icons.append(('returned.png',
                           translate('icon_help_returned',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_administrative_reviewer':
-            icons.append(('proposeToAdministrativeReviewer.png',
-                          translate('icon_help_proposed_to_administrative_reviewer',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_internal_reviewer':
-            icons.append(('proposeToInternalReviewer.png',
-                          translate('icon_help_proposed_to_internal_reviewer',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
-            icons.append(('askAdvicesByInternalReviewer.png',
-                          translate('icon_help_proposed_to_internal_reviewer_waiting_advices',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_director':
-            icons.append(('proposeToDirector.png',
-                          translate('icon_help_proposed_to_director',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_director_waiting_advices':
-            icons.append(('askAdvicesByDirector.png',
-                          translate('icon_help_proposed_to_director_waiting_advices',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_finance':
-            icons.append(('proposeToFinance.png',
-                          translate('icon_help_proposed_to_finance',
                                     domain="PloneMeeting",
                                     context=self.request)))
         elif itemState == 'proposed_to_general_manager':

@@ -31,7 +31,7 @@ def _everyAdvicesAreGivenFor(item):
     return True
 
 
-def _sendItemBackInWFIfNecessary(item):
+def _sendWaitingAdvicesItemBackInWFIfNecessary(item):
     '''Check if we need to send the item backToItemCreated
        or backToProposedToInternalReviewer.'''
     itemState = item.query_state()
@@ -41,11 +41,11 @@ def _sendItemBackInWFIfNecessary(item):
                      'proposed_to_director_waiting_advices'] and \
        _everyAdvicesAreGivenFor(item):
         if itemState == 'itemcreated_waiting_advices':
-            transition = 'backToItemCreated'
+            transition = 'backTo_itemcreated_from_waiting_advices'
         elif itemState == 'proposed_to_internal_reviewer_waiting_advices':
-            transition = 'backToProposedToInternalReviewer'
+            transition = 'backTo_proposed_to_internal_reviewer_from_waiting_advices'
         else:
-            transition = 'backToProposedToDirector'
+            transition = 'backTo_proposed_to_director_from_waiting_advices'
         item.REQUEST.set('everyAdvicesAreGiven', True)
         # use actionspanel so we are redirected to viewable url
         actionsPanel = item.restrictedTraverse('@@actions_panel')
@@ -82,13 +82,13 @@ def onItemLocalRolesUpdated(item, event):
 def onAdviceAdded(advice, event):
     '''Called when a meetingadvice is added.'''
     item = advice.getParentNode()
-    _sendItemBackInWFIfNecessary(item)
+    _sendWaitingAdvicesItemBackInWFIfNecessary(item)
 
 
 def onAdviceModified(advice, event):
     '''Called when a meetingadvice is edited.'''
     item = advice.getParentNode()
-    _sendItemBackInWFIfNecessary(item)
+    _sendWaitingAdvicesItemBackInWFIfNecessary(item)
 
 
 def onAdviceAfterTransition(advice, event):
@@ -130,7 +130,7 @@ def onAdviceAfterTransition(advice, event):
     # initial_state or going back from 'advice_given', we set automatically
     # advice_hide_during_redaction to True
     if not event.transition or \
-       newStateId == 'proposed_to_financial_controller' and oldStateId == 'advice_given':
+       (newStateId == 'proposed_to_financial_controller' and oldStateId == 'advice_given'):
         advice.advice_hide_during_redaction = True
 
     if newStateId == 'financial_advice_signed':
@@ -139,18 +139,24 @@ def onAdviceAfterTransition(advice, event):
 
         # final state of the wf, make sure advice is no more hidden during redaction
         advice.advice_hide_during_redaction = False
-        # if item was still in state 'proposed_to_finance', it is automatically validated
+        # if item was still in state 'proposed_to_finance_waiting_advices', it is automatically validated
         # and a specific message is added to the wf history regarding this
         # validate or send the item back to director depending on advice_type
-        if itemState == 'proposed_to_finance':
-            if advice.advice_type in ('positive_finance', 'positive_with_remarks_finance', 'not_required_finance'):
+        if itemState == 'proposed_to_finance_waiting_advices':
+            if advice.advice_type in ('positive_finance',
+                                      'positive_with_remarks_finance',
+                                      'not_required_finance'):
                 item.REQUEST.set('mayValidate', True)
-                wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_positive')
+                wfTool.doActionFor(
+                    item, 'validate', comment='item_wf_changed_finance_advice_positive')
                 item.REQUEST.set('mayValidate', False)
             else:
                 # if advice is negative, we automatically send the item back to the director
                 item.REQUEST.set('mayBackToProposedToDirector', True)
-                wfTool.doActionFor(item, 'backToProposedToDirector', comment='item_wf_changed_finance_advice_negative')
+                wfTool.doActionFor(
+                    item,
+                    'backTo_proposed_to_director_from_waiting_advices',
+                    comment='item_wf_changed_finance_advice_negative')
                 item.REQUEST.set('mayBackToProposedToDirector', False)
 
     # in some corner case, we could be here and we are actually already updating advices,
@@ -159,7 +165,7 @@ def onAdviceAfterTransition(advice, event):
     # but if we are in a '_updateAdvices', do not _updateAdvices again...
     # also bypass if we are creating the advice as onAdviceAdded is called after onAdviceTransition
     if event.transition and not item.REQUEST.get('currentlyUpdatingAdvice', False):
-        item.updateLocalRoles()
+        item.update_local_roles()
 
 
 def onAdvicesUpdated(item, event):
@@ -192,7 +198,7 @@ def onAdvicesUpdated(item, event):
         if adviceInfo['delay_infos']['delay_status'] == 'timed_out' and \
            'delay_infos' in event.old_adviceIndex[org_uid] and not \
            event.old_adviceIndex[org_uid]['delay_infos']['delay_status'] == 'timed_out':
-            if item.query_state() == 'proposed_to_finance':
+            if item.query_state() == 'proposed_to_finance_waiting_advices':
                 wfTool = api.portal.get_tool('portal_workflow')
                 item.REQUEST.set('mayValidate', True)
                 wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_timed_out')
@@ -279,7 +285,7 @@ def onItemListTypeChanged(item, event):
         view = item.restrictedTraverse('@@change-item-order')
         # we will set previous number + 1 so get previous item
         meeting = item.getMeeting()
-        items = meeting.getItems(ordered=True, theObjects=False)
+        items = meeting.get_items(ordered=True, the_objects=False)
         itemUID = item.UID()
         previous = None
         for item in items:
@@ -289,7 +295,8 @@ def onItemListTypeChanged(item, event):
         # first item of the meeting can not be set to 'addendum'
         if not previous:
             raise PloneMeetingError("First item of the meeting may not be set to 'Addendum' !")
-        newNumber = _storedItemNumber_to_itemNumber(previous.getItemNumber + 1)
+        newNumber = _storedItemNumber_to_itemNumber(
+            previous._unrestrictedGetObject().getItemNumber() + 1)
         view('number', newNumber)
     # going back from 'addendum'
     elif event.old_listType == u'addendum' and not _is_integer(item.getItemNumber()):
@@ -297,3 +304,6 @@ def onItemListTypeChanged(item, event):
         # we will use next integer
         nextInteger = (item.getItemNumber() + 100) / 100
         view('number', str(nextInteger))
+
+    # add a value in the REQUEST to specify that update_item_references is needed
+    item.REQUEST.set('need_Meeting_update_item_references', True)

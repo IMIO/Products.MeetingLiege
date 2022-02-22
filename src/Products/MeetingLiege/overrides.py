@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from plone import api
-from plone.memoize.instance import memoize
 from imio.history.adapters import ImioWfHistoryAdapter
 from imio.history.utils import getPreviousEvent
+from plone import api
+from plone.memoize.instance import memoize
 from Products.PloneMeeting.adapters import PMCategorizedObjectAdapter
 from Products.PloneMeeting.adapters import PMWfHistoryAdapter
 
@@ -22,7 +22,7 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
         '''
         # bypass for real Managers
         tool = api.portal.get_tool('portal_plonemeeting')
-        if tool.isManager(self.context, True):
+        if tool.isManager(realManagers=True):
             return True
 
         # if not a finance advice comment is viewable...
@@ -76,7 +76,7 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
                     # check that it is the finance group that made the transition 'backToProposedToInternalReviewer'
                     previousEvent = getPreviousEvent(
                         self.context, event, checkMayViewEvent=False, checkMayViewComment=False)
-                    if previousEvent and previousEvent['review_state'] == 'proposed_to_finance':
+                    if previousEvent and previousEvent['review_state'] == 'proposed_to_finance_waiting_advices':
                         return True
         return userMayAccessComment
 
@@ -123,7 +123,7 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
             tool = api.portal.get_tool('portal_plonemeeting')
             # MeetingManager bypass
 
-            if tool.isManager(self.context) or self._is_general_manager():
+            if tool.isManager(self.cfg) or self._is_general_manager():
                 return True
 
             # is member of the proposingGroup?
@@ -172,6 +172,6 @@ class MLItemCategorizedObjectAdapter(PMCategorizedObjectAdapter):
             if infos['signed_activated'] and \
                infos['to_sign'] and \
                not infos['signed'] and \
-               not self.tool.isManager(self.context):
+               not self.tool.isManager(self.cfg):
                 return False
         return res

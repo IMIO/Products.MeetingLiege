@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from Products.PloneMeeting.workflows.advice import IMeetingAdviceWorkflowActions
-from Products.PloneMeeting.workflows.advice import IMeetingAdviceWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingItemWorkflowActions
 from Products.PloneMeeting.interfaces import IMeetingItemWorkflowConditions
 from Products.PloneMeeting.interfaces import IMeetingWorkflowActions
 from Products.PloneMeeting.interfaces import IMeetingWorkflowConditions
+from Products.PloneMeeting.workflows.advice import IMeetingAdviceWorkflowActions
+from Products.PloneMeeting.workflows.advice import IMeetingAdviceWorkflowConditions
+
 
 __author__ = """Gauthier Bastien <g.bastien@imio.be>"""
 __docformat__ = 'plaintext'

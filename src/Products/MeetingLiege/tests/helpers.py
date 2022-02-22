@@ -97,7 +97,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self._addPrincipalToGroup('pmFinManager', '{0}_financialmanagers'.format(financial_group_uids[0]))
 
     def _giveFinanceAdvice(self, item, adviser_group_id):
-        """Given an p_item in state 'proposed_to_finance', give the p_adviser_group_id advice on it."""
+        """Given an p_item in state 'proposed_to_finance_waiting_advices', give the p_adviser_group_id advice on it."""
         originalUserId = self.member.getId()
         self.changeUser('pmFinController')
         changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
@@ -138,7 +138,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # make item completeness complete and add advice
         self.changeUser('pmFinController')
         changeCompleteness = item.restrictedTraverse('@@change-item-completeness')

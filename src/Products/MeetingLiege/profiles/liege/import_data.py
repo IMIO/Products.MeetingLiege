@@ -95,28 +95,28 @@ emetteuravisPers = UserDescriptor('emetteuravisPers', [], email="test@test.be", 
 
 # add finance groups
 dfcontrol = OrgDescriptor('df-contrale', u'DF - Contrôle', u'DF')
-dfcontrol.item_advice_states = ['meeting-config-college__state__proposed_to_finance']
-dfcontrol.item_advice_edit_states = ['meeting-config-college__state__proposed_to_finance']
+dfcontrol.item_advice_states = ['meeting-config-college__state__proposed_to_finance_waiting_advices']
+dfcontrol.item_advice_edit_states = ['meeting-config-college__state__proposed_to_finance_waiting_advices']
 dfcontrol.item_advice_view_states = ['meeting-config-college__state__accepted',
                                      'meeting-config-college__state__accepted_but_modified',
                                      'meeting-config-college__state__pre_accepted',
                                      'meeting-config-college__state__delayed',
                                      'meeting-config-college__state__itemfrozen',
-                                     'meeting-config-college__state__proposed_to_finance',
+                                     'meeting-config-college__state__proposed_to_finance_waiting_advices',
                                      'meeting-config-college__state__presented',
                                      'meeting-config-college__state__refused',
                                      'meeting-config-college__state__validated']
 dfcompta = OrgDescriptor('df-comptabilita-c-et-audit-financier',
                          u'DF - Comptabilité et Audit financier',
                          u'DF')
-dfcompta.item_advice_states = ['meeting-config-college__state__proposed_to_finance']
-dfcompta.item_advice_edit_states = ['meeting-config-college__state__proposed_to_finance']
+dfcompta.item_advice_states = ['meeting-config-college__state__proposed_to_finance_waiting_advices']
+dfcompta.item_advice_edit_states = ['meeting-config-college__state__proposed_to_finance_waiting_advices']
 dfcompta.item_advice_view_states = ['meeting-config-college__state__accepted',
                                     'meeting-config-college__state__accepted_but_modified',
                                     'meeting-config-college__state__pre_accepted',
                                     'meeting-config-college__state__delayed',
                                     'meeting-config-college__state__itemfrozen',
-                                    'meeting-config-college__state__proposed_to_finance',
+                                    'meeting-config-college__state__proposed_to_finance_waiting_advices',
                                     'meeting-config-college__state__presented',
                                     'meeting-config-college__state__refused',
                                     'meeting-config-college__state__validated']
@@ -257,6 +257,7 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'toDiscuss',
                                      'financeAdvice',
                                      'completeness',
+                                     'emergency',
                                      'labelForCouncil',
                                      'otherMeetingConfigsClonableToEmergency',
                                      'otherMeetingConfigsClonableToPrivacy',
@@ -284,6 +285,7 @@ collegeMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeeting
 collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowConditions'
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
 collegeMeeting.workflowAdaptations = [
+    'item_validation_shortcuts',
     'accepted_and_returned',
     'accepted_but_modified',
     'delayed',
@@ -305,7 +307,7 @@ collegeMeeting.itemWFValidationLevels = (
      'back_transition': 'backToItemCreated',
      'back_transition_title': 'backToItemCreated',
      'suffix': 'creators',
-     'extra_suffixes': [],
+     'extra_suffixes': [u'administrativereviewers', u'internalreviewers', u'reviewers'],
      'enabled': '1',
      },
     {'state': 'proposed_to_administrative_reviewer',
@@ -315,7 +317,7 @@ collegeMeeting.itemWFValidationLevels = (
      'back_transition': 'backToProposedToAdministrativeReviewer',
      'back_transition_title': 'backToProposedToAdministrativeReviewer',
      'suffix': 'administrativereviewers',
-     'extra_suffixes': [],
+     'extra_suffixes': [u'internalreviewers', u'reviewers'],
      'enabled': '1',
      },
     {'state': 'proposed_to_internal_reviewer',
@@ -326,7 +328,7 @@ collegeMeeting.itemWFValidationLevels = (
      'back_transition_title': 'backToProposedToInternalReviewer',
      'suffix': 'internalreviewers',
      'enabled': '1',
-     'extra_suffixes': [],
+     'extra_suffixes': [u'reviewers'],
      },
     {'state': 'proposed_to_director',
      'state_title': 'proposed_to_director',
@@ -492,6 +494,7 @@ collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
 collegeMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 collegeMeeting.transitionReinitializingDelays = 'backToProposedToDirector'
+collegeMeeting.defaultAdviceHiddenDuringRedaction = ['meetingadvice', 'meetingadvicefinances']
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.enableAdviceInvalidation = False
 collegeMeeting.useCopies = True

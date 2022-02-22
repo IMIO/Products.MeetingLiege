@@ -190,7 +190,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             advice = advice_infos['given_advice']
             advice_revisions = []
             if advice:
-                advice_revisions = [revision for revision in getAdapter(advice, IImioHistory, 'revision').getHistory()]
+                advice_revisions = [revision for revision in
+                                    getAdapter(advice, IImioHistory, 'revision').getHistory()]
                 # Browse the advice versions and keep their history.
                 for revision in advice_revisions:
                     historized_advice = pr.retrieve(advice, revision['version_id']).object
@@ -212,7 +213,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             for state in full_history:
                 # keep the history when advice is positive, negative or timed
                 # out.
-                if (state['action'] == 'backToProposedToDirector' and
+                if (state['action'] == 'backTo_proposed_to_director_from_waiting_advices' and
                     state['comments'] == 'item_wf_changed_finance_advice_negative') or \
                    (state['action'] == 'validate' and
                     (state['comments'] == 'item_wf_changed_finance_advice_positive' or
@@ -222,7 +223,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 # keep the history and add the comment eventually given when set to
                 # incomplete to the back to reviewer comment.
                 elif (last_action == 'completeness_incomplete' and
-                        state['action'] == 'backToProposedToInternalReviewer'):
+                        state['action'] == 'backTo_proposed_to_internal_reviewer_from_waiting_advices'):
                     state['comments'] += last_comment
                     kept_states.append(state)
                 # Keep the history when item is complete, but only the first
@@ -231,8 +232,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                       first_time_complete is True):
                     kept_states.append(state)
                     first_time_complete = False
-                # Keep also the proposeToFinance state.
-                elif (state['action']) == 'proposeToFinance':
+                # Keep also the proposed_to_finance_waiting_advices state.
+                elif (state['action']) == 'wait_advices_from_proposed_to_director':
                     finance_proposals.append(state.copy())
                 last_action = state['action']
                 last_comment = state['comments']
@@ -264,7 +265,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         res['title'] = item.Title()
         res['group'] = item.getProposingGroup(theObject=True).Title()
         if item.getMeeting():
-            res['meeting_date'] = item.getMeeting().getDate().strftime('%d/%m/%Y')
+            res['meeting_date'] = item.getMeeting().date.strftime('%d/%m/%Y')
         else:
             res['meeting_date'] = ''
         advice = advice_infos['given_advice']
@@ -302,7 +303,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     res['end_advice'] = end_advice
                     if end_advice == 'OUI':
                         end_advice = 'NON'
-                elif state['action'] == 'backToProposedToDirector':
+                elif state['action'] == 'backTo_proposed_to_director_from_waiting_advices':
                     res['end_advice'] = end_advice
                     res['advice_type'] = 'Avis finance défavorable'
                     if end_advice == 'OUI':
@@ -311,7 +312,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     res['end_advice'] = ''
                     res['advice_type'] = 'Complétude'
                     res['comments'] = ''
-                elif state['action'] == 'backToProposedToInternalReviewer':
+                elif state['action'] == 'backTo_proposed_to_internal_reviewer_from_waiting_advices':
                     res['end_advice'] = ''
                     res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
                     res['comments'] = state['comments']
@@ -329,7 +330,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                 if state['action'] == 'completeness_complete':
                     res['end_advice'] = ''
                     res['advice_type'] = 'Complétude'
-                elif state['action'] == 'backToProposedToInternalReviewer':
+                elif state['action'] == 'backTo_proposed_to_internal_reviewer_from_waiting_advices':
                     res['end_advice'] = ''
                     res['advice_type'] = 'Renvoyé au validateur interne pour incomplétude'
                     res['comments'] = state['comments']
@@ -337,9 +338,9 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     res['end_advice'] = ''
                     res['advice_type'] = 'Avis finance expiré'
                 # Some items had their advice deleted. So they still have
-                # the backtoproposedtodirector state in history, even if
+                # the backTo_proposed_to_director_from_waiting_advices action in history, even if
                 # there is no more advice given.
-                elif state['action'] == 'backToProposedToDirector':
+                elif state['action'] == 'backTo_proposed_to_director_from_waiting_advices':
                     res['end_advice'] = ''
                     res['advice_type'] = 'Avis finance défavorable'
                 # Yeah, you would not expect to find a positive advice in

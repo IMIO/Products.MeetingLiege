@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from DateTime import DateTime
 from datetime import datetime
 from plone import api
 from plone.app.textfield.value import RichTextValue
@@ -36,11 +35,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # make item sendable to council
         item.setOtherMeetingConfigsClonableTo('meeting-config-council')
         # send the item to the council
-        meeting = self.create('Meeting', date=DateTime('2014/01/01'))
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.closeMeeting(meeting)
         # the item has been sent, get it and test that relevant fields are correctly initialized
-        newItem = item.getBRefs('ItemPredecessor')[0]
+        newItem = item.getItemClonedToOtherMC(self.meetingConfig2.getId())
         self.assertEqual(newItem.get_predecessor().UID(), item.UID())
         self.assertEqual(newItem.getLabelForCouncil(), '<p>My label for council</p>')
         self.assertEqual(newItem.getPrivacy(), 'secret')
@@ -149,9 +148,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         devItem2.setCategory('development')
         maintItem1 = self.create('MeetingItem')
         maintItem1.setCategory('maintenance')
-        meeting = self.create('Meeting', date='2015/01/01')
+        meeting = self.create('Meeting')
         # make sure item reference is correct no matter it seems we are in the 'available items'
-        # view, this is because we use getItems(theObjects=False) that is sensible to being
+        # view, this is because we use get_items(the_objects=False) that is sensible to being
         # in the 'available items' view
         self.request.set('HTTP_REFERER',
                          '{0}/@@meeting_available_items_view'.format(meeting.absolute_url()))
@@ -161,28 +160,28 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(devItem2)
         self.presentItem(maintItem1)
         # no itemReference until meeting is frozen
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['', '', '', '', ''])
         self.freezeMeeting(meeting)
         # check that item references are correct
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o4', 'o1', 'o2', 'o5'])
         # change position of items 1 and 2, itemReference is changed too
         changeOrder = resItem1.restrictedTraverse('@@change-item-order')
         changeOrder(moveType='down')
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'research1', 'research2', 'maintenance_cat_id1'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o4', 'o2', 'o1', 'o5'])
         # move depItem2 to last position
         changeOrder = resItem2.restrictedTraverse('@@change-item-order')
         changeOrder('number', '5')
         # now depItem1 reference is back to 'deployment1' and depItem2 in last position
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'research1', 'maintenance_cat_id1', 'research2'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o4', 'o1', 'o5', 'o2'])
 
         # if we insert a new item, references are updated
@@ -190,36 +189,36 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         newItem.setCategory('development')
         self.presentItem(newItem)
         # item is inserted at the end
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'development3',
                           'research1', 'maintenance_cat_id1', 'research2'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o4', 'o7', 'o1', 'o5', 'o2'])
 
         # now if we remove an item from the meeting, reference are still correct
         # remove item with ref 'research1', the first item, the item that had 'research2' will get 'research1'
         self.backToState(resItem1, 'validated')
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'development3', 'maintenance_cat_id1', 'research1'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o4', 'o7', 'o5', 'o2'])
 
         # delete item having reference 'development2'
         # only Manager may delete an item
         self.changeUser('admin')
         self.deleteAsManager(devItem2.UID())
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'maintenance_cat_id1', 'research1'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o7', 'o5', 'o2'])
 
         # if we change the category used for an item, reference are updated accordingly
         # change category for resItem1 from 'research' to 'development'
         resItem2.setCategory('development')
         resItem2._update_after_edit()
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(ordered=True)],
                          ['development1', 'development2', 'maintenance_cat_id1', 'development3'])
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          ['o3', 'o7', 'o5', 'o2'])
 
         # test late items, reference is HOJ.1, HOJ.2, ...
@@ -250,12 +249,16 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(newItem.getItemReference(), '')
         # pmCreator1 is not able to access every items of the meeting
         # if we get the reference of other items, it is correct,
-        # make meeting modified so we are sure that item reference are recomputed
         # with pmCreator1 as current user
-        meeting.notifyModified()
-        meeting.updateItemReferences()
-        self.assertEqual([item.getItemReference() for item in meeting.getItems(ordered=True,
-                                                                               unrestricted=True)],
+        meeting.update_item_references()
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(
+                            ordered=True, unrestricted=True)],
+                         ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
+        # call update_item_references to show that references may be updated
+        # by a user that is not a MeetingManager
+        meeting.update_item_references()
+        self.assertEqual([item.getItemReference() for item in meeting.get_items(
+                            ordered=True, unrestricted=True)],
                          ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
         self.assertEqual(devItem1.getItemReference(), 'development1')
         # no more in the meeting
@@ -325,11 +328,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(item1._getInsertOrder(cfg) > item6._getInsertOrder(cfg))
 
         # now insert items in a meeting and compare
-        meeting = self.create('Meeting', date='2015/01/01')
+        meeting = self.create('Meeting')
         for item in item1, item2, item3, item4, item5, item6, item7:
             self.presentItem(item)
         # items should have been added respecting following order item3, item2, item5, item4, item6, item1
-        self.assertEqual([item.getId() for item in meeting.getItems(ordered=True)],
+        self.assertEqual([item.getId() for item in meeting.get_items(ordered=True)],
                          [item3Id, item2Id, item5Id, item7Id, item4Id, item6Id, item1Id, ])
 
     def test_GetItemWithFinanceAdvice(self):
@@ -362,7 +365,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(item.adapted().getItemWithFinanceAdvice(), item)
         # give advice
         self.proposeItem(item)
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinManager')
         item.setCompleteness('completeness_complete')
         item.setEmergency('emergency_accepted')
@@ -389,57 +392,58 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(financial_group_uids[0] in duplicatedItem.adviceIndex)
         # finance group get automatically access to the duplicatedItem as it is linked manually
         self.assertEqual(duplicatedItem.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
+        # duplicating an item will not make it a predecessor
+        self.assertFalse(item.get_predecessor())
 
-        # delaying an item will not make original item the item holder
+        # delaying an item will not make original item the advice holder
         # the finance advice is asked on the delayed item too
-        meeting = self.create('Meeting', date='2015/01/01')
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.decideMeeting(meeting)
         self.do(item, 'delay')
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
-        clonedDelayedItem = [newItem for newItem in item.getBRefs('ItemPredecessor')
-                             if not newItem == duplicatedItem][0]
-        self.assertEqual(clonedDelayedItem.adapted().getItemWithFinanceAdvice(), clonedDelayedItem)
+        delayedItem = item.get_successors()[0]
+        self.assertEqual(item.get_successors(), [delayedItem])
+        self.assertEqual(delayedItem.adapted().getItemWithFinanceAdvice(), delayedItem)
         # the finance advice is asked on the clonedDelayedItem
-        self.assertEqual(clonedDelayedItem.getFinanceAdvice(), financial_group_uids[0])
-        self.assertTrue(financial_group_uids[0] in clonedDelayedItem.adviceIndex)
+        self.assertEqual(delayedItem.getFinanceAdvice(), financial_group_uids[0])
+        self.assertTrue(financial_group_uids[0] in delayedItem.adviceIndex)
         # finance group did not get automatically access to the clonedDelayedItem
-        self.assertTrue(financeGroupAdvisersId not in clonedDelayedItem.__ac_local_roles__)
+        self.assertTrue(financeGroupAdvisersId not in delayedItem.__ac_local_roles__)
 
         # now correct item and 'accept and return' it
         # this time, the original item is considered the finance advice holder
         self.do(item, 'backToItemFrozen')
         self.do(item, 'return')
         # find the new item created by the clone as item is already the predecessor of 'duplicatedItem'
-        clonedReturnedItem = [newItem for newItem in item.getBRefs('ItemPredecessor')
-                              if newItem not in (duplicatedItem, clonedDelayedItem)][0]
+        returnedItem = [i for i in item.get_successors() if i != delayedItem][0]
         # this time, the item with finance advice is the 'returned' item
-        itemWithFinanceAdvice = clonedReturnedItem.adapted().getItemWithFinanceAdvice()
+        itemWithFinanceAdvice = returnedItem.adapted().getItemWithFinanceAdvice()
         self.assertEqual(itemWithFinanceAdvice, item)
         self.assertEqual(itemWithFinanceAdvice.query_state(), 'returned')
         # the info is kept in the financeAdvice attribute
         # nevertheless, the advice is not asked automatically anymore
-        self.assertEqual(clonedReturnedItem.getFinanceAdvice(), financial_group_uids[0])
-        self.assertTrue(financial_group_uids[0] not in clonedReturnedItem.adviceIndex)
+        self.assertEqual(returnedItem.getFinanceAdvice(), financial_group_uids[0])
+        self.assertTrue(financial_group_uids[0] not in returnedItem.adviceIndex)
         # finance group gets automatically access to the clonedReturnedItem
-        self.assertEqual(clonedReturnedItem.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
+        self.assertEqual(returnedItem.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
 
         # send the clonedReturnedItem to Council and check with the council item
-        clonedReturnedItem.setOtherMeetingConfigsClonableTo('meeting-config-council')
-        self.presentItem(clonedReturnedItem)
-        self.assertEqual(clonedReturnedItem.query_state(), 'itemfrozen')
+        returnedItem.setOtherMeetingConfigsClonableTo('meeting-config-council')
+        self.presentItem(returnedItem)
+        self.assertEqual(returnedItem.query_state(), 'itemfrozen')
         # still right, including sent item
-        self.assertEqual(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
+        self.assertEqual(returnedItem.adapted().getItemWithFinanceAdvice(), item)
         self.assertEqual(
-            clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
+            returnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
             item)
         # now test if setting an optional finance advice does not break getItemWithFinanceAdvice
-        clonedReturnedItem.setOptionalAdvisers((financial_group_uids[0], ))
-        clonedReturnedItem.updateLocalRoles()
-        self.assertTrue(financial_group_uids[0] in clonedReturnedItem.adviceIndex)
-        self.assertEqual(clonedReturnedItem.adapted().getItemWithFinanceAdvice(), item)
+        returnedItem.setOptionalAdvisers((financial_group_uids[0], ))
+        returnedItem.update_local_roles()
+        self.assertTrue(financial_group_uids[0] in returnedItem.adviceIndex)
+        self.assertEqual(returnedItem.adapted().getItemWithFinanceAdvice(), item)
         self.assertEqual(
-            clonedReturnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
+            returnedItem.getItemClonedToOtherMC(cfg2Id).adapted().getItemWithFinanceAdvice(),
             item)
 
         # now test when the item is in the council
@@ -474,8 +478,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(itemInCouncil2.adapted().getItemWithFinanceAdvice(), itemToCouncil2)
         # when college item was accepted_and_returned, it was cloned, the finance advice
         # is also found for this cloned item
-        clonedAcceptedAndReturnedItem = [newItem for newItem in itemToCouncil2.getBRefs('ItemPredecessor')
-                                         if newItem.portal_type == 'MeetingItemCollege'][0]
+        clonedAcceptedAndReturnedItem = [i for i in itemToCouncil2.get_successors()
+                                         if i.portal_type == 'MeetingItemCouncil'][0]
         self.assertEqual(clonedAcceptedAndReturnedItem.adapted().getItemWithFinanceAdvice(), itemToCouncil2)
         # finance group gets automatically access to the itemInCouncil2
         self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
@@ -486,7 +490,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.setMeetingConfig(self.meetingConfig2.getId())
         self.meetingConfig2.setUseGroupsAsCategories(True)
         self.meetingConfig2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},))
-        self.create('Meeting', date='2015/01/01')
+        self.create('Meeting')
         self.do(itemInCouncil2, 'present')
         self.assertEqual(itemInCouncil2.query_state(), 'presented')
         self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
@@ -528,11 +532,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(item1a.adapted().getLegalTextForFDAdvice(), '')
         self.assertEqual(item2.adapted().getLegalTextForFDAdvice(), '')
         self.assertEqual(item3.adapted().getLegalTextForFDAdvice(), '')
-        self.do(item1, 'proposeToFinance')
+        self.do(item1, 'wait_advices_from_proposed_to_director')
         item1.setCompleteness('completeness_complete')
-        self.do(item1a, 'proposeToFinance')
+        self.do(item1a, 'wait_advices_from_proposed_to_director')
         item1a.setCompleteness('completeness_complete')
-        self.do(item2, 'proposeToFinance')
+        self.do(item2, 'wait_advices_from_proposed_to_director')
         # use change-item-completeness view to change completeness
         # so completeness_changes_history is updated
         changeCompletenessView = item1a.restrictedTraverse('@@change-item-completeness')
@@ -540,13 +544,13 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
             new_completeness_value='completeness_complete',
             bypassSecurityCheck=True,
             comment='')
-        item1a.updateLocalRoles()
+        item1a.update_local_roles()
         item2.setCompleteness('completeness_complete')
-        self.do(item3, 'proposeToFinance')
+        self.do(item3, 'wait_advices_from_proposed_to_director')
         item3.setCompleteness('completeness_complete')
-        item3.updateLocalRoles()
+        item3.update_local_roles()
         item3.adviceIndex[item3.getFinanceAdvice()]['delay_started_on'] = datetime(2012, 1, 1)
-        item3.updateLocalRoles()
+        item3.update_local_roles()
 
         self.changeUser('pmFinManager')
         advice1 = createContentInContainer(
@@ -589,7 +593,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('admin')
         self.do(item1a, 'backToProposedToDirector')
         item1a.adviceIndex[item3.getFinanceAdvice()]['delay_started_on'] = None
-        item1a.updateLocalRoles()
+        item1a.update_local_roles()
 
         financialStuff1 = item1.adapted().getFinancialAdviceStuff()
         financialStuff1a = item1a.adapted().getFinancialAdviceStuff()
@@ -662,7 +666,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         financial_group_uids = self.tool.financialGroupUids()
         item1.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item1)
-        self.do(item1, 'proposeToFinance')
+        self.do(item1, 'wait_advices_from_proposed_to_director')
         item1.setCompleteness('completeness_complete')
 
         self.changeUser('pmFinManager')
@@ -690,7 +694,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertFalse(item1.adapted().mayGenerateFDAdvice())
 
         item1.adviceIndex[item1.getFinanceAdvice()]['delay_started_on'] = datetime(2012, 1, 1)
-        item1.updateLocalRoles()
+        item1.update_local_roles()
 
         self.assertTrue(item1.adapted().mayGenerateFDAdvice())
 
@@ -725,7 +729,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(itemToReturnTwice, 'validate')
 
         # Creates a meeting, presents and postpones the items.
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         self.presentItem(itemToReturn)
         self.presentItem(itemToReturnTwice)
         self.decideMeeting(meeting)
@@ -733,8 +737,8 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(itemToReturnTwice, 'return')
 
         # Gets the items which have been duplicated when postponed.
-        itemReturned = itemToReturn.getBRefs('ItemPredecessor')[0]
-        itemReturnedOnce = itemToReturnTwice.getBRefs('ItemPredecessor')[0]
+        itemReturned = itemToReturn.get_successors()[0]
+        itemReturnedOnce = itemToReturnTwice.get_successors()[0]
 
         # Put back the meeting in creation to add the duplicated item into it.
         # Presents and postpones again.
@@ -742,7 +746,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.presentItem(itemReturnedOnce)
         self.decideMeeting(meeting)
         self.do(itemReturnedOnce, 'return')
-        itemReturnedTwice = itemReturnedOnce.getBRefs('ItemPredecessor')[0]
+        itemReturnedTwice = itemReturnedOnce.get_successors()[0]
 
         # Checks if we have the infos of the office manager when we are supposed
         # to have it.
@@ -770,7 +774,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.setMeetingConfig(self.meetingConfig2.getId())
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        meeting = self.create('Meeting', date=DateTime())
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.freezeMeeting(meeting)
 
@@ -803,7 +807,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         cfg2Id = cfg2.getId()
         self.changeUser('pmManager')
         self.setMeetingConfig(cfg2Id)
-        self.create('Meeting', date=DateTime('2015/11/11'))
+        self.create('Meeting')
         FIRST_SENTENCE = '<p>A first sentence.</p>'
         item = self.create('MeetingItem')
         item.setDecisionEnd(FIRST_SENTENCE)
@@ -838,7 +842,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         financial_group_uids = self.tool.financialGroupUids()
         item1.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item1)
-        self.do(item1, 'proposeToFinance')
+        self.do(item1, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Set completeness to complete.
         changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
@@ -865,7 +869,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Propose to finance for the second time
         self.changeUser('pmManager')
-        self.do(item1, 'proposeToFinance')
+        ask_advice_again = advice1.restrictedTraverse('@@change-advice-asked-again')
+        ask_advice_again()
+        self.do(item1, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Set the completeness to incomplete with a comment.
         changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
@@ -875,13 +881,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         changeCompleteness()
 
         # Send the item back to internal reviewer due to his incompleteness.
-        self.changeUser('pmManager')
         self.do(item1,
-                'backToProposedToInternalReviewer',
-                comment="Go back to the abyss"
-                )
+                'backTo_proposed_to_internal_reviewer_from_waiting_advices',
+                comment='Go back to the abyss')
+        self.changeUser('pmManager')
         self.do(item1, 'proposeToDirector')
-        self.do(item1, 'proposeToFinance')
+        self.do(item1, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Let assume that the item is now complete. So set the completeness.
         changeCompleteness = item1.restrictedTraverse('@@change-item-completeness')
@@ -922,7 +927,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item2 = self.create('MeetingItem', title='Item2 with advice')
         item2.setFinanceAdvice(financial_group_uids[1])
         self.proposeItem(item2)
-        self.do(item2, 'proposeToFinance')
+        self.do(item2, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # The item is complete.
         changeCompleteness = item2.restrictedTraverse('@@change-item-completeness')
@@ -949,10 +954,10 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Present this item to a meeting.
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2019/09/19')
+        meeting = self.create('Meeting')
         # Delete recurring items.
-        self.deleteAsManager(meeting.getItems()[0].UID())
-        self.deleteAsManager(meeting.getItems()[0].UID())
+        self.deleteAsManager(meeting.get_items()[0].UID())
+        self.deleteAsManager(meeting.get_items()[0].UID())
         self.presentItem(item2)
 
         # Create the third item with advice which gonna be timed out..
@@ -960,7 +965,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item3 = self.create('MeetingItem', title='Item3 with advice timed out')
         item3.setFinanceAdvice(financial_group_uids[1])
         self.proposeItem(item3)
-        self.do(item3, 'proposeToFinance')
+        self.do(item3, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # The item is complete.
         changeCompleteness = item3.restrictedTraverse('@@change-item-completeness')
@@ -987,7 +992,9 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Propose to finance a second time.
         self.changeUser('pmManager')
-        self.do(item3, 'proposeToFinance')
+        ask_advice_again = advice3.restrictedTraverse('@@change-advice-asked-again')
+        ask_advice_again()
+        self.do(item3, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Item is still complete.
         changeCompleteness = item3.restrictedTraverse('@@change-item-completeness')
@@ -997,14 +1004,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Now, finance will forget this item and make it expire.
         item3.adviceIndex[financial_group_uids[1]]['delay_started_on'] = datetime(2016, 1, 1)
-        item3.updateLocalRoles()
+        item3.update_local_roles()
 
         # Create the fourth item without advice, but timed out too.
         self.changeUser('pmManager')
         item4 = self.create('MeetingItem', title='Item4 timed out without advice')
         item4.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item4)
-        self.do(item4, 'proposeToFinance')
+        self.do(item4, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # The item is complete.
         changeCompleteness = item4.restrictedTraverse('@@change-item-completeness')
@@ -1014,7 +1021,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Now, finance will forget this item and make it expire.
         item4.adviceIndex[financial_group_uids[0]]['delay_started_on'] = datetime(2016, 1, 1)
-        item4.updateLocalRoles()
+        item4.update_local_roles()
 
         # Create the fifth item with a bad advice and then remove financial impact.
         self.changeUser('pmManager')
@@ -1023,7 +1030,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         financial_group_uids = self.tool.financialGroupUids()
         item5.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item5)
-        self.do(item5, 'proposeToFinance')
+        self.do(item5, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Set completeness to complete.
         changeCompleteness = item5.restrictedTraverse('@@change-item-completeness')
@@ -1056,7 +1063,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item6 = self.create('MeetingItem', title='Item6 with positive advice with remarks')
         item6.setFinanceAdvice(financial_group_uids[1])
         self.proposeItem(item6)
-        self.do(item6, 'proposeToFinance')
+        self.do(item6, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # The item is complete.
         changeCompleteness = item6.restrictedTraverse('@@change-item-completeness')
@@ -1242,7 +1249,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertTrue(item.adapted().showOtherMeetingConfigsClonableToEmergency())
 
     def test_ItemTakenOverByFinancesAdviser(self):
-        """When item is proposed_to_finance, item is taken over by finances adviser.
+        """When item is proposed_to_finance_waiting_advices, item is taken over by finances adviser.
            There was a bug with ToolPloneMeeting.get_plone_groups_for_user cachekey
            that is why we call it in this test."""
         self.changeUser('admin')
@@ -1265,19 +1272,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.proposeItem(item)
         self.changeUser('pmReviewer1')
         self.tool.get_plone_groups_for_user()
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # finances take item over and send item back to director
         self.changeUser('pmFinController')
         self.tool.get_plone_groups_for_user()
         view = item.restrictedTraverse('@@toggle_item_taken_over_by')
         view.toggle(takenOverByFrom=item.getTakenOverBy())
         self.assertEqual(item.getTakenOverBy(), 'pmFinController')
-        self.do(item, 'backToProposedToInternalReviewer')
+        self.do(item, 'backTo_proposed_to_internal_reviewer_from_waiting_advices')
         self.assertEqual(item.getTakenOverBy(), '')
         # login as director and send item back to finances
         self.changeUser('pmReviewer1')
         self.do(item, 'proposeToDirector')
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertEqual(item.getTakenOverBy(), 'pmFinController')
 
     def test_ListArchivingRefsRestrictToGroups(self):

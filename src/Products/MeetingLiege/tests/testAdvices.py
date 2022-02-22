@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from Products.PloneMeeting.tests.testAdvices import testAdvices as pmta
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from Products.PloneMeeting.tests.testAdvices import testAdvices as pmta
 
 
 class testAdvices(MeetingLiegeTestCase, pmta):

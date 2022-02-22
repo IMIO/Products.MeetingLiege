@@ -1,13 +1,13 @@
-import os
-import logging
-
 from AccessControl import Unauthorized
 from Acquisition import aq_base
-from Products.CMFCore.utils import getToolByName
-
-from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone import api
+from plone.i18n.normalizer.interfaces import IFileNameNormalizer
+from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
+
+import logging
+import os
+
 
 def export_meetinggroups(self):
     """

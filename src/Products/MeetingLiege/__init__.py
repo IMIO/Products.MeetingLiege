@@ -36,14 +36,8 @@ __docformat__ = 'plaintext'
 #   - To perform custom initialisation after types have been registered,
 #       use the protected code section at the bottom of initialize().
 
-import logging
-logger = logging.getLogger('MeetingLiege')
-logger.debug('Installing Product')
-
-import os
-import os.path
+from config import *
 from Globals import package_home
-import Products.CMFPlone.interfaces
 from Products.Archetypes import listTypes
 from Products.Archetypes.atapi import *
 from Products.Archetypes.utils import capitalize
@@ -51,14 +45,23 @@ from Products.CMFCore import DirectoryView
 from Products.CMFCore import permissions as cmfpermissions
 from Products.CMFCore import utils as cmfutils
 from Products.CMFPlone.utils import ToolInit
-from config import *
+
+import adapters
+import logging
+##code-section custom-init-head #fill in your manual code here
+import model.pm_updates
+import os
+import os.path
+import Products.CMFPlone.interfaces
+
+
+logger = logging.getLogger('MeetingLiege')
+logger.debug('Installing Product')
+
 
 DirectoryView.registerDirectory('skins', product_globals)
 
 
-##code-section custom-init-head #fill in your manual code here
-import model.pm_updates
-import adapters
 ##/code-section custom-init-head
 
 

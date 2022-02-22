@@ -68,7 +68,6 @@ class testCustomContacts(MeetingLiegeTestCase):
                           '{0}_incopy'.format(self.vendors_uid),
                           '{0}_internalreviewers'.format(self.vendors_uid),
                           '{0}_observers'.format(self.vendors_uid),
-                          '{0}_prereviewers'.format(self.vendors_uid),
                           '{0}_reviewers'.format(self.vendors_uid)])
         financial_group_uids = self.tool.financialGroupUids()
         financeGroupUID = financial_group_uids[0]
@@ -84,5 +83,4 @@ class testCustomContacts(MeetingLiegeTestCase):
                           '{0}_incopy'.format(financeGroupUID),
                           '{0}_internalreviewers'.format(financeGroupUID),
                           '{0}_observers'.format(financeGroupUID),
-                          '{0}_prereviewers'.format(financeGroupUID),
                           '{0}_reviewers'.format(financeGroupUID)])

@@ -2,24 +2,7 @@
 #
 # File: testAdvices.py
 #
-# Copyright (c) 2007-2015 by Imio.be
-#
 # GNU General Public License (GPL)
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
 #
 
 from plone import api
@@ -49,7 +32,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # define relevant users for finance groups
         self._setupFinanceGroups()
 
-        # ask finance advice and ask advice (set item to 'proposed_to_finance')
+        # ask finance advice and ask advice (set item to 'proposed_to_finance_waiting_advices')
         # not need a finances advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
@@ -58,7 +41,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)
         self.proposeItem(item)
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         item.setCompleteness('completeness_complete')
         item._update_after_edit()
         # ok, now advice can be given
@@ -133,10 +116,11 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.assertTrue(self.vendors_uid in item.adviceIndex)
 
         # check when item is 'itemcreated_waiting_advices'
-        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
-                                                              askAdvicesTr='askAdvicesByItemCreator',
-                                                              availableBackTr='backToItemCreated',
-                                                              returnState='itemcreated')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(
+            item,
+            askAdvicesTr='wait_advices_from_itemcreated',
+            availableBackTr='backTo_itemcreated_from_waiting_advices',
+            returnState='itemcreated')
         # Give to pmInternalReviewer1 the creator role to grant him access to
         # items in creation.
         self.changeUser('admin')
@@ -147,28 +131,34 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # From item created.
         self.deleteAsManager(item.meetingadvice.UID())
         self.changeUser('pmInternalReviewer1')
-        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
-                                                              askAdvicesTr='askAdvicesByInternalReviewer',
-                                                              availableBackTr='backToProposedToInternalReviewer',
-                                                              returnState='proposed_to_internal_reviewer')
+        self.assertEqual(item.query_state(), 'itemcreated')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(
+            item,
+            askAdvicesTr='wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
+            availableBackTr='backTo_proposed_to_internal_reviewer_from_waiting_advices',
+            returnState='proposed_to_internal_reviewer',
+            askAdvicesTr2='wait_advices_from_proposed_to_internal_reviewer')
 
         # From proposed to administrative reviewer.
         self.deleteAsManager(item.meetingadvice.UID())
         self.changeUser('pmManager')
         self.do(item, 'backToProposedToAdministrativeReviewer')
         self.changeUser('pmInternalReviewer1')
-        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
-                                                              askAdvicesTr='askAdvicesByInternalReviewer',
-                                                              availableBackTr='backToProposedToInternalReviewer',
-                                                              returnState='proposed_to_internal_reviewer')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(
+            item,
+            askAdvicesTr='wait_advices_from_proposed_to_administrative_reviewer',
+            availableBackTr='backTo_proposed_to_internal_reviewer_from_waiting_advices',
+            returnState='proposed_to_internal_reviewer',
+            askAdvicesTr2='wait_advices_from_proposed_to_internal_reviewer')
 
         # From proposed to internal reviewer.
         self.deleteAsManager(item.meetingadvice.UID())
         self.changeUser('pmInternalReviewer1')
-        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
-                                                              askAdvicesTr='askAdvicesByInternalReviewer',
-                                                              availableBackTr='backToProposedToInternalReviewer',
-                                                              returnState='proposed_to_internal_reviewer')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(
+            item,
+            askAdvicesTr='wait_advices_from_proposed_to_internal_reviewer',
+            availableBackTr='backTo_proposed_to_internal_reviewer_from_waiting_advices',
+            returnState='proposed_to_internal_reviewer')
 
     def test_BourgmestreItemSentBackToAskerWhenEveryAdvicesGiven(self):
         '''Check that, when every advices are given, the item is automatically
@@ -192,7 +182,8 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                                          item,
                                                          askAdvicesTr,
                                                          availableBackTr,
-                                                         returnState):
+                                                         returnState,
+                                                         askAdvicesTr2=None):
         """Helper method for 'test_subproduct_ItemSentBackToAskerWhenEveryAdvicesGiven'."""
         # save current logged in user, the group asker user
         adviceAskerUserId = self.member.getId()
@@ -215,9 +206,9 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.assertTrue(_everyAdvicesAreGivenFor(item))
 
         # now add advice as vendors and hide it, advice is considered not given
-        self.changeUser('admin')
+        self.changeUser('siteadmin')
         item.restrictedTraverse('@@delete_givenuid')(item.meetingadvice.UID())
-        self.do(item, askAdvicesTr)
+        self.do(item, askAdvicesTr2 or askAdvicesTr)
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
                                           'meetingadvice',
@@ -238,7 +229,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser(adviceAskerUserId)
         advice.restrictedTraverse('@@change-advice-asked-again')()
         self.assertEqual(advice.advice_type, 'asked_again')
-        self.do(item, askAdvicesTr)
+        self.do(item, askAdvicesTr2 or askAdvicesTr)
         self.changeUser('pmReviewer2')
         notify(ObjectModifiedEvent(advice))
         # still waiting advices

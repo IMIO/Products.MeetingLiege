@@ -15,6 +15,7 @@ from Products.PloneMeeting.MeetingConfig import MeetingConfig
 from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
 
+
 # monkey patch the MeetingConfig.wfAdaptations again because it is done in
 # adapters.py but overrided by Products.MeetingCommunes here in the tests...
 MeetingConfig.wfAdaptations += customWfAdaptations

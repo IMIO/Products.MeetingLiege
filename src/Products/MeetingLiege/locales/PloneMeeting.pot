@@ -220,10 +220,6 @@ msgstr ""
 msgid "MeetingLiege_descr_textCheckList"
 msgstr ""
 
-#. Default: "No advice to ask"
-msgid "advice_required_to_ask_advices"
-msgstr ""
-
 #. Default: "Label to use for item in Council"
 msgid "MeetingLiege_label_labelForCouncil"
 msgstr ""
@@ -265,7 +261,7 @@ msgid "item_decision_descr"
 msgstr ""
 
 #. Default: "Decision (suite)"
-msgid "MeetingLiege_label_decisionSuite"
+msgid "PloneMeeting_label_decisionSuite"
 msgstr ""
 
 #. Default: " "

@@ -2,24 +2,7 @@
 #
 # File: testWorkflows.py
 #
-# Copyright (c) 2016 by Imio.be
-#
 # GNU General Public License (GPL)
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
 #
 
 from AccessControl import Unauthorized
@@ -29,8 +12,8 @@ from collective.contact.plonegroup.utils import get_plone_group_id
 from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_config_root
 from collective.iconifiedcategory.utils import get_group
-from DateTime import DateTime
 from datetime import datetime
+from DateTime import DateTime
 from imio.helpers.cache import cleanRamCacheFor
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
@@ -338,26 +321,26 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmManager is member of every sub-groups of 'developers'
         self.proposeItem(item)
         # now the item is 'proposed_to_director' it can not be validated
-        # the step 'proposed_to_finance' is required
+        # the step 'proposed_to_finance_waiting_advices' is required
         self.assertEqual(item.query_state(), 'proposed_to_director')
         # from here, we can not validate the item, it can only be sent
         # to the finances or back to the internal reviewer.
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer', 'proposeToFinance'])
+        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer', 'wait_advices_from_proposed_to_director'])
         # if emergency is asked, a director may either propose the item to finance or validate it
         item.setEmergency('emergency_asked')
         self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer',
-                                                  'proposeToFinance',
+                                                  'wait_advices_from_proposed_to_director',
                                                   'validate', ])
         item.setEmergency('no_emergency')
         # for now, advisers of the FINANCE_GROUP_IDS[0] can not give the advice
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
-        # proposeToFinance, advice will not be giveable as item.completeness is not 'completeness_complete'
-        self.do(item, 'proposeToFinance')
+        # wait_advices_from_proposed_to_director, advice will not be giveable as item.completeness is not 'completeness_complete'
+        self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
         # delay is not started, it only starts when item is complete
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['delay_started_on'])
         # if we _updateAdvices, infos are still ok
-        item.updateLocalRoles()
+        item.update_local_roles()
         # the item can be sent back to the internal reviewer by any finance role
         self.changeUser('pmFinController')
         self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer'])
@@ -444,7 +427,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # completeness was set automatically to 'completeness_evaluation_asked_again'
         self.changeUser('pmReviewer1')
         self.do(item, 'proposeToDirector')
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # item may be taken back when it is not complete
         self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
         self.changeUser('pmFinController')
@@ -531,22 +514,22 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # as no emergency is asked, the item can not be validated
         self.changeUser('pmReviewer1')
         self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer',
-                                                  'proposeToFinance'])
+                                                  'wait_advices_from_proposed_to_director'])
         # a financial advice can not be 'asked_again'
         self.assertFalse(item.adapted().mayAskAdviceAgain(advice))
         # a director can send the item back to director or internal reviewer even
         # when advice is on the way by finance.  So send it again to finance and take it back
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # completeness was 'completeness_evaluation_asked_again'
         self.assertEqual(item.getCompleteness(), 'completeness_evaluation_asked_again')
-        self.assertEqual(item.query_state(), 'proposed_to_finance')
+        self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
         self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
         # a reviewer can send the item back to the director
         self.do(item, 'backToProposedToDirector')
         # ok now the director can send it again to the finance
         # and finance can adapt the advice
-        self.do(item, 'proposeToFinance')
-        self.assertEqual(item.query_state(), 'proposed_to_finance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
+        self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
         # advice is available to the financial controller
         self.assertEqual(advice.query_state(), 'proposed_to_financial_controller')
         # and is hidden again
@@ -657,7 +640,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # propose the item to the director, he will send item to finance
         self.proposeItem(item)
         self.changeUser('pmReviewer1')
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # finance will add advice and send item back to the internal reviewer
         self.changeUser('pmFinController')
         changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
@@ -708,7 +691,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(advice.query_state(), 'advice_given')
 
     def test_ItemWithTimedOutAdviceIsAutomaticallyValidated(self):
-        '''When an item is 'proposed_to_finance', it may be validated
+        '''When an item is 'proposed_to_finance_waiting_advices', it may be validated
            only by finance group or if emergency is asked.  In case the asked
            advice is timed out, it will be automatically validated.'''
         self.changeUser('admin')
@@ -726,9 +709,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
-        self.do(item, 'proposeToFinance')
-        # item is now 'proposed_to_finance'
-        self.assertEqual(item.query_state(), 'proposed_to_finance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
+        # item is now 'proposed_to_finance_waiting_advices'
+        self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
         # item can not be validated
         self.assertTrue('validate' not in self.transitions(item))
 
@@ -754,7 +737,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertFalse('validate' in self.transitions(item))
         # now does advice timed out
         item.adviceIndex[financial_group_uids[0]]['delay_started_on'] = datetime(2014, 1, 1)
-        item.updateLocalRoles()
+        item.update_local_roles()
         # advice is timed out but as auto validated, it is 'no_more_giveable'
         self.assertEqual(item.adviceIndex[financial_group_uids[0]]['delay_infos']['delay_status'],
                          'no_more_giveable')
@@ -983,7 +966,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # send item to finance
         self.proposeItem(item)
         self.assertEqual(item.query_state(), 'proposed_to_director')
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # give the advice
         self.changeUser('pmFinController')
         advice = createContentInContainer(item,
@@ -1016,8 +999,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(indexAdvisers(item)(), catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
         # send item again to finance
         self.changeUser('pmReviewer1')
-        self.do(item, 'proposeToFinance')
-        self.assertEqual(item.query_state(), 'proposed_to_finance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
+        self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
         self.assertEqual(indexAdvisers(item)(), catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
         # advice is available to the financial controller
         self.changeUser('pmFinController')
@@ -1063,7 +1046,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToProposedToInternalReviewer')
         self.proposeItem(item)
         # send item to finance
-        self.do(item, 'proposeToFinance', comment='Proposed to finances by director')
+        self.do(item, 'wait_advices_from_proposed_to_director', comment='Proposed to finances by director')
         # save event index (position in the history) we will have to check access to
         wf_history_adapter = getAdapter(item, IImioHistory, 'workflow')
         history = wf_history_adapter.getHistory()
@@ -1108,7 +1091,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
-        self.do(item, 'proposeToFinance')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         # make item completeness complete and add advice
         self.changeUser('pmFinController')
         changeCompleteness = item.restrictedTraverse('@@change-item-completeness')
@@ -1273,7 +1256,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertFalse(self.hasPermission(View, item2))
 
         # access is shared accross linked items only if finance adviser
-        # has really access to an item, aka item was set to proposed_to_finance once at least
+        # has really access to an item, aka item was set to proposed_to_finance_waiting_advices once at least
         self.changeUser('pmCreator1')
         item1FinanceNeverAccessed = self.create('MeetingItem')
         financial_group_uids = self.tool.financialGroupUids()
@@ -1292,7 +1275,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # right, now propose it to finance
         self.changeUser('pmManager')
         self.proposeItem(item1FinanceNeverAccessed)
-        self.do(item1FinanceNeverAccessed, 'proposeToFinance')
+        self.do(item1FinanceNeverAccessed, 'wait_advices_from_proposed_to_director')
         # both item are accessible
         self.changeUser('pmFinController')
         self.assertTrue(self.hasPermission(View, item1FinanceNeverAccessed))
@@ -1701,7 +1684,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         self.changeUser('pmManager')
         collegeMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
-        self.do(collegeItem, 'proposeToFinance')
+        self.do(collegeItem, 'wait_advices_from_proposed_to_director')
         self._giveFinanceAdvice(collegeItem, financial_group_uids[0])
         self.presentItem(collegeItem)
         self.closeMeeting(collegeMeeting)
@@ -1809,8 +1792,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                          'trigger_workflow_transitions_until': '__nothing__'},))
         cfg.setItemAutoSentToOtherMCStates(('accepted', 'accepted_and_returned',
                                             'accepted_but_modified', 'itemfrozen', ))
-        cfg.setItemDecidedStates(('accepted', 'accepted_but_modified', 'accepted_and_returned',
-                                  'delayed', 'marked_not_applicable', 'refused', 'returned'))
 
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
@@ -1835,8 +1816,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(item2.getItemClonedToOtherMC(cfg2Id))
         self.decideMeeting(meeting)
 
-        # now in order of cfg.itemDecidedStates
-        # test transitions that will NOt delete the item in the Council
+        # test transitions that will NOT delete the item in the Council
         for tr in ('accept', 'accept_but_modify', 'accept_and_return'):
             self.do(item, tr)
             # still left in the Council
@@ -2139,7 +2119,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             ['backToProposedToCabinetReviewer', 'backToProposedToDirector'])
         meeting = self.create('Meeting', date=DateTime('2018/01/09'))
         self.do(item, 'present')
-        self.assertEqual(meeting.getItems()[0], item)
+        self.assertEqual(meeting.get_items()[0], item)
         self._check_access(
             item, ('pmCreator1', 'pmAdminReviewer1', 'pmInternalReviewer1',
                    'pmReviewer1', 'generalManager', 'bourgmestreManager',

@@ -879,11 +879,11 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.request['comment'] = 'You are not complete'
         self.request.form['form.submitted'] = True
         changeCompleteness()
-
         # Send the item back to internal reviewer due to his incompleteness.
         self.do(item1,
                 'backTo_proposed_to_internal_reviewer_from_waiting_advices',
                 comment='Go back to the abyss')
+
         self.changeUser('pmManager')
         self.do(item1, 'proposeToDirector')
         self.do(item1, 'wait_advices_from_proposed_to_director')
@@ -954,7 +954,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Present this item to a meeting.
         self.changeUser('pmManager')
-        meeting = self.create('Meeting')
+        meeting = self.create('Meeting', date=datetime(2019, 9, 19))
         # Delete recurring items.
         self.deleteAsManager(meeting.get_items()[0].UID())
         self.deleteAsManager(meeting.get_items()[0].UID())

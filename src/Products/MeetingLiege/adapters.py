@@ -623,8 +623,10 @@ class CustomMeetingItem(MeetingItem):
         '''Field is required.'''
         # Value could be '_none_' if it was displayed as listbox or None if
         # it was displayed as radio buttons...  Use 'flex' format
+        tool = api.portal.get_tool('portal_plonemeeting')
+        cfg = tool.getMeetingConfig(self)
         if (not self.isDefinedInTool()) and \
-           ('archivingRef' in self.cfg.getUsedItemAttributes()) and \
+           ('archivingRef' in cfg.getUsedItemAttributes()) and \
            (value == '_none_' or not value):
             return translate('archivingRef_required',
                              domain='PloneMeeting',

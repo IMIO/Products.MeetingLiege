@@ -13,7 +13,6 @@ from collective.iconifiedcategory.utils import get_categorized_elements
 from collective.iconifiedcategory.utils import get_config_root
 from collective.iconifiedcategory.utils import get_group
 from datetime import datetime
-from DateTime import DateTime
 from imio.helpers.cache import cleanRamCacheFor
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
@@ -61,7 +60,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
         self.assertEqual(self.transitions(item),
-                         ['proposeToAdministrativeReviewer', ])
+                         ['proposeToAdministrativeReviewer'])
         # access for observer
         self.changeUser('pmObserver1')
         self.assertTrue(self.hasPermission(View, item))
@@ -76,7 +75,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                          ['proposeToAdministrativeReviewer',
                           'proposeToDirector',
                           'proposeToInternalReviewer',
-                          'validate', ])
+                          'validate'])
         # the pmCreator1 send the item to the administrative reviewer
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
@@ -94,7 +93,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # he may send the item back to the pmCreator1 or send it to the internal reviewer
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated',
-                          'proposeToInternalReviewer', ])
+                          'proposeToInternalReviewer'])
         self.do(item, 'proposeToInternalReviewer')
         # pmAdminReviewer1 can no more edit item but can still view it
         self.assertTrue(self.hasPermission(View, item))
@@ -143,7 +142,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated',
                           'backToProposedToDirector', ])
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         # the item is available for the meeting
         availableItemsQuery = queryparser.parseFormquery(meeting, meeting.adapted()._availableItemsQuery())
         availableItemUids = [brain.UID for brain in self.portal.portal_catalog(availableItemsQuery)]
@@ -325,16 +324,24 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.query_state(), 'proposed_to_director')
         # from here, we can not validate the item, it can only be sent
         # to the finances or back to the internal reviewer.
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer', 'wait_advices_from_proposed_to_director'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'backToProposedToInternalReviewer',
+                          'wait_advices_from_proposed_to_director'])
         # if emergency is asked, a director may either propose the item to finance or validate it
         item.setEmergency('emergency_asked')
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer',
-                                                  'wait_advices_from_proposed_to_director',
-                                                  'validate', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'backToProposedToInternalReviewer',
+                          'validate',
+                          'wait_advices_from_proposed_to_director'])
         item.setEmergency('no_emergency')
         # for now, advisers of the FINANCE_GROUP_IDS[0] can not give the advice
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
-        # wait_advices_from_proposed_to_director, advice will not be giveable as item.completeness is not 'completeness_complete'
+        # wait_advices_from_proposed_to_director, advice will not be giveable
+        # as item.completeness is not 'completeness_complete'
         self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
         # delay is not started, it only starts when item is complete
@@ -343,7 +350,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.update_local_roles()
         # the item can be sent back to the internal reviewer by any finance role
         self.changeUser('pmFinController')
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_proposed_to_internal_reviewer_from_waiting_advices'])
         # set the item to "incomplete"
         self.assertTrue(item.adapted().mayEvaluateCompleteness())
         item.setCompleteness('completeness_incomplete')
@@ -577,7 +585,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertFalse(self.hasPermission(ModifyPortalContent, advice))
         # if the advice is no more editable, it's state switched to 'advice_given'
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         # freeze the meeting, the advice will be set to 'advice_given'
         # the advice could still be given if not already in state 'presented' and 'itemfrozen'
         self.presentItem(item)
@@ -622,9 +630,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # remove pmManager from 'developers' so he will not have the 'MeetingReviewer' role
         # managed by the meetingadviceliege_workflow and giving access to 'Access contents information'
-        for group in self.portal.portal_membership.getMemberById('pmManager').getGroups():
-            if group.startswith(self.developers_uid):
-                self._removePrincipalFromGroup('pmManager', group)
+        self.changeUser('pmManager')
+        dev_groups = [grp for grp in self.member.getGroups()
+                      if grp.startswith(self.developers_uid)]
+        self._removePrincipalFromGroups('pmManager', dev_groups)
 
         self.changeUser('pmCreator1')
         # create an item and ask finance advice
@@ -681,7 +690,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # create a meeting and make sure it can be frozen, aka it will
         # change not viewable advice state to 'advice_given'
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         self.do(item, 'present')
         # advice state is still given
         self.assertEqual(advice.query_state(), 'advice_given')
@@ -756,7 +765,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # in the adviceIndex because _updateAdvices is called during _updateAdvices
         self.do(item, 'validate')
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2015/05/05')
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.assertEqual(advice.query_state(), 'advice_given')
         self.assertFalse(item.adviceIndex[financial_group_uids[0]]['advice_editable'])
@@ -784,14 +793,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='An item to return')
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         # present the item into the meeting
         self.presentItem(item)
         self.decideMeeting(meeting)
         # now the item can be 'returned'
         self.assertTrue('return' in self.transitions(item))
         # no duplicated for now
-        self.assertTrue(not item.getBRefs('ItemPredecessor'))
+        self.assertTrue(not item.get_successors())
         self.do(item, 'return')
         self.assertEqual(item.query_state(), 'returned')
 
@@ -802,7 +811,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # now that the item is 'returned', it has been duplicated
         # and the new item has been validated
         self.changeUser('pmManager')
-        returned = item.getBRefs('ItemPredecessor')
+        returned = item.get_successors()
         self.assertEqual(len(returned), 1)
         returned = returned[0]
         self.assertEqual(returned.query_state(), 'validated')
@@ -826,7 +835,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # create meetingFolder in cfg2 for pmCreator1
         self.getMeetingFolder(cfg2)
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         # present the item into the meeting
         self.presentItem(item)
         self.presentItem(item2)
@@ -839,8 +848,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # and both are duplicated in current config and set to 'validated'
         self.do(item, 'accept_and_return')
         self.do(item2, 'accept_and_return')
-        returned = item.getBRefs('ItemPredecessor')
-        returned2 = item2.getBRefs('ItemPredecessor')
+        returned = item.get_successors()
+        returned2 = item2.get_successors()
         self.assertEqual(len(returned), 1)
         self.assertEqual(len(returned2), 2)
         returned = returned[0]
@@ -869,7 +878,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # informations about "needs to be sent to other mc" is kept
         self.assertEqual(duplicatedLocally.getOtherMeetingConfigsClonableTo(), (cfg2Id, ))
         # now if duplicated item is accepted again, it will not be sent again the council
-        meeting2 = self.create('Meeting', date='2014/02/02 09:00:00')
+        meeting2 = self.create('Meeting')
         # present the item into the meeting
         self.presentItem(duplicatedLocally)
         self.decideMeeting(meeting2)
@@ -879,7 +888,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # that was sent in the council is 'delayed' or 'marked_not_applicable'
         # so insert duplicatedToCfg2 in a meeting and 'delay' it
         self.setMeetingConfig(cfg2Id)
-        councilMeeting = self.create('Meeting', date='2015/01/15 09:00:00')
+        councilMeeting = self.create('Meeting')
         self.setMeetingConfig(cfgId)
         # meetingConfig2 is using categories
         duplicatedToCfg2.setCategory('deployment')
@@ -901,7 +910,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # with an item on the council that is not 'delayed' or 'marked_not_applicable' is
         # not sent again
         self.changeUser('pmManager')
-        returned = duplicatedLocally.getBRefs('ItemPredecessor')
+        returned = duplicatedLocally.get_successors()
         newduplicated1, newduplicated2 = returned
         # original creator was kept
         self.assertEqual(newduplicated1.Creator(), item.Creator())
@@ -911,7 +920,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         else:
             newDuplicatedLocally = newduplicated1
         self.assertEqual(newDuplicatedLocally.portal_type, cfg.getItemTypeName())
-        meeting3 = self.create('Meeting', date='2014/02/02 09:00:00')
+        meeting3 = self.create('Meeting')
         self.presentItem(newDuplicatedLocally)
         self.decideMeeting(meeting3)
         # it is considered sent, so accepting it will not send it again
@@ -936,7 +945,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(dupLinkedItem.getRawManuallyLinkedItems(), [duplicatedLocally.UID()])
         self.assertTrue(getLastWFAction(dupLinkedItem, 'Duplicate and keep link'))
         self.assertEqual(dupLinkedItem.getOtherMeetingConfigsClonableTo(), (cfg2Id,))
-        meeting4 = self.create('Meeting', date='2014/03/03 09:00:00')
+        meeting4 = self.create('Meeting')
         self.presentItem(dupLinkedItem)
         self.decideMeeting(meeting4)
         # once accepted, it has been sent to the council
@@ -1145,7 +1154,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.validateItem(item)
         self.changeUser('pmManager')
         self.assertFalse(self.hasPermission(DeleteObjects, item))
-        meeting = self.create('Meeting', date='2015/01/01')
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.assertEqual(item.query_state(), 'presented')
         self.assertFalse(self.hasPermission(DeleteObjects, item))
@@ -1166,14 +1175,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item, advice = self._setupCollegeItemWithFinanceAdvice()
         # present the item into the meeting
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date='2014/01/01 09:00:00')
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.decideMeeting(meeting)
         self.do(item, 'return')
         self.assertEqual(item.query_state(), 'returned')
         # now that the item is 'returned', it has been duplicated
         # and the finance advisers have access to the newItem
-        newItem = item.getBRefs('ItemPredecessor')[0]
+        newItem = item.get_successors()[0]
         financial_group_uids = self.tool.financialGroupUids()
         self.assertEqual(newItem.__ac_local_roles__['{0}_advisers'.format(financial_group_uids[0])],
                          ['Reader', ])
@@ -1185,7 +1194,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setOtherMeetingConfigsClonableTo((self.meetingConfig2.getId(), ))
         self.do(item, 'accept_and_return')
         self.assertEqual(item.query_state(), 'accepted_and_returned')
-        predecessors = item.getBRefs('ItemPredecessor')
+        predecessors = item.get_successors()
         self.assertEqual(len(predecessors), 2)
         self.assertEqual(predecessors[0].__ac_local_roles__['{0}_advisers'.format(financial_group_uids[0])],
                          ['Reader', ])
@@ -1203,15 +1212,15 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'backToItemFrozen')
         self.do(item, 'return')
         self.assertEqual(item.query_state(), 'returned')
-        newItem = item.getBRefs('ItemPredecessor')[0]
+        newItem = item.get_successors()[0]
         self.assertEqual(newItem.adapted().getItemWithFinanceAdvice(), item)
         # right accept_and_return newItem
-        meeting2 = self.create('Meeting', date='2015/01/01 09:00:00')
+        meeting2 = self.create('Meeting')
         self.presentItem(newItem)
         self.decideMeeting(meeting2)
         self.do(newItem, 'accept_and_return')
         self.assertEqual(newItem.query_state(), 'accepted_and_returned')
-        predecessors = newItem.getBRefs('ItemPredecessor')
+        predecessors = newItem.get_successors()
         self.assertEqual(len(predecessors), 2)
         self.assertEqual(predecessors[0].__ac_local_roles__['{0}_advisers'.format(financial_group_uids[0])],
                          ['Reader', ])
@@ -1365,22 +1374,22 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The first item')
         # pmCreator may only 'proposeToAdministrativeReviewer'
-        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer', ])
+        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         # if there is no administrative reviewer, a creator can send the item
         # directly to internal reviewer.
         self._removeAllMembers(darGroup, darMembers)
-        self.assertEqual(self.transitions(item), ['proposeToInternalReviewer', ])
+        self.assertEqual(self.transitions(item), ['proposeToInternalReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         # if there is neither administrative nor internal reviewer, a creator
         # can send the item directly to director.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['proposeToDirector', ])
+        self.assertEqual(self.transitions(item), ['proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
         # if there is an administrative reviewer but no internal reviewer, the
         # creator may only send the item to administative reviewer.
         self._addAllMembers(darGroup, darMembers)
-        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer', ])
+        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self._addAllMembers(dirGroup, dirMembers)
 
@@ -1389,22 +1398,22 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToAdministrativeReviewer', ])
+                                                  'proposeToAdministrativeReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to give a normal advice and can propose to
         # administrative reviewer.
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToAdministrativeReviewer', ])
+                                                  'proposeToAdministrativeReviewer'])
         # If there is no administrative reviewer, the user can send the item to
         # internal reviewer.
         self._removeAllMembers(darGroup, darMembers)
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToInternalReviewer', ])
+                                                  'proposeToInternalReviewer'])
         # If there are neither administrative nor internal reviewer, allow to
         # send directly to direction.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['backToItemCreated', 'proposeToDirector', ])
+        self.assertEqual(self.transitions(item), ['backToItemCreated', 'proposeToDirector'])
         self._addAllMembers(darGroup, darMembers)
         self._addAllMembers(dirGroup, dirMembers)
         self.do(item, 'backToItemCreated')
@@ -1415,12 +1424,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # an administrative reviewer can send an item in creation directly to
         # the internal reviewer.
         self.changeUser('pmAdminReviewer1')
-        self.assertEqual(self.transitions(item), ['proposeToInternalReviewer', ])
+        self.assertEqual(self.transitions(item), ['proposeToInternalReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         # if there is no internal reviewer, an administrative reviewer can only
         # send the item to director.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['proposeToDirector', ])
+        self.assertEqual(self.transitions(item), ['proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self._addAllMembers(dirGroup, dirMembers)
         # an item which is proposed to administrative reviewer can be send to
@@ -1429,12 +1438,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmAdminReviewer1')
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToInternalReviewer', ])
+                                                  'proposeToInternalReviewer'])
         # if there is no internal reviewer, an administrative reviewer can only
         # send the item to director.
         self._removeAllMembers(dirGroup, dirMembers)
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         self._addAllMembers(dirGroup, dirMembers)
         self.do(item, 'backToItemCreated')
 
@@ -1442,18 +1451,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToInternalReviewer', ])
+                                                  'proposeToInternalReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # internal reviewer.
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToInternalReviewer', ])
+                                                  'proposeToInternalReviewer'])
         # If there is no internal reviewer, the user can send the item to
         # director.
         self._removeAllMembers(dirGroup, dirMembers)
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         self._addAllMembers(dirGroup, dirMembers)
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
@@ -1484,7 +1493,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # An internal reviewer can ask an advice to internal reviewer when the
         # item is in creation.
-        self.developers.item_advice_states = ('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, )
+        self.developers.item_advice_states = (
+            '%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, )
         item.setOptionalAdvisers((self.developers_uid, ))
         item._update_after_edit()
         self.changeUser('pmInternalReviewer1')
@@ -1503,20 +1513,20 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # a reviewer can send an item to director, aka himself
         self.changeUser('pmReviewer1')
         self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # A reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'askAdvicesByItemCreator')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         self.do(item, 'backToItemCreated')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
@@ -1527,13 +1537,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmReviewer1')
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         # A director can send an item from internal reviewer to director.
         self.changeUser('pmAdminReviewer1')
         self.do(item, 'proposeToInternalReviewer')
         self.changeUser('pmReviewer1')
         self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         self.do(item, 'backToProposedToAdministrativeReviewer')
         self.do(item, 'backToItemCreated')
 
@@ -1542,17 +1552,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # back to him.
         self.do(item, 'proposeToDirector')
         self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer',
-                                                  'validate', ])
+                                                  'validate'])
         # If there is no internal reviewer, allow to send the item back to
         # administrative reviewer.
         self._removeAllMembers(dirGroup, dirMembers)
         self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'validate', ])
+                                                  'validate'])
         # If there is neither internal nor administrative reviewer, allow to
         # send the item back to creation.
         self._removeAllMembers(darGroup, darMembers)
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'validate', ])
+                                                  'validate'])
         self._addAllMembers(darGroup, darMembers)
         self._addAllMembers(dirGroup, dirMembers)
         # Send the item back to internal reviewer.
@@ -1561,12 +1571,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # to creator or to administrative reviewer.
         self.changeUser('pmInternalReviewer1')
         self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
         # If there is no administrative reviewer, allow the item to be sent
         # back to creation.
         self._removeAllMembers(darGroup, darMembers)
         self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector', ])
+                                                  'proposeToDirector'])
 
     def _checkItemWithoutCategory(self, item, originalCategory):
         '''Make sure that an item without category cannot be sent to anybody.'''
@@ -1591,7 +1601,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item2 = self.create('MeetingItem')
-        meeting = self.create('Meeting', date=DateTime())
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.freezeMeeting(meeting)
         item2.setPreferredMeeting(meeting.UID())
@@ -1683,7 +1693,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.proposeItem(collegeItem)
 
         self.changeUser('pmManager')
-        collegeMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        collegeMeeting = self.create('Meeting')
         self.do(collegeItem, 'wait_advices_from_proposed_to_director')
         self._giveFinanceAdvice(collegeItem, financial_group_uids[0])
         self.presentItem(collegeItem)
@@ -1693,7 +1703,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # in the council
         # use groups as categories
         self.setMeetingConfig(cfg2Id)
-        councilMeeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        councilMeeting = self.create('Meeting')
         self.presentItem(councilItem)
         self.decideMeeting(councilMeeting)
         return collegeItem, councilItem, collegeMeeting, councilMeeting
@@ -1757,7 +1767,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        meeting = self.create('Meeting')
         item = self.create('MeetingItem')
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         self.presentItem(item)
@@ -1804,7 +1814,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item4.setOtherMeetingConfigsClonableTo((cfg2Id, ))
         item5 = self.create('MeetingItem')
         item5.setOtherMeetingConfigsClonableTo((cfg2Id, ))
-        meeting = self.create('Meeting', date=DateTime('2015/11/11'))
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.presentItem(item2)
         self.presentItem(item3)
@@ -1828,26 +1838,26 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item2, 'delay')
         self.assertFalse(item2.getItemClonedToOtherMC(cfg2Id))
         # but original delay action was kept, the item was duplicated in the College
-        backRefs = item2.getBRefs('ItemPredecessor')
+        backRefs = item2.get_successors()
         self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item2.portal_type)
 
         # mark_not_applicable the College item, it will automatically delete the Council item
         self.do(item3, 'mark_not_applicable')
         self.assertFalse(item3.getItemClonedToOtherMC(cfg2Id))
         # no more backRefs
-        self.assertFalse(item3.getBRefs('ItemPredecessor'))
+        self.assertFalse(item3.get_successors())
 
         # refuse the College item, it will automatically delete the Council item
         self.do(item4, 'refuse')
         self.assertFalse(item4.getItemClonedToOtherMC(cfg2Id))
         # no more backRefs
-        self.assertFalse(item4.getBRefs('ItemPredecessor'))
+        self.assertFalse(item4.get_successors())
 
         # return the College item, it will automatically delete the Council item
         self.do(item5, 'return')
         self.assertFalse(item5.getItemClonedToOtherMC(cfg2Id))
         # but original delay action was kept, the item was duplicated in the College
-        backRefs = item5.getBRefs('ItemPredecessor')
+        backRefs = item5.get_successors()
         self.assertTrue(len(backRefs) == 1 and backRefs[0].portal_type == item5.portal_type)
 
     def test_CreatorMayAskAdviceOnlyIfRelevant(self):
@@ -1908,7 +1918,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem')
         self.changeUser('pmManager')
-        meeting = self.create('Meeting', date=DateTime())
+        meeting = self.create('Meeting')
         self.presentItem(item)
         self.closeMeeting(meeting)
         self.assertEqual(item.query_state(), 'accepted')
@@ -2117,7 +2127,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(
             self.transitions(item),
             ['backToProposedToCabinetReviewer', 'backToProposedToDirector'])
-        meeting = self.create('Meeting', date=DateTime('2018/01/09'))
+        meeting = self.create('Meeting')
         self.do(item, 'present')
         self.assertEqual(meeting.get_items()[0], item)
         self._check_access(
@@ -2149,7 +2159,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             write=False)
         self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         self.assertEqual(item.query_state(), 'delayed')
-        cloned_item = item.getBRefs('ItemPredecessor')[0]
+        cloned_item = item.get_successors()[0]
         self.assertEqual(cloned_item.query_state(), 'itemcreated')
         # only viewable by proposingGroup members
         self._check_access(
@@ -2203,7 +2213,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setDescription('<p>Sample description</p>')
         item.setMotivation('<p>Sample motivation</p>')
         item.setDecision('<p>Sample decision</p>')
-        self.create('Meeting', date=DateTime('2018/01/22'))
+        self.create('Meeting')
 
         # full WF as siteadmin
         self.changeUser('siteadmin')
@@ -2261,7 +2271,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
 
         item = self.create('MeetingItem')
-        self.create('Meeting', date=DateTime('2018/01/30'))
+        self.create('Meeting')
 
         sc_uid = org_id_to_uid('sc')
         bg_uid = org_id_to_uid('bourgmestre')

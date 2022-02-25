@@ -95,6 +95,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self._addPrincipalToGroup('pmFinController', '{0}_financialcontrollers'.format(financial_group_uids[0]))
         self._addPrincipalToGroup('pmFinReviewer', '{0}_financialreviewers'.format(financial_group_uids[0]))
         self._addPrincipalToGroup('pmFinManager', '{0}_financialmanagers'.format(financial_group_uids[0]))
+        self.meetingConfig.setKeepAccessToItemWhenAdvice('is_given')
 
     def _giveFinanceAdvice(self, item, adviser_group_id):
         """Given an p_item in state 'proposed_to_finance_waiting_advices', give the p_adviser_group_id advice on it."""

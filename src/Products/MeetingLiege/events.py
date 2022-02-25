@@ -74,9 +74,9 @@ def onItemLocalRolesUpdated(item, event):
     org_uid = item.adapted().getFinanceGroupUIDForItem()
     if org_uid and item.query_state() in cfg.getItemDecidedStates():
         adviserGroupId = '%s_advisers' % org_uid
-        # if item is decided, we give the _advisers, the 'MeetingMember'
+        # if item is decided, we give the _advisers, the 'Contributor'
         # role on the item so he is able to add decision annexes
-        item.manage_addLocalRoles(adviserGroupId, ('MeetingMember', ))
+        item.manage_addLocalRoles(adviserGroupId, ('Contributor', ))
 
 
 def onAdviceAdded(advice, event):
@@ -172,7 +172,8 @@ def onAdvicesUpdated(item, event):
     '''
       When advices have been updated, we need to check that finance advice marked as 'advice_editable' = True
       are really editable, this could not be the case if the advice is signed.
-      In a second step, if item is 'backToProposedToInternalReviewer', we need to reinitialize finance advice delay.
+      In a second step, if item is 'backTo_proposed_to_internal_reviewer_from_waiting_advices',
+      we need to reinitialize finance advice delay.
     '''
     for org_uid, adviceInfo in item.adviceIndex.items():
         # special behaviour for finance advice
@@ -180,11 +181,11 @@ def onAdvicesUpdated(item, event):
             continue
 
         # when a finance has accessed an item, he will always be able to access it after
-        if not adviceInfo['item_viewable_by_advisers'] and \
-           getLastWFAction(item, 'proposeToFinance'):
-            # give access to the item to the finance group
-            item.manage_addLocalRoles('%s_advisers' % org_uid, (READER_USECASES['advices'],))
-            item.adviceIndex[org_uid]['item_viewable_by_advisers'] = True
+        # if not adviceInfo['item_viewable_by_advisers'] and \
+        #    getLastWFAction(item, 'proposeToFinance'):
+        #     # give access to the item to the finance group
+        #     item.manage_addLocalRoles('%s_advisers' % org_uid, (READER_USECASES['advices'],))
+        #     item.adviceIndex[org_uid]['item_viewable_by_advisers'] = True
         # the advice delay is really started when item completeness is 'complete' or 'evaluation_not_required'
         # until then, we do not let the delay start
         if not item.getCompleteness() in ('completeness_complete', 'completeness_evaluation_not_required'):
@@ -204,8 +205,9 @@ def onAdvicesUpdated(item, event):
                 wfTool.doActionFor(item, 'validate', comment='item_wf_changed_finance_advice_timed_out')
                 item.REQUEST.set('mayValidate', False)
 
-    # when item is 'backToProposedToInternalReviewer', reinitialize advice delay
-    if event.triggered_by_transition == 'backToProposedToInternalReviewer':
+    # when item is 'backTo_proposed_to_internal_reviewer_from_waiting_advices',
+    # reinitialize advice delay
+    if event.triggered_by_transition == 'backTo_proposed_to_internal_reviewer_from_waiting_advices':
         financeGroupId = item.adapted().getFinanceGroupUIDForItem()
         if financeGroupId in item.adviceIndex:
             adviceInfo = item.adviceIndex[financeGroupId]

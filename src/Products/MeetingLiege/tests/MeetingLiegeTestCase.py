@@ -62,4 +62,4 @@ class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):
         cfg.setUsedAdviceTypes(cfg.getUsedAdviceTypes() + ('asked_again', ))
         cfg.setItemAdviceStates(('proposed_to_director_waiting_advices', ))
         cfg.setItemAdviceEditStates = (('proposed_to_director_waiting_advices', ))
-        cfg.setKeepAccessToItemWhenAdviceIsGiven(True)
+        cfg.setKeepAccessToItemWhenAdvice('is_given')

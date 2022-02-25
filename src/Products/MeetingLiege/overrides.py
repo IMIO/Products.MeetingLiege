@@ -68,16 +68,10 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
             # we want only to show comment to the finance group when it is the finance group
             # that triggered the transition...
             action = event['action']
-            if action in ['backToProposedToInternalReviewer', 'proposeToFinance']:
-                isCurrentUserInFDGroup = self.context.adapted().isCurrentUserInFDGroup(financeAdvice)
-                if isCurrentUserInFDGroup and action == 'proposeToFinance':
-                    return True
-                else:
-                    # check that it is the finance group that made the transition 'backToProposedToInternalReviewer'
-                    previousEvent = getPreviousEvent(
-                        self.context, event, checkMayViewEvent=False, checkMayViewComment=False)
-                    if previousEvent and previousEvent['review_state'] == 'proposed_to_finance_waiting_advices':
-                        return True
+            if action in ['backTo_proposed_to_internal_reviewer_from_waiting_advices',
+                          'wait_advices_from_proposed_to_director'] and \
+               self.context.adapted().isCurrentUserInFDGroup(financeAdvice):
+                userMayAccessComment = True
         return userMayAccessComment
 
     @memoize

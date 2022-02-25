@@ -108,7 +108,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(ModifyPortalContent, item))
         # he may send the item back to the administrative reviewer or send it to the reviewer (director)
         self.assertEqual(self.transitions(item),
-                         ['backToProposedToAdministrativeReviewer',
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
                           'proposeToDirector', ])
         self.do(item, 'proposeToDirector')
         # pmInternalReviewer1 can no more edit item but can still view it
@@ -125,8 +126,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # he may send the item back to the internal reviewer, validate it
         # or send it back to itemCreated.
         self.assertEqual(self.transitions(item),
-                         ['backToProposedToInternalReviewer',
-                          'validate', ])
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'backToProposedToInternalReviewer',
+                          'validate'])
         self.do(item, 'validate')
         self.assertTrue(self.hasPermission(View, item))
         # pmReviewer1 can no more edit item but can still view it
@@ -141,11 +144,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # the item can be removed sent back to the reviewer (director) or sent back in 'itemcreated'
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated',
-                          'backToProposedToDirector', ])
+                          'backToProposedToAdministrativeReviewer',
+                          'backToProposedToDirector',
+                          'backToProposedToInternalReviewer'])
         meeting = self.create('Meeting')
         # the item is available for the meeting
-        availableItemsQuery = queryparser.parseFormquery(meeting, meeting.adapted()._availableItemsQuery())
-        availableItemUids = [brain.UID for brain in self.portal.portal_catalog(availableItemsQuery)]
+        availableItemsQuery = queryparser.parseFormquery(meeting, meeting._available_items_query())
+        availableItemUids = [brain.UID for brain in self.catalog(availableItemsQuery)]
         self.assertTrue(item.UID() in availableItemUids)
         self.do(item, 'present')
         # access for observer
@@ -153,8 +158,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, item))
         self.changeUser('pmManager')
         self.assertEqual(item.query_state(), 'presented')
-        # the item can be removed from the meeting or sent back in 'itemcreated'
-        self.assertEqual(self.transitions(item), ['backToValidated', ])
+        # the item can be removed from the meeting
+        self.assertEqual(self.transitions(item), ['backToValidated', 'return_to_proposing_group'])
         # the meeting can now be frozen then decided
         self.do(meeting, 'freeze')
         # access for observer
@@ -164,7 +169,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # the item has been automatically frozen
         self.assertEqual(item.query_state(), 'itemfrozen')
         # but the item can be sent back to 'presented'
-        self.assertEqual(self.transitions(item), ['backToPresented', ])
+        self.assertEqual(self.transitions(item), ['backToPresented', 'return_to_proposing_group'])
         self.do(meeting, 'decide')
         # the item is still frozen but can be decided
         self.assertEqual(item.query_state(), 'itemfrozen')
@@ -177,7 +182,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                           'mark_not_applicable',
                           'pre_accept',
                           'refuse',
-                          'return'])
+                          'return',
+                          'return_to_proposing_group'])
         # if we pre_accept an item, we can accept it after
         self.do(item, 'pre_accept')
         # access for observer
@@ -232,15 +238,15 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                                    domain='PloneMeeting',
                                                    context=self.request)
         self.assertEqual(translate(
-            item.wfConditions().mayAskAdvicesByItemCreator().msg,
+            item.wfConditions().mayWait_advices(item.query_state(), None).msg,
             context=self.request), advice_required_to_ask_advices)
         # now ask 'vendors' advice
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToAdministrativeReviewer', ])
+        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer',
+                                                  'wait_advices_from_itemcreated'])
         # give advice
-        self.do(item, 'askAdvicesByItemCreator')
+        self.do(item, 'wait_advices_from_itemcreated')
         # pmReviewer2 is adviser for vendors
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
@@ -249,7 +255,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                              'advice_type': u'positive',
                                              'advice_comment': RichTextValue(u'My comment vendors')})
         # no more advice to give
-        self.assertTrue(not item.hasAdvices(toGive=True))
+        self.assertFalse(item.hasAdvices(toGive=True))
         # item may be proposed directly to administrative reviewer
         # from state 'itemcreated_waiting_advices'
         # we continue wf as internal reviewer may also ask advice
@@ -259,8 +265,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToInternalReviewer')
         self.changeUser('pmInternalReviewer1')
         # no advice to give so not askable
-        self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector', ])
+        self.assertEqual(self.transitions(item), ['backToItemCreated',
+                                                  'backToProposedToAdministrativeReviewer',
+                                                  'proposeToDirector'])
         # advice could be asked again
         self.assertTrue(item.adapted().mayAskAdviceAgain(advice))
         item.setOptionalAdvisers((self.vendors_uid, self.developers_uid))
@@ -268,17 +275,21 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # now that there is an advice to give (developers)
         # internal reviewer may ask it
         self.assertTrue(self.tool.userIsAmong(['internalreviewers']))
-        self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
-                                                  'backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'wait_advices_from_proposed_to_internal_reviewer'])
         # it is the case for the director as well without being internal reviewer
         self.changeUser('pmReviewer1')
         self.assertFalse(self.tool.userIsAmong(['internalreviewers']))
-        self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
-                                                  'backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector', ])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'wait_advices_from_proposed_to_internal_reviewer'])
         # ask advice
-        self.do(item, 'askAdvicesByInternalReviewer')
+        self.do(item, 'wait_advices_from_proposed_to_internal_reviewer')
         # pmAdviser1 is adviser for developers
         self.changeUser('pmAdviser1')
         createContentInContainer(item,
@@ -356,7 +367,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(item.adapted().mayEvaluateCompleteness())
         item.setCompleteness('completeness_incomplete')
         item._update_after_edit()
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_proposed_to_internal_reviewer_from_waiting_advices'])
         # pmFinController may not add advice for FINANCE_GROUP_IDS[0]
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and not toEdit)
@@ -369,7 +381,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         changeCompleteness()
         self.assertEqual(item.getCompleteness(), 'completeness_complete')
         # can be sent back even if considered complete
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_proposed_to_internal_reviewer_from_waiting_advices'])
         # but now, advice is giveable
         self.assertTrue(item.adviceIndex[financial_group_uids[0]]['advice_addable'])
         # and delay to give advice is started
@@ -412,7 +425,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # is stopped, and when item is sent back to the finance, advice delay does not
         # start immediatelly because item completeness is automatically set to 'evaluate again'
         # for now delay is started and advice is editable
-        self.do(item, 'backToProposedToInternalReviewer')
+        self.do(item, 'backTo_proposed_to_internal_reviewer_from_waiting_advices')
         # finance access is kept when item is sent back to internal reviewer no matter itemAdviceXXXStates
         self.assertTrue(self.hasPermission(View, item))
         self.assertFalse('proposed_to_internal_reviewer' in cfg.getItemAdviceStates())
@@ -424,7 +437,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(0)
         self.assertEqual(retrievedAdvice['metadata']['sys_metadata']['comment'],
                          ADVICE_GIVEN_HISTORIZED_COMMENT)
-
         # advice delay is no more started and advice is no more editable
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_editable'])
@@ -435,9 +447,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # completeness was set automatically to 'completeness_evaluation_asked_again'
         self.changeUser('pmReviewer1')
         self.do(item, 'proposeToDirector')
+        ask_advice_again = advice.restrictedTraverse('@@change-advice-asked-again')
+        ask_advice_again()
         self.do(item, 'wait_advices_from_proposed_to_director')
         # item may be taken back when it is not complete
-        self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
+        self.assertEqual(self.transitions(item), ['backTo_proposed_to_director_from_waiting_advices'])
         self.changeUser('pmFinController')
         # delay did not start
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
@@ -521,9 +535,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # now an item with a negative financial advice back to the director
         # as no emergency is asked, the item can not be validated
         self.changeUser('pmReviewer1')
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer',
+        ask_advice_again()
+        self.assertEqual(self.transitions(item), ['backToItemCreated',
+                                                  'backToProposedToAdministrativeReviewer',
+                                                  'backToProposedToInternalReviewer',
                                                   'wait_advices_from_proposed_to_director'])
-        # a financial advice can not be 'asked_again'
+        # financial advice is asked_again and can no more be
+        self.assertEqual(advice.advice_type, 'asked_again')
         self.assertFalse(item.adapted().mayAskAdviceAgain(advice))
         # a director can send the item back to director or internal reviewer even
         # when advice is on the way by finance.  So send it again to finance and take it back
@@ -531,9 +549,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # completeness was 'completeness_evaluation_asked_again'
         self.assertEqual(item.getCompleteness(), 'completeness_evaluation_asked_again')
         self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
-        self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
+        self.assertEqual(self.transitions(item), ['backTo_proposed_to_director_from_waiting_advices'])
         # a reviewer can send the item back to the director
-        self.do(item, 'backToProposedToDirector')
+        self.do(item, 'backTo_proposed_to_director_from_waiting_advices')
         # ok now the director can send it again to the finance
         # and finance can adapt the advice
         self.do(item, 'wait_advices_from_proposed_to_director')
@@ -604,7 +622,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'accept')
         self.assertEqual(item.query_state(), 'accepted')
         self.changeUser('pmFinController')
-        self.assertEqual(item.__ac_local_roles__[adviserGroupId], ['Reader', 'MeetingMember'])
+        self.assertEqual(item.__ac_local_roles__[adviserGroupId], ['Reader', 'Contributor'])
         self.changeUser('pmFinController')
         self.assertFalse(get_annexes(item, portal_types=['annexDecision']))
         # finance user is able to add a decision annex
@@ -663,7 +681,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                              'advice_type': u'positive_finance',
                                              'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
                                              'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
-        self.do(item, 'backToProposedToInternalReviewer')
+        self.do(item, 'backTo_proposed_to_internal_reviewer_from_waiting_advices')
         # internal reviewer will send item to the director that will ask emergency
         self.changeUser('pmInternalReviewer1')
         self.do(item, 'proposeToDirector')
@@ -1008,6 +1026,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(indexAdvisers(item)(), catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
         # send item again to finance
         self.changeUser('pmReviewer1')
+        ask_advice_again = advice.restrictedTraverse('@@change-advice-asked-again')
+        ask_advice_again()
         self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
         self.assertEqual(indexAdvisers(item)(), catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
@@ -1061,14 +1081,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         history = wf_history_adapter.getHistory()
         proposedToFinancesViewableIndex = history.index(history[-1])
         # now finance send it back to the internal reviewer
-        self.do(item, 'backToProposedToInternalReviewer')
+        self.do(item, 'backTo_proposed_to_internal_reviewer_from_waiting_advices')
         # save event
         # clean memoize
         getattr(wf_history_adapter, Memojito.propname).clear()
         history = wf_history_adapter.getHistory()
         proposedToInternalReviewerViewableIndex = history.index(history[-1])
 
-        # ok now, check, the only viewable events for finance grou members
+        # ok now, check, the only viewable events for finance group members
         # should be proposedToFinancesViewableIndex and proposedToInternalReviewerViewableIndex
         viewableCommentIndexes = (proposedToFinancesViewableIndex, proposedToInternalReviewerViewableIndex)
         self.changeUser('pmFinController')
@@ -1229,7 +1249,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         # still works after an _updateAdvices
         self.changeUser('siteadmin')
-        self.tool.updateAllLocalRoles()
+        self.tool.update_all_local_roles()
         self.changeUser('pmManager')
         self.assertEqual(predecessors[0].__ac_local_roles__['{0}_advisers'.format(financial_group_uids[0])],
                          ['Reader', ])
@@ -1397,10 +1417,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.vendors.item_advice_states = ('%s__state__itemcreated_waiting_advices' % cfgId, )
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToAdministrativeReviewer'])
+        self.assertEqual(self.transitions(item), ['proposeToAdministrativeReviewer',
+                                                  'wait_advices_from_itemcreated'])
         self._checkItemWithoutCategory(item, item.getCategory())
-        self.do(item, 'askAdvicesByItemCreator')
+        self.do(item, 'wait_advices_from_itemcreated')
         # The user is not forced to give a normal advice and can propose to
         # administrative reviewer.
         self.assertEqual(self.transitions(item), ['backToItemCreated',
@@ -1875,15 +1895,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item._update_after_edit()
         # for now this advice may be asked
         self.assertFalse(self.vendors.item_advice_states)
-        self.assertIn('askAdvicesByItemCreator', self.transitions(item))
+        self.assertIn('wait_advices_from_itemcreated', self.transitions(item))
         # now restrict 'vendors' item_advice_states to 'proposed_to_internal_reviewer_waiting_advices'
-        self.vendors.item_advice_states = ('%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, )
-        self.assertNotIn('askAdvicesByItemCreator', self.transitions(item))
+        self.vendors.item_advice_states = (
+            '%s__state__proposed_to_internal_reviewer_waiting_advices' % cfgId, )
+        notify(ObjectModifiedEvent(self.vendors))
+        self.assertNotIn('wait_advices_from_itemcreated', self.transitions(item))
         # if another advice is asked, then the transition shows up
         self.assertFalse(self.developers.item_advice_states)
         item.setOptionalAdvisers((self.vendors_uid, self.developers_uid))
         item._update_after_edit()
-        self.assertIn('askAdvicesByItemCreator', self.transitions(item))
+        self.assertIn('wait_advices_from_itemcreated', self.transitions(item))
 
         # now test when item is 'proposed_to_internal_reviewer_waiting_advices'
         self.changeUser('pmReviewer1')
@@ -1894,10 +1916,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'proposeToInternalReviewer')
         self.changeUser('pmInternalReviewer1')
         # advice may be asked
-        self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
+        self.assertIn('wait_advices_from_proposed_to_internal_reviewer', self.transitions(item))
         self.vendors.item_advice_states = ('%s__state__itemcreated_waiting_advices' % cfgId, )
+        notify(ObjectModifiedEvent(self.vendors))
         # advice may not be asked anymore
-        self.assertNotIn('askAdvicesByInternalReviewer', self.transitions(item))
+        self.assertNotIn('wait_advices_from_proposed_to_internal_reviewer', self.transitions(item))
 
     def test_TreasuryPowerAdviserMayBeAskedAgain(self):
         """TREASURY_GROUP_ID is power observer and may give advice when the
@@ -1945,7 +1968,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # advice may be given again
         self.changeUser('pmCreator2')
         self.assertEqual(item.getAdvicesGroupsInfosForUser(),
-                         ([], [(treasury_org_uid, treasury_org.get_full_title())]))
+                         ([], [treasury_org_uid]))
         advice.advice_type = 'positive'
         advice.advice_comment = RichTextValue(u'My positive comment')
         notify(ObjectModifiedEvent(advice))

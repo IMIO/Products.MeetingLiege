@@ -299,6 +299,7 @@ collegeMeeting.workflowAdaptations = [
     'return_to_proposing_group',
     'sent_to_council_emergency',
     'waiting_advices',
+    'waiting_advices_proposing_group_send_back',
     'waiting_advices_adviser_send_back']
 collegeMeeting.itemWFValidationLevels = (
     {'state': 'itemcreated',
@@ -493,6 +494,7 @@ collegeMeeting.itemAdviceViewStates = ('itemcreated_waiting_advices', 'proposed_
                                        'proposed_to_director', 'validated', 'presented',
                                        'itemfrozen', 'refused', 'delayed',
                                        'pre_accepted', 'accepted', 'accepted_but_modified', )
+collegeMeeting.keepAccessToItemWhenAdvice = 'is_given'
 collegeMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 collegeMeeting.transitionReinitializingDelays = 'backToProposedToDirector'
 collegeMeeting.defaultAdviceHiddenDuringRedaction = ['meetingadvice', 'meetingadvicefinances']

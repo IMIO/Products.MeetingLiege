@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
 from Products.CMFCore.permissions import setDefaultRoles
 from Products.PloneMeeting import config as PMconfig
 

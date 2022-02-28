@@ -1423,20 +1423,24 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(item, 'wait_advices_from_itemcreated')
         # The user is not forced to give a normal advice and can propose to
         # administrative reviewer.
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToAdministrativeReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_administrative_reviewer_from_waiting_advices'])
         # If there is no administrative reviewer, the user can send the item to
         # internal reviewer.
         self._removeAllMembers(darGroup, darMembers)
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToInternalReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_internal_reviewer_from_waiting_advices'])
         # If there are neither administrative nor internal reviewer, allow to
         # send directly to direction.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['backToItemCreated', 'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_director_from_waiting_advices'])
         self._addAllMembers(darGroup, darMembers)
         self._addAllMembers(dirGroup, dirMembers)
-        self.do(item, 'backToItemCreated')
+        self.do(item, 'backTo_itemcreated_from_waiting_advices')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item._update_after_edit()
@@ -1444,12 +1448,15 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # an administrative reviewer can send an item in creation directly to
         # the internal reviewer.
         self.changeUser('pmAdminReviewer1')
-        self.assertEqual(self.transitions(item), ['proposeToInternalReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToInternalReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
         # if there is no internal reviewer, an administrative reviewer can only
         # send the item to director.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer', 'proposeToDirector'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self._addAllMembers(dirGroup, dirMembers)
         # an item which is proposed to administrative reviewer can be send to
@@ -1470,21 +1477,26 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # An administrative reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToInternalReviewer'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToInternalReviewer',
+                          'wait_advices_from_itemcreated'])
         self._checkItemWithoutCategory(item, item.getCategory())
-        self.do(item, 'askAdvicesByItemCreator')
+        self.do(item, 'wait_advices_from_itemcreated')
         # The user is not forced to wait for a normal advice and can propose to
         # internal reviewer.
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToInternalReviewer'])
-        # If there is no internal reviewer, the user can send the item to
-        # director.
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_administrative_reviewer_from_waiting_advices',
+                          'backTo_proposed_to_internal_reviewer_from_waiting_advices'])
+        # If there is no internal reviewer, the user can send the item to director.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_administrative_reviewer_from_waiting_advices',
+                          'backTo_proposed_to_director_from_waiting_advices'])
         self._addAllMembers(dirGroup, dirMembers)
-        self.do(item, 'backToItemCreated')
+        self.do(item, 'backTo_itemcreated_from_waiting_advices')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item._update_after_edit()
@@ -1492,21 +1504,30 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # an internal reviewer can propose an item in creation directly
         # to the direction.
         self.changeUser('pmInternalReviewer1')
-        self.assertEqual(self.transitions(item), ['proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer'])
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # An internal reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer',
+                          'wait_advices_from_itemcreated'])
         self._checkItemWithoutCategory(item, item.getCategory())
-        self.do(item, 'askAdvicesByItemCreator')
+        self.do(item, 'wait_advices_from_itemcreated')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector'])
-        self.do(item, 'backToItemCreated')
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_administrative_reviewer_from_waiting_advices',
+                          'backTo_proposed_to_director_from_waiting_advices',
+                          'backTo_proposed_to_internal_reviewer_from_waiting_advices'])
+        self.do(item, 'backTo_itemcreated_from_waiting_advices')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item._update_after_edit()
@@ -1518,36 +1539,45 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setOptionalAdvisers((self.developers_uid, ))
         item._update_after_edit()
         self.changeUser('pmInternalReviewer1')
-        self.assertIn('askAdvicesByInternalReviewer', self.transitions(item))
-
+        self.assertIn(
+            'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
+            self.transitions(item))
         # An internal reviewer can send an item from administrative reviewer to
         # director but can also ask an advice to internal reviewer.
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmInternalReviewer1')
-        self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
-                                                  'backToItemCreated',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer',
+                          'wait_advices_from_proposed_to_administrative_reviewer'])
         self.do(item, 'backToItemCreated')
 
         # a reviewer can send an item to director, aka himself
         self.changeUser('pmReviewer1')
-        self.assertEqual(self.transitions(item), ['askAdvicesByInternalReviewer',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer',
+                          'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices'])
         self._checkItemWithoutCategory(item, item.getCategory())
 
         # A reviewer can ask for advices if an advice is required.
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertEqual(self.transitions(item), ['askAdvicesByItemCreator',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['proposeToAdministrativeReviewer', 'proposeToDirector', 'proposeToInternalReviewer', 'wait_advices_from_itemcreated'])
         self._checkItemWithoutCategory(item, item.getCategory())
-        self.do(item, 'askAdvicesByItemCreator')
+        self.do(item, 'wait_advices_from_itemcreated')
         # The user is not forced to wait for a normal advice and can propose to
         # director.
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector'])
-        self.do(item, 'backToItemCreated')
+        self.assertEqual(self.transitions(item),
+                         ['backTo_itemcreated_from_waiting_advices',
+                          'backTo_proposed_to_administrative_reviewer_from_waiting_advices',
+                          'backTo_proposed_to_director_from_waiting_advices',
+                          'backTo_proposed_to_internal_reviewer_from_waiting_advices'])
+        self.do(item, 'backTo_itemcreated_from_waiting_advices')
         # Remove the advice for the tests below.
         item.setOptionalAdvisers(())
         item._update_after_edit()
@@ -1556,14 +1586,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         self.do(item, 'proposeToAdministrativeReviewer')
         self.changeUser('pmReviewer1')
-        self.assertEqual(self.transitions(item), ['backToItemCreated',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer'])
         # A director can send an item from internal reviewer to director.
         self.changeUser('pmAdminReviewer1')
         self.do(item, 'proposeToInternalReviewer')
         self.changeUser('pmReviewer1')
-        self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'proposeToDirector'])
         self.do(item, 'backToProposedToAdministrativeReviewer')
         self.do(item, 'backToItemCreated')
 
@@ -1571,13 +1605,18 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # user in it. As there is an internal reviewer, the item can be sent
         # back to him.
         self.do(item, 'proposeToDirector')
-        self.assertEqual(self.transitions(item), ['backToProposedToInternalReviewer',
-                                                  'validate'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'backToProposedToInternalReviewer',
+                          'validate'])
         # If there is no internal reviewer, allow to send the item back to
         # administrative reviewer.
         self._removeAllMembers(dirGroup, dirMembers)
-        self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'validate'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'validate'])
         # If there is neither internal nor administrative reviewer, allow to
         # send the item back to creation.
         self._removeAllMembers(darGroup, darMembers)
@@ -1590,8 +1629,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # Internal reviewer is able to propose to director, send the item back
         # to creator or to administrative reviewer.
         self.changeUser('pmInternalReviewer1')
-        self.assertEqual(self.transitions(item), ['backToProposedToAdministrativeReviewer',
-                                                  'proposeToDirector'])
+        self.assertEqual(self.transitions(item),
+                         ['backToItemCreated',
+                          'backToProposedToAdministrativeReviewer',
+                          'proposeToDirector'])
         # If there is no administrative reviewer, allow the item to be sent
         # back to creation.
         self._removeAllMembers(darGroup, darMembers)

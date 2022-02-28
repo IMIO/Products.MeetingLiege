@@ -1443,7 +1443,8 @@ class CustomMeetingConfig(MeetingConfig):
             res.append((org.UID(), org.Title()))
         # make sure that if a configuration was defined for a group
         # that is now inactive, it is still displayed
-        storedArchivingRefsOrgs = [archivingRef['restrict_to_groups'] for archivingRef in self.getArchivingRefs()]
+        storedArchivingRefsOrgs = [
+            archivingRef['restrict_to_groups'] for archivingRef in self.getArchivingRefs()]
         if storedArchivingRefsOrgs:
             orgsInVocab = [org[0] for org in res]
             for storedArchivingRefsOrg in storedArchivingRefsOrgs:
@@ -2030,9 +2031,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     def _mayBackToProposedToDirector(self, destinationState):
         '''
           Item may back to proposedToDirector if a value 'mayBackToProposedToDirector' is
-          found and True in the REQUEST.  It means that the item is 'proposed_to_finance_waiting_advices' and that the
-          freshly signed advice was negative.
-          It is also the case for MeetingItemBourgmestre if 'everyAdvicesAreGiven' found and True in the REQUEST.
+          found and True in the REQUEST.  It means that the item is 'proposed_to_finance_waiting_advices'
+          and that the freshly signed advice was negative.
+          It is also the case for MeetingItemBourgmestre if 'everyAdvicesAreGiven' found
+          and True in the REQUEST.
           If the item is 'validated', a MeetingManager can send it back to the director.
         '''
         res = False
@@ -2042,8 +2044,10 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         # special case when automatically sending back an item to 'proposed_to_director'
         # when every advices are given (coming from waiting_advices)
         elif (self.context.REQUEST.get('everyAdvicesAreGiven', False) and
-              item_state == 'proposed_to_director_waiting_advices') or \
-                _checkPermission(ReviewPortalContent, self.context):
+              item_state == 'proposed_to_director_waiting_advices'):
+            res = True
+        # bypass for (Meeting)Managers
+        elif self.tool.isManager(self.cfg):
             res = True
         else:
             res = super(MeetingItemCollegeLiegeWorkflowConditions, self).mayCorrect(
@@ -2098,9 +2102,6 @@ class MeetingItemCouncilLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     implements(IMeetingItemCouncilLiegeWorkflowConditions)
     security = ClassSecurityInfo()
-
-    def __init__(self, item):
-        self.context = item  # Implements IMeetingItem
 
     security.declarePublic('mayDecide')
 
@@ -2205,9 +2206,6 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemCollegeLiegeWorkflowCo
 
     implements(IMeetingItemBourgmestreWorkflowConditions)
     security = ClassSecurityInfo()
-
-    def __init__(self, item):
-        self.context = item  # Implements IMeetingItem
 
     security.declarePublic('mayProposeToGeneralManager')
 

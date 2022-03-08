@@ -159,29 +159,17 @@ bourgmestreMeeting.categories = deepcopy(councilMeeting.categories)
 bourgmestreMeeting.categories[-1].using_groups = ()
 bourgmestreMeeting.shortName = 'Bourgmestre'
 bourgmestreMeeting.annexTypes = councilMeeting.annexTypes
-bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
-    'configgroup_budgetimpacteditors',
-    'reader_advices',
-    'reader_copy_groups',
-    'reader_groupsincharge',
-    'configgroup_powerobservers',
-    'suffix_proposing_group_prereviewers',
-    'suffix_proposing_group_internalreviewers',
-    'suffix_proposing_group_observers',
-    'suffix_proposing_group_reviewers',
-    'suffix_proposing_group_creators',
-    'suffix_proposing_group_administrativereviewers')
-
+bourgmestreMeeting.itemAnnexConfidentialVisibleFor = bg_import_data.bourgmestreMeeting.itemAnnexConfidentialVisibleFor
+bourgmestreMeeting.itemWFValidationLevels = bg_import_data.bourgmestreMeeting.itemWFValidationLevels
 bourgmestreMeeting.itemConditionsInterface = bg_import_data.bourgmestreMeeting.itemConditionsInterface
 bourgmestreMeeting.itemActionsInterface = bg_import_data.bourgmestreMeeting.itemActionsInterface
 bourgmestreMeeting.meetingConditionsInterface = bg_import_data.bourgmestreMeeting.meetingConditionsInterface
 bourgmestreMeeting.meetingActionsInterface = bg_import_data.bourgmestreMeeting.meetingActionsInterface
+bourgmestreMeeting.itemDecidedStates = bg_import_data.bourgmestreMeeting.itemDecidedStates
 bourgmestreMeeting.transitionsForPresentingAnItem = bg_import_data.bourgmestreMeeting.transitionsForPresentingAnItem
-bourgmestreMeeting.onMeetingTransitionItemActionToExecute = (
-    {'meeting_transition': 'close',
-     'item_action': 'accept',
-     'tal_expression': ''}, )
+bourgmestreMeeting.onMeetingTransitionItemActionToExecute = bg_import_data.bourgmestreMeeting.onMeetingTransitionItemActionToExecute
 bourgmestreMeeting.transitionsToConfirm = []
+bourgmestreMeeting.workflowAdaptations = ml_import_data.bourgmestreMeeting.workflowAdaptations
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )
 bourgmestreMeeting.itemAdviceStates = ('proposed_to_director_waiting_advices', )
@@ -211,7 +199,8 @@ bourgmestreMeeting.recurringItems = []
 bourgmestreMeeting.itemTemplates = []
 
 data = deepcopy(pm_import_data.data)
-data.meetingConfigs = (collegeMeeting, councilMeeting)  # , bourgmestreMeeting)
+data.meetingConfigs = (collegeMeeting, councilMeeting, bourgmestreMeeting)
 # necessary for testSetup.test_pm_ToolAttributesAreOnlySetOnFirstImportData
 data.restrictUsers = False
-data.usersOutsideGroups = data.usersOutsideGroups + [pmFinController, pmFinReviewer, pmFinManager, pmMeetingManagerBG]
+data.usersOutsideGroups = data.usersOutsideGroups + \
+    [pmFinController, pmFinReviewer, pmFinManager, pmMeetingManagerBG]

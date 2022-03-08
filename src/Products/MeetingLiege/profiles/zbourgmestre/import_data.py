@@ -75,7 +75,6 @@ bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
     'reader_advices',
     'reader_copy_groups',
     'reader_groupsincharge',
-    'suffix_proposing_group_prereviewers',
     'suffix_proposing_group_internalreviewers',
     'suffix_proposing_group_observers',
     'suffix_proposing_group_reviewers',
@@ -87,8 +86,6 @@ bourgmestreMeeting.recordMeetingHistoryStates = []
 bourgmestreMeeting.xhtmlTransformFields = ()
 bourgmestreMeeting.xhtmlTransformTypes = ()
 bourgmestreMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
-bourgmestreMeeting.itemWorkflow = 'meetingitembourgmestre_workflow'
-bourgmestreMeeting.meetingWorkflow = 'meetingbourgmestre_workflow'
 bourgmestreMeeting.itemConditionsInterface = \
     'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
 bourgmestreMeeting.itemActionsInterface = \
@@ -97,6 +94,79 @@ bourgmestreMeeting.meetingConditionsInterface = \
     'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowConditions'
 bourgmestreMeeting.meetingActionsInterface = \
     'Products.MeetingLiege.interfaces.IMeetingBourgmestreWorkflowActions'
+bourgmestreMeeting.itemWFValidationLevels = (
+    {'state': 'itemcreated',
+     'state_title': 'itemcreated',
+     'leading_transition': '-',
+     'leading_transition_title': '-',
+     'back_transition': 'backToItemCreated',
+     'back_transition_title': 'backToItemCreated',
+     'suffix': 'creators',
+     # only creators may manage itemcreated item
+     'extra_suffixes': [],
+     'enabled': '1',
+     },
+    {'state': 'proposed_to_administrative_reviewer',
+     'state_title': 'proposed_to_administrative_reviewer',
+     'leading_transition': 'proposeToAdministrativeReviewer',
+     'leading_transition_title': 'proposeToAdministrativeReviewer',
+     'back_transition': 'backToProposedToAdministrativeReviewer',
+     'back_transition_title': 'backToProposedToAdministrativeReviewer',
+     'suffix': 'administrativereviewers',
+     'extra_suffixes': [u'internalreviewers', u'reviewers'],
+     'enabled': '1',
+     },
+    {'state': 'proposed_to_internal_reviewer',
+     'state_title': 'proposed_to_internal_reviewer',
+     'leading_transition': 'proposeToInternalReviewer',
+     'leading_transition_title': 'proposeToInternalReviewer',
+     'back_transition': 'backToProposedToInternalReviewer',
+     'back_transition_title': 'backToProposedToInternalReviewer',
+     'suffix': 'internalreviewers',
+     'enabled': '1',
+     'extra_suffixes': [u'reviewers'],
+     },
+    {'state': 'proposed_to_director',
+     'state_title': 'proposed_to_director',
+     'leading_transition': 'proposeToDirector',
+     'leading_transition_title': 'proposeToDirector',
+     'back_transition': 'backToProposedToDirector',
+     'back_transition_title': 'backToProposedToDirector',
+     'suffix': 'reviewers',
+     'enabled': '1',
+     'extra_suffixes': [],
+     },
+    {'state': 'proposed_to_general_manager',
+     'state_title': 'proposed_to_general_manager',
+     'leading_transition': 'proposeToGeneralManager',
+     'leading_transition_title': 'proposeToGeneralManager',
+     'back_transition': 'backToProposedToGeneralManager',
+     'back_transition_title': 'backToProposedToGeneralManager',
+     'suffix': 'reviewers',
+     'enabled': '1',
+     'extra_suffixes': [],
+     },
+    {'state': 'proposed_to_cabinet_manager',
+     'state_title': 'proposed_to_cabinet_manager',
+     'leading_transition': 'proposeToCabinetManager',
+     'leading_transition_title': 'proposeToCabinetManager',
+     'back_transition': 'backToProposedToCabinetManager',
+     'back_transition_title': 'backToProposedToCabinetManager',
+     'suffix': 'creators',
+     'enabled': '1',
+     'extra_suffixes': ['reviewers'],
+     },
+    {'state': 'proposed_to_cabinet_reviewer',
+     'state_title': 'proposed_to_cabinet_reviewer',
+     'leading_transition': 'proposeToCabinetReviewer',
+     'leading_transition_title': 'proposeToCabinetReviewer',
+     'back_transition': 'backToProposedToCabinetReviewer',
+     'back_transition_title': 'backToProposedToCabinetReviewer',
+     'suffix': 'reviewers',
+     'enabled': '1',
+     'extra_suffixes': [],
+     },
+)
 bourgmestreMeeting.transitionsToConfirm = ['MeetingItem.delay', ]
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )
@@ -169,10 +239,17 @@ bourgmestreMeeting.powerObservers = (
      'row_id': 'jursecpubpowerobservers'},
 )
 bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'marked_not_applicable']
-bourgmestreMeeting.workflowAdaptations = []
+bourgmestreMeeting.workflowAdaptations = ['accepted_but_modified', 'delayed',
+                                          'mark_not_applicable', 'refused']
 bourgmestreMeeting.transitionsForPresentingAnItem = (
-    u'proposeToAdministrativeReviewer', u'proposeToInternalReviewer', u'proposeToDirector',
-    u'proposeToGeneralManager', 'proposeToCabinetManager', u'proposeToCabinetReviewer', u'validate', u'present')
+    u'proposeToAdministrativeReviewer',
+    u'proposeToInternalReviewer',
+    u'proposeToDirector',
+    u'proposeToGeneralManager',
+    u'proposeToCabinetManager',
+    u'proposeToCabinetReviewer',
+    u'validate',
+    u'present')
 bourgmestreMeeting.onTransitionFieldTransforms = (
     ({'transition': 'delay',
       'field_name': 'MeetingItem.decision',

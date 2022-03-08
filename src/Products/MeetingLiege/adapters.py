@@ -2,16 +2,16 @@
 
 from AccessControl import ClassSecurityInfo
 from collections import OrderedDict
-from collective.contact.plonegroup.config import get_registry_organizations
 from collective.contact.plonegroup.utils import get_all_suffixes
 from collective.contact.plonegroup.utils import get_organization
 from collective.contact.plonegroup.utils import get_organizations
-from collective.contact.plonegroup.utils import get_own_organization
 from collective.contact.plonegroup.utils import get_plone_group_id
 from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import get_cachekey_volatile
+from imio.helpers.content import uuidToObject
+from imio.helpers.content import uuidsToObjects
 from imio.history.adapters import BaseImioHistoryAdapter
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
@@ -22,18 +22,14 @@ from Products.Archetypes import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import ReviewPortalContent
 from Products.CMFCore.utils import _checkPermission
-from Products.MeetingLiege.config import BOURGMESTRE_GROUP_ID
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE_RAW
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
 from Products.MeetingLiege.config import FINANCE_GIVEABLE_ADVICE_STATES
-from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import FINANCE_GROUP_SUFFIXES
-from Products.MeetingLiege.config import GENERAL_MANAGER_GROUP_ID
 from Products.MeetingLiege.config import ITEM_MAIN_INFOS_HISTORY
-from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.interfaces import IMeetingAdviceFinancesWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingAdviceFinancesWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingBourgmestreWorkflowActions
@@ -48,6 +44,10 @@ from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowAct
 from Products.MeetingLiege.interfaces import IMeetingItemCollegeLiegeWorkflowConditions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowActions
 from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowConditions
+from Products.MeetingLiege.utils import bg_group_uid
+from Products.MeetingLiege.utils import finance_group_uids
+from Products.MeetingLiege.utils import gm_group_uid
+from Products.MeetingLiege.utils import treasury_group_cec_uid
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
@@ -567,8 +567,10 @@ class CustomMeetingItem(MeetingItem):
     security = ClassSecurityInfo()
 
     BOURGMESTRE_PROPOSING_GROUP_STATES = [
-        'itemcreated', 'proposed_to_administrative_reviewer',
-        'proposed_to_internal_reviewer', 'proposed_to_director',
+        'itemcreated',
+        'proposed_to_administrative_reviewer',
+        'proposed_to_internal_reviewer',
+        'proposed_to_director',
         'proposed_to_director_waiting_advices']
 
     def __init__(self, item):
@@ -578,21 +580,15 @@ class CustomMeetingItem(MeetingItem):
 
     def is_general_manager(self):
         """Is current user a general manager?"""
-        group_id = '{0}_reviewers'.format(org_id_to_uid(GENERAL_MANAGER_GROUP_ID))
-        userGroups = self.tool.get_plone_groups_for_user()
-        return group_id in userGroups
+        return '{0}_reviewers'.format(gm_group_uid()) in self.tool.get_plone_groups_for_user()
 
     def is_cabinet_manager(self):
         """Is current user a cabinet manager?"""
-        group_id = '{0}_creators'.format(org_id_to_uid(BOURGMESTRE_GROUP_ID))
-        userGroups = self.tool.get_plone_groups_for_user()
-        return group_id in userGroups
+        return '{0}_creators'.format(bg_group_uid()) in self.tool.get_plone_groups_for_user()
 
     def is_cabinet_reviewer(self):
         """Is current user a cabinet reviewer?"""
-        group_id = '{0}_reviewers'.format(org_id_to_uid(BOURGMESTRE_GROUP_ID))
-        userGroups = self.tool.get_plone_groups_for_user()
-        return group_id in userGroups
+        return '{0}_reviewers'.format(bg_group_uid) in self.tool.get_plone_groups_for_user()
 
     security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
 
@@ -673,7 +669,7 @@ class CustomMeetingItem(MeetingItem):
         '''If we are on a finance advice that is still not giveable because
            the item is not 'complete', we display a clear message.'''
         item = self.getSelf()
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         if advice['id'] in financial_group_uids and \
            advice['delay'] and \
            not advice['delay_started_on']:
@@ -717,7 +713,7 @@ class CustomMeetingItem(MeetingItem):
            not item.adviceIndex[finance_advice]['optional']:
             return finance_advice
         if checkAdviceIndex:
-            financial_group_uids = self.tool.financialGroupUids()
+            financial_group_uids = self.tool.finance_group_uids()
             for advice_uid, advice_info in item.adviceIndex.items():
                 if advice_uid in financial_group_uids and not advice_info['optional']:
                     return advice_uid
@@ -733,7 +729,7 @@ class CustomMeetingItem(MeetingItem):
 
     def _advicePortalTypeForAdviser(self, org_uid):
         """Return the meetingadvicefinances for financial groups, meetingadvice for others."""
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         if org_uid in financial_group_uids:
             return "meetingadvicefinances"
         else:
@@ -750,7 +746,7 @@ class CustomMeetingItem(MeetingItem):
 
     def _sendAdviceToGiveToGroup(self, org_uid):
         """Do not send an email to FINANCE_GROUP_IDS."""
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         if org_uid in financial_group_uids:
             return False
         return True
@@ -860,7 +856,7 @@ class CustomMeetingItem(MeetingItem):
            '''
         res = False
         # raise_on_error=False for tests
-        if advice.advice_group == org_id_to_uid(TREASURY_GROUP_ID, raise_on_error=False) and \
+        if advice.advice_group == treasury_group_cec_uid() and \
            self.context.query_state() in ('accepted', 'accepted_but_modified'):
             org_uid = self.context.getProposingGroup()
             if org_uid in self.tool.get_orgs_for_user(
@@ -879,7 +875,7 @@ class CustomMeetingItem(MeetingItem):
                                         domain='PloneMeeting',
                                         context=self.REQUEST)))
         tool = api.portal.get_tool('portal_plonemeeting')
-        financial_group_uids = tool.financialGroupUids()
+        financial_group_uids = tool.finance_group_uids()
         for finance_group_uid in financial_group_uids:
             res.append((finance_group_uid, get_organization(finance_group_uid).Title()))
         return DisplayList(tuple(res))
@@ -1229,7 +1225,7 @@ class CustomMeetingItem(MeetingItem):
         # we finished to compute all local_roles for self, compare to finance access
         # that were given in old local_roles if it is the same,
         # it means that we do not need to update linked items
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         potentialFinanceAccesses = set(["{0}_advisers".format(finance_advice_uid) for
                                         finance_advice_uid in financial_group_uids])
         financeInOldLocalRoles = potentialFinanceAccesses.intersection(set(old_local_roles.keys()))
@@ -1297,15 +1293,14 @@ class CustomMeetingItem(MeetingItem):
         if item.portal_type == 'MeetingItemBourgmestre':
             review_state = item.query_state()
             if review_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES:
-                org_ids = []
-                org_ids.append(GENERAL_MANAGER_GROUP_ID)
+                org_uids = []
+                org_uids.append(gm_group_uid())
                 if review_state not in ['proposed_to_general_manager']:
-                    org_ids.append(BOURGMESTRE_GROUP_ID)
+                    org_uids.append(bg_group_uid())
                 if theObjects:
-                    own_org = get_own_organization()
-                    res += [own_org.get(org_id) for org_id in org_ids]
+                    res += uuidsToObjects(org_uids, unrestricted=True)
                 else:
-                    res += org_ids
+                    res += org_uids
         return res
 
     def _getGroupManagingItem(self, review_state, theObject=False):
@@ -1314,52 +1309,53 @@ class CustomMeetingItem(MeetingItem):
         if item.portal_type != 'MeetingItemBourgmestre':
             return item.getProposingGroup(theObject=theObject)
         else:
-            own_org = get_own_organization()
             # administrative states or item presented to a meeting,
             # proposingGroup is managing the item
             if review_state in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['validated'] or item.hasMeeting():
                 return item.getProposingGroup(theObject=theObject)
             # general manager, we take the _reviewers group
             elif review_state in ['proposed_to_general_manager']:
-                gm_org = own_org.get(GENERAL_MANAGER_GROUP_ID)
-                return theObject and gm_org or gm_org.UID()
+                return theObject and \
+                    uuidToObject(gm_group_uid(), unrestricted=True) or gm_group_uid()
             else:
-                bg_org = own_org.get(BOURGMESTRE_GROUP_ID)
-                return theObject and bg_org or bg_org.UID()
+                return theObject and \
+                    uuidToObject(bg_group_uid(), unrestricted=True) or bg_group_uid()
 
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
         item = self.getSelf()
         item_state = item.query_state()
-        own_org = get_own_organization()
-        item_managing_group = item.adapted()._getGroupManagingItem(item_state)
-        proposingGroup = item.getProposingGroup(theObject=True)
+        item_managing_group_uid = item.adapted()._getGroupManagingItem(item_state)
+        proposing_group_uid = item.getProposingGroup()
         # when proposingGroup is no more the managing group, it means item is at least
         # proposed to general manager, give read access to proposingGroup and to general manager
         # if it is not the managing group
-        if item_managing_group != proposingGroup:
+        if item_managing_group_uid != proposing_group_uid:
             # give 'Reader' role for every suffix except 'observers' that
             # only get access when item is positively decided
-            roles = {suffix: 'Reader' for suffix in get_all_suffixes(proposingGroup.UID()) if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(proposingGroup, roles=roles)
+            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(proposing_group_uid)
+                            if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(proposing_group_uid, suffix_roles=suffix_roles)
         # access for GENERAL_MANAGER_GROUP_ID groups
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['proposed_to_general_manager']:
-            gm_org = own_org.get(GENERAL_MANAGER_GROUP_ID)
+            gm_org_uid = gm_group_uid()
             # give 'Reader' role for every suffix except 'observers' that
             # only get access when item is positively decided
-            roles = {suffix: 'Reader' for suffix in get_all_suffixes(gm_org.UID()) if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(gm_org, roles=roles)
+            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(gm_org_uid)
+                            if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(gm_org_uid, suffix_roles=suffix_roles)
         # access for BOURGMESTRE_GROUP_ID groups
         if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + \
                 ['proposed_to_general_manager',
                  'proposed_to_cabinet_manager',
                  'proposed_to_cabinet_reviewer']:
-            bg_org = own_org.get(BOURGMESTRE_GROUP_ID)
+            bg_org_uid = bg_group_uid()
             # give 'Reader' role for every suffix except 'observers' that
             # only get access when item is positively decided
-            roles = {suffix: 'Reader' for suffix in get_all_suffixes(bg_org.UID()) if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(bg_org, roles=roles)
+            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(bg_org_uid)
+                            if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(bg_org_uid, suffix_roles=suffix_roles)
 
     def getOfficeManager(self):
         '''
@@ -1649,22 +1645,10 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
         return tool.userIsAmong(FINANCE_GROUP_SUFFIXES)
     ToolPloneMeeting.isFinancialUser = isFinancialUser
 
-    def financialGroupUids_cachekey(method, self):
-        '''cachekey method for self.financialGroupUids.'''
-        return get_registry_organizations()
-
-    @ram.cache(financialGroupUids_cachekey)
-    def financialGroupUids(self):
+    def finance_group_uids(self):
         """ """
-        res = []
-        for org_id in FINANCE_GROUP_IDS:
-            try:
-                org_uid = org_id_to_uid(org_id)
-            except KeyError:
-                continue
-            res.append(org_uid)
-        return res
-    ToolPloneMeeting.financialGroupUids = financialGroupUids
+        return finance_group_uids()
+    ToolPloneMeeting.finance_group_uids = finance_group_uids
 
     security.declarePublic('isUrbanismUser')
 
@@ -2232,8 +2216,10 @@ class MeetingItemBourgmestreWorkflowConditions(MeetingItemCollegeLiegeWorkflowCo
         res = False
         if _checkPermission(ReviewPortalContent, self.context):
             res = True
-            # if item is itemcreated, only Cabinet Manager may propose to cabinet reviewer directly
-            if self.context.query_state() == 'itemcreated' and not self.context.adapted().is_cabinet_manager():
+            # if item is itemcreated, only Cabinet Manager
+            # may propose to cabinet reviewer directly
+            if self.context.query_state() == 'itemcreated' and \
+               not self.context.adapted().is_cabinet_manager():
                 res = False
         return res
 
@@ -2327,7 +2313,7 @@ def get_advice_given_on(self):
     '''Monkeypatch the meetingadvice.get_advice_given_on method, if it is
        a finance advice, we will return date of last transition 'sign_advice'.'''
     tool = api.portal.get_tool('portal_plonemeeting')
-    financial_group_uids = tool.financialGroupUids()
+    financial_group_uids = tool.finance_group_uids()
     if self.advice_group in financial_group_uids:
         lastEvent = getLastWFAction(self, 'signFinancialAdvice')
         if not lastEvent:
@@ -2373,7 +2359,7 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
             return {}
         groupIds = []
         userGroups = self.tool.get_plone_groups_for_user()
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2403,7 +2389,7 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
             return {}
         groupIds = []
         userGroups = self.tool.get_plone_groups_for_user()
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is controller for
             if '%s_financialcontrollers' % financeGroup in userGroups:
@@ -2427,7 +2413,7 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
             return {}
         groupIds = []
         userGroups = self.tool.get_plone_groups_for_user()
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is reviewer for
             if '%s_financialreviewers' % financeGroup in userGroups:
@@ -2449,7 +2435,7 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
             return {}
         groupIds = []
         userGroups = self.tool.get_plone_groups_for_user()
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is manager for
             if '%s_financialmanagers' % financeGroup in userGroups:
@@ -2476,31 +2462,15 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         if self.context.isDefinedInTool():
             return icons
 
-        itemState = self.context.query_state()
         # Add our icons for some review states
-        if itemState == 'accepted_and_returned':
+        if self.itemState == 'accepted_and_returned':
             icons.append(('accepted_and_returned.png',
                           translate('icon_help_accepted_and_returned',
                                     domain="PloneMeeting",
                                     context=self.request)))
-        elif itemState == 'returned':
+        elif self.itemState == 'returned':
             icons.append(('returned.png',
                           translate('icon_help_returned',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_general_manager':
-            icons.append(('proposeToGeneralManager.png',
-                          translate('icon_help_proposed_to_general_manager',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_cabinet_manager':
-            icons.append(('proposeToCabinetManager.png',
-                          translate('icon_help_proposed_to_cabinet_manager',
-                                    domain="PloneMeeting",
-                                    context=self.request)))
-        elif itemState == 'proposed_to_cabinet_reviewer':
-            icons.append(('proposeToCabinetReviewer.png',
-                          translate('icon_help_proposed_to_cabinet_reviewer',
                                     domain="PloneMeeting",
                                     context=self.request)))
 
@@ -2508,17 +2478,12 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
         # if item was ever gone the the finances and now it is down to the
         # services, then it is considered as down the wf from the finances
         # so take into account every states before 'validated/proposed_to_finance_waiting_advices'
-        if not self.context.hasMeeting() and itemState not in ['proposed_to_finance_waiting_advices', 'validated']:
-            wfTool = api.portal.get_tool('portal_workflow')
-            itemWF = wfTool.getWorkflowsFor(self.context)[0]
-            history = self.context.workflow_history[itemWF.getId()]
-            for event in history:
-                if event['action'] == 'proposeToFinance':
-                    icons.append(('wf_down_finances.png',
-                                  translate('icon_help_wf_down_finances',
-                                            domain="PloneMeeting",
-                                            context=self.request)))
-                    break
+        if self.itemState in self.cfg.getItemWFValidationLevels(data='state', only_enabled=True) and \
+           getLastWFAction(self.context, 'proposeToFinance'):
+            icons.append(('wf_down_finances.png',
+                         translate('icon_help_wf_down_finances',
+                                   domain="PloneMeeting",
+                                   context=self.request)))
         return icons
 
 

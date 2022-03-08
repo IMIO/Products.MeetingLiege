@@ -70,7 +70,7 @@ class testCustomContacts(MeetingLiegeTestCase):
                           '{0}_observers'.format(self.vendors_uid),
                           '{0}_prereviewers'.format(self.vendors_uid),
                           '{0}_reviewers'.format(self.vendors_uid)])
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         financeGroupUID = financial_group_uids[0]
         financePloneGroupIds = get_plone_groups(financeGroupUID, ids_only=True)
         financePloneGroupIds.sort()

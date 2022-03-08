@@ -22,7 +22,7 @@ def _everyAdvicesAreGivenFor(item):
     '''Every advices are considered given on an item if no more
        hidden_during_redaction and created.'''
     tool = api.portal.get_tool('portal_plonemeeting')
-    finance_group_uids = tool.financialGroupUids()
+    finance_group_uids = tool.finance_group_uids()
     for adviceUid, adviceInfos in item.adviceIndex.items():
         if adviceUid not in finance_group_uids and \
            adviceInfos['type'] in (NOT_GIVEN_ADVICE_VALUE, 'asked_again') or \
@@ -100,7 +100,7 @@ def onAdviceAfterTransition(advice, event):
     # manage finance workflow, just consider relevant transitions
     # if it is not a finance wf transition, return
     tool = api.portal.get_tool('portal_plonemeeting')
-    finance_group_uids = tool.financialGroupUids()
+    finance_group_uids = tool.finance_group_uids()
     if advice.advice_group not in finance_group_uids:
         return
 

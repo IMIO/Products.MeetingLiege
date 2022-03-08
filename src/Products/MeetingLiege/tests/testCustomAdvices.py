@@ -36,7 +36,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # not need a finances advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)
@@ -49,7 +49,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         delayView = item.restrictedTraverse('@@advice-available-delays')
         # advice has been asked automatically
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         isAutomatic = not bool(item.adviceIndex[financial_group_uids[0]]['optional'])
         # advice is addable, delays may be changed
         self.assertTrue(delayView._mayEditDelays(isAutomatic=isAutomatic))
@@ -108,7 +108,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # finance advice is not considered in the case we test here
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', title='The item')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()

@@ -309,7 +309,8 @@ collegeMeeting.itemWFValidationLevels = (
      'back_transition': 'backToItemCreated',
      'back_transition_title': 'backToItemCreated',
      'suffix': 'creators',
-     'extra_suffixes': [u'administrativereviewers', u'internalreviewers', u'reviewers'],
+     # only creators may manage itemcreated item
+     'extra_suffixes': [],
      'enabled': '1',
      },
     {'state': 'proposed_to_administrative_reviewer',

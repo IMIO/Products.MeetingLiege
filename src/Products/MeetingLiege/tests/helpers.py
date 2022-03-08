@@ -3,6 +3,7 @@
 from collective.contact.plonegroup.utils import select_org_for_function
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
+from plone.memoize.forever import _memos
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import PROJECTNAME
 from Products.MeetingLiege.profiles.liege.import_data import dfcompta
@@ -78,8 +79,9 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
 
     def _setupFinanceGroups(self):
         '''Configure finance groups.'''
-        # add pmFinController, pmFinReviewer and pmFinManager to advisers and to their respective finance group
-        financial_group_uids = self.tool.financialGroupUids()
+        # add pmFinController, pmFinReviewer and pmFinManager to advisers and
+        # to their respective finance group
+        financial_group_uids = self.tool.finance_group_uids()
         self._addPrincipalToGroup('pmFinController', '{0}_advisers'.format(financial_group_uids[0]))
         self._addPrincipalToGroup('pmFinReviewer', '{0}_advisers'.format(financial_group_uids[0]))
         self._addPrincipalToGroup('pmFinManager', '{0}_advisers'.format(financial_group_uids[0]))
@@ -126,7 +128,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='An item with finance advice')
         # ask finance advice and give it
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
@@ -167,3 +169,5 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
                 select_org_for_function(org_uid, 'financialcontrollers')
                 select_org_for_function(org_uid, 'financialmanagers')
                 select_org_for_function(org_uid, 'financialreviewers')
+        # clean forever cache on utils finance_group_uid
+        _memos.clear()

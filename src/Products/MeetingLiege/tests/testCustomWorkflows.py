@@ -322,7 +322,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(not item.adviceIndex)
         # finances advice is an automatic advice aksed depending on the
         # selected MeetingItem.financeAdvice
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertEqual(item.adapted().getFinanceGroupUIDForItem(), financial_group_uids[0])
@@ -656,7 +656,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         # create an item and ask finance advice
         item = self.create('MeetingItem')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         # no emergency for now
         item.setEmergency('no_emergency')
@@ -732,7 +732,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # send item to finance
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
@@ -984,7 +984,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
         # ask finance advice
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         # the finance advice is asked
@@ -1065,7 +1065,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # - send it from finances to internal reviewer : comment should be visible.
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
@@ -1116,7 +1116,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # create an item and ask finance advice
         self.changeUser('pmManager')
         item = self.create('MeetingItem', title='The first item')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.proposeItem(item)
@@ -1203,7 +1203,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # now that the item is 'returned', it has been duplicated
         # and the finance advisers have access to the newItem
         newItem = item.get_successors()[0]
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         self.assertEqual(newItem.__ac_local_roles__['{0}_advisers'.format(financial_group_uids[0])],
                          ['Reader', ])
         # right, remove newItem and 'accept_and_return' item
@@ -1288,7 +1288,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # has really access to an item, aka item was set to proposed_to_finance_waiting_advices once at least
         self.changeUser('pmCreator1')
         item1FinanceNeverAccessed = self.create('MeetingItem')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item1FinanceNeverAccessed.setFinanceAdvice(financial_group_uids[0])
         item1FinanceNeverAccessed._update_after_edit()
         item2FinanceNeverAccessed = self.create('MeetingItem')
@@ -1749,7 +1749,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                 'otherMeetingConfigsClonableToPrivacy': ('meeting-config-council', ),
                 'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
         collegeItem = self.create('MeetingItem', **data)
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         collegeItem.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(collegeItem)
 
@@ -1791,7 +1791,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
 
         # it is sent back in "itemcreated" state and finance advice does not follow
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         self.assertEqual(backCollegeItem.getFinanceAdvice(), financial_group_uids[0])
         self.assertEqual(backCollegeItem.query_state(), 'itemcreated')
         self.assertEqual(backCollegeItem.adapted().getItemWithFinanceAdvice(), backCollegeItem)
@@ -1817,7 +1817,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
 
         # it is sent back in "validated" state and finance advice does follow
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         self.assertEqual(backCollegeItem.getFinanceAdvice(), financial_group_uids[0])
         self.assertEqual(backCollegeItem.query_state(), 'validated')
         self.assertEqual(backCollegeItem.adapted().getItemWithFinanceAdvice(), collegeItem)

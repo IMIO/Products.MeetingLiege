@@ -107,7 +107,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item._update_after_edit()
         self.assertEqual(item.adviceIndex, {})
         # ask finance advice
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)
@@ -358,7 +358,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)
@@ -514,7 +514,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         self.changeUser('pmManager')
         item1 = self.create('MeetingItem', title='Item with positive advice')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item1.setFinanceAdvice(financial_group_uids[0])
         item1a = self.create('MeetingItem', title='Item with positive with remarks advice')
         item1a.setFinanceAdvice(financial_group_uids[0])
@@ -663,7 +663,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if no advice is asked, mayGenerate returns False.
         self.assertFalse(item1.adapted().mayGenerateFDAdvice())
 
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item1.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item1)
         self.do(item1, 'wait_advices_from_proposed_to_director')
@@ -839,7 +839,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item1 = self.create('MeetingItem', title='Item1 with advice')
 
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item1.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item1)
         self.do(item1, 'wait_advices_from_proposed_to_director')
@@ -1027,7 +1027,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item5 = self.create('MeetingItem', title='Item5 with advice')
 
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item5.setFinanceAdvice(financial_group_uids[0])
         self.proposeItem(item5)
         self.do(item5, 'wait_advices_from_proposed_to_director')
@@ -1266,7 +1266,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmCreator1')
         self.tool.get_plone_groups_for_user()
         item = self.create('MeetingItem')
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         # send item to finances
         self.proposeItem(item)
@@ -1329,7 +1329,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # bypass finances advice
         item.setEmergency('emergency_asked')
         # ask finance advice
-        financial_group_uids = self.tool.financialGroupUids()
+        financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         item._update_after_edit()
         self.assertTrue(financial_group_uids[0] in item.adviceIndex)

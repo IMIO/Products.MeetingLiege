@@ -26,7 +26,7 @@ class AdviceWfHistoryAdapter(ImioWfHistoryAdapter):
             return True
 
         # if not a finance advice comment is viewable...
-        financial_group_uids = tool.financialGroupUids()
+        financial_group_uids = tool.finance_group_uids()
         if self.context.advice_group not in financial_group_uids:
             return True
 

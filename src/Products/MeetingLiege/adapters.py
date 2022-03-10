@@ -1287,7 +1287,8 @@ class CustomMeetingItem(MeetingItem):
             item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
     def _getAllGroupsManagingItem(self, theObjects=False):
-        """ """
+        """For meeting-config-bourgmestre, include the proposingGroup,
+           the general manager and the bourgmestre."""
         item = self.getSelf()
         res = [item.getProposingGroup(theObject=theObjects)]
         if item.portal_type == 'MeetingItemBourgmestre':
@@ -1324,38 +1325,12 @@ class CustomMeetingItem(MeetingItem):
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
+        org_uids = self._getAllGroupsManagingItem()
         item = self.getSelf()
-        item_state = item.query_state()
-        item_managing_group_uid = item.adapted()._getGroupManagingItem(item_state)
-        proposing_group_uid = item.getProposingGroup()
-        # when proposingGroup is no more the managing group, it means item is at least
-        # proposed to general manager, give read access to proposingGroup and to general manager
-        # if it is not the managing group
-        if item_managing_group_uid != proposing_group_uid:
-            # give 'Reader' role for every suffix except 'observers' that
-            # only get access when item is positively decided
-            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(proposing_group_uid)
-                            if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(proposing_group_uid, suffix_roles=suffix_roles)
-        # access for GENERAL_MANAGER_GROUP_ID groups
-        if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + ['proposed_to_general_manager']:
-            gm_org_uid = gm_group_uid()
-            # give 'Reader' role for every suffix except 'observers' that
-            # only get access when item is positively decided
-            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(gm_org_uid)
-                            if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(gm_org_uid, suffix_roles=suffix_roles)
-        # access for BOURGMESTRE_GROUP_ID groups
-        if item_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES + \
-                ['proposed_to_general_manager',
-                 'proposed_to_cabinet_manager',
-                 'proposed_to_cabinet_reviewer']:
-            bg_org_uid = bg_group_uid()
-            # give 'Reader' role for every suffix except 'observers' that
-            # only get access when item is positively decided
-            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(bg_org_uid)
-                            if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(bg_org_uid, suffix_roles=suffix_roles)
+        for org_uid in org_uids:
+            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(org_uid)
+                if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(org_uid, suffix_roles=suffix_roles)
 
     def getOfficeManager(self):
         '''

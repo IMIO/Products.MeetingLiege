@@ -85,53 +85,69 @@ from zope.interface import implements
 customWfAdaptations = ('returned', 'accepted_and_returned', 'sent_to_council_emergency')
 MeetingConfig.wfAdaptations += customWfAdaptations
 
-LIEGE_WAITING_ADVICES_FROM_STATES = (
-    {'from_states': ('itemcreated', ),
-     'back_states': ('itemcreated',
-                     'proposed_to_administrative_reviewer',
-                     'proposed_to_internal_reviewer',
-                     'proposed_to_director', ),
-     'use_custom_icon': False,
-     # is translated to "Remove from meeting"
-     'use_custom_back_transition_title_for': ("validated", ),
-     # if () given, a custom transition icon is used for every back transitions
-     'only_use_custom_back_transition_icon_for': ("validated", ),
-     'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
-     'adviser_may_validate': False,
-     'new_state_id': 'itemcreated_waiting_advices',
-     },
-    {'from_states': ('itemcreated',
-                     'proposed_to_administrative_reviewer',
-                     'proposed_to_internal_reviewer', ),
-     'back_states': ('proposed_to_internal_reviewer',
-                     'proposed_to_director', ),
-     'use_custom_icon': False,
-     # is translated to "Remove from meeting"
-     'use_custom_back_transition_title_for': ("validated", ),
-     # if () given, a custom transition icon is used for every back transitions
-     'only_use_custom_back_transition_icon_for': ("validated", ),
-     'use_custom_transition_title_for': (
-        'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
-        'wait_advices_from_proposed_to_administrative_reviewer',
-        'wait_advices_from_proposed_to_internal_reviewer', ),
-     'adviser_may_validate': False,
-     'new_state_id': 'proposed_to_internal_reviewer_waiting_advices',
-     },
-    {'from_states': ('proposed_to_director', ),
-     'back_states': ('proposed_to_internal_reviewer',
-                     'proposed_to_director', ),
-     'use_custom_icon': False,
-     # is translated to "Remove from meeting"
-     'use_custom_back_transition_title_for': ("validated", ),
-     # use "validate" as back transition to state "validated"
-     'defined_back_transition_ids': {"validated": "validate"},
-     # if () given, a custom transition icon is used for every back transitions
-     'only_use_custom_back_transition_icon_for': ("validated", ),
-     'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
-     'adviser_may_validate': True,
-     'new_state_id': 'proposed_to_finance_waiting_advices',
-     },
-)
+LIEGE_WAITING_ADVICES_FROM_STATES = {
+    'meeting-config-college':
+    (
+        {'from_states': ('itemcreated', ),
+         'back_states': ('itemcreated',
+                         'proposed_to_administrative_reviewer',
+                         'proposed_to_internal_reviewer',
+                         'proposed_to_director', ),
+         'use_custom_icon': False,
+         # is translated to "Remove from meeting"
+         'use_custom_back_transition_title_for': ("validated", ),
+         # if () given, a custom transition icon is used for every back transitions
+         'only_use_custom_back_transition_icon_for': ("validated", ),
+         'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
+         'adviser_may_validate': False,
+         'new_state_id': 'itemcreated_waiting_advices',
+         },
+        {'from_states': ('itemcreated',
+                         'proposed_to_administrative_reviewer',
+                         'proposed_to_internal_reviewer', ),
+         'back_states': ('proposed_to_internal_reviewer',
+                         'proposed_to_director', ),
+         'use_custom_icon': False,
+         # is translated to "Remove from meeting"
+         'use_custom_back_transition_title_for': ("validated", ),
+         # if () given, a custom transition icon is used for every back transitions
+         'only_use_custom_back_transition_icon_for': ("validated", ),
+         'use_custom_transition_title_for': (
+            'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
+            'wait_advices_from_proposed_to_administrative_reviewer',
+            'wait_advices_from_proposed_to_internal_reviewer', ),
+         'adviser_may_validate': False,
+         'new_state_id': 'proposed_to_internal_reviewer_waiting_advices',
+         },
+        {'from_states': ('proposed_to_director', ),
+         'back_states': ('proposed_to_internal_reviewer',
+                         'proposed_to_director', ),
+         'use_custom_icon': False,
+         # is translated to "Remove from meeting"
+         'use_custom_back_transition_title_for': ("validated", ),
+         # use "validate" as back transition to state "validated"
+         'defined_back_transition_ids': {"validated": "validate"},
+         # if () given, a custom transition icon is used for every back transitions
+         'only_use_custom_back_transition_icon_for': ("validated", ),
+         'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
+         'adviser_may_validate': True,
+         'new_state_id': 'proposed_to_finance_waiting_advices',
+         },
+     ),
+    'meeting-config-bourgmestre':
+    (
+        {'from_states': ('proposed_to_director', ),
+         'back_states': ('proposed_to_director', ),
+         'use_custom_icon': False,
+         'use_custom_back_transition_title_for': (),
+         # if () given, a custom transition icon is used for every back transitions
+         'only_use_custom_back_transition_icon_for': ("dummy", ),
+         'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
+         'adviser_may_validate': False,
+         'new_state_id': 'proposed_to_director_waiting_advices',
+         },
+    )
+}
 adaptations.WAITING_ADVICES_FROM_STATES = LIEGE_WAITING_ADVICES_FROM_STATES
 
 
@@ -1329,7 +1345,7 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         for org_uid in org_uids:
             suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(org_uid)
-                if suffix != 'observers'}
+                            if suffix != 'observers'}
             item._assign_roles_to_group_suffixes(org_uid, suffix_roles=suffix_roles)
 
     def getOfficeManager(self):

@@ -1567,7 +1567,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
         self.assertEqual(self.transitions(item),
-                         ['proposeToAdministrativeReviewer', 'proposeToDirector', 'proposeToInternalReviewer', 'wait_advices_from_itemcreated'])
+                         ['proposeToAdministrativeReviewer',
+                          'proposeToDirector',
+                          'proposeToInternalReviewer',
+                          'wait_advices_from_itemcreated'])
         self._checkItemWithoutCategory(item, item.getCategory())
         self.do(item, 'wait_advices_from_itemcreated')
         # The user is not forced to wait for a normal advice and can propose to

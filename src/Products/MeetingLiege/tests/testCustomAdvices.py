@@ -174,8 +174,8 @@ class testCustomAdvices(MeetingLiegeTestCase):
 
         # check when item is 'itemcreated_waiting_advices'
         self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
-                                                              askAdvicesTr='askAdvicesByDirector',
-                                                              availableBackTr='backToProposedToDirector',
+                                                              askAdvicesTr='wait_advices_from_proposed_to_director',
+                                                              availableBackTr='backTo_proposed_to_director_from_waiting_advices',
                                                               returnState='proposed_to_director')
 
     def _checkItemSentBackToServiceWhenEveryAdvicesGiven(self,
@@ -188,6 +188,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # save current logged in user, the group asker user
         adviceAskerUserId = self.member.getId()
         # ask advices
+        import ipdb; ipdb.set_trace()
         self.do(item, askAdvicesTr)
         # item can be sent back to returnState by creator even if every advices are not given
         self.assertTrue(availableBackTr in self.transitions(item))

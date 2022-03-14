@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from imio.history.adapters import ImioWfHistoryAdapter
-from imio.history.utils import getPreviousEvent
 from plone import api
 from plone.memoize.instance import memoize
 from Products.PloneMeeting.adapters import PMCategorizedObjectAdapter

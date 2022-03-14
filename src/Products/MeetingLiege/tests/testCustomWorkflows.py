@@ -2063,8 +2063,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self._check_access(item)
         self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
         # he may send the item back to the internal reviewer, or send it to
-        # general manager (proposeToGeneralManager).  askAdvicesByDirector is only available
-        # if advices are asked
+        # general manager (proposeToGeneralManager).
+        # wait_advices_from_proposed_to_director is only available if advices are asked
         self.assertEqual(self.transitions(item),
                          ['backToItemCreated',
                           'backToProposedToAdministrativeReviewer',
@@ -2073,11 +2073,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # ask advices
         item.setOptionalAdvisers((self.vendors_uid, ))
         item._update_after_edit()
-        self.assertTrue('askAdvicesByDirector' in self.transitions(item))
-        self.do(item, 'askAdvicesByDirector')
+        self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertEqual(item.query_state(), 'proposed_to_director_waiting_advices')
         # director may take item back
-        self.assertEqual(self.transitions(item), ['backToProposedToDirector'])
+        self.assertEqual(self.transitions(item), ['backTo_proposed_to_director_from_waiting_advices'])
         self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
 
     def test_BourgmestreDirectionProcess(self):
@@ -2093,9 +2092,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # unable to trigger proposeToCabinetReviewer
         self.assertEqual(self.transitions(item),
                          ['proposeToAdministrativeReviewer',
+                          'proposeToCabinetManager',
+                          'proposeToCabinetReviewer',
                           'proposeToDirector',
-                          'proposeToInternalReviewer'])
-
+                          'proposeToGeneralManager',
+                          'proposeToInternalReviewer',
+                          'validate'])
         # propose to general manager and check access
         self.do(item, 'proposeToAdministrativeReviewer')
         self.do(item, 'proposeToInternalReviewer')
@@ -2392,24 +2394,22 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
+                    self.developers_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid)]}})
-        # the every_reviewer_levels_and_lower will also search for
-        # 'developers__reviewprocess__proposed_to_cabinet_manager'
-        # but this will not match any item as when an item is 'proposed_to_cabinet_manager'
-        # the reviewProcessInfo will be 'bourgmestre__reviewprocess__proposed_to_cabinet_manager'
+                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
+                    self.developers_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
+                    self.developers_uid)]}})
 
         # internal reviewer
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2421,21 +2421,24 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(
+                    self.developers_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(
+                    self.developers_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(
+                    self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
+                            self.developers_uid)]}})
 
         # director
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2452,25 +2455,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid)]}})
@@ -2485,17 +2482,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid)]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid)]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {

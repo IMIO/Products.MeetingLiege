@@ -168,6 +168,7 @@ bourgmestreMeeting.itemWFValidationLevels = (
      },
 )
 bourgmestreMeeting.transitionsToConfirm = ['MeetingItem.delay', ]
+bourgmestreMeeting.itemPreferredMeetingStates = ()
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )
 bourgmestreMeeting.enforceAdviceMandatoriness = False
@@ -190,7 +191,6 @@ bourgmestreMeeting.powerObservers = (
      'item_states': ['accepted',
                      'accepted_but_modified',
                      'delayed',
-                     'itemfrozen',
                      'refused',
                      'validated'],
      'label': 'Super observateurs',
@@ -201,7 +201,6 @@ bourgmestreMeeting.powerObservers = (
      'item_states': ['accepted',
                      'accepted_but_modified',
                      'delayed',
-                     'itemfrozen',
                      'refused',
                      'returned_to_proposing_group',
                      'marked_not_applicable',
@@ -239,8 +238,18 @@ bourgmestreMeeting.powerObservers = (
      'row_id': 'jursecpubpowerobservers'},
 )
 bourgmestreMeeting.itemDecidedStates = ['accepted', 'refused', 'delayed', 'marked_not_applicable']
-bourgmestreMeeting.workflowAdaptations = ['accepted_but_modified', 'delayed',
-                                          'mark_not_applicable', 'refused']
+bourgmestreMeeting.workflowAdaptations = (
+    'accepted_but_modified',
+    'mark_not_applicable',
+    'refused',
+    'delayed',
+    'no_publication',
+    'item_validation_shortcuts',
+    'no_decide',
+    'no_freeze',
+    'waiting_advices',
+    'waiting_advices_proposing_group_send_back')
+
 bourgmestreMeeting.transitionsForPresentingAnItem = (
     u'proposeToAdministrativeReviewer',
     u'proposeToInternalReviewer',

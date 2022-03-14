@@ -149,6 +149,16 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
     )
 }
 adaptations.WAITING_ADVICES_FROM_STATES = LIEGE_WAITING_ADVICES_FROM_STATES
+LIEGE_RESTRICT_ITEM_BACK_SHORTCUTS = {
+    'meeting-config-bourgmestre':
+    {
+        '*': '*',
+        'proposed_to_cabinet_reviewer': ['proposed_to_director'],
+        'proposed_to_cabinet_manager': ['proposed_to_director'],
+        'validated': ['proposed_to_director']
+    }
+}
+adaptations.RESTRICT_ITEM_BACK_SHORTCUTS = LIEGE_RESTRICT_ITEM_BACK_SHORTCUTS
 
 
 class CustomMeeting(Meeting):

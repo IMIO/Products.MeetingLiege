@@ -159,16 +159,20 @@ bourgmestreMeeting.categories = deepcopy(councilMeeting.categories)
 bourgmestreMeeting.categories[-1].using_groups = ()
 bourgmestreMeeting.shortName = 'Bourgmestre'
 bourgmestreMeeting.annexTypes = councilMeeting.annexTypes
-bourgmestreMeeting.itemAnnexConfidentialVisibleFor = bg_import_data.bourgmestreMeeting.itemAnnexConfidentialVisibleFor
+bourgmestreMeeting.itemAnnexConfidentialVisibleFor = \
+    bg_import_data.bourgmestreMeeting.itemAnnexConfidentialVisibleFor
 bourgmestreMeeting.itemWFValidationLevels = bg_import_data.bourgmestreMeeting.itemWFValidationLevels
 bourgmestreMeeting.itemConditionsInterface = bg_import_data.bourgmestreMeeting.itemConditionsInterface
 bourgmestreMeeting.itemActionsInterface = bg_import_data.bourgmestreMeeting.itemActionsInterface
 bourgmestreMeeting.meetingConditionsInterface = bg_import_data.bourgmestreMeeting.meetingConditionsInterface
 bourgmestreMeeting.meetingActionsInterface = bg_import_data.bourgmestreMeeting.meetingActionsInterface
 bourgmestreMeeting.itemDecidedStates = bg_import_data.bourgmestreMeeting.itemDecidedStates
-bourgmestreMeeting.transitionsForPresentingAnItem = bg_import_data.bourgmestreMeeting.transitionsForPresentingAnItem
-bourgmestreMeeting.onMeetingTransitionItemActionToExecute = bg_import_data.bourgmestreMeeting.onMeetingTransitionItemActionToExecute
+bourgmestreMeeting.transitionsForPresentingAnItem = \
+    bg_import_data.bourgmestreMeeting.transitionsForPresentingAnItem
+bourgmestreMeeting.onMeetingTransitionItemActionToExecute = \
+    bg_import_data.bourgmestreMeeting.onMeetingTransitionItemActionToExecute
 bourgmestreMeeting.transitionsToConfirm = []
+bourgmestreMeeting.itemPreferredMeetingStates = bg_import_data.bourgmestreMeeting.itemPreferredMeetingStates
 bourgmestreMeeting.workflowAdaptations = bg_import_data.bourgmestreMeeting.workflowAdaptations
 bourgmestreMeeting.meetingTopicStates = ('created', )
 bourgmestreMeeting.decisionTopicStates = ('closed', )

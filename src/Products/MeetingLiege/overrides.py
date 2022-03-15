@@ -109,7 +109,8 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
             'proposeToDirector': None,
             'backToProposedToInternalReviewer': None,
             'proposeToGeneralManager': None,
-            'backToProposedToDirector': ['proposed_to_general_manager', 'proposed_to_director_waiting_advices'],
+            'backToProposedToDirector': ['proposed_to_general_manager',
+                                         'proposed_to_director_waiting_advices'],
             'askAdvicesByDirector': None, }
 
         if event['action'] and self.context.portal_type == 'MeetingItemBourgmestre':

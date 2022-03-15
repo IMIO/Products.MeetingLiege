@@ -153,12 +153,13 @@ LIEGE_RESTRICT_ITEM_BACK_SHORTCUTS = {
     'meeting-config-bourgmestre':
     {
         '*': '*',
+        'proposed_to_general_manager': [],
         'proposed_to_cabinet_reviewer': ['proposed_to_director'],
         'proposed_to_cabinet_manager': ['proposed_to_director'],
-        'validated': ['proposed_to_director']
+        'validated': ['proposed_to_director', 'proposed_to_cabinet_reviewer']
     }
 }
-adaptations.RESTRICT_ITEM_BACK_SHORTCUTS = LIEGE_RESTRICT_ITEM_BACK_SHORTCUTS
+adaptations.RESTRICT_ITEM_BACK_SHORTCUTS.update(LIEGE_RESTRICT_ITEM_BACK_SHORTCUTS)
 
 
 class CustomMeeting(Meeting):
@@ -614,7 +615,7 @@ class CustomMeetingItem(MeetingItem):
 
     def is_cabinet_reviewer(self):
         """Is current user a cabinet reviewer?"""
-        return '{0}_reviewers'.format(bg_group_uid) in self.tool.get_plone_groups_for_user()
+        return '{0}_reviewers'.format(bg_group_uid()) in self.tool.get_plone_groups_for_user()
 
     security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
 
@@ -1351,6 +1352,13 @@ class CustomMeetingItem(MeetingItem):
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
+        item = self.getSelf()
+        item_state = item.queryState()
+        item_managing_group = item.adapted()._getGroupManagingItem(item_state)
+        proposing_group = item.getProposingGroup()
+        # only add extra accesses if out of proposingGroup WF
+        if item_managing_group == proposing_group:
+            return
         org_uids = self._getAllGroupsManagingItem()
         item = self.getSelf()
         for org_uid in org_uids:

@@ -188,7 +188,6 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # save current logged in user, the group asker user
         adviceAskerUserId = self.member.getId()
         # ask advices
-        import ipdb; ipdb.set_trace()
         self.do(item, askAdvicesTr)
         # item can be sent back to returnState by creator even if every advices are not given
         self.assertTrue(availableBackTr in self.transitions(item))

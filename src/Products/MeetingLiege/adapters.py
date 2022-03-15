@@ -1353,11 +1353,12 @@ class CustomMeetingItem(MeetingItem):
         """Depending on item's review_state, we need to give Reader role to the proposing group
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
         item = self.getSelf()
-        item_state = item.queryState()
+        item_state = item.query_state()
         item_managing_group = item.adapted()._getGroupManagingItem(item_state)
         proposing_group = item.getProposingGroup()
         # only add extra accesses if out of proposingGroup WF
-        if item_managing_group == proposing_group:
+        if item_managing_group == proposing_group and \
+           (not item.hasMeeting() and item_state != 'validated'):
             return
         org_uids = self._getAllGroupsManagingItem()
         item = self.getSelf()

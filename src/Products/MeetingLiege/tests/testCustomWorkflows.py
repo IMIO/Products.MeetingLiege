@@ -2154,6 +2154,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         """ """
         self.setUpBourgmestreConfig()
         self.changeUser('bourgmestreManager')
+        # proposingGroup will be 'bourgmestre'
         item = self.create('MeetingItem')
         self.assertEqual(self.transitions(item), ['proposeToCabinetReviewer', 'proposeToDirector'])
         self.do(item, 'proposeToCabinetReviewer')

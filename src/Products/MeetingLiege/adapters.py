@@ -148,7 +148,7 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          },
     )
 }
-adaptations.WAITING_ADVICES_FROM_STATES = LIEGE_WAITING_ADVICES_FROM_STATES
+adaptations.WAITING_ADVICES_FROM_STATES.update(LIEGE_WAITING_ADVICES_FROM_STATES)
 LIEGE_RESTRICT_ITEM_BACK_SHORTCUTS = {
     'meeting-config-bourgmestre':
     {
@@ -1313,13 +1313,12 @@ class CustomMeetingItem(MeetingItem):
             groupId = "{0}_advisers".format(itemWithFinanceAdvice.getFinanceAdvice())
             item.manage_addLocalRoles(groupId, (READER_USECASES['advices'], ))
 
-    def _getAllGroupsManagingItem(self, theObjects=False):
+    def _getAllGroupsManagingItem(self, review_state, theObjects=False):
         """For meeting-config-bourgmestre, include the proposingGroup,
            the general manager and the bourgmestre."""
         item = self.getSelf()
         res = [item.getProposingGroup(theObject=theObjects)]
         if item.portal_type == 'MeetingItemBourgmestre':
-            review_state = item.query_state()
             if review_state not in self.BOURGMESTRE_PROPOSING_GROUP_STATES:
                 org_uids = []
                 org_uids.append(gm_group_uid())
@@ -1352,20 +1351,16 @@ class CustomMeetingItem(MeetingItem):
     def _setBourgmestreGroupsReadAccess(self):
         """Depending on item's review_state, we need to give Reader role to the proposing group
            and general manager so it keeps Read access to item when it is managed by the Cabinet."""
-        item = self.getSelf()
-        item_state = item.query_state()
-        item_managing_group = item.adapted()._getGroupManagingItem(item_state)
-        proposing_group = item.getProposingGroup()
         # only add extra accesses if out of proposingGroup WF
-        if item_managing_group == proposing_group and \
-           (not item.hasMeeting() and item_state != 'validated'):
-            return
-        org_uids = self._getAllGroupsManagingItem()
+        # in this case we have more than 1 group managing item
         item = self.getSelf()
-        for org_uid in org_uids:
-            suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(org_uid)
-                            if suffix != 'observers'}
-            item._assign_roles_to_group_suffixes(org_uid, suffix_roles=suffix_roles)
+        org_uids = self._getAllGroupsManagingItem(item.query_state())
+        if len(org_uids) > 1:
+            item = self.getSelf()
+            for org_uid in org_uids:
+                suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(org_uid)
+                                if suffix != 'observers'}
+                item._assign_roles_to_group_suffixes(org_uid, suffix_roles=suffix_roles)
 
     def getOfficeManager(self):
         '''

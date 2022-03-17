@@ -60,32 +60,6 @@ collegeMeeting.itemAutoSentToOtherMCStates = ('sent_to_council_emergency',
                                               'accepted_and_returned',)
 collegeMeeting.itemDecidedStates = ['accepted', 'delayed', 'accepted_but_modified', 'pre_accepted']
 collegeMeeting.itemPositiveDecidedStates = ['accepted', 'accepted_but_modified']
-collegeMeeting.onMeetingTransitionItemActionToExecute = (
-    {'meeting_transition': 'freeze',
-     'item_action': 'itemfreeze',
-     'tal_expression': ''},
-
-    {'meeting_transition': 'decide',
-     'item_action': 'itemfreeze',
-     'tal_expression': ''},
-
-    {'meeting_transition': 'publish_decisions',
-     'item_action': 'itemfreeze',
-     'tal_expression': ''},
-    {'meeting_transition': 'publish_decisions',
-     'item_action': 'accept',
-     'tal_expression': ''},
-
-    {'meeting_transition': 'close',
-     'item_action': 'itemfreeze',
-     'tal_expression': ''},
-    {'meeting_transition': 'close',
-     'item_action': 'accept',
-     'tal_expression': ''},
-
-    {'meeting_transition': 'backToCreated',
-     'item_action': 'backToPresented',
-     'tal_expression': ''}, )
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
 collegeMeeting.itemCopyGroupsStates = ['validated']
@@ -117,8 +91,6 @@ councilMeeting.itemWFValidationLevels = ml_import_data.councilMeeting.itemWFVali
 councilMeeting.workflowAdaptations = ml_import_data.councilMeeting.workflowAdaptations
 councilMeeting.itemDecidedStates = collegeMeeting.itemDecidedStates
 councilMeeting.itemPositiveDecidedStates = collegeMeeting.itemPositiveDecidedStates
-councilMeeting.onMeetingTransitionItemActionToExecute = deepcopy(
-    collegeMeeting.onMeetingTransitionItemActionToExecute)
 councilMeeting.onTransitionFieldTransforms = (
     {'transition': 'present',
      'field_name': 'MeetingItem.decisionEnd',
@@ -169,8 +141,7 @@ bourgmestreMeeting.meetingActionsInterface = bg_import_data.bourgmestreMeeting.m
 bourgmestreMeeting.itemDecidedStates = bg_import_data.bourgmestreMeeting.itemDecidedStates
 bourgmestreMeeting.transitionsForPresentingAnItem = \
     bg_import_data.bourgmestreMeeting.transitionsForPresentingAnItem
-bourgmestreMeeting.onMeetingTransitionItemActionToExecute = \
-    bg_import_data.bourgmestreMeeting.onMeetingTransitionItemActionToExecute
+bourgmestreMeeting.onMeetingTransitionItemActionToExecute = ()
 bourgmestreMeeting.transitionsToConfirm = []
 bourgmestreMeeting.itemPreferredMeetingStates = bg_import_data.bourgmestreMeeting.itemPreferredMeetingStates
 bourgmestreMeeting.workflowAdaptations = bg_import_data.bourgmestreMeeting.workflowAdaptations

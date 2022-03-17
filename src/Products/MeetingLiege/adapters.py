@@ -81,9 +81,27 @@ from zope.i18n import translate
 from zope.interface import implements
 
 
-# add our wfAdaptations
-customWfAdaptations = ('returned', 'accepted_and_returned', 'sent_to_council_emergency')
-MeetingConfig.wfAdaptations += customWfAdaptations
+# we get this list by running utils.get_enabled_ordered_wfas(tool) on a living site
+# order is important, so keep the one from MeetingConfig.wfAdaptations
+keptWfAdaptations = (
+    'item_validation_shortcuts',
+    'only_creator_may_delete',
+    'no_freeze',
+    'no_publication',
+    'no_decide',
+    'accepted_but_modified',
+    'mark_not_applicable',
+    'refused',
+    'delayed',
+    'pre_accepted',
+    'return_to_proposing_group',
+    'waiting_advices',
+    'waiting_advices_proposing_group_send_back',
+    'waiting_advices_adviser_send_back')
+# add our own wfAdaptations
+ownWfAdaptations = ('returned', 'accepted_and_returned', 'sent_to_council_emergency')
+customWfAdaptations = keptWfAdaptations + ownWfAdaptations
+MeetingConfig.wfAdaptations = customWfAdaptations
 
 LIEGE_WAITING_ADVICES_FROM_STATES = {
     'meeting-config-college':

@@ -67,6 +67,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
                       'backToValidated', )}
 
     WF_ITEM_STATE_NAME_MAPPINGS_1 = {'itemcreated': 'itemcreated',
+                                     'proposed_first_level': 'proposed_to_director',
                                      'proposed': 'proposed_to_director',
                                      'validated': 'validated',
                                      'presented': 'presented',
@@ -171,3 +172,11 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
                 select_org_for_function(org_uid, 'financialreviewers')
         # clean forever cache on utils finance_group_uid
         _memos.clear()
+
+    def _setItemToWaitingAdvices(self, item, transition):
+        """Setup item so advice may be asked."""
+        # "proposed_to_director_waiting_advices" is actually named "proposed_to_finance_waiting_advices"
+        values = list(self.vendors.get_item_advice_states())
+        values[0] = values[0].replace('director', 'finance')
+        self.vendors.item_advice_states = tuple(values)
+        self.do(item, transition)

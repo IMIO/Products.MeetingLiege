@@ -676,6 +676,9 @@ class CustomMeetingItem(MeetingItem):
 
     security.declareProtected(ModifyPortalContent, 'setCategory')
 
+    # we will monkeypatch MeetingItem.setCategory but we need to call original code
+    MeetingItem.__old_pm_setCategory = MeetingItem.setCategory
+
     def setCategory(self, value, **kwargs):
         '''Overrides the field 'category' mutator to remove stored
            result of the Meeting.getItemNumsForActe on the corresponding meeting.
@@ -683,14 +686,13 @@ class CustomMeetingItem(MeetingItem):
            MeetingItem.getItemRefForActe ram cache.'''
         current = self.getField('category').get(self)
         meeting = self.getMeeting()
+        # call original code
+        self.__old_pm_setCategory(value, **kwargs)
         if current != value and meeting:
             ann = IAnnotations(meeting)
             if 'MeetingLiege-getItemNumsForActe' in ann:
                 ann['MeetingLiege-getItemNumsForActe'] = {}
             cleanRamCacheFor('Products.MeetingLiege.adapters.getItemRefForActe')
-            # add a value in the REQUEST to specify that update_item_references is needed
-            self.REQUEST.set('need_Meeting_update_item_references', True)
-        self.getField('category').set(self, value, **kwargs)
     MeetingItem.setCategory = setCategory
 
     security.declarePublic('showAdvices')

@@ -30,6 +30,8 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
                                          'validate', )
     TRANSITIONS_FOR_VALIDATING_ITEM_2 = ('proposeToDirector',
                                          'validate', )
+    TRANSITIONS_FOR_PROPOSING_ITEM_FIRST_LEVEL_1 = TRANSITIONS_FOR_PROPOSING_ITEM_FIRST_LEVEL_2 = (
+        'proposeToAdministrativeReviewer', )
     TRANSITIONS_FOR_PRESENTING_ITEM_1 = ('proposeToAdministrativeReviewer',
                                          'proposeToInternalReviewer',
                                          'proposeToDirector',
@@ -177,6 +179,12 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         """Setup item so advice may be asked."""
         # "proposed_to_director_waiting_advices" is actually named "proposed_to_finance_waiting_advices"
         values = list(self.vendors.get_item_advice_states())
-        values[0] = values[0].replace('director', 'finance')
-        self.vendors.item_advice_states = tuple(values)
-        self.do(item, transition)
+        if not values:
+            # path on MeetingConfig
+            values = list(self.meetingConfig.getItemAdviceStates())
+            values[0] = values[0].replace('director', 'finance')
+            self.meetingConfig.setItemAdviceStates(values)
+        else:
+            values[0] = values[0].replace('director', 'finance')
+            self.vendors.item_advice_states = tuple(values)
+        self.do(item, 'wait_advices_from_proposed_to_director')

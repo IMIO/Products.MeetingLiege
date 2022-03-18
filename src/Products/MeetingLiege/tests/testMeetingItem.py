@@ -21,6 +21,15 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
         '''Bypass as we changed behavior, we do not keep decision annexes.'''
         pass
 
+    def test_pm_ItemEditAndView(self):
+        """Setup finance groups before calling test."""
+        self.changeUser('admin')
+        self._createFinanceGroups()
+        super(testMeetingItem, self).test_pm_ItemEditAndView()
+
+    def test_pm_ItemActionsPanelCachingInvalidatedWhenUserGroupsChanged(self):
+        """Bypass..."""
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

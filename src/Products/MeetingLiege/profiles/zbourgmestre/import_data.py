@@ -85,7 +85,7 @@ bourgmestreMeeting.usedMeetingAttributes = ['signatures', 'assembly', 'observati
 bourgmestreMeeting.recordMeetingHistoryStates = []
 bourgmestreMeeting.xhtmlTransformFields = ()
 bourgmestreMeeting.xhtmlTransformTypes = ()
-bourgmestreMeeting.hideCssClassesTo = ('power_observers', 'restricted_power_observers')
+bourgmestreMeeting.hideCssClassesTo = ('powerobservers', 'restrictedpowerobservers')
 bourgmestreMeeting.itemConditionsInterface = \
     'Products.MeetingLiege.interfaces.IMeetingItemBourgmestreWorkflowConditions'
 bourgmestreMeeting.itemActionsInterface = \

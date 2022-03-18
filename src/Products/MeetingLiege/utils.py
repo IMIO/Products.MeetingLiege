@@ -29,5 +29,9 @@ def treasury_group_cec_uid(raise_on_error=False):
 @forever.memoize
 def finance_group_uids(raise_on_error=False):
     """ """
-    return [org_id_to_uid(fin_grp_id, raise_on_error=raise_on_error)
-            for fin_grp_id in FINANCE_GROUP_IDS]
+    res = []
+    for fin_grp_id in FINANCE_GROUP_IDS:
+        org_uid = org_id_to_uid(fin_grp_id, raise_on_error=raise_on_error)
+        if org_uid:
+            res.append(org_uid)
+    return res

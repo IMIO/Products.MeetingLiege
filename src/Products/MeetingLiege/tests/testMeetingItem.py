@@ -30,6 +30,9 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
     def test_pm_ItemActionsPanelCachingInvalidatedWhenUserGroupsChanged(self):
         """Bypass..."""
 
+    def test_pm__sendCopyGroupsMailIfRelevant(self):
+        """Bypass..."""
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

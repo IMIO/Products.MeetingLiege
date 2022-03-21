@@ -42,6 +42,9 @@ class testMeetingConfig(MeetingLiegeTestCase, pmtmc):
         cleanRamCacheFor('Products.PloneMeeting.ToolPloneMeeting._users_groups_value')
         super(testMeetingConfig, self).test_pm_UpdatePersonalLabels()
 
+    def test_pm_Validate_itemWFValidationLevels_removed_depending_used_state_item(self):
+        """Bypass..."""
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

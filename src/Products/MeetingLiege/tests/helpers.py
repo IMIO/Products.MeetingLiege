@@ -71,6 +71,7 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
     WF_ITEM_STATE_NAME_MAPPINGS_1 = {'itemcreated': 'itemcreated',
                                      'proposed_first_level': 'proposed_to_director',
                                      'proposed': 'proposed_to_director',
+                                     'prevalidated': 'proposed_to_administrative_reviewer',
                                      'validated': 'validated',
                                      'presented': 'presented',
                                      'itemfrozen': 'itemfrozen'}

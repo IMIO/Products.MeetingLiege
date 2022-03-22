@@ -225,7 +225,6 @@ def onItemDuplicated(original, event):
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     newItem.adapted().updateFinanceAdvisersAccess()
 
-    import ipdb; ipdb.set_trace()
     if original.portal_type == 'MeetingItemCouncil' and \
        newItem.portal_type == 'MeetingItemCollege':
         # an item Council is sent back to College, enable the 'otherMeetingConfigsClonableTo'

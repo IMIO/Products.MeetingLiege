@@ -269,7 +269,7 @@ msgid "item_decision_suite_descr"
 msgstr ""
 
 #. Default: "Decision (end)"
-msgid "MeetingLiege_label_decisionEnd"
+msgid "PloneMeeting_label_decisionEnd"
 msgstr ""
 
 #. Default: " "

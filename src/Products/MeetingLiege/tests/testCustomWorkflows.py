@@ -1748,7 +1748,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.getMeetingFolder(cfg2)
         # send a college item to council and delay this council item
         # in the college
-        data = {'labelForCouncil': COUNCIL_LABEL,
+        data = {'otherMeetingConfigsClonableToFieldLabelForCouncil': COUNCIL_LABEL,
                 'otherMeetingConfigsClonableToPrivacy': ('meeting-config-council', ),
                 'otherMeetingConfigsClonableTo': ('meeting-config-council', )}
         collegeItem = self.create('MeetingItem', **data)
@@ -1788,7 +1788,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertTrue(self.hasPermission(View, councilItem))
 
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
-        self.assertEqual(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
+        self.assertEqual(backCollegeItem.getLabelForCouncil(), '')
+        self.assertEqual(backCollegeItem.getOtherMeetingConfigsClonableToFieldLabelForCouncil(),
+                         COUNCIL_LABEL)
         self.assertEqual(backCollegeItem.getOtherMeetingConfigsClonableTo(),
                          ('meeting-config-council', ))
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())
@@ -1814,7 +1816,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         councilItem._update_after_edit()
         self.do(councilItem, 'return')
         backCollegeItem = councilItem.getItemClonedToOtherMC(cfgId)
-        self.assertEqual(backCollegeItem.getLabelForCouncil(), COUNCIL_LABEL)
+        self.assertEqual(backCollegeItem.getLabelForCouncil(), '')
+        self.assertEqual(backCollegeItem.getOtherMeetingConfigsClonableToFieldLabelForCouncil(),
+                         COUNCIL_LABEL)
         self.assertEqual(backCollegeItem.getOtherMeetingConfigsClonableTo(),
                          ('meeting-config-council', ))
         self.assertIn(cfg2Id, backCollegeItem.getOtherMeetingConfigsClonableTo())

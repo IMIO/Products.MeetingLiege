@@ -28,7 +28,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # create a college item
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
-        item.setLabelForCouncil('<p>My label for council</p>')
+        item.setOtherMeetingConfigsClonableToFieldLabelForCouncil('<p>My label for council</p>')
         # before we used field 'privacyForCouncil' to init privacy on Council item
         # now use the field MeetingItem.otherMeetingConfigsClonableToPrivacy
         item.setOtherMeetingConfigsClonableToPrivacy((self.meetingConfig2.getId(), ))
@@ -75,8 +75,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
         item.setOtherMeetingConfigsClonableTo((cfg2Id, ))
-
-        item.setLabelForCouncil('<p>My label for council</p>')
+        item.setOtherMeetingConfigsClonableToFieldLabelForCouncil('<p>My label for council</p>')
         item.setOtherMeetingConfigsClonableTo('meeting-config-council')
         item.setDecisionSuite('<p>My decision suite</p>')
         item.setDecisionEnd('<p>My decision end</p>')
@@ -84,7 +83,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # send College item to Council and compare
         new_item = item.cloneToOtherMeetingConfig(cfg2Id)
         self.assertEqual(new_item.portal_type, 'MeetingItemCouncil')
-        self.assertEqual(item.getLabelForCouncil(),
+        self.assertEqual(item.getOtherMeetingConfigsClonableToFieldLabelForCouncil(),
                          new_item.getLabelForCouncil())
         self.assertEqual(item.getDecisionSuite(),
                          new_item.getDecisionSuite())

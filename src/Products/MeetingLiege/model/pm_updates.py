@@ -23,13 +23,28 @@ def update_item_schema(baseSchema):
         # field for defining label that will be used when the item is in the Council
         # in College, this is a proposal that will be copied to the item sent to Council
         TextField(
+            name='otherMeetingConfigsClonableToFieldLabelForCouncil',
+            widget=RichWidget(
+                condition="python: here.attribute_is_used('otherMeetingConfigsClonableToFieldLabelForCouncil')",
+                label_msgid="MeetingLiege_label_labelForCouncil",
+                label='Description',
+                description="",
+                description_msgid="MeetingLiege_descr_labelForCouncil",
+                i18n_domain='PloneMeeting',
+            ),
+            default_content_type="text/html",
+            searchable=True,
+            allowable_content_types=('text/html',),
+            default_output_type="text/x-html-safe",
+            optional=True,
+        ),
+        TextField(
             name='labelForCouncil',
             widget=RichWidget(
-                rows=15,
                 condition="python: here.attribute_is_used('labelForCouncil')",
                 label='LabelForCouncil',
                 label_msgid='MeetingLiege_label_labelForCouncil',
-                description="Label of decision that will be used when the will be in the Council",
+                description="",
                 description_msgid="MeetingLiege_descr_labelForCouncil",
                 i18n_domain='PloneMeeting',
             ),
@@ -68,25 +83,6 @@ def update_item_schema(baseSchema):
             vocabulary='listArchivingRefs',
             default='_none_',
         ),
-        TextField(
-            name='decisionEnd',
-            widget=RichWidget(
-                rows=15,
-                condition="python: here.attribute_is_used('decisionEnd')",
-                label='DecisionEnd',
-                label_msgid='MeetingLiege_label_decisionEnd',
-                description="Decision end descr",
-                description_msgid="item_decision_end_descr",
-                i18n_domain='PloneMeeting',
-            ),
-            read_permission="PloneMeeting: Read decision",
-            searchable=True,
-            allowable_content_types=('text/html',),
-            default_content_type="text/html",
-            default_output_type="text/x-html-safe",
-            write_permission="PloneMeeting: Write decision",
-            optional=True,
-        ),
     ),)
 
     completeItemSchema = baseSchema + specificSchema.copy()
@@ -98,12 +94,15 @@ def update_item_schema(baseSchema):
     completeItemSchema['motivation'].widget.description_msgid = 'item_motivation_descr'
     completeItemSchema['decision'].widget.description_msgid = 'item_decision_descr'
     completeItemSchema['decisionSuite'].widget.description_msgid = 'item_decision_suite_descr'
+    completeItemSchema['decisionEnd'].widget.description_msgid = 'item_decision_end_descr'
     completeItemSchema['observations'].widget.description_msgid = 'item_observations_descr'
     # use a specific condition to show field 'otherMeetingConfigsClonableToEmergency'
     completeItemSchema['otherMeetingConfigsClonableToEmergency'].widget.condition = \
         'python: here.adapted().showOtherMeetingConfigsClonableToEmergency()'
 
     return completeItemSchema
+
+
 MeetingItem.schema = update_item_schema(MeetingItem.schema)
 
 
@@ -128,6 +127,8 @@ def update_meeting_schema(baseSchema):
 
     completeConfigSchema = baseSchema + specificSchema.copy()
     return completeConfigSchema
+
+
 Meeting.schema = update_meeting_schema(Meeting.schema)
 
 
@@ -144,8 +145,9 @@ def update_config_schema(baseSchema):
                 columns={'row_id': Column("Archiving reference row id", visible=False),
                          'code': Column("Archiving reference code"),
                          'label': Column("Archiving reference label"),
-                         'restrict_to_groups': MultiSelectColumn("Archiving reference restrict to selected groups",
-                                                                 vocabulary="listActiveOrgsForArchivingRefs"),
+                         'restrict_to_groups': MultiSelectColumn(
+                            "Archiving reference restrict to selected groups",
+                            vocabulary="listActiveOrgsForArchivingRefs"),
                          'active': SelectColumn("Archiving reference active?",
                                                 vocabulary="listBooleanVocabulary",
                                                 default='1'),
@@ -156,7 +158,8 @@ def update_config_schema(baseSchema):
             ),
             allow_oddeven=True,
             default=(),
-            # do not use 'finance_advice' column for now, replaced (definitively?) by field 'financeAdvice'
+            # do not use 'finance_advice' column for now, replaced (definitively?)
+            # by field 'financeAdvice'
             columns=('row_id', 'code', 'label', 'restrict_to_groups', 'active'),
             allow_empty_rows=False,
             write_permission=WriteRiskyConfig,
@@ -165,7 +168,8 @@ def update_config_schema(baseSchema):
 
     completeConfigSchema = baseSchema + specificSchema.copy()
     return completeConfigSchema
-MeetingConfig.schema = update_config_schema(MeetingConfig.schema)
 
+
+MeetingConfig.schema = update_config_schema(MeetingConfig.schema)
 
 registerClasses()

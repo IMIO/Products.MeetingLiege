@@ -701,13 +701,27 @@ class CustomMeetingItem(MeetingItem):
         """We show advices in every case on MeetingItemCollege and MeetingItemCouncil."""
         return True
 
+    MeetingItem.__old_pm_show_budget_infos = MeetingItem.show_budget_infos
+
+    security.declarePublic('show_budget_infos')
+
+    def show_budget_infos(self):
+        """Hide budget infos to the restrictedPowerObservers."""
+        # call original code
+        if self.__old_pm_show_budget_infos():
+            tool = api.portal.get_tool('portal_plonemeeting')
+            cfg = tool.getMeetingConfig(self)
+            if not tool.isPowerObserverForCfg(cfg, power_observer_types=['restrictedpowerobservers']):
+                return True
+    MeetingItem.show_budget_infos = show_budget_infos
+
     security.declarePublic('getExtraFieldsToCopyWhenCloning')
 
     def getExtraFieldsToCopyWhenCloning(self, cloned_to_same_mc, cloned_from_item_template):
         '''
           Keep some new fields when item is cloned (to another mc or from itemtemplate).
         '''
-        res = ['labelForCouncil', 'financeAdvice', 'decisionEnd', 'toDiscuss']
+        res = ['financeAdvice', 'decisionEnd', 'toDiscuss']
         if cloned_to_same_mc:
             res = res + ['archivingRef', 'textCheckList']
         return res

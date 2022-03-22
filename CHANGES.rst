@@ -6,6 +6,15 @@ Products.MeetingLiege Changelog
 
 - Updated meetingliege_restrictedpowerobservers.css - SUP-22174
   [aduchene]
+- Adapted workflows to use MeetingConfig.itemWFValidationLevels.
+  [gbastien]
+- Adapted `MeetingItem.labelForCouncil` behavior, use new field
+  `MeetingItem.otherMeetingConfigsClonableToFieldLabelForCouncil` on College item
+  and data sent is managed by PloneMeeting.
+  [gbastien]
+- Override `MeetingItem.show_budget_infos` to hide it to `restricted_power_observers`,
+  removed override from `MeetingItem` view/edit templates.
+  [gbastien]
 
 4.1.3 (2021-11-05)
 ------------------

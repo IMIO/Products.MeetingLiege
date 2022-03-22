@@ -225,6 +225,7 @@ def onItemDuplicated(original, event):
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     newItem.adapted().updateFinanceAdvisersAccess()
 
+    import ipdb; ipdb.set_trace()
     if original.portal_type == 'MeetingItemCouncil' and \
        newItem.portal_type == 'MeetingItemCollege':
         # an item Council is sent back to College, enable the 'otherMeetingConfigsClonableTo'
@@ -232,7 +233,8 @@ def onItemDuplicated(original, event):
         # keep same privacy
         if original.getPrivacy() == 'secret':
             newItem.setOtherMeetingConfigsClonableToPrivacy(('meeting-config-council', ))
-        newItem.reindexObject(idxs=['sentToInfos'])
+        # restore labelForCouncil in otherMeetingConfigsClonableToFieldLabelForCouncil
+        newItem.setOtherMeetingConfigsClonableToFieldLabelForCouncil(original.getRawLabelForCouncil())
 
 
 def onItemAfterTransition(item, event):

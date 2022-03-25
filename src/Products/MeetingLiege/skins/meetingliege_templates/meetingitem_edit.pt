@@ -88,6 +88,11 @@
         </div>
     </fieldset>
 
+    <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
+    <tal:field define="fieldName python: 'labelForCouncil'">
+      <metal:f use-macro="context/@@pm-macros/editContentField"/>
+    </tal:field>
+
     <tal:field define="fieldName python: 'motivation'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>

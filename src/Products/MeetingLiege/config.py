@@ -87,7 +87,10 @@ GENERAL_MANAGER_GROUP_ID = 'sc'
 BOURGMESTRE_GROUP_ID = 'bourgmestre'
 
 # in those states, finance advice can still be given
-FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance_waiting_advices', 'validated', 'presented', 'itemfrozen')
+FINANCE_GIVEABLE_ADVICE_STATES = ('proposed_to_finance_waiting_advices',
+                                  'validated',
+                                  'presented',
+                                  'itemfrozen')
 
 # comment used when a finance advice has been signed and so historized
 FINANCE_ADVICE_HISTORIZE_COMMENTS = 'financial_advice_signed_historized_comments'

@@ -723,7 +723,7 @@ class CustomMeetingItem(MeetingItem):
         '''
         res = ['financeAdvice', 'decisionEnd', 'toDiscuss']
         if cloned_to_same_mc:
-            res = res + ['archivingRef', 'textCheckList',
+            res = res + ['labelForCouncil', 'archivingRef', 'textCheckList',
                          'otherMeetingConfigsClonableToFieldLabelForCouncil']
         return res
 

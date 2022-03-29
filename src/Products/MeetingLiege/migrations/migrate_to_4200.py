@@ -8,6 +8,7 @@ from Products.PloneMeeting.migrations.migrate_to_4200 import Migrate_To_4200 as 
 from Products.PloneMeeting.migrations.migrate_to_4201 import Migrate_To_4201
 from imio.pyutils.utils import replace_in_list
 from collective.contact.plonegroup.utils import get_organizations
+from imio.helpers.content import uuidToObject
 
 import logging
 
@@ -181,6 +182,18 @@ class Migrate_To_4200(PMMigrate_To_4200):
                             tuple(replace_in_list(
                                 value, old_finance_value, new_finance_value)))
 
+    def _migrateDeliberationToSignAnnexType(self):
+        """Make the annex_type confidential by default."""
+        logger.info('Migrating deliberation-to-sign annex_type...')
+        for cfg in self.tool.objectValues('MeetingConfig'):
+            pod_template_path = cfg.getMeetingItemTemplatesToStoreAsAnnex()
+            if pod_template_path:
+                pod_template = cfg.podtemplates.get(pod_template_path[0].split('__')[0])
+                annex_type_uid = pod_template.store_as_annex
+                annex_type = uuidToObject(annex_type_uid, unrestricted=True)
+                annex_type.confidential = True
+        logger.info('Done.')
+
     def _hook_custom_meeting_to_dx(self, old, new):
         """Called when meetings migrated to DX."""
         if old.adoptsNextCouncilAgenda:
@@ -203,6 +216,9 @@ class Migrate_To_4200(PMMigrate_To_4200):
 
         # migrate items workflow_history
         self._migrateItemsWorkflowHistory()
+
+        # make the deliberation to sign annex_type, confidential by default
+        self._migrateDeliberationToSignAnnexType()
 
         # call steps from Products.PloneMeeting
         super(Migrate_To_4200, self).run(extra_omitted=extra_omitted)

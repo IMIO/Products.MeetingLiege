@@ -233,7 +233,7 @@ msgid "icon_help_proposed_to_director_waiting_advices"
 msgstr "Avis demandés par la direction"
 
 #. Default: "Proposed to finance"
-msgid "icon_help_proposed_to_finance"
+msgid "icon_help_proposed_to_finance_waiting_advices"
 msgstr "Proposé aux finances"
 
 #. Default: "Proposed to General Manager"

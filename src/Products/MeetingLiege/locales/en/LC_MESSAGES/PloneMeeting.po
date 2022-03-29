@@ -234,8 +234,8 @@ msgid "icon_help_proposed_to_director_waiting_advices"
 msgstr ""
 
 #. Default: "Proposed to finance"
-msgid "icon_help_proposed_to_finance"
-msgstr "Proposed to finance"
+msgid "icon_help_proposed_to_finance_waiting_advices"
+msgstr ""
 
 #. Default: "Proposed to General Manager"
 msgid "icon_help_proposed_to_general_manager"

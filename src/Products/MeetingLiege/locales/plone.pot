@@ -44,16 +44,24 @@ msgstr ""
 msgid "MeetingItemTemplateCouncil" 
 msgstr "" 
 
-#. Default: "Ask advices"
-msgid "askAdvicesByItemCreator"
+#. Default: "Ask advices (itemcreated)"
+msgid "wait_advices_from_itemcreated"
 msgstr ""
 
-#. Default: "Ask advices"
-msgid "askAdvicesByInternalReviewer"
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices"
 msgstr ""
 
-#. Default: "Ask advices"
-msgid "askAdvicesByDirector"
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_proposed_to_administrative_reviewer"
+msgstr ""
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_proposed_to_internal_reviewer"
+msgstr ""
+
+#. Default: "Ask advices to finances"
+msgid "wait_advices_from_proposed_to_director"
 msgstr ""
 
 #. Default: "Advices asked by creator"
@@ -125,7 +133,7 @@ msgid "proposed_to_cabinet_reviewer"
 msgstr ""
 
 #. Default: "Proposed to finance"
-msgid "proposed_to_finance"
+msgid "proposed_to_finance_waiting_advices"
 msgstr ""
 
 #. Default: "Sent to Council emergency"
@@ -194,10 +202,6 @@ msgstr ""
 
 #. Default: "Back to frozen"
 msgid "backToFrozen"
-msgstr ""
-
-#. Default: "Back to item created"
-msgid "backToItemCreated"
 msgstr ""
 
 #. Default: "Back to proposed to internal reviewer"

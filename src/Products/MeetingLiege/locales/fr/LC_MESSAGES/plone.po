@@ -80,18 +80,6 @@ msgstr "Accepté avec retour Collège"
 msgid "accepted_but_modified"
 msgstr "Accepté avec modifications"
 
-#. Default: "Ask advices"
-msgid "askAdvicesByDirector"
-msgstr "Demander les avis (Direction)"
-
-#. Default: "Ask advices"
-msgid "askAdvicesByInternalReviewer"
-msgstr "Demander les avis (VI)"
-
-#. Default: "Ask advices"
-msgid "askAdvicesByItemCreator"
-msgstr "Demander les avis (Créateur)"
-
 #. Default: "Back to created"
 msgid "backToCreated"
 msgstr "Remettre en création"
@@ -107,10 +95,6 @@ msgstr "Remettre en 'Décisions publiées'"
 #. Default: "Back to frozen"
 msgid "backToFrozen"
 msgstr "Remettre en 'Gelé'"
-
-#. Default: "Back to item created"
-msgid "backToItemCreated"
-msgstr "Remettre 'En création'"
 
 #. Default: "Back to proposed to administrative reviewer"
 msgid "backToProposedToAdministrativeReviewer"
@@ -190,7 +174,7 @@ msgstr "Historiser avis DF signé"
 
 #. Default: "Advices asked by creator"
 msgid "itemcreated_waiting_advices"
-msgstr "Avis demandé par le créateur"
+msgstr "En attente des avis (Créateur)"
 
 #. Default: "Mark not applicable"
 msgid "mark_not_applicable"
@@ -266,10 +250,10 @@ msgstr "Proposé à la direction"
 
 #. Default: "Advices asked by director"
 msgid "proposed_to_director_waiting_advices"
-msgstr "Avis demandés par la direction"
+msgstr "En attente des avis (Direction)"
 
 #. Default: "Proposed to finance"
-msgid "proposed_to_finance"
+msgid "proposed_to_finance_waiting_advices"
 msgstr "Proposé aux finances"
 
 #. Default: "Proposed to financial controller"
@@ -294,7 +278,7 @@ msgstr "Proposé au validateur interne"
 
 #. Default: "Advices asked by internal reviewer"
 msgid "proposed_to_internal_reviewer_waiting_advices"
-msgstr "Avis demandés par le validateur interne"
+msgstr "En attente des avis (VI)"
 
 #. Default: "Return"
 msgid "return"
@@ -323,3 +307,23 @@ msgstr "Proposer à la séance"
 #. Default: "Validated"
 msgid "validated"
 msgstr "Proposé à la séance"
+
+#. Default: "Ask advices (itemcreated)"
+msgid "wait_advices_from_itemcreated"
+msgstr "Demander les avis (Créateur)"
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices"
+msgstr "Demander les avis (VI)"
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_proposed_to_administrative_reviewer"
+msgstr "Demander les avis (VI)"
+
+#. Default: "Ask advices to finances"
+msgid "wait_advices_from_proposed_to_director"
+msgstr "Proposer aux finances"
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_proposed_to_internal_reviewer"
+msgstr "Demander les avis (VI)"

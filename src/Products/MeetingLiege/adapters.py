@@ -113,9 +113,9 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
                          'proposed_to_director', ),
          'use_custom_icon': False,
          # is translated to "Remove from meeting"
-         'use_custom_back_transition_title_for': ("validated", ),
+         'use_custom_back_transition_title_for': ('validated', ),
          # if () given, a custom transition icon is used for every back transitions
-         'only_use_custom_back_transition_icon_for': ("validated", ),
+         'only_use_custom_back_transition_icon_for': ('validated', ),
          'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
          'adviser_may_validate': False,
          'new_state_id': 'itemcreated_waiting_advices',
@@ -127,9 +127,9 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
                          'proposed_to_director', ),
          'use_custom_icon': False,
          # is translated to "Remove from meeting"
-         'use_custom_back_transition_title_for': ("validated", ),
+         'use_custom_back_transition_title_for': ('validated', ),
          # if () given, a custom transition icon is used for every back transitions
-         'only_use_custom_back_transition_icon_for': ("validated", ),
+         'only_use_custom_back_transition_icon_for': ('validated', ),
          'use_custom_transition_title_for': (
             'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
             'wait_advices_from_proposed_to_administrative_reviewer',
@@ -1883,6 +1883,8 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     implements(IMeetingItemCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
+
+
 
     security.declarePublic('mayWait_advices')
 

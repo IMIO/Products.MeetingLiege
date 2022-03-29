@@ -79,18 +79,6 @@ msgstr "Accepted and returned"
 msgid "accepted_but_modified"
 msgstr "Accepted with modifications"
 
-#. Default: "Ask advices"
-msgid "askAdvicesByDirector"
-msgstr ""
-
-#. Default: "Ask advices"
-msgid "askAdvicesByInternalReviewer"
-msgstr "Ask advices"
-
-#. Default: "Ask advices"
-msgid "askAdvicesByItemCreator"
-msgstr "Ask advices"
-
 #. Default: "Back to created"
 msgid "backToCreated"
 msgstr "Back to created"
@@ -106,10 +94,6 @@ msgstr "Back to decisions published"
 #. Default: "Back to frozen"
 msgid "backToFrozen"
 msgstr "Back to frozen"
-
-#. Default: "Back to item created"
-msgid "backToItemCreated"
-msgstr "Back to item created"
 
 #. Default: "Back to proposed to administrative reviewer"
 msgid "backToProposedToAdministrativeReviewer"
@@ -268,8 +252,8 @@ msgid "proposed_to_director_waiting_advices"
 msgstr ""
 
 #. Default: "Proposed to finance"
-msgid "proposed_to_finance"
-msgstr "Proposed to finance"
+msgid "proposed_to_finance_waiting_advices"
+msgstr ""
 
 #. Default: "Proposed to financial controller"
 msgid "proposed_to_financial_controller"
@@ -322,3 +306,23 @@ msgstr "Validate"
 #. Default: "Validated"
 msgid "validated"
 msgstr "Validated"
+
+#. Default: "Ask advices (itemcreated)"
+msgid "wait_advices_from_itemcreated"
+msgstr ""
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices"
+msgstr ""
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_proposed_to_administrative_reviewer"
+msgstr ""
+
+#. Default: "Ask advices to finances"
+msgid "wait_advices_from_proposed_to_director"
+msgstr ""
+
+#. Default: "Ask advices (internal reviewer)"
+msgid "wait_advices_from_proposed_to_internal_reviewer"
+msgstr ""

@@ -2,9 +2,12 @@
 
 from DateTime import DateTime
 from plone import api
+from Products.MeetingLiege.profiles.liege import import_data as ml_import_data
+from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.PloneMeeting.migrations.migrate_to_4200 import Migrate_To_4200 as PMMigrate_To_4200
 from Products.PloneMeeting.migrations.migrate_to_4201 import Migrate_To_4201
 from imio.pyutils.utils import replace_in_list
+from collective.contact.plonegroup.utils import get_organizations
 
 import logging
 
@@ -15,17 +18,17 @@ logger = logging.getLogger('MeetingLiege')
 class Migrate_To_4200(PMMigrate_To_4200):
 
     def _fixUsedMeetingWFs(self):
-        """meetingcommunes_workflow/meetingitemcommunes_workflows do not exist anymore,
+        """meetingliege_workflow/meetingitemliege_workflows do not exist anymore,
            we use meeting_workflow/meetingitem_workflow."""
         logger.info("Adapting 'meetingWorkflow/meetingItemWorkflow' for every MeetingConfigs...")
         for cfg in self.tool.objectValues('MeetingConfig'):
             if cfg.getMeetingWorkflow() in ('meetingcollegeliege_workflow',
-                                            'meetingcouncil_workflow',
-                                            'meetingbourgmestre_workflow', ):
+                                            'meetingcouncilliege_workflow',
+                                            'meetingbourgmestreliege_workflow', ):
                 cfg.setMeetingWorkflow('meeting_workflow')
-            if cfg.getMeetingWorkflow() in ('meetingitemcollegeliege_workflow',
-                                            'meetingitemcouncil_workflow',
-                                            'meetingitembourgmestre_workflow', ):
+            if cfg.getItemWorkflow() in ('meetingitemcollegeliege_workflow',
+                                         'meetingitemcouncilliege_workflow',
+                                         'meetingitembourgmestreliege_workflow', ):
                 cfg.setItemWorkflow('meetingitem_workflow')
         # delete old unused workflows
         wfTool = api.portal.get_tool('portal_workflow')
@@ -79,6 +82,21 @@ class Migrate_To_4200(PMMigrate_To_4200):
                     break
         logger.info('Done.')
 
+    def _doConfigureItemWFValidationLevels(self, cfg):
+        """Apply correct itemWFValidationLevels from profiles import_data."""
+        stored_itemWFValidationLevels = getattr(cfg, 'itemWFValidationLevels', [])
+        if not stored_itemWFValidationLevels:
+            if cfg.getId() == 'meeting-config-college':
+                cfg.setItemWFValidationLevels(ml_import_data.collegeMeeting.itemWFValidationLevels)
+                cfg.setWorkflowAdaptations(ml_import_data.collegeMeeting.workflowAdaptations)
+            elif cfg.getId() == 'meeting-config-council':
+                cfg.setItemWFValidationLevels(ml_import_data.councilMeeting.itemWFValidationLevels)
+                cfg.setWorkflowAdaptations(ml_import_data.councilMeeting.workflowAdaptations)
+            else:
+                # meeting-config-bourgmestre
+                cfg.setItemWFValidationLevels(bg_import_data.bourgmestreMeeting.itemWFValidationLevels)
+                cfg.setWorkflowAdaptations(bg_import_data.bourgmestreMeeting.workflowAdaptations)
+
     def _migrateLabelForCouncil(self):
         """Field labelForCouncil is replaced by
            otherMeetingConfigsClonableToFieldDetailedDescription in College and
@@ -96,12 +114,20 @@ class Migrate_To_4200(PMMigrate_To_4200):
         for brain in self.catalog(portal_type='MeetingItemCollege'):
             item = brain.getObject()
             if not item.fieldIsEmpty('labelForCouncil'):
-                item.otherMeetingConfigsClonableToFieldLabelForCouncil(item.getRawLabelForCouncil())
+                item.setOtherMeetingConfigsClonableToFieldLabelForCouncil(
+                    item.getRawLabelForCouncil())
                 item.setLabelForCouncil('')
         logger.info('Done.')
 
     def _hook_before_meeting_to_dx(self):
         """Adapt Meeting.workflow_history before migrating to DX."""
+        # enable adopts_next_agenda_of in usedMeetingAttributes of College
+        college_cfg = self.tool.get('meeting-config-college')
+        used_attrs = college_cfg.getUsedMeetingAttributes()
+        used_attrs = replace_in_list(used_attrs,
+                                     "adoptsNextCouncilAgenda",
+                                     "adopts_next_agenda_of")
+        college_cfg.setUsedMeetingAttributes(used_attrs)
         self._adaptWFHistoryForItemsAndMeetings()
 
     def _mc_fixPODTemplatesInstructions(self):
@@ -114,6 +140,51 @@ class Migrate_To_4200(PMMigrate_To_4200):
         item_replacements = {}
 
         self.updatePODTemplatesCode(replacements, meeting_replacements, item_replacements)
+
+    def _migrateItemsWorkflowHistory(self):
+        """Migrate items workflow_history and remap states."""
+        # update item workflow_history
+        self.updateWFHistory(
+            query={'portal_type': ('MeetingItemCollege', 'MeetingItemBourgmestre')},
+            review_state_mappings={
+                # meeting-config-college
+                'proposed_to_finance': 'proposed_to_finance_waiting_advices'},
+            action_mappings={
+                # meeting-config-college
+                'proposeToFinance': 'wait_advices_from_proposed_to_director',
+                'askAdvicesByInternalReviewer': 'wait_advices_from_proposed_to_internal_reviewer',
+                'askAdvicesByItemCreator': 'wait_advices_from_itemcreated',
+                # meeting-config-bourgmestre
+                'askAdvicesByDirector': 'wait_advices_from_proposed_to_director', })
+        # as state "proposed_to_finance" changed to "proposed_to_finance_waiting_advices",
+        # we must update various places
+        # organizations
+        old_finance_value = 'meeting-config-college__state__proposed_to_finance'
+        new_finance_value = 'meeting-config-college__state__proposed_to_finance_waiting_advices'
+        for org in get_organizations():
+            for field_name in ('item_advice_states', 'item_advice_edit_states', 'item_advice_view_states'):
+                value = getattr(org, field_name) or []
+                if old_finance_value in value:
+                    setattr(org,
+                            field_name,
+                            tuple(replace_in_list(
+                                value, old_finance_value, new_finance_value)))
+        # MeetingConfigs
+        old_finance_value = 'proposed_to_finance'
+        new_finance_value = 'proposed_to_finance_waiting_advices'
+        for cfg in self.tool.objectValues('MeetingConfig'):
+            for field_name in ('itemAdviceStates', 'itemAdviceEditStates', 'itemAdviceViewStates'):
+                value = getattr(cfg, field_name) or []
+                if old_finance_value in value:
+                    setattr(cfg,
+                            field_name,
+                            tuple(replace_in_list(
+                                value, old_finance_value, new_finance_value)))
+
+    def _hook_custom_meeting_to_dx(self, old, new):
+        """Called when meetings migrated to DX."""
+        if old.adoptsNextCouncilAgenda:
+            new.adopts_next_agenda_of = ['meeting-config-council']
 
     def run(self,
             profile_name=u'profile-Products.MeetingLiege:default',
@@ -130,17 +201,19 @@ class Migrate_To_4200(PMMigrate_To_4200):
         # migrate labelForCouncil
         self._migrateLabelForCouncil()
 
+        # migrate items workflow_history
+        self._migrateItemsWorkflowHistory()
+
         # call steps from Products.PloneMeeting
         super(Migrate_To_4200, self).run(extra_omitted=extra_omitted)
 
         # execute upgrade steps in PM that were added after main upgrade to 4200
         Migrate_To_4201(self.portal).run(from_migration_to_4200=True)
 
+        # now MeetingLiege specific steps
+        logger.info('Migrating to MeetingLiege 4200...')
         # add new searches (searchitemswithnofinanceadvice)
         self.addNewSearches()
-
-        # now MeetingCommunes specific steps
-        logger.info('Migrating to MeetingCommunes 4200...')
 
 
 # The migration function -------------------------------------------------------

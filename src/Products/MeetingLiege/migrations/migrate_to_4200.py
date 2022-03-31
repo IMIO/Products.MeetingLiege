@@ -9,6 +9,7 @@ from Products.PloneMeeting.migrations.migrate_to_4201 import Migrate_To_4201
 from imio.pyutils.utils import replace_in_list
 from collective.contact.plonegroup.utils import get_organizations
 from imio.helpers.content import uuidToObject
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 
 import logging
 
@@ -102,7 +103,7 @@ class Migrate_To_4200(PMMigrate_To_4200):
         """Field labelForCouncil is replaced by
            otherMeetingConfigsClonableToFieldDetailedDescription in College and
            detailedDescription in Council."""
-        logger.info('Migrating field "labelForCouncil"...')
+        logger.info('Migrating field "labelForCouncil" in MeetingConfig...')
         # enable relevant fields in MeetingConfigs
         # College we use the "otherMeetingConfigsClonableToFieldLabelForCouncil" field
         # Council is correct
@@ -112,12 +113,22 @@ class Migrate_To_4200(PMMigrate_To_4200):
                                      "labelForCouncil",
                                      "otherMeetingConfigsClonableToFieldLabelForCouncil")
         college_cfg.setUsedItemAttributes(used_attrs)
-        for brain in self.catalog(portal_type='MeetingItemCollege'):
+        logger.info('Done.')
+
+        logger.info('Migrating field "labelForCouncil" for College items...')
+        pghandler = ZLogHandler(steps=1000)
+        brains = self.catalog(portal_type='MeetingItemCollege')
+        pghandler.init('Migrating field "labelForCouncil" for College items', len(brains))
+        i = 0
+        for brain in brains:
+            i += 1
+            pghandler.report(i)
             item = brain.getObject()
             if not item.fieldIsEmpty('labelForCouncil'):
                 item.setOtherMeetingConfigsClonableToFieldLabelForCouncil(
                     item.getRawLabelForCouncil())
                 item.setLabelForCouncil('')
+        pghandler.finish()
         logger.info('Done.')
 
     def _hook_before_meeting_to_dx(self):
@@ -133,14 +144,16 @@ class Migrate_To_4200(PMMigrate_To_4200):
 
     def _mc_fixPODTemplatesInstructions(self):
         '''Make some replace in POD templates to fit changes in code...'''
+        return
         # for every POD templates
-        replacements = {'.getLabelForCouncil(': '.getDetailedDescription(', }
+        # replacements = {}
         # specific for Meeting POD Templates
-        meeting_replacements = {}
+        # meeting_replacements = {}
         # specific for MeetingItem POD Templates
-        item_replacements = {}
+        # item_replacements = {}
 
-        self.updatePODTemplatesCode(replacements, meeting_replacements, item_replacements)
+        # comment for now, nothing to do
+        # self.updatePODTemplatesCode(replacements, meeting_replacements, item_replacements)
 
     def _migrateItemsWorkflowHistory(self):
         """Migrate items workflow_history and remap states."""

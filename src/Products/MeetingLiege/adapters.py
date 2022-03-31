@@ -47,6 +47,7 @@ from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowCon
 from Products.MeetingLiege.utils import bg_group_uid
 from Products.MeetingLiege.utils import finance_group_uids
 from Products.MeetingLiege.utils import gm_group_uid
+from Products.MeetingLiege.utils import not_copy_group_uids
 from Products.MeetingLiege.utils import treasury_group_cec_uid
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
@@ -1433,6 +1434,7 @@ class CustomMeetingItem(MeetingItem):
            This is used in the MeetingGroup.asCopyGroupOn field."""
         item = self.getSelf()
         if item.getFinanceAdvice() != '_none_' and \
+           item.getProposingGroup() not in not_copy_group_uids() and \
            (item.query_state() in ('validated', 'sent_to_council_emergency') or item.hasMeeting()):
             return ['incopy']
         else:

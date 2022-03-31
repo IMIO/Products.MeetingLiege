@@ -82,6 +82,8 @@ FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 
 TREASURY_GROUP_ID = 'df-controle-tresorerie'
 
+NOT_COPY_GROUP_IDS = ['rh-recrutement', 'rh-gestion-administrative']
+
 GENERAL_MANAGER_GROUP_ID = 'sc'
 
 BOURGMESTRE_GROUP_ID = 'bourgmestre'

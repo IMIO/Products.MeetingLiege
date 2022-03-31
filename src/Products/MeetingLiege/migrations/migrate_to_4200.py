@@ -242,6 +242,8 @@ class Migrate_To_4200(PMMigrate_To_4200):
         self.addNewSearches()
         # migrate items workflow_history
         self._migrateItemsWorkflowHistory()
+        # enable 'async_actions' column in dashboards
+        self.updateItemColumns(to_remove=['actions'], to_add=['async_actions'])
 
 
 # The migration function -------------------------------------------------------

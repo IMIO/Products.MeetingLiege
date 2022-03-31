@@ -1884,8 +1884,6 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
     implements(IMeetingItemCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
 
-
-
     security.declarePublic('mayWait_advices')
 
     def mayWait_advices(self, from_state, destination_state):

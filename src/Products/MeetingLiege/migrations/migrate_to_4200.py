@@ -25,11 +25,11 @@ class Migrate_To_4200(PMMigrate_To_4200):
         for cfg in self.tool.objectValues('MeetingConfig'):
             if cfg.getMeetingWorkflow() in ('meetingcollegeliege_workflow',
                                             'meetingcouncilliege_workflow',
-                                            'meetingbourgmestreliege_workflow', ):
+                                            'meetingbourgmestre_workflow', ):
                 cfg.setMeetingWorkflow('meeting_workflow')
             if cfg.getItemWorkflow() in ('meetingitemcollegeliege_workflow',
                                          'meetingitemcouncilliege_workflow',
-                                         'meetingitembourgmestreliege_workflow', ):
+                                         'meetingitembourgmestre_workflow', ):
                 cfg.setItemWorkflow('meetingitem_workflow')
         # delete old unused workflows
         wfTool = api.portal.get_tool('portal_workflow')
@@ -144,13 +144,13 @@ class Migrate_To_4200(PMMigrate_To_4200):
 
     def _migrateItemsWorkflowHistory(self):
         """Migrate items workflow_history and remap states."""
-        # update item workflow_history
-        self.updateWFHistory(
+        # update item workflow_history and MeetingConfig fields using states/transitions
+        self.updateWFStatesAndTransitions(
             query={'portal_type': ('MeetingItemCollege', 'MeetingItemBourgmestre')},
             review_state_mappings={
                 # meeting-config-college
                 'proposed_to_finance': 'proposed_to_finance_waiting_advices'},
-            action_mappings={
+            transition_mappings={
                 # meeting-config-college
                 'proposeToFinance': 'wait_advices_from_proposed_to_director',
                 'askAdvicesByInternalReviewer': 'wait_advices_from_proposed_to_internal_reviewer',
@@ -214,9 +214,6 @@ class Migrate_To_4200(PMMigrate_To_4200):
         # migrate labelForCouncil
         self._migrateLabelForCouncil()
 
-        # migrate items workflow_history
-        self._migrateItemsWorkflowHistory()
-
         # make the deliberation to sign annex_type, confidential by default
         self._migrateDeliberationToSignAnnexType()
 
@@ -230,6 +227,8 @@ class Migrate_To_4200(PMMigrate_To_4200):
         logger.info('Migrating to MeetingLiege 4200...')
         # add new searches (searchitemswithnofinanceadvice)
         self.addNewSearches()
+        # migrate items workflow_history
+        self._migrateItemsWorkflowHistory()
 
 
 # The migration function -------------------------------------------------------

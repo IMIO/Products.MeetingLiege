@@ -15,6 +15,8 @@ Products.MeetingLiege Changelog
 - Override `MeetingItem.show_budget_infos` to hide it to `restricted_power_observers`,
   removed override from `MeetingItem` view/edit templates.
   [gbastien]
+- Added `Migrate_To_4200` upgrade step to move to PloneMeeting 4200.
+  [gbastien]
 
 4.1.3 (2021-11-05)
 ------------------

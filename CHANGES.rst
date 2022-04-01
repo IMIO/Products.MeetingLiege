@@ -17,6 +17,9 @@ Products.MeetingLiege Changelog
   [gbastien]
 - Added `Migrate_To_4200` upgrade step to move to PloneMeeting 4200.
   [gbastien]
+- Completed `CustomMeetingItem.treasuryCopyGroup` to not set the DF Treasury
+  group as copyGroup if item is using some specific RH proposingGroups.
+  [gbastien]
 
 4.1.3 (2021-11-05)
 ------------------

@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from collective.contact.plonegroup.utils import select_org_for_function
+from imio.helpers.cache import cleanForeverCache
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
-from plone.memoize.forever import _memos
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import PROJECTNAME
-from Products.MeetingLiege.profiles.liege.import_data import dfcompta
-from Products.MeetingLiege.profiles.liege.import_data import dfcontrol
-from Products.MeetingLiege.profiles.liege.import_data import dftresor
+from Products.MeetingLiege.profiles.liege import import_data as liege_import_data
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.PloneMeeting.exportimport.content import ToolInitializer
 from Products.PloneMeeting.tests.helpers import PloneMeetingTestingHelpers
@@ -164,7 +162,9 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         """
         context = self.portal.portal_setup._getImportContext('Products.MeetingLiege:testing')
         initializer = ToolInitializer(context, PROJECTNAME)
-        org_descriptors = (dfcompta, dfcontrol, dftresor)
+        org_descriptors = (liege_import_data.dfcompta,
+                           liege_import_data.dfcontrol,
+                           liege_import_data.dftresor)
         orgs, active_orgs, savedOrgsData = initializer.addOrgs(org_descriptors, defer_data=False)
         for org in orgs:
             org_uid = org.UID()
@@ -173,8 +173,25 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
                 select_org_for_function(org_uid, 'financialcontrollers')
                 select_org_for_function(org_uid, 'financialmanagers')
                 select_org_for_function(org_uid, 'financialreviewers')
-        # clean forever cache on utils finance_group_uid
-        _memos.clear()
+        # clean forever cache on utils finance_group_uids
+        cleanForeverCache()
+
+    def _createRHGroups(self):
+        """
+           Create the RH groups.
+        """
+        context = self.portal.portal_setup._getImportContext('Products.MeetingLiege:testing')
+        initializer = ToolInitializer(context, PROJECTNAME)
+        org_descriptors = (liege_import_data.rhrecr,
+                           liege_import_data.rhgestadmin)
+        orgs, active_orgs, savedOrgsData = initializer.addOrgs(org_descriptors, defer_data=False)
+        for org in orgs:
+            org_uid = org.UID()
+            self._select_organization(org_uid)
+            self._addPrincipalToGroup('pmManager', '{0}_creators'.format(org_uid))
+            self._addPrincipalToGroup('pmManager', '{0}_reviewers'.format(org_uid))
+        # clean forever cache on utils rh_group_uids
+        cleanForeverCache()
 
     def _setItemToWaitingAdvices(self, item, transition):
         """Setup item so advice may be asked."""

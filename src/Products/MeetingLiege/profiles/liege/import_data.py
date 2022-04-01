@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from DateTime import DateTime
+from Products.MeetingLiege.config import NOT_COPY_GROUP_IDS
 from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.PloneMeeting.config import DEFAULT_LIST_TYPES
 from Products.PloneMeeting.profiles import AnnexTypeDescriptor
@@ -128,6 +129,8 @@ dftresor.item_advice_states = ['meeting-config-college__state__accepted',
                                'meeting-config-college__state__accepted_but_modified']
 dftresor.item_advice_edit_states = ['meeting-config-college__state__accepted',
                                     'meeting-config-college__state__accepted_but_modified']
+rhrecr = OrgDescriptor(NOT_COPY_GROUP_IDS[0], u'RH - Recrutement', u'RHR')
+rhgestadmin = OrgDescriptor(NOT_COPY_GROUP_IDS[1], u'RH - Gestion administrative', u'RHGA')
 
 orgs = [OrgDescriptor('dirgen', 'Directeur Général', u'DG'),
         OrgDescriptor('secretariat', 'Secrétariat communal', u'Secr'),
@@ -141,7 +144,9 @@ orgs = [OrgDescriptor('dirgen', 'Directeur Général', u'DG'),
         OrgDescriptor('secra-c-tariat-collage-conseil', 'Secrétariat Collège-Conseil', u'SC SCC'),
         dfcontrol,
         dfcompta,
-        dftresor]
+        dftresor,
+        rhrecr,
+        rhgestadmin]
 
 # MeetingManager
 orgs[0].creators.append(dgen)
@@ -210,6 +215,16 @@ orgs[8].observers.append(dfin)
 orgs[8].advisers.append(dfin)
 orgs[8].administrativereviewers.append(dfin)
 orgs[8].internalreviewers.append(dfin)
+
+orgs[9].creators.append(agentPers)
+orgs[9].reviewers.append(chefPers)
+orgs[9].administrativereviewers.append(chefPers)
+orgs[9].internalreviewers.append(chefPers)
+
+orgs[10].creators.append(agentPers)
+orgs[10].reviewers.append(chefPers)
+orgs[10].administrativereviewers.append(chefPers)
+orgs[10].internalreviewers.append(chefPers)
 
 # Meeting configurations -------------------------------------------------------
 # college

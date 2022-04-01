@@ -9,9 +9,10 @@ from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_NOT_GIVEN
 from Products.MeetingLiege.config import FINANCE_ADVICE_LEGAL_TEXT_PRE
-from Products.MeetingLiege.config import TREASURY_GROUP_ID
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from Products.MeetingLiege.utils import not_copy_group_uids
+from Products.MeetingLiege.utils import treasury_group_cec_uid
 from Products.PloneMeeting.utils import org_id_to_uid
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
@@ -1322,6 +1323,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         cfg.setUseCopies(True)
         self.changeUser('admin')
         self._createFinanceGroups()
+        self._createRHGroups()
         _configureCollegeCustomAdvisers(self.portal)
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
@@ -1336,7 +1338,20 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(item.getAllCopyGroups(), ())
         self.validateItem(item)
         self.assertEqual(item.getAllCopyGroups(),
-                         ('auto__%s_incopy' % org_id_to_uid(TREASURY_GROUP_ID), ))
+                         ('auto__%s_incopy' % treasury_group_cec_uid(), ))
+        # exception when using a RH group, treasury is not set as copy group
+        not_copy_uids = not_copy_group_uids()
+        item.setProposingGroup(not_copy_uids[0])
+        item._update_after_edit()
+        self.assertEqual(item.getAllCopyGroups(), ())
+        item.setProposingGroup(not_copy_uids[1])
+        item._update_after_edit()
+        self.assertEqual(item.getAllCopyGroups(), ())
+        # back to a copy groupable group
+        item.setProposingGroup(self.vendors_uid)
+        item._update_after_edit()
+        self.assertEqual(item.getAllCopyGroups(),
+                         ('auto__%s_incopy' % treasury_group_cec_uid(), ))
 
     def test_Index_category_id(self):
         """ """

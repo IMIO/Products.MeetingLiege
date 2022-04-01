@@ -43,8 +43,13 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
     def test_pm_WFA_waiting_advices(self):
         """Bypass, tested in testCustomWorkflows.py..."""
         pass
+
     def test_pm_WFA_waiting_advices_with_prevalidation(self):
         """Bypass, tested in testCustomWorkflows.py..."""
+        pass
+
+    def test_pm_WFA_item_validation_shortcuts(self):
+        """Bypass as mayValidated is overrided..."""
         pass
 
     def _beforeValidateItemFields(self, item):

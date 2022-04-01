@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from collective.contact.plonegroup.utils import get_organizations
 from DateTime import DateTime
+from imio.helpers.content import uuidToObject
+from imio.pyutils.utils import replace_in_list
 from plone import api
 from Products.MeetingLiege.profiles.liege import import_data as ml_import_data
 from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.PloneMeeting.migrations.migrate_to_4200 import Migrate_To_4200 as PMMigrate_To_4200
 from Products.PloneMeeting.migrations.migrate_to_4201 import Migrate_To_4201
-from imio.pyutils.utils import replace_in_list
-from collective.contact.plonegroup.utils import get_organizations
-from imio.helpers.content import uuidToObject
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 
 import logging

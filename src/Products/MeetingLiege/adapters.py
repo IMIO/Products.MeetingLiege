@@ -10,8 +10,8 @@ from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import get_cachekey_volatile
-from imio.helpers.content import uuidToObject
 from imio.helpers.content import uuidsToObjects
+from imio.helpers.content import uuidToObject
 from imio.history.adapters import BaseImioHistoryAdapter
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction

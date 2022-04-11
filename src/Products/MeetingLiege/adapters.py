@@ -86,6 +86,7 @@ from zope.interface import implements
 # order is important, so keep the one from MeetingConfig.wfAdaptations
 keptWfAdaptations = (
     'item_validation_shortcuts',
+    'item_validation_validate_shortcuts',
     'only_creator_may_delete',
     'no_freeze',
     'no_publication',

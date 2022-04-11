@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
 
- <!-- first remove then re-apply so workflows are correct regarding workflow adaptations... -->
- <object name="meetingadviceliege_workflow" meta_type="Workflow" remove="True"/>
+ <!-- remove no more used workflows -->
  <object name="meetingbourgmestre_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingcollegeliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingcouncilliege_workflow" meta_type="Workflow" remove="True"/>
@@ -10,13 +9,10 @@
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingitemcouncilliege_workflow" meta_type="Workflow" remove="True"/>
 
+ <!-- meetingadviceliege_workflow, first remove then re-apply so workflow
+      is correct regarding workflow adaptations... -->
+ <object name="meetingadviceliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingadviceliege_workflow" meta_type="Workflow"/>
- <object name="meetingbourgmestre_workflow" meta_type="Workflow"/>
- <object name="meetingcollegeliege_workflow" meta_type="Workflow"/>
- <object name="meetingcouncilliege_workflow" meta_type="Workflow"/>
- <object name="meetingitembourgmestre_workflow" meta_type="Workflow"/>
- <object name="meetingitemcollegeliege_workflow" meta_type="Workflow"/>
- <object name="meetingitemcouncilliege_workflow" meta_type="Workflow"/>
  <bindings>
   <type type_id="meetingadvicefinances">
      <bound-workflow workflow_id="meetingadviceliege_workflow" />

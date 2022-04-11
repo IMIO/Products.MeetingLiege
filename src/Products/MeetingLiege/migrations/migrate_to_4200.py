@@ -33,17 +33,16 @@ class Migrate_To_4200(PMMigrate_To_4200):
                                          'meetingitembourgmestre_workflow', ):
                 cfg.setItemWorkflow('meetingitem_workflow')
         # delete old unused workflows
-        wfTool = api.portal.get_tool('portal_workflow')
-        wfs_to_delete = [wfId for wfId in wfTool.listWorkflows()
+        wfs_to_delete = [wfId for wfId in self.wfTool.listWorkflows()
                          if any(x in wfId for x in (
                             'meetingcollegeliege_workflow',
-                            'meetingcouncil_workflow',
+                            'meetingcouncilliege_workflow',
                             'meetingbourgmestre_workflow',
                             'meetingitemcollegeliege_workflow',
-                            'meetingitemcouncil_workflow',
+                            'meetingitemcouncilliege_workflow',
                             'meetingitembourgmestre_workflow',))]
         if wfs_to_delete:
-            wfTool.manage_delObjects(wfs_to_delete)
+            self.wfTool.manage_delObjects(wfs_to_delete)
         logger.info('Done.')
 
     def _get_wh_key(self, itemOrMeeting):
@@ -64,14 +63,13 @@ class Migrate_To_4200(PMMigrate_To_4200):
     def _adaptWFHistoryForItemsAndMeetings(self):
         """We use PM default WFs, no more meeting(item)liege_workflow..."""
         logger.info('Updating WF history items and meetings to use new WF id...')
-        wfTool = api.portal.get_tool('portal_workflow')
         catalog = api.portal.get_tool('portal_catalog')
         for cfg in self.tool.objectValues('MeetingConfig'):
             # this will call especially part where we duplicate WF and apply WFAdaptations
             cfg.registerPortalTypes()
             for brain in catalog(portal_type=(cfg.getItemTypeName(), cfg.getMeetingTypeName())):
                 itemOrMeeting = brain.getObject()
-                itemOrMeetingWFId = wfTool.getWorkflowsFor(itemOrMeeting)[0].getId()
+                itemOrMeetingWFId = self.wfTool.getWorkflowsFor(itemOrMeeting)[0].getId()
                 if itemOrMeetingWFId not in itemOrMeeting.workflow_history:
                     wf_history_key = self._get_wh_key(itemOrMeeting)
                     itemOrMeeting.workflow_history[itemOrMeetingWFId] = \
@@ -103,7 +101,7 @@ class Migrate_To_4200(PMMigrate_To_4200):
         """Field labelForCouncil is replaced by
            otherMeetingConfigsClonableToFieldDetailedDescription in College and
            detailedDescription in Council."""
-        logger.info('Migrating field "labelForCouncil" in MeetingConfig...')
+        logger.info('Migrating field "labelForCouncil" in "meeting-config-college"...')
         # enable relevant fields in MeetingConfigs
         # College we use the "otherMeetingConfigsClonableToFieldLabelForCouncil" field
         # Council is correct
@@ -215,35 +213,41 @@ class Migrate_To_4200(PMMigrate_To_4200):
     def run(self,
             profile_name=u'profile-Products.MeetingLiege:default',
             extra_omitted=[]):
-        # change self.profile_name that is reinstalled at the beginning of the PM migration
-        self.profile_name = profile_name
 
-        # fix used WFs before reinstalling
-        self._fixUsedMeetingWFs()
+        if self.is_in_part('a'):  # main step
 
-        # fix some instructions in POD templates
-        self._mc_fixPODTemplatesInstructions()
+            # change self.profile_name that is reinstalled at the beginning of the PM migration
+            self.profile_name = profile_name
 
-        # migrate labelForCouncil
-        self._migrateLabelForCouncil()
+            # fix used WFs before reinstalling
+            self._fixUsedMeetingWFs()
 
-        # make the deliberation to sign annex_type, confidential by default
-        self._migrateDeliberationToSignAnnexType()
+            # fix some instructions in POD templates
+            self._mc_fixPODTemplatesInstructions()
+
+            # migrate labelForCouncil
+            self._migrateLabelForCouncil()
+
+            # make the deliberation to sign annex_type, confidential by default
+            self._migrateDeliberationToSignAnnexType()
 
         # call steps from Products.PloneMeeting
+        # this will manage parts 'a', 'b' and 'c'
         super(Migrate_To_4200, self).run(extra_omitted=extra_omitted)
 
-        # execute upgrade steps in PM that were added after main upgrade to 4200
-        Migrate_To_4201(self.portal).run(from_migration_to_4200=True)
+        if self.is_in_part('c'):  # main step
 
-        # now MeetingLiege specific steps
-        logger.info('Migrating to MeetingLiege 4200...')
-        # add new searches (searchitemswithnofinanceadvice)
-        self.addNewSearches()
-        # migrate items workflow_history
-        self._migrateItemsWorkflowHistory()
-        # enable 'async_actions' column in dashboards
-        self.updateItemColumns(to_remove=['actions'], to_add=['async_actions'])
+            # execute upgrade steps in PM that were added after main upgrade to 4200
+            Migrate_To_4201(self.portal).run(from_migration_to_4200=True)
+
+            # now MeetingLiege specific steps
+            logger.info('Migrating to MeetingLiege 4200...')
+            # add new searches (searchitemswithnofinanceadvice)
+            self.addNewSearches()
+            # migrate items workflow_history
+            self._migrateItemsWorkflowHistory()
+            # enable 'async_actions' column in dashboards
+            self.updateItemColumns(to_remove=['actions'], to_add=['async_actions'])
 
 
 # The migration function -------------------------------------------------------

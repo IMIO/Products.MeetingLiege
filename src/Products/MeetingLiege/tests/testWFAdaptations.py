@@ -18,6 +18,7 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
                            'accepted_but_modified',
                            'delayed',
                            'item_validation_shortcuts',
+                           'item_validation_validate_shortcuts',
                            'mark_not_applicable',
                            'no_decide',
                            'no_freeze',

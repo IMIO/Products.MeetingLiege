@@ -17,6 +17,7 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
                           ['accepted_and_returned',
                            'accepted_but_modified',
                            'delayed',
+                           'item_validation_no_validate_shortcuts',
                            'item_validation_shortcuts',
                            'mark_not_applicable',
                            'no_decide',
@@ -50,6 +51,10 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
 
     def test_pm_WFA_item_validation_shortcuts(self):
         """Bypass as mayValidated is overrided..."""
+        pass
+
+    def test_pm_Validate_workflowAdaptations_dependencies(self):
+        """Bypass as most WFA not used..."""
         pass
 
     def _beforeValidateItemFields(self, item):

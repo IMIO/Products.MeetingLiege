@@ -208,7 +208,7 @@ class CustomMeeting(Meeting):
 
     security.declarePublic('getPrintableItemsByCategory')
 
-    def getPrintableItemsByCategory(self, itemUids=[], listTypes=['normal'],
+    def getPrintableItemsByCategory(self, itemUids=[], list_types=['normal'],
                                     ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                                     privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
                                     excludedCategories=[], groupIds=[], firstNumber=1, renumber=False,
@@ -260,7 +260,7 @@ class CustomMeeting(Meeting):
             if elt == '':
                 itemUids.remove(elt)
 
-        items = self.context.get_items(uids=itemUids, list_types=listTypes, ordered=True)
+        items = self.context.get_items(uids=itemUids, list_types=list_types, ordered=True)
 
         if withCollege:
             insertMethods = self.cfg.getInsertingMethodsOnAddItem()
@@ -433,7 +433,7 @@ class CustomMeeting(Meeting):
 
     security.declarePublic('getItemsForAM')
 
-    def getItemsForAM(self, itemUids=[], listTypes=['normal'],
+    def getItemsForAM(self, itemUids=[], list_types=['normal'],
                       ignore_review_states=[], by_proposing_group=False, group_prefixes={},
                       privacy='*', oralQuestion='both', toDiscuss='both', categories=[],
                       excludedCategories=[], firstNumber=1, renumber=False,
@@ -448,7 +448,7 @@ class CustomMeeting(Meeting):
         res = []
         lst = []
         for category in self.cfg.getCategories(onlySelectable=False):
-            lst.append(self.getPrintableItemsByCategory(itemUids=itemUids, listTypes=listTypes,
+            lst.append(self.getPrintableItemsByCategory(itemUids=itemUids, list_types=list_types,
                                                         ignore_review_states=ignore_review_states,
                                                         by_proposing_group=by_proposing_group,
                                                         group_prefixes=group_prefixes,
@@ -545,11 +545,11 @@ class CustomMeeting(Meeting):
     Meeting.getItemNumsForActe = getItemNumsForActe
 
     def getRepresentative(self, sublst, itemUids, privacy='public',
-                          listTypes=['normal'], oralQuestion='both', by_proposing_group=False,
+                          list_types=['normal'], oralQuestion='both', by_proposing_group=False,
                           withCollege=False, renumber=False, firstNumber=1):
         '''Checks if the given category is the same than the previous one. Return none if so and the new one if not.'''
         previousCat = ''
-        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, listTypes=listTypes,
+        for sublist in self.getPrintableItemsByCategory(itemUids, privacy=privacy, list_types=list_types,
                                                         oralQuestion=oralQuestion,
                                                         by_proposing_group=by_proposing_group,
                                                         withCollege=withCollege,

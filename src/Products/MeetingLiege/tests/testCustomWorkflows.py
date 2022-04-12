@@ -2223,7 +2223,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(
             self.transitions(item),
             ['accept', 'accept_but_modify', 'backToValidated',
-             'delay', 'mark_not_applicable', 'refuse'])
+             'delay', 'mark_not_applicable', 'refuse', 'return_to_proposing_group'])
         # if item is delayed, it is duplicated in it's initial_state
         self.do(item, 'delay')
         self._check_access(

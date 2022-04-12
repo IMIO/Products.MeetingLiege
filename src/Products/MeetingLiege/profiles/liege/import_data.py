@@ -302,6 +302,7 @@ collegeMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IM
 collegeMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCollegeLiegeWorkflowActions'
 collegeMeeting.workflowAdaptations = [
     'item_validation_shortcuts',
+    'item_validation_no_validate_shortcuts',
     'accepted_and_returned',
     'accepted_but_modified',
     'delayed',

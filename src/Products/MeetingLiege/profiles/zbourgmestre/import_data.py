@@ -245,6 +245,7 @@ bourgmestreMeeting.workflowAdaptations = (
     'delayed',
     'no_publication',
     'item_validation_shortcuts',
+    'item_validation_no_validate_shortcuts',
     'no_decide',
     'no_freeze',
     'waiting_advices',

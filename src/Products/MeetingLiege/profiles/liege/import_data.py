@@ -695,6 +695,7 @@ councilMeeting.itemActionsInterface = 'Products.MeetingLiege.interfaces.IMeeting
 councilMeeting.meetingConditionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowConditions'
 councilMeeting.meetingActionsInterface = 'Products.MeetingLiege.interfaces.IMeetingCouncilLiegeWorkflowActions'
 councilMeeting.workflowAdaptations = [
+    'return_to_proposing_group',
     'accepted_but_modified',
     'delayed',
     'mark_not_applicable',

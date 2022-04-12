@@ -248,6 +248,8 @@ bourgmestreMeeting.workflowAdaptations = (
     'item_validation_no_validate_shortcuts',
     'no_decide',
     'no_freeze',
+    'only_creator_may_delete',
+    'return_to_proposing_group',
     'waiting_advices',
     'waiting_advices_proposing_group_send_back')
 

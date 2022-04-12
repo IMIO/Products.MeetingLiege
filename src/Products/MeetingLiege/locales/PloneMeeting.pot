@@ -477,3 +477,15 @@ msgstr ""
 #. Default: "The item is signed. Click on the image to remove signature."
 msgid "item_is_signed_yes_edit"
 msgstr ""
+
+#. Default: "Accepted and returned"
+msgid "wa_accepted_and_returned"
+msgstr ""
+
+#. Default: "Returned"
+msgid "wa_returned"
+msgstr ""
+
+#. Default: "Sent to Council emergency"
+msgid "wa_sent_to_council_emergency"
+msgstr ""

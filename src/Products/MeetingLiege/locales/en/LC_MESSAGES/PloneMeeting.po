@@ -463,6 +463,18 @@ msgstr "To be discussed during the meeting."
 msgid "to_discuss_yes_edit"
 msgstr "To be discussed during the meeting. Click on the image for not discussing the item."
 
+#. Default: "Accepted and returned"
+msgid "wa_accepted_and_returned"
+msgstr ""
+
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Items come validated"
+
+#. Default: "Returned"
+msgid "wa_returned"
+msgstr ""
+
+#. Default: "Sent to Council emergency"
+msgid "wa_sent_to_council_emergency"
+msgstr ""

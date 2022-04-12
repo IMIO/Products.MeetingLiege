@@ -460,6 +460,18 @@ msgstr "Point avec acte"
 msgid "to_discuss_yes_edit"
 msgstr "Point avec acte, cliquez sur l'image pour passer en 'Point sans acte'."
 
+#. Default: "Accepted and returned"
+msgid "wa_accepted_and_returned"
+msgstr "Ajouter l'état de décision \"Accepté avec retour Collège\" sur un point"
+
 #. Default: "Items come validated"
 msgid "wa_items_come_validated"
 msgstr "Les points arrivent proposés à la séance"
+
+#. Default: "Returned"
+msgid "wa_returned"
+msgstr "Ajouter l'état de décision \"Ajourné avec retour Collège\" sur un point"
+
+#. Default: "Sent to Council emergency"
+msgid "wa_sent_to_council_emergency"
+msgstr "Ajouter l'état de décision \"Envoyé au Conseil Communal en urgence\" sur un point"

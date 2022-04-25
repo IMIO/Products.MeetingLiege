@@ -231,11 +231,15 @@ class Migrate_To_4200(PMMigrate_To_4200):
             # make the deliberation to sign annex_type, confidential by default
             self._migrateDeliberationToSignAnnexType()
 
+        if self.is_in_part('b'):  # update_local_roles step
+            # migrate items workflow_history
+            self._migrateItemsWorkflowHistory()
+
         # call steps from Products.PloneMeeting
         # this will manage parts 'a', 'b' and 'c'
         super(Migrate_To_4200, self).run(extra_omitted=extra_omitted)
 
-        if self.is_in_part('c'):  # main step
+        if self.is_in_part('c'):  # update wf_mappings/recatalog step
 
             # execute upgrade steps in PM that were added after main upgrade to 4200
             Migrate_To_4201(self.portal).run(from_migration_to_4200=True)
@@ -244,8 +248,6 @@ class Migrate_To_4200(PMMigrate_To_4200):
             logger.info('Migrating to MeetingLiege 4200...')
             # add new searches (searchitemswithnofinanceadvice)
             self.addNewSearches()
-            # migrate items workflow_history
-            self._migrateItemsWorkflowHistory()
             # enable 'async_actions' column in dashboards
             self.updateItemColumns(to_remove=['actions'], to_add=['async_actions'])
 

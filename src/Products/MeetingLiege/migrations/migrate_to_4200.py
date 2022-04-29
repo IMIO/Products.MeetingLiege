@@ -155,19 +155,6 @@ class Migrate_To_4200(PMMigrate_To_4200):
 
     def _migrateItemsWorkflowHistory(self):
         """Migrate items workflow_history and remap states."""
-        # update item workflow_history and MeetingConfig fields using states/transitions
-        self.updateWFStatesAndTransitions(
-            query={'portal_type': ('MeetingItemCollege', 'MeetingItemBourgmestre')},
-            review_state_mappings={
-                # meeting-config-college
-                'proposed_to_finance': 'proposed_to_finance_waiting_advices'},
-            transition_mappings={
-                # meeting-config-college
-                'proposeToFinance': 'wait_advices_from_proposed_to_director',
-                'askAdvicesByInternalReviewer': 'wait_advices_from_proposed_to_internal_reviewer',
-                'askAdvicesByItemCreator': 'wait_advices_from_itemcreated',
-                # meeting-config-bourgmestre
-                'askAdvicesByDirector': 'wait_advices_from_proposed_to_director', })
         # as state "proposed_to_finance" changed to "proposed_to_finance_waiting_advices",
         # we must update various places
         # organizations
@@ -192,6 +179,22 @@ class Migrate_To_4200(PMMigrate_To_4200):
                             field_name,
                             tuple(replace_in_list(
                                 value, old_finance_value, new_finance_value)))
+
+        # update item workflow_history and MeetingConfig fields using states/transitions
+        self.updateWFStatesAndTransitions(
+            query={'portal_type': ('MeetingItemCollege', 'MeetingItemBourgmestre')},
+            review_state_mappings={
+                # meeting-config-college
+                'proposed_to_finance': 'proposed_to_finance_waiting_advices'},
+            transition_mappings={
+                # meeting-config-college
+                'proposeToFinance': 'wait_advices_from_proposed_to_director',
+                'askAdvicesByInternalReviewer': 'wait_advices_from_proposed_to_internal_reviewer',
+                'askAdvicesByItemCreator': 'wait_advices_from_itemcreated',
+                # meeting-config-bourgmestre
+                'askAdvicesByDirector': 'wait_advices_from_proposed_to_director', },
+            # will be done by next step in migration
+            update_local_roles=False)
 
     def _migrateDeliberationToSignAnnexType(self):
         """Make the annex_type confidential by default."""

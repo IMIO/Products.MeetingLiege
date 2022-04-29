@@ -4,8 +4,10 @@ Products.MeetingLiege Changelog
 4.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Adapted `Migrate_To_4200._migrateItemsWorkflowHistory` to update `MeetingConfigs`
+  before `workflow_history` and to call `BaseMigrator.updateWFStatesAndTransitions`
+  with `update_local_roles=False` as it is done by the main migrator just after.
+  [gbastien]
 
 4.2 (2022-04-28)
 ----------------

@@ -11,6 +11,10 @@ Products.MeetingLiege Changelog
 - Fixed `CustomMeetingItem.getLegalTextForFDAdvice` to be sure that everything is
   `utf-8` to avoid `UnicodeDecodeError` as now `RichTextValue.output` returns `unicode`.
   [gbastien]
+- Make sure suffixes `administrativereviewers`, `internalreviewers` and
+  `reviewers` have access to the item in the `Council`, as items come validated,
+  need to configure the `itemcreated` item WF validation level `extra_suffixes`.
+  [gbastien]
 
 4.2 (2022-04-28)
 ----------------

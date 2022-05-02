@@ -711,7 +711,7 @@ councilMeeting.itemWFValidationLevels = (
      'back_transition': 'backToItemCreated',
      'back_transition_title': 'backToItemCreated',
      'suffix': 'creators',
-     'extra_suffixes': [],
+     'extra_suffixes': [u'administrativereviewers', u'internalreviewers', u'reviewers'],
      'enabled': '0',
      }, )
 councilMeeting.transitionsForPresentingAnItem = ('present', )

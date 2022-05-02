@@ -1725,6 +1725,15 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
     def _setupCollegeItemSentToCouncil(self):
         """Send an item from College to Council just before the Council item is decided."""
+        def _check_access_council_item(councilItem):
+            """ """
+            self.assertEqual(councilItem.getProposingGroup(), self.developers_uid)
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_creators], ['Reader'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_observers], ['Reader'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_administrativereviewers], ['Reader'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_internalreviewers], ['Reader'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_reviewers], ['Reader'])
+
         self.changeUser('admin')
         # add finance groups
         self._createFinanceGroups()
@@ -1765,13 +1774,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.presentItem(collegeItem)
         self.closeMeeting(collegeMeeting)
         councilItem = collegeItem.getItemClonedToOtherMC(cfg2Id)
+        # test that every suffixes have access to the Council item
+        _check_access_council_item(councilItem)
 
         # in the council
         # use groups as categories
         self.setMeetingConfig(cfg2Id)
         councilMeeting = self.create('Meeting')
         self.presentItem(councilItem)
+        _check_access_council_item(councilItem)
         self.decideMeeting(councilMeeting)
+        _check_access_council_item(councilItem)
         return collegeItem, councilItem, collegeMeeting, councilMeeting
 
     def test_CouncilItemSentToCollegeWhenDelayed(self):

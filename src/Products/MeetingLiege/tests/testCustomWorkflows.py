@@ -2424,13 +2424,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
              'reviewProcessInfo': {
                 'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
                     self.developers_uid)]}})
+        # it works because finally the only value taken into account is the
+        # ...__reviewprocess__proposed_to_administrative_reviewer the other value will
+        # never match as an item with ...__reviewprocess__proposed_to_cabinet_manager
+        # the first part is the UID of the BG organization which 'pmAdminReviewer1' is not member of
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
                 'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
-                    self.developers_uid)]}})
+                    self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(
+                    self.developers_uid), ]}})
 
         # internal reviewer
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2451,15 +2457,19 @@ class testCustomWorkflows(MeetingLiegeTestCase):
              'reviewProcessInfo': {
                 'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(
                     self.developers_uid)]}})
+        import ipdb; ipdb.set_trace()
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(
-                    self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
-                            self.developers_uid)]}})
+                'query': [
+                    '{0}__reviewprocess__proposed_to_internal_reviewer'.format(
+                        self.developers_uid),
+                    '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
+                        self.developers_uid),
+                    '{0}__reviewprocess__proposed_to_cabinet_manager'.format(
+                        self.developers_uid), ]}})
 
         # director
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2478,26 +2488,29 @@ class testCustomWorkflows(MeetingLiegeTestCase):
              'reviewProcessInfo': {
                 'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(self.developers_uid)]}})
+                          '{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
+                          ]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(self.developers_uid)]}})
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
+                          ]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_internal_reviewer'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid)]}})
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(self.developers_uid),
+                          ]}})
 
         # general manager
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2509,28 +2522,31 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(sc_uid)]}})
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
+                          ]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(sc_uid)]}})
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
+                          ]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(sc_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(sc_uid),
                           '{0}__reviewprocess__proposed_to_internal_reviewer'.format(sc_uid),
-                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(sc_uid)]}})
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(sc_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(sc_uid),
+                          ]}})
 
         # cabinet manager
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2554,9 +2570,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_internal_reviewer'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(bg_uid)]}})
+                'query': ['{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid)]}})
 
         # cabinet reviewer
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')
@@ -2568,28 +2582,31 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(bg_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(bg_uid)]}})
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
+                          ]}})
         self.assertEqual(
             highest_hierarchic_level.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(bg_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(bg_uid)]}})
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
+                          ]}})
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(bg_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(bg_uid),
                           '{0}__reviewprocess__proposed_to_internal_reviewer'.format(bg_uid),
-                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(bg_uid)]}})
+                          '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(bg_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(bg_uid),
+                          ]}})
 
     def _check_confidential_annex_access(self, item, userIds=[], access=True):
         """ """

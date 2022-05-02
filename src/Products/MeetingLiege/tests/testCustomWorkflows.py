@@ -2485,9 +2485,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
+                'query': ['{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
                           '{0}__reviewprocess__proposed_to_general_manager'.format(self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_director'.format(self.developers_uid),
+                          '{0}__reviewprocess__proposed_to_cabinet_reviewer'.format(self.developers_uid),
                           ]}})
         self.assertEqual(
             highest_hierarchic_level.query,

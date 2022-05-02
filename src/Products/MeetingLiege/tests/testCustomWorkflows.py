@@ -14,12 +14,12 @@ from collective.iconifiedcategory.utils import get_config_root
 from collective.iconifiedcategory.utils import get_group
 from datetime import datetime
 from imio.helpers.cache import cleanRamCacheFor
+from imio.helpers.content import richtextval
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastAction
 from imio.history.utils import getLastWFAction
 from plone import api
 from plone.app.querystring import queryparser
-from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 from plone.memoize.instance import Memojito
 from Products.CMFCore.permissions import DeleteObjects
@@ -253,7 +253,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                           'meetingadvice',
                                           **{'advice_group': self.vendors_uid,
                                              'advice_type': u'positive',
-                                             'advice_comment': RichTextValue(u'My comment vendors')})
+                                             'advice_comment': richtextval(u'My comment vendors')})
         # no more advice to give
         self.assertFalse(item.hasAdvices(toGive=True))
         # item may be proposed directly to administrative reviewer
@@ -296,7 +296,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                  'meetingadvice',
                                  **{'advice_group': self.developers_uid,
                                     'advice_type': u'positive',
-                                    'advice_comment': RichTextValue(u'My comment developers')})
+                                    'advice_comment': richtextval(u'My comment developers')})
         # item may be proposed directly to director
         # from state 'proposed_to_internal_reviewer_waiting_advices'
         self.changeUser('pmInternalReviewer1')
@@ -403,12 +403,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(toAdd and not toEdit)
         # give the advice
-        advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
-                                          **{'advice_group': financial_group_uids[0],
-                                             'advice_type': u'positive_with_remarks_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        advice = createContentInContainer(
+            item,
+            'meetingadvicefinances',
+            **{'advice_group': financial_group_uids[0],
+               'advice_type': u'positive_with_remarks_finance',
+               'advice_comment': richtextval(u'<p>My comment finance</p>'),
+               'advice_observations': richtextval(u'<p>My observation finance</p>')})
         # once given, still editable
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and toEdit)
@@ -679,8 +680,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                           'meetingadvicefinances',
                                           **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+                                             'advice_comment': richtextval(u'<p>My comment finance</p>'),
+                                             'advice_observations': richtextval(u'<p>My observation finance</p>')})
         self.do(item, 'backTo_proposed_to_internal_reviewer_from_waiting_advices')
         # internal reviewer will send item to the director that will ask emergency
         self.changeUser('pmInternalReviewer1')
@@ -751,7 +752,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                           'meetingadvicefinances',
                                           **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'My comment finance')})
+                                             'advice_comment': richtextval(u'My comment finance')})
         # sign advice, necessary to test _updateAdvices called in _updateAdvices...
         self.do(advice, 'proposeToFinancialReviewer')
         self.changeUser('pmFinReviewer')
@@ -1000,7 +1001,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                           'meetingadvicefinances',
                                           **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'My comment finance')})
+                                             'advice_comment': richtextval(u'My comment finance')})
         # now play advice finance workflow and check catalog indexAdvisers is correct
         catalog = api.portal.get_tool('portal_catalog')
         itemPath = item.absolute_url_path()
@@ -1127,12 +1128,13 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.request.set('new_completeness_value', 'completeness_complete')
         self.request.form['form.submitted'] = True
         changeCompleteness()
-        advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
-                                          **{'advice_group': financial_group_uids[0],
-                                             'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        advice = createContentInContainer(
+            item,
+            'meetingadvicefinances',
+            **{'advice_group': financial_group_uids[0],
+               'advice_type': u'positive_finance',
+               'advice_comment': richtextval(u'<p>My comment finance</p>'),
+               'advice_observations': richtextval(u'<p>My observation finance</p>')})
         self.assertEqual(advice.query_state(), 'proposed_to_financial_controller')
         self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
         # as finance reviewer
@@ -1994,11 +1996,12 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.closeMeeting(meeting)
         self.assertEqual(item.query_state(), 'accepted')
         self.changeUser('pmCreator2')
-        advice = createContentInContainer(item,
-                                          'meetingadvice',
-                                          **{'advice_group': treasury_org_uid,
-                                             'advice_type': u'negative',
-                                             'advice_comment': RichTextValue(u'My negative comment')})
+        advice = createContentInContainer(
+            item,
+            'meetingadvice',
+            **{'advice_group': treasury_org_uid,
+               'advice_type': u'negative',
+               'advice_comment': richtextval(u'My negative comment')})
         # ask advice again
         self.changeUser('pmCreator1')
         # not able as not internalreviewer/reviewer
@@ -2018,7 +2021,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.getAdvicesGroupsInfosForUser(),
                          ([], [treasury_org_uid]))
         advice.advice_type = 'positive'
-        advice.advice_comment = RichTextValue(u'My positive comment')
+        advice.advice_comment = richtextval(u'My positive comment')
         notify(ObjectModifiedEvent(advice))
         self.assertEqual(item.adviceIndex[treasury_org_uid]['type'], 'positive')
 

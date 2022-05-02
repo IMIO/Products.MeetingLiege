@@ -8,6 +8,9 @@ Products.MeetingLiege Changelog
   before `workflow_history` and to call `BaseMigrator.updateWFStatesAndTransitions`
   with `update_local_roles=False` as it is done by the main migrator just after.
   [gbastien]
+- Fixed `CustomMeetingItem.getLegalTextForFDAdvice` to be sure that everything is
+  `utf-8` to avoid `UnicodeDecodeError` as now `RichTextValue.output` returns `unicode`.
+  [gbastien]
 
 4.2 (2022-04-28)
 ----------------
@@ -267,5 +270,5 @@ Products.MeetingLiege Changelog
 - Get rid of ToolPloneMeeting.formatMeetingDate override that displayed a '*' for meetings where
   adoptsNextCouncilAgenda=True, we use imio.prettylink _leadingIcons now
 - Moved finances specific advices to their own portal_type 'meetingadvicefinances'
-- Removed field 'MeetingItem.privacyForCouncil', instead we will use new builtin PM functionnality 
+- Removed field 'MeetingItem.privacyForCouncil', instead we will use new builtin PM functionnality
   'MeetingItem.otherMeetingConfigsClonableToPrivacy' that does the same

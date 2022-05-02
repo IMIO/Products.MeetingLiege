@@ -2,7 +2,7 @@
 
 from collective.contact.plonegroup.utils import select_org_for_function
 from imio.helpers.cache import cleanForeverCache
-from plone.app.textfield.value import RichTextValue
+from imio.helpers.content import richtextval
 from plone.dexterity.utils import createContentInContainer
 from Products.MeetingLiege.config import FINANCE_GROUP_IDS
 from Products.MeetingLiege.config import PROJECTNAME
@@ -100,12 +100,13 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.request.set('new_completeness_value', 'completeness_complete')
         self.request.form['form.submitted'] = True
         changeCompleteness()
-        advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
-                                          **{'advice_group': adviser_group_id,
-                                             'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        advice = createContentInContainer(
+            item,
+            'meetingadvicefinances',
+            **{'advice_group': adviser_group_id,
+               'advice_type': u'positive_finance',
+               'advice_comment': richtextval(u'<p>My comment finance</p>'),
+               'advice_observations': richtextval(u'<p>My observation finance</p>')})
         self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
         # as finance reviewer
         self.changeUser('pmFinReviewer')
@@ -141,12 +142,13 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
         self.request.set('new_completeness_value', 'completeness_complete')
         self.request.form['form.submitted'] = True
         changeCompleteness()
-        advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
-                                          **{'advice_group': financial_group_uids[0],
-                                             'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'<p>My comment finance</p>'),
-                                             'advice_observations': RichTextValue(u'<p>My observation finance</p>')})
+        advice = createContentInContainer(
+            item,
+            'meetingadvicefinances',
+            **{'advice_group': financial_group_uids[0],
+               'advice_type': u'positive_finance',
+               'advice_comment': richtextval(u'<p>My comment finance</p>'),
+               'advice_observations': richtextval(u'<p>My observation finance</p>')})
         self.do(advice, 'proposeToFinancialReviewer', comment='My financial controller comment')
         # as finance reviewer
         self.changeUser('pmFinReviewer')

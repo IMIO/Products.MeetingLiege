@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from imio.helpers.content import richtextval
 from plone import api
-from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 from plone.indexer.wrapper import IndexableObjectWrapper
 from Products.MeetingLiege.config import COUNCILITEM_DECISIONEND_SENTENCE
@@ -13,7 +13,6 @@ from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.MeetingLiege.utils import not_copy_group_uids
 from Products.MeetingLiege.utils import treasury_group_cec_uid
-from Products.PloneMeeting.utils import org_id_to_uid
 from zope.event import notify
 from zope.lifecycleevent import ObjectModifiedEvent
 
@@ -373,7 +372,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                  'meetingadvicefinances',
                                  **{'advice_group': financial_group_uids[0],
                                     'advice_type': 'positive_finance',
-                                    'advice_comment': RichTextValue(u'My positive comment finance')})
+                                    'advice_comment': richtextval(u'My positive comment finance')})
         # finance group has read access to the item
         financeGroupAdvisersId = "{0}_advisers".format(item.getFinanceAdvice())
         self.assertEqual(item.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
@@ -558,19 +557,19 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
             'meetingadvicefinances',
             **{'advice_group': financial_group_uids[0],
                'advice_type': 'positive_finance',
-               'advice_comment': RichTextValue(u'My good comment finance')})
+               'advice_comment': richtextval(u'My good comment finance')})
         advice1a = createContentInContainer(
             item1a,
             'meetingadvicefinances',
             **{'advice_group': financial_group_uids[0],
                'advice_type': 'positive_with_remarks_finance',
-               'advice_comment': RichTextValue(u'My good with remarks comment finance')})
+               'advice_comment': richtextval(u'My good with remarks comment finance')})
         advice2 = createContentInContainer(
             item2,
             'meetingadvicefinances',
             **{'advice_group': financial_group_uids[0],
                'advice_type': 'negative_finance',
-               'advice_comment': RichTextValue(u'My bad comment finance')})
+               'advice_comment': richtextval(u'My bad comment finance héhé')})
 
         # send to financial reviewer
         self.changeUser('pmFinController')
@@ -674,7 +673,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                            'meetingadvicefinances',
                                            **{'advice_group': financial_group_uids[0],
                                               'advice_type': 'positive_finance',
-                                              'advice_comment': RichTextValue(u'My comment finance')})
+                                              'advice_comment': richtextval(u'My comment finance')})
         # if advice is hidden, it can only be seen by advisers of the finance group.
         advice1.advice_hide_during_redaction = True
         self.changeUser('pmManager')
@@ -852,11 +851,12 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # Add a negative advice.
         self.changeUser('pmFinManager')
-        advice1 = createContentInContainer(item1,
-                                           'meetingadvicefinances',
-                                           **{'advice_group': financial_group_uids[0],
-                                              'advice_type': 'negative_finance',
-                                              'advice_comment': RichTextValue(u'My bad comment finance')})
+        advice1 = createContentInContainer(
+            item1,
+            'meetingadvicefinances',
+            **{'advice_group': financial_group_uids[0],
+               'advice_type': 'negative_finance',
+               'advice_comment': richtextval(u'My bad comment finance héhé')})
         self.changeUser('pmFinController')
         self.do(advice1, 'proposeToFinancialReviewer')
 
@@ -897,7 +897,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # Give a positive advice
         advice1.advice_type = 'positive_finance'
         # Erase the comment
-        advice1.advice_comment = RichTextValue('')
+        advice1.advice_comment = richtextval('')
         notify(ObjectModifiedEvent(advice1))
 
         self.changeUser('pmFinController')
@@ -1044,7 +1044,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                            'meetingadvicefinances',
                                            **{'advice_group': financial_group_uids[0],
                                               'advice_type': 'negative_finance',
-                                              'advice_comment': RichTextValue(u'Bad comment finance')})
+                                              'advice_comment': richtextval(u'Bad comment finance')})
         self.changeUser('pmFinController')
         self.do(advice5, 'proposeToFinancialReviewer')
 
@@ -1077,7 +1077,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                                            'meetingadvicefinances',
                                            **{'advice_group': financial_group_uids[1],
                                               'advice_type': 'positive_with_remarks_finance',
-                                              'advice_comment': RichTextValue(u'A remark')})
+                                              'advice_comment': richtextval(u'A remark')})
 
         self.changeUser('pmFinController')
         self.do(advice6, 'proposeToFinancialReviewer')
@@ -1125,7 +1125,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(results[2]['meeting_date'], "")
         self.assertEqual(results[2]['group'], "Developers")
         self.assertEqual(results[2]['end_advice'], "NON")
-        self.assertEqual(results[2]['comments'], "My bad comment finance")
+        self.assertEqual(results[2]['comments'], u"My bad comment finance héhé")
         self.assertEqual(results[2]['adviser'], u'DF - Contr\xf4le')
         self.assertEqual(results[2]['advice_type'], 'Avis finance d\xc3\xa9favorable')
 

@@ -10,6 +10,7 @@ from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import get_cachekey_volatile
+from imio.helpers.content import safe_encode
 from imio.helpers.content import uuidsToObjects
 from imio.helpers.content import uuidToObject
 from imio.history.adapters import BaseImioHistoryAdapter
@@ -1007,7 +1008,7 @@ class CustomMeetingItem(MeetingItem):
         financialAdvice = item.getFinanceAdvice()
         adviceData = item.getAdviceDataFor(item, financialAdvice)
         res['comment'] = 'comment' in adviceData\
-            and adviceData['comment'] or ''
+            and safe_encode(adviceData['comment']) or ''
         advice_id = 'advice_id' in adviceData\
             and adviceData['advice_id'] or ''
         signature_event = advice_id and getLastWFAction(getattr(item, advice_id), 'signFinancialAdvice') or ''

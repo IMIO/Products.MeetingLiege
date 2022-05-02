@@ -5,8 +5,8 @@
 # GNU General Public License (GPL)
 #
 
+from imio.helpers.content import richtextval
 from plone import api
-from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import createContentInContainer
 from Products.MeetingLiege.events import _everyAdvicesAreGivenFor
 from Products.MeetingLiege.setuphandlers import _configureCollegeCustomAdvisers
@@ -54,11 +54,12 @@ class testCustomAdvices(MeetingLiegeTestCase):
         # advice is addable, delays may be changed
         self.assertTrue(delayView._mayEditDelays(isAutomatic=isAutomatic))
         # add the advice, delay still changeable as advice is editable
-        advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
-                                          **{'advice_group': financial_group_uids[0],
-                                             'advice_type': u'positive_finance',
-                                             'advice_comment': RichTextValue(u'My comment finance')})
+        advice = createContentInContainer(
+            item,
+            'meetingadvicefinances',
+            **{'advice_group': financial_group_uids[0],
+               'advice_type': u'positive_finance',
+               'advice_comment': richtextval(u'My comment finance')})
         self.assertTrue(delayView._mayEditDelays(isAutomatic=isAutomatic))
         # other members of the finance group can not edit advice delay
         self.changeUser('pmFinController')
@@ -173,10 +174,11 @@ class testCustomAdvices(MeetingLiegeTestCase):
         self.changeUser('pmReviewer1')
 
         # check when item is 'itemcreated_waiting_advices'
-        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(item,
-                                                              askAdvicesTr='wait_advices_from_proposed_to_director',
-                                                              availableBackTr='backTo_proposed_to_director_from_waiting_advices',
-                                                              returnState='proposed_to_director')
+        self._checkItemSentBackToServiceWhenEveryAdvicesGiven(
+            item,
+            askAdvicesTr='wait_advices_from_proposed_to_director',
+            availableBackTr='backTo_proposed_to_director_from_waiting_advices',
+            returnState='proposed_to_director')
 
     def _checkItemSentBackToServiceWhenEveryAdvicesGiven(self,
                                                          item,
@@ -200,7 +202,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                  **{'advice_group': self.vendors_uid,
                                     'advice_type': u'positive',
                                     'advice_hide_during_redaction': False,
-                                    'advice_comment': RichTextValue(u'My comment')})
+                                    'advice_comment': richtextval(u'My comment')})
         # directly sent back to service
         self.assertEqual(item.query_state(), returnState)
         self.assertTrue(_everyAdvicesAreGivenFor(item))
@@ -215,7 +217,7 @@ class testCustomAdvices(MeetingLiegeTestCase):
                                           **{'advice_group': self.vendors_uid,
                                              'advice_type': u'positive',
                                              'advice_hide_during_redaction': True,
-                                             'advice_comment': RichTextValue(u'My comment')})
+                                             'advice_comment': richtextval(u'My comment')})
         # still waiting advices
         self.assertEqual(item.query_state(), '{0}_waiting_advices'.format(returnState))
         self.assertFalse(_everyAdvicesAreGivenFor(item))
@@ -257,8 +259,8 @@ class testCustomAdvices(MeetingLiegeTestCase):
             'meetingadvice',
             **{'advice_group': self.vendors_uid,
                'advice_type': u'negative',
-               'advice_comment': RichTextValue(u'<p>My comment vendors</p>'),
-               'advice_observations': RichTextValue(u'<p>My observation vendors</p>')})
+               'advice_comment': richtextval(u'<p>My comment vendors</p>'),
+               'advice_observations': richtextval(u'<p>My observation vendors</p>')})
         finance_keys = vocab(finance_advice).by_value.keys()
         finance_keys.sort()
         self.assertEquals(finance_keys,

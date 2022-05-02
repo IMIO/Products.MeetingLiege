@@ -1670,6 +1670,20 @@ class CustomMeetingConfig(MeetingConfig):
         ''' '''
         return ['accepted_and_returned', 'returned']
 
+    def _custom_reviewersFor(self):
+        '''Manage reviewersFor Bourgmestre because as some 'creators' suffixes are
+           used after reviewers levels, this break the _highestReviewerLevel and other
+           related hierarchic level functionalities.'''
+        cfg = self.getSelf()
+        if cfg.getId() == 'meeting-config-bourgmestre':
+            return OrderedDict(
+              [('reviewers', ['proposed_to_director',
+                              'proposed_to_general_manager',
+                              'proposed_to_cabinet_reviewer']),
+               ('internalreviewers', ['proposed_to_internal_reviewer']),
+               ('administrativereviewers', ['proposed_to_administrative_reviewer']),
+               ('creators', ['proposed_to_cabinet_manager'])])
+
 
 class CustomToolPloneMeeting(ToolPloneMeeting):
     '''Adapter that adapts portal_plonemeeting.'''

@@ -15,6 +15,10 @@ Products.MeetingLiege Changelog
   `reviewers` have access to the item in the `Council`, as items come validated,
   need to configure the `itemcreated` item WF validation level `extra_suffixes`.
   [gbastien]
+- Implemented `MeetingConfig._custom_reviewersFor` to manage `reviewersFor` the
+  `Bourgmestre MeetingConfig` because suffix `creators` is used at several levels
+  in MeetingConfig.itemWFValidationLevels and this breaks `MeetingConfig._highestReviewerLevel`.
+  [gbastien]
 
 4.2 (2022-04-28)
 ----------------

@@ -2457,7 +2457,6 @@ class testCustomWorkflows(MeetingLiegeTestCase):
              'reviewProcessInfo': {
                 'query': ['{0}__reviewprocess__proposed_to_internal_reviewer'.format(
                     self.developers_uid)]}})
-        import ipdb; ipdb.set_trace()
         self.assertEqual(
             every_reviewer_levels_and_lower.query,
             {'portal_type': {

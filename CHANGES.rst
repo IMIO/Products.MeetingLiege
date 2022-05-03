@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.1 (unreleased)
+4.2.1 (2022-05-03)
 ------------------
 
 - Adapted `Migrate_To_4200._migrateItemsWorkflowHistory` to update `MeetingConfigs`

@@ -19,6 +19,10 @@ Products.MeetingLiege Changelog
   `Bourgmestre MeetingConfig` because suffix `creators` is used at several levels
   in MeetingConfig.itemWFValidationLevels and this breaks `MeetingConfig._highestReviewerLevel`.
   [gbastien]
+- Fixed `ItemWfHistoryAdapter.mayViewComment` to show comment to the
+  `MeetingItem.financeAdvice` advisers group for `backToProposedToInternalReviewer`
+  action if `previous_review_state` was `proposed_to_finance_waiting_advices`.
+  [gbastien]
 
 4.2 (2022-04-28)
 ----------------

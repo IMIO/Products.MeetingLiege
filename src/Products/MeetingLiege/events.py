@@ -127,6 +127,9 @@ def onAdviceAfterTransition(advice, event):
 
     # initial_state or going back from 'advice_given', we set automatically
     # advice_hide_during_redaction to True
+    # we do not use MeetingConfig.defaultAdviceHiddenDuringRedaction because
+    # when advice is "asked_again", it is hidden which is not useable
+    # see https://support.imio.be/browse/PM-3883
     if not event.transition or \
        (newStateId == 'proposed_to_financial_controller' and oldStateId == 'advice_given'):
         advice.advice_hide_during_redaction = True

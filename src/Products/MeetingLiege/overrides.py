@@ -42,8 +42,8 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
 
     @memoize
     def get_history_data(self):
-        """We need previous_review_state for MeetingItemBourgmestre."""
-        if self.context.portal_type == 'MeetingItemBourgmestre':
+        """We need previous_review_state for MeetingItemBourgmestre and MeetingItemCollege."""
+        if self.context.portal_type in ('MeetingItemBourgmestre', 'MeetingItemCollege'):
             self.include_previous_review_state = True
         history_data = super(ItemWfHistoryAdapter, self).get_history_data()
         return history_data
@@ -66,9 +66,9 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
             # last event 'backToProposedToInternalReviewer' it could be done by the director and
             # we want only to show comment to the finance group when it is the finance group
             # that triggered the transition...
-            action = event['action']
-            if action in ['backTo_proposed_to_internal_reviewer_from_waiting_advices',
-                          'wait_advices_from_proposed_to_director'] and \
+            if (event['action'] in ('backTo_proposed_to_internal_reviewer_from_waiting_advices',
+                          'wait_advices_from_proposed_to_director') or
+                event['previous_review_state'] == 'proposed_to_finance_waiting_advices') and \
                self.context.adapted().isCurrentUserInFDGroup(financeAdvice):
                 userMayAccessComment = True
         return userMayAccessComment

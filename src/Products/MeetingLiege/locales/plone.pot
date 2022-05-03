@@ -24,25 +24,25 @@ msgstr ""
 msgid "MeetingItemCollege"
 msgstr ""
 
-#. Default: "MeetingItemRecurringCollege" 
-msgid "MeetingItemRecurringCollege" 
-msgstr "" 
+#. Default: "MeetingItemRecurringCollege"
+msgid "MeetingItemRecurringCollege"
+msgstr ""
 
-#. Default: "MeetingItemTemplateCollege" 
-msgid "MeetingItemTemplateCollege" 
-msgstr "" 
+#. Default: "MeetingItemTemplateCollege"
+msgid "MeetingItemTemplateCollege"
+msgstr ""
 
 #. Default: "MeetingItemCouncil"
 msgid "MeetingItemCouncil"
 msgstr ""
 
-#. Default: "MeetingItemRecurringCouncil" 
-msgid "MeetingItemRecurringCouncil" 
-msgstr "" 
+#. Default: "MeetingItemRecurringCouncil"
+msgid "MeetingItemRecurringCouncil"
+msgstr ""
 
-#. Default: "MeetingItemTemplateCouncil" 
-msgid "MeetingItemTemplateCouncil" 
-msgstr "" 
+#. Default: "MeetingItemTemplateCouncil"
+msgid "MeetingItemTemplateCouncil"
+msgstr ""
 
 #. Default: "Ask advices (itemcreated)"
 msgid "wait_advices_from_itemcreated"
@@ -62,6 +62,11 @@ msgstr ""
 
 #. Default: "Ask advices to finances"
 msgid "wait_advices_from_proposed_to_director"
+msgstr ""
+
+#. Default: "Ask advices (reviewers)"
+#. Overrided, see https://support.imio.be/browse/PM-3885
+msgid "wait_advices_from"
 msgstr ""
 
 #. Default: "Advices asked by creator"

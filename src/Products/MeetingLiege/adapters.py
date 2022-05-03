@@ -163,7 +163,7 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'use_custom_back_transition_title_for': (),
          # if () given, a custom transition icon is used for every back transitions
          'only_use_custom_back_transition_icon_for': ("dummy", ),
-         'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
+         'use_custom_transition_title_for': (),
          'adviser_may_validate': False,
          'new_state_id': 'proposed_to_director_waiting_advices',
          },

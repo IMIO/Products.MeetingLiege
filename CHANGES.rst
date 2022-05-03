@@ -4,8 +4,10 @@ Products.MeetingLiege Changelog
 4.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed in BG transition title for `wait_advices_from_proposed_to_director` to
+  use the default `wait_advices_from` because same transition exist in College
+  and translation is already overrided.
+  [gbastien]
 
 4.2.1 (2022-05-03)
 ------------------

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.2 (unreleased)
+4.2.2 (2022-05-03)
 ------------------
 
 - Fixed in BG transition title for `wait_advices_from_proposed_to_director` to

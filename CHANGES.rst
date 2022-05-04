@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.3 (unreleased)
+4.2.3 (2022-05-04)
 ------------------
 
 - Fixed code still using item College transition `proposeToFinance`, was replaced

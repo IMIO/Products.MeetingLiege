@@ -8,6 +8,9 @@ Products.MeetingLiege Changelog
   by `wait_advices_from_proposed_to_director` (`wf_down_finances.png` icon and
   finances advice popup comment message).
   [gbastien]
+- Speed up displaying `MeetingConfig` by hidding the `archivingRefs` field in
+  `view` (still available in `edit`).
+  [gbastien]
 
 4.2.2 (2022-05-03)
 ------------------

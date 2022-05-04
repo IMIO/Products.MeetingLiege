@@ -127,6 +127,7 @@ def update_config_schema(baseSchema):
                 label='ArchivingRefs',
                 label_msgid='MeetingLiege_label_archivingRefs',
                 i18n_domain='PloneMeeting',
+                visible={'view': 'invisible', }
             ),
             allow_oddeven=True,
             default=(),

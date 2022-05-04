@@ -207,10 +207,6 @@ msgstr ""
 msgid "proposeToDirector"
 msgstr "Propose to director"
 
-#. Default: "Propose to finance"
-msgid "proposeToFinance"
-msgstr "Propose to finance"
-
 #. Default: "Propose to financial controller"
 msgid "proposeToFinancialController"
 msgstr "Propose to financial controller"

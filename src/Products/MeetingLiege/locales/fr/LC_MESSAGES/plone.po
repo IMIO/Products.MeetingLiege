@@ -208,10 +208,6 @@ msgstr "Proposer au Validateur Cabinet"
 msgid "proposeToDirector"
 msgstr "Proposer à la direction"
 
-#. Default: "Propose to finance"
-msgid "proposeToFinance"
-msgstr "Proposer aux finances"
-
 #. Default: "Propose to financial controller"
 msgid "proposeToFinancialController"
 msgstr "Proposer au contrôleur financier"

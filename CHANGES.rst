@@ -4,8 +4,10 @@ Products.MeetingLiege Changelog
 4.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed code still using item College transition `proposeToFinance`, was replaced
+  by `wait_advices_from_proposed_to_director` (`wf_down_finances.png` icon and
+  finances advice popup comment message).
+  [gbastien]
 
 4.2.2 (2022-05-03)
 ------------------

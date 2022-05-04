@@ -61,7 +61,7 @@ class ItemWfHistoryAdapter(PMWfHistoryAdapter):
         if not userMayAccessComment and financeAdvice != '_none_':
             # in case there is a finance advice asked comments of finance to internal_reviewer
             # and from director to finance must be viewable by the finance group
-            # so comments in the 'proposeToFinance' and comments made by finance in
+            # so comments in the 'wait_advices_from_proposed_to_director' and comments made by finance in
             # the 'backToProposedToInternalReviewer' must be viewable.  Take care that for this
             # last event 'backToProposedToInternalReviewer' it could be done by the director and
             # we want only to show comment to the finance group when it is the finance group

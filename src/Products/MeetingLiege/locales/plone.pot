@@ -113,10 +113,6 @@ msgstr ""
 msgid "proposeToCabinetReviewer"
 msgstr ""
 
-#. Default: "Propose to finance"
-msgid "proposeToFinance"
-msgstr ""
-
 #. Default: "Send to Council emergency"
 msgid "sendToCouncilEmergency"
 msgstr ""

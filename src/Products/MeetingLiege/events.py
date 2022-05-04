@@ -175,7 +175,7 @@ def onAdvicesUpdated(item, event):
 
         # when a finance has accessed an item, he will always be able to access it after
         # if not adviceInfo['item_viewable_by_advisers'] and \
-        #    getLastWFAction(item, 'proposeToFinance'):
+        #    getLastWFAction(item, 'wait_advices_from_proposed_to_director'):
         #     # give access to the item to the finance group
         #     item.manage_addLocalRoles('%s_advisers' % org_uid, (READER_USECASES['advices'],))
         #     item.adviceIndex[org_uid]['item_viewable_by_advisers'] = True

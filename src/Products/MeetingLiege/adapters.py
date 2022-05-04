@@ -163,6 +163,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'use_custom_back_transition_title_for': (),
          # if () given, a custom transition icon is used for every back transitions
          'only_use_custom_back_transition_icon_for': ("dummy", ),
+         # can not use custom_transition_title for wait_advices_from_proposed_to_director
+         # as it is already used in College, see https://support.imio.be/browse/PM-3885
          'use_custom_transition_title_for': (),
          'adviser_may_validate': False,
          'new_state_id': 'proposed_to_director_waiting_advices',
@@ -747,7 +749,7 @@ class CustomMeetingItem(MeetingItem):
                         translate('finance_advice_not_giveable_because_item_not_complete',
                                   domain="PloneMeeting",
                                   context=item.REQUEST)}
-            elif getLastWFAction(item, 'proposeToFinance') and \
+            elif getLastWFAction(item, 'wait_advices_from_proposed_to_director') and \
                 item_state in ('itemcreated',
                                'itemcreated_waiting_advices',
                                'proposed_to_internal_reviewer',
@@ -1786,7 +1788,8 @@ class MeetingItemCollegeLiegeWorkflowActions(MeetingItemWorkflowActions):
         if stateChange.new_state.id == 'proposed_to_finance_waiting_advices':
             # if we found an event 'wait_advices_from_proposed_to_director' in workflow_history,
             # it means that item is proposed again to the finances and we need to ask completeness
-            # evaluation again current transition 'proposeToFinance' is already in workflow_history...
+            # evaluation again current transition 'wait_advices_from_proposed_to_director'
+            # is already in workflow_history...
             wfTool = api.portal.get_tool('portal_workflow')
             # take history but leave last event apart
             history = self.context.workflow_history[wfTool.getWorkflowsFor(self.context)[0].getId()][:-1]
@@ -2533,11 +2536,11 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
                                     context=self.request)))
 
         # add an icon if item is down the workflow from the finances
-        # if item was ever gone the the finances and now it is down to the
-        # services, then it is considered as down the wf from the finances
-        # so take into account every states before 'validated/proposed_to_finance_waiting_advices'
+        # if item was ever gone the finances and now it is down to the
+        # proposingGroup, then it is considered as down the wf from the finances
+        # take into account every states before 'validated/proposed_to_finance_waiting_advices'
         if self.itemState in self.cfg.getItemWFValidationLevels(data='state', only_enabled=True) and \
-           getLastWFAction(self.context, 'proposeToFinance'):
+           getLastWFAction(self.context, 'wait_advices_from_proposed_to_director'):
             icons.append(('wf_down_finances.png',
                          translate('icon_help_wf_down_finances',
                                    domain="PloneMeeting",

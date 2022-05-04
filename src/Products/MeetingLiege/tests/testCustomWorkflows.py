@@ -438,6 +438,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(0)
         self.assertEqual(retrievedAdvice['metadata']['sys_metadata']['comment'],
                          ADVICE_GIVEN_HISTORIZED_COMMENT)
+        # in this case, a specific icon is displayed in the prettyLink
+        self.assertTrue('wf_down_finances.png' in item.getPrettyLink())
         # advice delay is no more started and advice is no more editable
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_addable'])
         self.assertTrue(not item.adviceIndex[financial_group_uids[0]]['advice_editable'])

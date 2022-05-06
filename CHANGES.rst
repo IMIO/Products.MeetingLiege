@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed `WAITING_ADVICES_FROM_STATES.use_custom_transition_title_for`
+  that is now a dict instead a tuple.
+  [gbastien]
 
 4.2.3 (2022-05-04)
 ------------------

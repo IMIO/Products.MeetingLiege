@@ -304,11 +304,6 @@ msgstr "Proposer à la séance"
 msgid "validated"
 msgstr "Proposé à la séance"
 
-#. Default: "Ask advices (reviewers)"
-#. Overrided, see https://support.imio.be/browse/PM-3885
-msgid "wait_advices_from"
-msgstr "Demander les avis (Direction)"
-
 #. Default: "Ask advices (itemcreated)"
 msgid "wait_advices_from_itemcreated"
 msgstr "Demander les avis (Créateur)"
@@ -321,10 +316,14 @@ msgstr "Demander les avis (VI)"
 msgid "wait_advices_from_proposed_to_administrative_reviewer"
 msgstr "Demander les avis (VI)"
 
-#. Default: "Ask advices to finances"
+#. Default: "Ask advices (reviewers)"
 msgid "wait_advices_from_proposed_to_director"
-msgstr "Proposer aux finances"
+msgstr "Demander les avis (Direction)"
 
 #. Default: "Ask advices (internal reviewer)"
 msgid "wait_advices_from_proposed_to_internal_reviewer"
 msgstr "Demander les avis (VI)"
+
+#. Default: "Ask advices to finances"
+msgid "wait_advices_proposed_to_finances"
+msgstr "Proposer aux finances"

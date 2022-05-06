@@ -119,7 +119,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'use_custom_back_transition_title_for': ('validated', ),
          # if () given, a custom transition icon is used for every back transitions
          'only_use_custom_back_transition_icon_for': ('validated', ),
-         'use_custom_transition_title_for': ('wait_advices_from_itemcreated', ),
+         'use_custom_transition_title_for':
+            {'wait_advices_from_itemcreated': 'wait_advices_from_itemcreated', },
          'adviser_may_validate': False,
          'new_state_id': 'itemcreated_waiting_advices',
          },
@@ -133,10 +134,13 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'use_custom_back_transition_title_for': ('validated', ),
          # if () given, a custom transition icon is used for every back transitions
          'only_use_custom_back_transition_icon_for': ('validated', ),
-         'use_custom_transition_title_for': (
+         'use_custom_transition_title_for': {
+            'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices':
             'wait_advices_from_itemcreated__to__proposed_to_internal_reviewer_waiting_advices',
+            'wait_advices_from_proposed_to_administrative_reviewer':
             'wait_advices_from_proposed_to_administrative_reviewer',
-            'wait_advices_from_proposed_to_internal_reviewer', ),
+            'wait_advices_from_proposed_to_internal_reviewer':
+            'wait_advices_from_proposed_to_internal_reviewer', },
          'adviser_may_validate': False,
          'new_state_id': 'proposed_to_internal_reviewer_waiting_advices',
          },
@@ -150,7 +154,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'defined_back_transition_ids': {"validated": "validate"},
          # if () given, a custom transition icon is used for every back transitions
          'only_use_custom_back_transition_icon_for': ("validated", ),
-         'use_custom_transition_title_for': ('wait_advices_from_proposed_to_director', ),
+         'use_custom_transition_title_for': {
+            'wait_advices_from_proposed_to_director': 'wait_advices_proposed_to_finances', },
          'adviser_may_validate': True,
          'new_state_id': 'proposed_to_finance_waiting_advices',
          },
@@ -165,7 +170,8 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'only_use_custom_back_transition_icon_for': ("dummy", ),
          # can not use custom_transition_title for wait_advices_from_proposed_to_director
          # as it is already used in College, see https://support.imio.be/browse/PM-3885
-         'use_custom_transition_title_for': (),
+         'use_custom_transition_title_for': {
+            'wait_advices_from_proposed_to_director': 'wait_advices_from_proposed_to_director', },
          'adviser_may_validate': False,
          'new_state_id': 'proposed_to_director_waiting_advices',
          },

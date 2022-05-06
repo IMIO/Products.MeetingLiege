@@ -303,11 +303,6 @@ msgstr "Validate"
 msgid "validated"
 msgstr "Validated"
 
-#. Default: "Ask advices (reviewers)"
-#. Overrided, see https://support.imio.be/browse/PM-3885
-msgid "wait_advices_from"
-msgstr ""
-
 #. Default: "Ask advices (itemcreated)"
 msgid "wait_advices_from_itemcreated"
 msgstr ""
@@ -320,10 +315,14 @@ msgstr ""
 msgid "wait_advices_from_proposed_to_administrative_reviewer"
 msgstr ""
 
-#. Default: "Ask advices to finances"
+#. Default: "Ask advices (reviewers)"
 msgid "wait_advices_from_proposed_to_director"
 msgstr ""
 
 #. Default: "Ask advices (internal reviewer)"
 msgid "wait_advices_from_proposed_to_internal_reviewer"
+msgstr ""
+
+#. Default: "Ask advices to finances"
+msgid "wait_advices_proposed_to_finances"
 msgstr ""

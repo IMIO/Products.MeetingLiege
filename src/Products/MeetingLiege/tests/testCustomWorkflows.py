@@ -2439,10 +2439,11 @@ class testCustomWorkflows(MeetingLiegeTestCase):
             {'portal_type': {
                 'query': 'MeetingItemBourgmestre'},
              'reviewProcessInfo': {
-                'query': ['{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
-                    self.developers_uid),
-                          '{0}__reviewprocess__proposed_to_cabinet_manager'.format(
-                    self.developers_uid), ]}})
+                'query': [
+                    '{0}__reviewprocess__proposed_to_administrative_reviewer'.format(
+                        self.developers_uid),
+                    '{0}__reviewprocess__proposed_to_cabinet_manager'.format(
+                        self.developers_uid), ]}})
 
         # internal reviewer
         cleanRamCacheFor('Products.PloneMeeting.adapters.query_itemstovalidateofmyreviewergroups')

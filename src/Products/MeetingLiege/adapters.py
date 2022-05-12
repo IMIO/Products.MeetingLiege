@@ -159,7 +159,7 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
          'adviser_may_validate': True,
          'new_state_id': 'proposed_to_finance_waiting_advices',
          },
-     ),
+    ),
     'meeting-config-bourgmestre':
     (
         {'from_states': ('proposed_to_director', ),
@@ -1685,12 +1685,19 @@ class CustomMeetingConfig(MeetingConfig):
         cfg = self.getSelf()
         if cfg.getId() == 'meeting-config-bourgmestre':
             return OrderedDict(
-              [('reviewers', ['proposed_to_director',
-                              'proposed_to_general_manager',
-                              'proposed_to_cabinet_reviewer']),
-               ('internalreviewers', ['proposed_to_internal_reviewer']),
-               ('administrativereviewers', ['proposed_to_administrative_reviewer']),
-               ('creators', ['proposed_to_cabinet_manager'])])
+                [
+                    ('reviewers',
+                     ['proposed_to_director',
+                      'proposed_to_general_manager',
+                      'proposed_to_cabinet_reviewer']),
+                    ('internalreviewers',
+                     ['proposed_to_internal_reviewer']),
+                    ('administrativereviewers',
+                     ['proposed_to_administrative_reviewer']),
+                    ('creators',
+                     ['proposed_to_cabinet_manager'])
+                ]
+            )
 
 
 class CustomToolPloneMeeting(ToolPloneMeeting):

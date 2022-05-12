@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed item pretty link icon `wf_down_finances.png` was displayed on BG items,
+  must only be displayed on College items.
+  [gbastien]
 
 4.2.4 (2022-05-10)
 ------------------

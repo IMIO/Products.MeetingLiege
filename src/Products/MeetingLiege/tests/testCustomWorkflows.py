@@ -2100,6 +2100,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # director may take item back
         self.assertEqual(self.transitions(item), ['backTo_proposed_to_director_from_waiting_advices'])
         self._check_access(item, userIds=['pmObserver1'], read=True, write=False)
+        # when item is back to the director, the wf_down_finances icon is not displayed
+        # this is only displayed in College
+        self.do(item, 'backTo_proposed_to_director_from_waiting_advices')
+        self.assertFalse('wf_down_finances.png' in item.getPrettyLink())
 
     def test_BourgmestreDirectionProcess(self):
         """ """

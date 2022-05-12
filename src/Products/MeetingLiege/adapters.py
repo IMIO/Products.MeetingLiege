@@ -2541,11 +2541,12 @@ class MLItemPrettyLinkAdapter(ItemPrettyLinkAdapter):
                                     domain="PloneMeeting",
                                     context=self.request)))
 
-        # add an icon if item is down the workflow from the finances
+        # add an icon if College item is down the workflow from the finances
         # if item was ever gone the finances and now it is down to the
         # proposingGroup, then it is considered as down the wf from the finances
         # take into account every states before 'validated/proposed_to_finance_waiting_advices'
-        if self.itemState in self.cfg.getItemWFValidationLevels(data='state', only_enabled=True) and \
+        if self.context.portal_type == 'MeetingItemCollege' and \
+           self.itemState in self.cfg.getItemWFValidationLevels(data='state', only_enabled=True) and \
            getLastWFAction(self.context, 'wait_advices_from_proposed_to_director'):
             icons.append(('wf_down_finances.png',
                          translate('icon_help_wf_down_finances',

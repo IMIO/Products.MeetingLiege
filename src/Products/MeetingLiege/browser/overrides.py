@@ -117,7 +117,8 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         legalTextForFDAdvice = self.context.adapted().getLegalTextForFDAdvice().strip()
         if legalTextForFDAdvice:
             body += legalTextForFDAdvice
-        representative = self.context.getCategory(theObject=True).Description().split('|')[1]
+        category = self.context.getCategory(theObject=True)
+        representative = category and category.Description().split('|')[1] or "Monsieur / Madame X"
         body += "<p>Sur proposition de %s,<br></p>" % representative
         body += self.context.getDecision()
         body += self.context.getDecisionSuite()
@@ -126,7 +127,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
                     "du Code de la démocratie locale et de la décentralisation relatifs "\
                     "à la Tutelle, la présente décision et ses pièces justificatives sont "\
-                    "transmises aux Autorités de Tutelle.</p>"
+                    "transmises aux Autorités de Tutelle.</p>"
         return body
 
     def printActeContentForCouncil(self, include_decisionEnd=True, include_observations=True):

@@ -7,6 +7,8 @@ Products.MeetingLiege Changelog
 - Fixed item pretty link icon `wf_down_finances.png` was displayed on BG items,
   must only be displayed on College items.
   [gbastien]
+- Don't fail printActeContentForCollege if no category supplied.
+  [odelaere]
 
 4.2.4 (2022-05-10)
 ------------------

@@ -9,6 +9,9 @@ Products.MeetingLiege Changelog
   [gbastien]
 - Don't fail printActeContentForCollege if no category supplied.
   [odelaere]
+- Bypass `test_pm_SendItemToOtherMCTransitionsTriggeredOnlyWhenAutomaticOrHasMeeting`
+  as item created in `cfg2` is directly `validated`.
+  [gbastien]
 
 4.2.4 (2022-05-10)
 ------------------

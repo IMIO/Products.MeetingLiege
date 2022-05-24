@@ -33,6 +33,9 @@ class testMeetingItem(MeetingLiegeTestCase, pmtmi):
     def test_pm__sendCopyGroupsMailIfRelevant(self):
         """Bypass..."""
 
+    def test_pm_SendItemToOtherMCTransitionsTriggeredOnlyWhenAutomaticOrHasMeeting(self):
+        """Bypass as item created to cfg2 is directly "validated"..."""
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

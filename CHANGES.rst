@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.5 (unreleased)
+4.2.5 (2022-06-17)
 ------------------
 
 - Fixed item pretty link icon `wf_down_finances.png` was displayed on BG items,

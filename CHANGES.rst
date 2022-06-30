@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.2.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed `CustomMeetingItem.mayGenerateFDAdvice`, `False` for an `ItemTemplate`.
+  [gbastien]
 
 4.2.5 (2022-06-17)
 ------------------

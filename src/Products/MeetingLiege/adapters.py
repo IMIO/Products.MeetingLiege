@@ -1075,7 +1075,9 @@ class CustomMeetingItem(MeetingItem):
         '''
         adviceHolder = self.getItemWithFinanceAdvice()
 
-        if adviceHolder.getFinanceAdvice() != '_none_' and \
+        # do not generate if on an advice template
+        if not adviceHolder.isDefinedInTool(item_type='itemtemplate') and \
+           adviceHolder.getFinanceAdvice() != '_none_' and \
             (adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['hidden_during_redaction'] is False or
              self.isCurrentUserInFDGroup(adviceHolder.getFinanceAdvice()) is True or
              adviceHolder.adviceIndex[adviceHolder.getFinanceAdvice()]['advice_editable'] is False):

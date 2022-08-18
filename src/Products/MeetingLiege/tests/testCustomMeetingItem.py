@@ -250,14 +250,14 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         # if we get the reference of other items, it is correct,
         # with pmCreator1 as current user
         meeting.update_item_references()
-        self.assertEqual([item.getItemReference() for item in meeting.get_items(
-                            ordered=True, unrestricted=True)],
+        self.assertEqual([item.getItemReference() for item in
+                          meeting.get_items(ordered=True, unrestricted=True)],
                          ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
         # call update_item_references to show that references may be updated
         # by a user that is not a MeetingManager
         meeting.update_item_references()
-        self.assertEqual([item.getItemReference() for item in meeting.get_items(
-                            ordered=True, unrestricted=True)],
+        self.assertEqual([item.getItemReference() for item in
+                          meeting.get_items(ordered=True, unrestricted=True)],
                          ['development1', 'maintenance_cat_id1', 'development2', 'HOJ.1'])
         self.assertEqual(devItem1.getItemReference(), 'development1')
         # no more in the meeting
@@ -1361,3 +1361,48 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         item = self.create('MeetingItem', category='research')
         indexable_wrapper = IndexableObjectWrapper(item, self.catalog)
         self.assertEqual(indexable_wrapper.category_id, 'research')
+
+    def test_DecisionAnnexAddableInEveryStates(self):
+        """Proposing group members are able to add decision annexes in every states."""
+        cfg = self.meetingConfig
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', decision=self.decisionText)
+        # itemcreated
+        self.addAnnex(item, relatedTo='item_decision')
+        # proposed_to_administrative_reviewer
+        self.do(item, 'proposeToAdministrativeReviewer')
+        self.addAnnex(item, relatedTo='item_decision')
+        self.changeUser('pmAdminReviewer1')
+        self.addAnnex(item, relatedTo='item_decision')
+        # proposed_to_internal_reviewer
+        self.do(item, 'proposeToInternalReviewer')
+        self.addAnnex(item, relatedTo='item_decision')
+        self.changeUser('pmCreator1')
+        self.addAnnex(item, relatedTo='item_decision')
+        # proposed_to_director
+        self.changeUser('pmInternalReviewer1')
+        self.do(item, 'proposeToDirector')
+        self.addAnnex(item, relatedTo='item_decision')
+        self.changeUser('pmCreator1')
+        self.addAnnex(item, relatedTo='item_decision')
+        # validated
+        self.changeUser('pmReviewer1')
+        self.do(item, 'validate')
+        self.addAnnex(item, relatedTo='item_decision')
+        self.changeUser('pmCreator1')
+        self.addAnnex(item, relatedTo='item_decision')
+
+        # in meeting
+        # remove recurring items
+        self._removeConfigObjectsFor(cfg)
+        self.changeUser('pmManager')
+        meeting = self.create('Meeting')
+        self.presentItem(item)
+        self.changeUser('pmCreator1')
+        self.addAnnex(item, relatedTo='item_decision')
+        self.freezeMeeting(meeting, as_manager=True)
+        self.addAnnex(item, relatedTo='item_decision')
+        self.decideMeeting(meeting, as_manager=True)
+        self.addAnnex(item, relatedTo='item_decision')
+        self.closeMeeting(meeting, as_manager=True)
+        self.addAnnex(item, relatedTo='item_decision')

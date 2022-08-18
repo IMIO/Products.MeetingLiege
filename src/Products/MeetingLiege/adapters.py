@@ -1470,6 +1470,9 @@ class CustomMeetingItem(MeetingItem):
         return isReviewer, isInternalReviewer, isAdminReviewer
     MeetingItem._roles_in_context = _roles_in_context
 
+    def _annex_decision_addable_states_after_validation(self, cfg):
+        """Decision annex may be added in every states for every MeetingConfig."""
+        return ["*"]
 
 class CustomMeetingConfig(MeetingConfig):
     '''Adapter that adapts a meetingConfig implementing IMeetingConfig to the

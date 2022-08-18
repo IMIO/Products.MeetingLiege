@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Adapted `MeetingItem._annex_decision_addable_states_after_validation`
+  to make decision annexes addable in every item WF states.
+  [gbastien]
 
 4.2.6 (2022-07-11)
 ------------------

@@ -1730,11 +1730,17 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         def _check_access_council_item(councilItem):
             """ """
             self.assertEqual(councilItem.getProposingGroup(), self.developers_uid)
-            self.assertEqual(councilItem.__ac_local_roles__[self.developers_creators], ['Reader'])
-            self.assertEqual(councilItem.__ac_local_roles__[self.developers_observers], ['Reader'])
-            self.assertEqual(councilItem.__ac_local_roles__[self.developers_administrativereviewers], ['Reader'])
-            self.assertEqual(councilItem.__ac_local_roles__[self.developers_internalreviewers], ['Reader'])
-            self.assertEqual(councilItem.__ac_local_roles__[self.developers_reviewers], ['Reader'])
+            # users have Contributor role as decision annex are addable in every states
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_creators],
+                             ['Reader', 'Contributor'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_observers],
+                             ['Reader'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_administrativereviewers],
+                             ['Reader', 'Contributor'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_internalreviewers],
+                             ['Reader', 'Contributor'])
+            self.assertEqual(councilItem.__ac_local_roles__[self.developers_reviewers],
+                             ['Reader', 'Contributor'])
 
         self.changeUser('admin')
         # add finance groups

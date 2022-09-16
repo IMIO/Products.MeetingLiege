@@ -58,10 +58,8 @@ def _sendWaitingAdvicesItemBackInWFIfNecessary(item):
 def onItemLocalRolesUpdated(item, event):
     """Called after localRoles have been updated on the item.
        Update local_roles regarding :
-       - the matterOfGroups;
-       - access of finance advisers."""
-    if item.portal_type == "MeetingItemBourgmestre":
-        item.adapted()._setBourgmestreGroupsReadAccess()
+       - access of finance advisers;
+       - finance advisers able to add decision annexes on decided items."""
 
     # warning, it is necessary that updateFinanceAdvisersAccess is called last!
     item.adapted().updateFinanceAdvisersAccess(old_local_roles=event.old_local_roles)

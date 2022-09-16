@@ -1396,19 +1396,19 @@ class CustomMeetingItem(MeetingItem):
                 return theObject and \
                     uuidToObject(bg_group_uid(), unrestricted=True) or bg_group_uid()
 
-    def _setBourgmestreGroupsReadAccess(self):
-        """Depending on item's review_state, we need to give Reader role to the proposing group
-           and general manager so it keeps Read access to item when it is managed by the Cabinet."""
-        # only add extra accesses if out of proposingGroup WF
-        # in this case we have more than 1 group managing item
+    def _assign_roles_to_all_groups_managing_item_suffixes(self,
+                                                           cfg,
+                                                           item_state,
+                                                           org_uids,
+                                                           org_uid):
+        """By default, every proposingGroup suffixes get the "Reader" role
+           but we do not want the "observers" to get the "Reader" role."""
         item = self.getSelf()
-        org_uids = self._getAllGroupsManagingItem(item.query_state())
-        if len(org_uids) > 1:
-            item = self.getSelf()
-            for org_uid in org_uids:
-                suffix_roles = {suffix: ['Reader'] for suffix in get_all_suffixes(org_uid)
-                                if suffix != 'observers'}
-                item._assign_roles_to_group_suffixes(org_uid, suffix_roles=suffix_roles)
+        for managing_org_uid in org_uids:
+            suffix_roles = {suffix: ['Reader'] for suffix in
+                            get_all_suffixes(managing_org_uid)
+                            if suffix != 'observers'}
+            item._assign_roles_to_group_suffixes(managing_org_uid, suffix_roles)
 
     def getOfficeManager(self):
         '''

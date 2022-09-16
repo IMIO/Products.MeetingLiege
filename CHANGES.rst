@@ -7,6 +7,10 @@ Products.MeetingLiege Changelog
 - Adapted `MeetingItem._annex_decision_addable_states_after_validation`
   to make decision annexes addable in every item WF states.
   [gbastien]
+- Use new adaptable method
+  `MeetingItem._assign_roles_to_all_groups_managing_item_suffixes`
+  to manage managing groups access to the `Bourgmestre` item.
+  [gbastien]
 
 4.2.6 (2022-07-11)
 ------------------

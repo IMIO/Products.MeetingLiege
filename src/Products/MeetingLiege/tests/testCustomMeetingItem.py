@@ -1406,3 +1406,22 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.addAnnex(item, relatedTo='item_decision')
         self.closeMeeting(meeting, as_manager=True)
         self.addAnnex(item, relatedTo='item_decision')
+
+    def test__roles_in_context(self):
+        """Test especially because it is cached."""
+        self.changeUser('pmCreator1')
+        item = self.create('MeetingItem', decision=self.decisionText)
+        self.assertEqual(item._roles_in_context(), (False, False, False))
+        self.changeUser('pmAdminReviewer1')
+        self.assertEqual(item._roles_in_context(), (False, False, True))
+        self.changeUser('pmInternalReviewer1')
+        self.assertEqual(item._roles_in_context(), (False, True, False))
+        self.changeUser('pmReviewer1')
+        self.assertEqual(item._roles_in_context(), (True, False, False))
+        # check that cachekey is correctly invalidated
+        self._addPrincipalToGroup(
+            'pmReviewer1', '{0}_internalreviewers'.format(item.getProposingGroup()))
+        self.assertEqual(item._roles_in_context(), (True, True, False))
+        self._addPrincipalToGroup(
+            'pmReviewer1', '{0}_administrativereviewers'.format(item.getProposingGroup()))
+        self.assertEqual(item._roles_in_context(), (True, True, True))

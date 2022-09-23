@@ -1455,7 +1455,7 @@ class CustomMeetingItem(MeetingItem):
     def _roles_in_context_cachekey(method, self):
         '''cachekey method for self._roles_in_context.'''
         user_id = get_current_user_id(self.REQUEST)
-        date = get_cachekey_volatile('Products.PloneMeeting.ToolPloneMeeting._users_groups_value')
+        date = get_cachekey_volatile('_users_groups_value')
         return (self.getProposingGroup(), user_id, date)
 
     @ram.cache(_roles_in_context_cachekey)

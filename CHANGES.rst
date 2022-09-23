@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.2.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fixed cachekey for `CustomMeetingItem._roles_in_context`.
+  [gbastien]
 
 4.2.7 (2022-09-22)
 ------------------

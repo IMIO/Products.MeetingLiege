@@ -6,6 +6,8 @@ Products.MeetingLiege Changelog
 
 - Fixed cachekey for `CustomMeetingItem._roles_in_context`.
   [gbastien]
+- Fixed `meetingitem_view.pt` to use `structure` to display groups in charge.
+  [gbastien]
 
 4.2.7 (2022-09-22)
 ------------------

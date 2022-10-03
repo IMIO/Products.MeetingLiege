@@ -10,6 +10,7 @@ from Globals import InitializeClass
 from imio.actionspanel.utils import unrestrictedRemoveGivenObject
 from imio.helpers.cache import cleanRamCacheFor
 from imio.helpers.cache import get_cachekey_volatile
+from imio.helpers.cache import get_plone_groups_for_user
 from imio.helpers.content import safe_encode
 from imio.helpers.content import uuidsToObjects
 from imio.helpers.content import uuidToObject
@@ -636,15 +637,15 @@ class CustomMeetingItem(MeetingItem):
 
     def is_general_manager(self):
         """Is current user a general manager?"""
-        return '{0}_reviewers'.format(gm_group_uid()) in self.tool.get_plone_groups_for_user()
+        return '{0}_reviewers'.format(gm_group_uid()) in get_plone_groups_for_user()
 
     def is_cabinet_manager(self):
         """Is current user a cabinet manager?"""
-        return '{0}_creators'.format(bg_group_uid()) in self.tool.get_plone_groups_for_user()
+        return '{0}_creators'.format(bg_group_uid()) in get_plone_groups_for_user()
 
     def is_cabinet_reviewer(self):
         """Is current user a cabinet reviewer?"""
-        return '{0}_reviewers'.format(bg_group_uid()) in self.tool.get_plone_groups_for_user()
+        return '{0}_reviewers'.format(bg_group_uid()) in get_plone_groups_for_user()
 
     security.declarePublic('showOtherMeetingConfigsClonableToEmergency')
 
@@ -841,9 +842,8 @@ class CustomMeetingItem(MeetingItem):
         financeGroupId = item.adapted().getFinanceGroupUIDForItem()
         # a finance controller may evaluate if advice is actually asked
         # and may not change completeness if advice is currently given or has been given
-        userGroups = self.tool.get_plone_groups_for_user()
         if not financeGroupId or \
-           not '%s_financialcontrollers' % financeGroupId in userGroups:
+           not '%s_financialcontrollers' % financeGroupId in get_plone_groups_for_user():
             return False
 
         # item must be still in a state where the advice can be given
@@ -893,7 +893,7 @@ class CustomMeetingItem(MeetingItem):
            Emergency can be accepted only by financial managers.'''
         # by default, only MeetingManagers can accept or refuse emergency
         if self.tool.isManager(realManagers=True) or \
-           '%s_financialmanagers' % self.getFinanceGroupUIDForItem() in self.tool.get_plone_groups_for_user():
+           '%s_financialmanagers' % self.getFinanceGroupUIDForItem() in get_plone_groups_for_user():
             return True
         return False
 
@@ -1461,8 +1461,7 @@ class CustomMeetingItem(MeetingItem):
     @ram.cache(_roles_in_context_cachekey)
     def _roles_in_context(self):
         ''' '''
-        tool = api.portal.get_tool('portal_plonemeeting')
-        user_plone_groups = tool.get_plone_groups_for_user()
+        user_plone_groups = get_plone_groups_for_user()
         proposingGroupUID = self.getProposingGroup()
         isReviewer = get_plone_group_id(proposingGroupUID, 'reviewers') in user_plone_groups
         isInternalReviewer = get_plone_group_id(proposingGroupUID, 'internalreviewers') in user_plone_groups
@@ -2076,7 +2075,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         if item_state == 'proposed_to_finance_waiting_advices' and not self.tool.isManager(self.cfg):
             # user must be a member of the finance group the advice is asked to
             financeGroupId = self.context.adapted().getFinanceGroupUIDForItem()
-            memberGroups = self.tool.get_plone_groups_for_user()
+            memberGroups = get_plone_groups_for_user()
             for suffix in FINANCE_GROUP_SUFFIXES:
                 financeSubGroupId = get_plone_group_id(financeGroupId, suffix)
                 if financeSubGroupId in memberGroups:
@@ -2438,7 +2437,7 @@ class ItemsToControlCompletenessOfAdapter(CompoundCriterionBaseAdapter):
         if not self.cfg:
             return {}
         groupIds = []
-        userGroups = self.tool.get_plone_groups_for_user()
+        userGroups = get_plone_groups_for_user()
         financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is controller for
@@ -2468,7 +2467,7 @@ class ItemsWithAdviceProposedToFinancialControllerAdapter(CompoundCriterionBaseA
         if not self.cfg:
             return {}
         groupIds = []
-        userGroups = self.tool.get_plone_groups_for_user()
+        userGroups = get_plone_groups_for_user()
         financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is controller for
@@ -2492,7 +2491,7 @@ class ItemsWithAdviceProposedToFinancialReviewerAdapter(CompoundCriterionBaseAda
         if not self.cfg:
             return {}
         groupIds = []
-        userGroups = self.tool.get_plone_groups_for_user()
+        userGroups = get_plone_groups_for_user()
         financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is reviewer for
@@ -2514,7 +2513,7 @@ class ItemsWithAdviceProposedToFinancialManagerAdapter(CompoundCriterionBaseAdap
         if not self.cfg:
             return {}
         groupIds = []
-        userGroups = self.tool.get_plone_groups_for_user()
+        userGroups = get_plone_groups_for_user()
         financial_group_uids = self.tool.finance_group_uids()
         for financeGroup in financial_group_uids:
             # only keep finance groupIds the current user is manager for

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from DateTime import DateTime
+from imio.helpers.cache import get_plone_groups_for_user
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastWFAction
 from plone import api
@@ -57,7 +58,7 @@ class MLAdviceDelaysView(AdviceDelaysView):
 
             # current advice is still addable/editable, a finance manager may change delay for it
             financialManagerGroupId = '%s_financialmanagers' % financeGroupId
-            if financialManagerGroupId not in self.tool.get_plone_groups_for_user():
+            if financialManagerGroupId not in get_plone_groups_for_user():
                 return False
 
         return True

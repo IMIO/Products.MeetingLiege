@@ -8,6 +8,9 @@ Products.MeetingLiege Changelog
   [gbastien]
 - Fixed `meetingitem_view.pt` to use `structure` to display groups in charge.
   [gbastien]
+- `ToolPloneMeeting.get_plone_groups_for_user` is deprecated,
+  use `imio.helpers.cache.get_plone_groups_for_user` instead.
+  [gbastien]
 
 4.2.7 (2022-09-22)
 ------------------

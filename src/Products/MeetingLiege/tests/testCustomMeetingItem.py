@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
+from imio.helpers.cache import get_plone_groups_for_user
 from imio.helpers.content import richtextval
 from plone import api
 from plone.dexterity.utils import createContentInContainer
@@ -1250,7 +1251,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
     def test_ItemTakenOverByFinancesAdviser(self):
         """When item is proposed_to_finance_waiting_advices, item is taken over by finances adviser.
-           There was a bug with ToolPloneMeeting.get_plone_groups_for_user cachekey
+           There was a bug with get_plone_groups_for_user cachekey
            that is why we call it in this test."""
         self.changeUser('admin')
         cfg = self.meetingConfig
@@ -1264,18 +1265,18 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
         # create item with asked finances advice
         self.changeUser('pmCreator1')
-        self.tool.get_plone_groups_for_user()
+        get_plone_groups_for_user()
         item = self.create('MeetingItem')
         financial_group_uids = self.tool.finance_group_uids()
         item.setFinanceAdvice(financial_group_uids[0])
         # send item to finances
         self.proposeItem(item)
         self.changeUser('pmReviewer1')
-        self.tool.get_plone_groups_for_user()
+        get_plone_groups_for_user()
         self.do(item, 'wait_advices_from_proposed_to_director')
         # finances take item over and send item back to director
         self.changeUser('pmFinController')
-        self.tool.get_plone_groups_for_user()
+        get_plone_groups_for_user()
         view = item.restrictedTraverse('@@toggle_item_taken_over_by')
         view.toggle(takenOverByFrom=item.getTakenOverBy())
         self.assertEqual(item.getTakenOverBy(), 'pmFinController')

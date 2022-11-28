@@ -133,8 +133,8 @@ def onAdviceAfterTransition(advice, event):
         advice.advice_hide_during_redaction = True
 
     if newStateId == 'financial_advice_signed':
-        # historize given advice into a version
-        advice.versionate_if_relevant(FINANCE_ADVICE_HISTORIZE_COMMENTS)
+        # historize given advice
+        advice.historize_if_relevant(FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # final state of the wf, make sure advice is no more hidden during redaction
         advice.advice_hide_during_redaction = False

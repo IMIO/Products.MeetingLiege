@@ -11,6 +11,9 @@ Products.MeetingLiege Changelog
 - `ToolPloneMeeting.get_plone_groups_for_user` is deprecated,
   use `imio.helpers.cache.get_plone_groups_for_user` instead.
   [gbastien]
+- Advices is no more using Plone versioning, removed `repositorytool.xml`
+  from `default` profile (migration is managed by `Products.PloneMeeting`).
+  [gbastien]
 
 4.2.7 (2022-09-22)
 ------------------

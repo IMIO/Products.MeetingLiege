@@ -12,7 +12,8 @@ Products.MeetingLiege Changelog
   use `imio.helpers.cache.get_plone_groups_for_user` instead.
   [gbastien]
 - Advices is no more using Plone versioning, removed `repositorytool.xml`
-  from `default` profile (migration is managed by `Products.PloneMeeting`).
+  from `default` profile (migration is managed by `Products.PloneMeeting`),
+  fixed code and tests.
   [gbastien]
 
 4.2.7 (2022-09-22)

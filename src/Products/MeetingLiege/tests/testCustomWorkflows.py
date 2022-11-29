@@ -426,6 +426,8 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # is stopped, and when item is sent back to the finance, advice delay does not
         # start immediatelly because item completeness is automatically set to 'evaluate again'
         # for now delay is started and advice is editable
+        adapter = getAdapter(advice, IImioHistory, 'advice_given')
+        self.assertIsNone(getLastAction(adapter))
         self.do(item, 'backTo_proposed_to_internal_reviewer_from_waiting_advices')
         # finance access is kept when item is sent back to internal reviewer no matter itemAdviceXXXStates
         self.assertTrue(self.hasPermission(View, item))
@@ -433,11 +435,9 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertFalse('proposed_to_internal_reviewer' in cfg.getItemAdviceEditStates())
         self.assertFalse('proposed_to_internal_reviewer' in cfg.getItemAdviceViewStates())
         # advice was historized
-        pr = self.portal.portal_repository
-        self.assertEqual(pr.getHistoryMetadata(advice)._available, [0])
-        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(0)
-        self.assertEqual(retrievedAdvice['metadata']['sys_metadata']['comment'],
-                         ADVICE_GIVEN_HISTORIZED_COMMENT)
+        adapter = getAdapter(advice, IImioHistory, 'advice_given')
+        last_action = getLastAction(adapter)
+        self.assertEqual(last_action['comments'], ADVICE_GIVEN_HISTORIZED_COMMENT)
         # in this case, a specific icon is displayed in the prettyLink
         self.assertTrue('wf_down_finances.png' in item.getPrettyLink())
         # advice delay is no more started and advice is no more editable
@@ -528,11 +528,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.assertEqual(item.query_state(), 'proposed_to_director')
         self.assertEqual(advice.query_state(), 'advice_given')
         self.assertFalse(advice.advice_hide_during_redaction)
-        # when an advice is signed, it is automatically versioned
-        self.assertEqual(pr.getHistoryMetadata(advice)._available, [0, 1])
-        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(1)
-        self.assertEqual(retrievedAdvice['metadata']['sys_metadata']['comment'],
-                         FINANCE_ADVICE_HISTORIZE_COMMENTS)
+        # when an advice is signed, it is automatically historized
+        adapter = getAdapter(advice, IImioHistory, 'advice_given')
+        last_action_signed1 = getLastAction(adapter)
+        self.assertEqual(last_action_signed1['comments'], FINANCE_ADVICE_HISTORIZE_COMMENTS)
         # as there is a finance advice on the item, finance keep read access to the item
         self.assertTrue(self.hasPermission(View, item))
         # now an item with a negative financial advice back to the director
@@ -578,10 +577,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
                                                     'signFinancialAdvice'])
         self.do(advice, 'signFinancialAdvice')
         # each time an advice is signed, it is historized in the advice history
-        self.assertEqual(pr.getHistoryMetadata(advice)._available, [0, 1, 2])
-        retrievedAdvice = pr.getHistoryMetadata(advice).retrieve(2)
-        self.assertEqual(retrievedAdvice['metadata']['sys_metadata']['comment'],
-                         FINANCE_ADVICE_HISTORIZE_COMMENTS)
+        adapter = getAdapter(advice, IImioHistory, 'advice_given')
+        last_action_signed2 = getLastAction(adapter)
+        self.assertNotEqual(last_action_signed1['time'], last_action_signed2['time'])
+        self.assertEqual(last_action_signed2['comments'], FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # this time, the item has been validated automatically
         self.assertEqual(item.query_state(), 'validated')

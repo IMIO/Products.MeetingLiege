@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from DateTime import DateTime
 from imio.helpers.cache import get_plone_groups_for_user
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastWFAction
@@ -12,6 +11,7 @@ from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
 from Products.PloneMeeting.browser.overrides import PMContentHistoryView
 from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
+from Products.PloneMeeting.utils import get_event_field_data
 from zope.component import getAdapter
 
 import time
@@ -181,7 +181,6 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
         Join informations from completeness, workflow and revision histories and
         return them in a list generated in a xls file.
         """
-        pr = api.portal.get_tool('portal_repository')
         results = []
         startTime1 = time.time()
         for brain in brains:
@@ -190,15 +189,14 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             full_history = []
             advice_infos = item.getAdviceDataFor(item)[advice_id]
             advice = advice_infos['given_advice']
-            advice_revisions = []
+            advice_histories = []
             if advice:
-                advice_revisions = [revision for revision in
-                                    getAdapter(advice, IImioHistory, 'revision').getHistory()]
-                # Browse the advice versions and keep their history.
-                for revision in advice_revisions:
-                    historized_advice = pr.retrieve(advice, revision['version_id']).object
-                    wf_history = getAdapter(historized_advice, IImioHistory, 'workflow').getHistory()
-                    full_history.extend(wf_history)
+                advice_histories = [history for history in
+                                    getAdapter(advice, IImioHistory, 'advice_given').getHistory()]
+                wf_history = getAdapter(advice, IImioHistory, 'workflow').getHistory()
+                full_history.extend(wf_history)
+            # older histories first
+            advice_histories.reverse()
             # Keep the completeness history
             full_history.extend(item.completeness_changes_history)
             # Keep the item workflow history.
@@ -247,7 +245,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                                               kept_states,
                                               finance_proposals,
                                               advice_infos,
-                                              advice_revisions)
+                                              advice_histories)
             # Because we don't want a list of list of dict, we append each
             # element of res in results.
             for re in res:
@@ -258,9 +256,8 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
 
         return results
 
-    def _preparePrintableDatas(self, item, kept_states, finance_proposals, advice_infos, advice_revisions):
+    def _preparePrintableDatas(self, item, kept_states, finance_proposals, advice_infos, advice_histories):
         """ Prepare datas needed by the FD synthesis. """
-        pr = api.portal.get_tool('portal_repository')
         pt = api.portal.get_tool('portal_transforms')
         results = []
         res = {}
@@ -277,16 +274,16 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             end_advice = 'OUI'
             for state in kept_states:
                 res['comments'] = ''
-                for revision in advice_revisions:
-                    if DateTime(revision['time']) < state['time']:
-                        advice_object = pr.retrieve(advice, revision['version_id']).object
-                        advice_comment = advice_object.advice_comment
-                        advice_type = advice_object.advice_type
+                for advice_history in advice_histories:
+                    if advice_history['time'] < state['time']:
+                        advice_comment = get_event_field_data(
+                            advice_history["advice_data"], "advice_comment")
+                        advice_type = get_event_field_data(
+                            advice_history["advice_data"], "advice_type")
                         # Must check if a comment was added. If not, there
                         # is no advice_comment object.
                         if advice_comment:
-                            html_comment = advice_comment.output
-                            str_comment = pt.convert('html_to_text', html_comment).getData().strip()
+                            str_comment = pt.convert('html_to_text', advice_comment).getData().strip()
                             res['comments'] = str_comment
                             break
                         else:

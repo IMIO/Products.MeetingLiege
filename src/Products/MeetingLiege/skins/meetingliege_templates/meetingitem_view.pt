@@ -44,7 +44,7 @@
                   <span class="item_attribute_label"
                         i18n:translate="PloneMeeting_label_proposingGroup"></span>:&nbsp;&nbsp;
                   <tal:hasProposingGroup condition="nocall:proposingGroup">
-                    <span tal:content="proposingGroup/Title" />
+                    <span tal:content="structure python: context.displayValue(context.Vocabulary('proposingGroup')[0], proposingGroup.UID())" />
                     <metal:people use-macro="here/@@pm-macros/proposingGroupUsers"/>
                   </tal:hasProposingGroup>
                   <span tal:condition="not:nocall:proposingGroup">-</span>
@@ -55,7 +55,7 @@
                   <span class="item_attribute_label"
                         i18n:translate="PloneMeeting_label_groupsInCharge"></span>:&nbsp;&nbsp;
                   <tal:displayGroupsInCharge condition="groupsInCharge">
-                      <span tal:content="structure python: context.displayValue(context.Vocabulary('groupsInCharge')[0], groupsInCharge)" />
+                      <span tal:content="python: context.displayValue(context.Vocabulary('groupsInCharge')[0], groupsInCharge)" />
                   </tal:displayGroupsInCharge>
                   <span tal:condition="not: groupsInCharge">-</span>
               </div>
@@ -367,7 +367,8 @@
                               parent_tag=null,
                               load_view='@@load_item_assembly_and_signatures',
                               base_url=null,
-                              toggle_type='${toggle_type}');"
+                              toggle_type='${toggle_type}',
+                              sync=false);;initializeItemAttendeesDND();"
            class="collapsible discreet not-auto-collapsible-activable">
           <span class="meeting_attribute_label" i18n:translate="redefinable_assembly_and_signatures">
               <span i18n:name="assembly"
@@ -375,7 +376,7 @@
                     tal:attributes="class class_to_use">
                     <tal:block i18n:translate="title_assembly">Assembly</tal:block>
                     <tal:block condition="isUsingContacts"
-                               content="python:'(' + str(len(context.get_attendees())) + '/' + str(len(meeting.get_attendees())) + ')'">Number of attendees</tal:block>
+                               content="python:'(' + str(len(context.get_attendees())) + '/' + str(len(meeting.get_all_attendees())) + ')'">Number of attendees</tal:block>
               </span>
 
               <a i18n:name="assembly_edit" tal:condition="mayQuickEditItemAssembly" href="manage_item_assembly_form?initial_edit=1" class="link-overlay-pm">
@@ -636,6 +637,11 @@
 
     <tal:comment replace="nothing">Committee observations</tal:comment>
     <tal:field define="fieldName python: 'committeeObservations'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Committee transcript</tal:comment>
+    <tal:field define="fieldName python: 'committeeTranscript'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 

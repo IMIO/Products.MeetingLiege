@@ -15,6 +15,9 @@ Products.MeetingLiege Changelog
   from `default` profile (migration is managed by `Products.PloneMeeting`),
   fixed code and tests.
   [gbastien]
+- Updated `meetingitem_view` regarding changes in `PloneMeeting`
+  (votesResult after motivation or after decision).
+  [gbastien]
 
 4.2.7 (2022-09-22)
 ------------------

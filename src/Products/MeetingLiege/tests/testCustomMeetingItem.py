@@ -127,7 +127,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
                     id='maintenance',
                     title='Maintenance',
                     category_id='maintenance_cat_id')
-        cfg.setUseGroupsAsCategories(False)
+        self._enableField('category')
         cfg.setInsertingMethodsOnAddItem((
             {'insertingMethod': 'on_list_type', 'reverse': '0'},
             {'insertingMethod': 'on_categories', 'reverse': '0'}))
@@ -488,7 +488,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(itemInCouncil2.__ac_local_roles__[financeGroupAdvisersId], ['Reader'])
         # only available transition is 'present', so create a meeting in council to test...
         self.setMeetingConfig(self.meetingConfig2.getId())
-        self.meetingConfig2.setUseGroupsAsCategories(True)
+        self._enableField('category', cfg=self.meetingConfig2, enable=False)
         self.meetingConfig2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups', 'reverse': '0'},))
         self.create('Meeting')
         self.do(itemInCouncil2, 'present')
@@ -1356,8 +1356,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
 
     def test_Index_category_id(self):
         """ """
-        cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(False)
+        self._enableField('category')
         self.changeUser('pmCreator1')
         item = self.create('MeetingItem', category='research')
         indexable_wrapper = IndexableObjectWrapper(item, self.catalog)

@@ -1380,7 +1380,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         '''
         cfg = self.meetingConfig
         cfgId = cfg.getId()
-        cfg.setUseGroupsAsCategories(False)
+        self._enableField('category')
         pg = self.portal.portal_groups
         darGroup = pg.getGroupById(self.developers_administrativereviewers)
         darMembers = darGroup.getMemberIds()
@@ -1751,10 +1751,10 @@ class testCustomWorkflows(MeetingLiegeTestCase):
 
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
-        cfg2.setUseGroupsAsCategories(True)
+        self._enableField('category', cfg=cfg2, enable=False)
         cfg = self.meetingConfig
         cfgId = cfg.getId()
-        cfg2.setUseGroupsAsCategories(True)
+        self._enableField('category', cfg=cfg2, enable=False)
         cfg2.setInsertingMethodsOnAddItem(({'insertingMethod': 'on_proposing_groups',
                                             'reverse': '0'},))
         cfg2.setMeetingConfigsToCloneTo(({'meeting_config': cfgId,
@@ -1885,7 +1885,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
            not accepted, accepted_but_modified or accepted_and_returned,
            delete the Council item that was sent."""
         cfg = self.meetingConfig
-        cfg.setUseGroupsAsCategories(True)
+        self._enableField('category', enable=False)
         cfg2 = self.meetingConfig2
         cfg2Id = cfg2.getId()
         cfg.setMeetingConfigsToCloneTo(({'meeting_config': cfg2Id,

@@ -14,7 +14,7 @@ class testCustomMeeting(MeetingLiegeTestCase):
     """
 
     def test_GetPrintableItemsByCategoryWithoutCategories(self):
-        self.meetingConfig.setUseGroupsAsCategories(False)
+        self._enableField('category')
         meetingConfigCouncil = self.meetingConfig2.getId()
         self.changeUser('pmManager')
         self.meetingConfig.setInsertingMethodsOnAddItem(

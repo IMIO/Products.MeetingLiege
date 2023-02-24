@@ -18,6 +18,8 @@ Products.MeetingLiege Changelog
 - Updated `meetingitem_view` regarding changes in `PloneMeeting`
   (votesResult after motivation or after decision).
   [gbastien]
+- Adapted code regarding removal of `MeetingConfig.useGroupsAsCategories`.
+  [gbastien]
 
 4.2.7 (2022-09-22)
 ------------------

@@ -266,6 +266,7 @@ collegeMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'suffix_proposing_group_creators',
                                                   'suffix_proposing_group_administrativereviewers')
 collegeMeeting.usedItemAttributes = ['budgetInfos',
+                                     'category',
                                      'observations',
                                      'description',
                                      'detailedDescription',
@@ -532,7 +533,6 @@ collegeMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},
                                             {'insertingMethod': 'on_other_mc_to_clone_to',
                                              'reverse': '0'}, )
-collegeMeeting.useGroupsAsCategories = False
 collegeMeeting.recurringItems = [
     RecurringItemDescriptor(
         id='recurringagenda1',
@@ -668,6 +668,7 @@ councilMeeting.itemAnnexConfidentialVisibleFor = ('configgroup_budgetimpactedito
                                                   'suffix_proposing_group_observers',
                                                   'suffix_proposing_group_creators', )
 councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'category',
                                      'description',
                                      'detailedDescription',
                                      'observations',
@@ -746,7 +747,6 @@ councilMeeting.powerObservers = deepcopy(collegeMeeting.powerObservers)
 councilMeeting.podTemplates = councilTemplates
 councilMeeting.insertingMethodsOnAddItem = ({'insertingMethod': 'on_categories',
                                              'reverse': '0'},)
-councilMeeting.useGroupsAsCategories = False
 councilMeeting.meetingUsers = []
 councilMeeting.recurringItems = [
     RecurringItemDescriptor(

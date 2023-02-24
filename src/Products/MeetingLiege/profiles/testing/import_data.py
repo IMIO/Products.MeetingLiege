@@ -152,6 +152,7 @@ bourgmestreMeeting.recordItemHistoryStates = []
 bourgmestreMeeting.maxShownMeetings = 5
 bourgmestreMeeting.maxDaysDecisions = 60
 bourgmestreMeeting.usedItemAttributes = [
+    'category',
     'budgetInfos',
     'observations',
     'privacy',
@@ -160,7 +161,6 @@ bourgmestreMeeting.usedItemAttributes = [
 bourgmestreMeeting.insertingMethodsOnAddItem = (
     {'insertingMethod': 'at_the_end',
      'reverse': '0'}, )
-bourgmestreMeeting.useGroupsAsCategories = False
 bourgmestreMeeting.useAdvices = True
 bourgmestreMeeting.selectableAdvisers = []
 bourgmestreMeeting.itemAdviceStates = []

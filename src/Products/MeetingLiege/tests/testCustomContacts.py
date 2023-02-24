@@ -20,7 +20,7 @@ class testCustomContacts(MeetingLiegeTestCase):
         new_org = self.create('organization', id='new_org', title=u'New org', acronym='NO1')
         new_org_id = new_org.getId()
         new_org_uid = new_org.UID()
-        cfg.setUseGroupsAsCategories(False)
+        self._enableField('category')
         self._select_organization(new_org_uid)
         self.assertTrue(new_org_uid in cfg.listActiveOrgsForArchivingRefs())
         cfg.setArchivingRefs((

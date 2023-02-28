@@ -76,6 +76,7 @@ councilMeeting.id = 'meeting-config-council'
 councilMeeting.isDefault = False
 councilMeeting.shortName = 'Council'
 councilMeeting.usedItemAttributes = ['budgetInfos',
+                                     'category',
                                      'labelForCouncil',
                                      'observations',
                                      'privacy',

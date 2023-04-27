@@ -7,7 +7,7 @@ from plone import api
 from plone.memoize.view import memoize_contextless
 from Products.MeetingLiege import logger
 from Products.PloneMeeting.browser.advicechangedelay import AdviceDelaysView
-from Products.PloneMeeting.browser.overrides import BaseActionsPanelView
+from Products.PloneMeeting.browser.overrides import AdviceActionsPanelView
 from Products.PloneMeeting.browser.overrides import PMContentHistoryView
 from Products.PloneMeeting.browser.views import FolderDocumentGenerationHelperView
 from Products.PloneMeeting.browser.views import ItemDocumentGenerationHelperView
@@ -17,7 +17,7 @@ from zope.component import getAdapter
 import time
 
 
-class MLAdviceActionsPanelView(BaseActionsPanelView):
+class MLAdviceActionsPanelView(AdviceActionsPanelView):
     """
       Specific actions displayed on a meetingadvice.
     """

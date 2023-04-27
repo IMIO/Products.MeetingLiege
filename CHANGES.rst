@@ -6,7 +6,9 @@ Products.MeetingLiege Changelog
 
 - Fixed translation of `Data that will be used on new item` on `meetingitem_view.pt`.
   [gbastien]
-
+- Fixed `MLAdviceActionsPanelView` that inherits from `AdviceActionsPanelView` and
+  not `BaseActionsPanelView` so we get the `renderOwnDeleteWithComments`.
+  [gbastien]
 
 4.2.8 (2023-03-20)
 ------------------

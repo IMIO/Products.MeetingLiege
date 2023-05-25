@@ -26,6 +26,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_InitFieldsWhenItemSentToCouncil(self):
         '''When an item is sent from College to Council, fields 'title' and 'privacy'
            are initialized from what is defined on the College item.'''
+        self._enableField('otherMeetingConfigsClonableToFieldLabelForCouncil')
         # create a college item
         self.changeUser('pmManager')
         item = self.create('MeetingItem')
@@ -53,6 +54,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
            - decisionEnd;
            - toDiscuss.
         '''
+        self._enableField('otherMeetingConfigsClonableToFieldLabelForCouncil')
         # create a college item
         self.changeUser('pmManager')
         item = self.create('MeetingItem')

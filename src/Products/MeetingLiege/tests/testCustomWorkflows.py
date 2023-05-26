@@ -1798,6 +1798,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         """While an item in the council is set to 'delayed', it is sent
            in 'itemcreated' state back to the College and ready to process
            back to the council."""
+        self._enableField('otherMeetingConfigsClonableToFieldLabelForCouncil')
         cfg = self.meetingConfig
         cfgId = cfg.getId()
         cfg2 = self.meetingConfig2
@@ -1827,6 +1828,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         """While an item in the council is set to 'delayed', it is sent
            in 'validated' state back to the College and ready to process
            back to the council."""
+        self._enableField('otherMeetingConfigsClonableToFieldLabelForCouncil')
         cfg = self.meetingConfig
         cfgId = cfg.getId()
         cfg2 = self.meetingConfig2

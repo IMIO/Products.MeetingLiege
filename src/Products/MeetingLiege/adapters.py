@@ -55,6 +55,7 @@ from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
 from Products.PloneMeeting.adapters import ItemPrettyLinkAdapter
 from Products.PloneMeeting.adapters import MeetingPrettyLinkAdapter
 from Products.PloneMeeting.adapters import query_user_groups_cachekey
+from Products.PloneMeeting.config import MEETING_REMOVE_MOG_WFA
 from Products.PloneMeeting.config import NOT_GIVEN_ADVICE_VALUE
 from Products.PloneMeeting.config import PMMessageFactory as _
 from Products.PloneMeeting.config import READER_USECASES
@@ -101,7 +102,8 @@ keptWfAdaptations = (
     'return_to_proposing_group',
     'waiting_advices',
     'waiting_advices_proposing_group_send_back',
-    'waiting_advices_adviser_send_back')
+    'waiting_advices_adviser_send_back',
+    MEETING_REMOVE_MOG_WFA)
 # add our own wfAdaptations
 ownWfAdaptations = ('returned', 'accepted_and_returned', 'sent_to_council_emergency')
 customWfAdaptations = keptWfAdaptations + ownWfAdaptations

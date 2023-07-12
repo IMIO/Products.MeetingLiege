@@ -6,6 +6,7 @@
 #
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
+from Products.PloneMeeting.config import MEETING_REMOVE_MOG_WFA
 from Products.PloneMeeting.tests.testWFAdaptations import testWFAdaptations as pmtwfa
 
 
@@ -20,6 +21,7 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
                            'item_validation_no_validate_shortcuts',
                            'item_validation_shortcuts',
                            'mark_not_applicable',
+                           MEETING_REMOVE_MOG_WFA,
                            'no_decide',
                            'no_freeze',
                            'no_publication',

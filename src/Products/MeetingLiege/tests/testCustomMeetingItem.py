@@ -1322,8 +1322,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
     def test_TreasuryCopyGroup(self):
         """TREASURY_GROUP_ID 'incopy' suffix is set in copy of items
            having finances advice when at least validated."""
-        cfg = self.meetingConfig
-        cfg.setUseCopies(True)
+        self._enableField('copyGroups')
         self.changeUser('admin')
         self._createFinanceGroups()
         self._createRHGroups()

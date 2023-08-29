@@ -80,8 +80,8 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'observations',
                                      'privacy',
                                      'motivation',
-                                     'itemIsSigned']
-
+                                     'itemIsSigned',
+                                     'copyGroups']
 councilMeeting.itemConditionsInterface = ml_import_data.councilMeeting.itemConditionsInterface
 councilMeeting.itemActionsInterface = ml_import_data.councilMeeting.itemActionsInterface
 councilMeeting.meetingConditionsInterface = ml_import_data.councilMeeting.meetingConditionsInterface
@@ -157,7 +157,8 @@ bourgmestreMeeting.usedItemAttributes = [
     'observations',
     'privacy',
     'motivation',
-    'itemIsSigned']
+    'itemIsSigned',
+    'copyGroups']
 bourgmestreMeeting.insertingMethodsOnAddItem = (
     {'insertingMethod': 'at_the_end',
      'reverse': '0'}, )
@@ -168,7 +169,6 @@ bourgmestreMeeting.itemAdviceEditStates = []
 bourgmestreMeeting.itemAdviceViewStates = []
 bourgmestreMeeting.itemDecidedStates = [
     'accepted', 'refused', 'delayed', 'marked_not_applicable']
-bourgmestreMeeting.useCopies = True
 bourgmestreMeeting.useVotes = False
 bourgmestreMeeting.recurringItems = []
 bourgmestreMeeting.itemTemplates = []

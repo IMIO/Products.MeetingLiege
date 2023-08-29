@@ -282,7 +282,8 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'motivation',
                                      'decisionSuite',
                                      'decisionEnd',
-                                     'textCheckList', ]
+                                     'textCheckList',
+                                     'copyGroups']
 collegeMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
                                         'assembly_excused',
@@ -518,7 +519,6 @@ collegeMeeting.transitionReinitializingDelays = 'backToProposedToDirector'
 collegeMeeting.defaultAdviceHiddenDuringRedaction = ['meetingadvice', 'meetingadvicefinances']
 collegeMeeting.enforceAdviceMandatoriness = False
 collegeMeeting.enableAdviceInvalidation = False
-collegeMeeting.useCopies = True
 collegeMeeting.selectableCopyGroups = [orgs[0].getIdSuffixed('reviewers'),
                                        orgs[1].getIdSuffixed('reviewers'),
                                        orgs[2].getIdSuffixed('reviewers'),
@@ -675,7 +675,8 @@ councilMeeting.usedItemAttributes = ['budgetInfos',
                                      'privacy',
                                      'motivation',
                                      'decisionSuite',
-                                     'decisionEnd']
+                                     'decisionEnd',
+                                     'copyGroups']
 councilMeeting.usedMeetingAttributes = ['signatures',
                                         'assembly',
                                         'assembly_excused',
@@ -732,7 +733,6 @@ councilMeeting.useAdvices = False
 councilMeeting.enforceAdviceMandatoriness = False
 councilMeeting.enableAdviceInvalidation = False
 councilMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
-councilMeeting.useCopies = True
 councilMeeting.selectableCopyGroups = [orgs[0].getIdSuffixed('reviewers'),
                                        orgs[1].getIdSuffixed('reviewers'),
                                        orgs[2].getIdSuffixed('reviewers'),

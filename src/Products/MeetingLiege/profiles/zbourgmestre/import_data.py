@@ -80,7 +80,7 @@ bourgmestreMeeting.itemAnnexConfidentialVisibleFor = (
     'suffix_proposing_group_reviewers',
     'suffix_proposing_group_creators',
     'suffix_proposing_group_administrativereviewers')
-bourgmestreMeeting.usedItemAttributes = ['observations', ]
+bourgmestreMeeting.usedItemAttributes = ['observations', 'copyGroups']
 bourgmestreMeeting.usedMeetingAttributes = ['signatures', 'assembly', 'observations', ]
 bourgmestreMeeting.recordMeetingHistoryStates = []
 bourgmestreMeeting.xhtmlTransformFields = ()
@@ -274,7 +274,6 @@ bourgmestreMeeting.meetingPowerObserversStates = ('closed', 'created', )
 bourgmestreMeeting.powerAdvisersGroups = ()
 bourgmestreMeeting.itemBudgetInfosStates = ()
 bourgmestreMeeting.enableLabels = True
-bourgmestreMeeting.useCopies = True
 bourgmestreMeeting.hideItemHistoryCommentsToUsersOutsideProposingGroup = True
 bourgmestreMeeting.selectableCopyGroups = []
 bourgmestreMeeting.podTemplates = bourgmestreTemplates

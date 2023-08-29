@@ -9,6 +9,8 @@ Products.MeetingLiege Changelog
 - Fixed `MLAdviceActionsPanelView` that inherits from `AdviceActionsPanelView` and
   not `BaseActionsPanelView` so we get the `renderOwnDeleteWithComments`.
   [gbastien]
+- Adapted code as `MeetingConfig.useCopies` field was removed.
+  [gbastien]
 
 4.2.8 (2023-03-20)
 ------------------

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.9 (unreleased)
+4.2.9 (2023-10-05)
 ------------------
 
 - Fixed translation of `Data that will be used on new item` on `meetingitem_view.pt`.

@@ -1,6 +1,12 @@
 Products.MeetingLiege Changelog
 ===============================
 
+4.2.10 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 4.2.9 (2023-10-05)
 ------------------
 

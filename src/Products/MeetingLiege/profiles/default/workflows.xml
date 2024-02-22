@@ -9,13 +9,11 @@
  <object name="meetingitemcollegeliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingitemcouncilliege_workflow" meta_type="Workflow" remove="True"/>
 
- <!-- meetingadviceliege_workflow, first remove then re-apply so workflow
-      is correct regarding workflow adaptations... -->
  <object name="meetingadviceliege_workflow" meta_type="Workflow" remove="True"/>
  <object name="meetingadviceliege_workflow" meta_type="Workflow"/>
- <bindings>
+ <!--bindings>
   <type type_id="meetingadvicefinances">
      <bound-workflow workflow_id="meetingadviceliege_workflow" />
   </type>
- </bindings>
+ </bindings-->
 </object>

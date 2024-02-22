@@ -803,23 +803,6 @@ class CustomMeetingItem(MeetingItem):
             return False
         return True
 
-    def _advicePortalTypeForAdviser(self, org_uid):
-        """Return the meetingadvicefinances for financial groups, meetingadvice for others."""
-        financial_group_uids = self.tool.finance_group_uids()
-        if org_uid in financial_group_uids:
-            return "meetingadvicefinances"
-        else:
-            return "meetingadvice"
-
-    def _adviceTypesForAdviser(self, meeting_advice_portal_type):
-        """Return the advice types (positive, negative, ...) for given p_meeting_advice_portal_type.
-           By default we always use every MeetingConfig.usedAdviceTypes but this is useful
-           when using several portal_types for meetingadvice and some may use particular advice types."""
-        if meeting_advice_portal_type == 'meetingadvice':
-            return [t for t in self.cfg.getUsedAdviceTypes() if not t.endswith('_finance')]
-        else:
-            return [t for t in self.cfg.getUsedAdviceTypes() if t.endswith('_finance')]
-
     def _sendAdviceToGiveToGroup(self, org_uid):
         """Do not send an email to FINANCE_GROUP_IDS."""
         financial_group_uids = self.tool.finance_group_uids()
@@ -1662,11 +1645,6 @@ class CustomMeetingConfig(MeetingConfig):
             infos.update(finance_infos)
         return infos
 
-    def extraAdviceTypes(self):
-        '''See doc in interfaces.py.'''
-        return ("positive_finance", "positive_with_remarks_finance",
-                "negative_finance", "not_required_finance")
-
     def _adviceConditionsInterfaceFor(self, advice_obj):
         '''See doc in interfaces.py.'''
         if advice_obj.portal_type == 'meetingadvicefinances':
@@ -1774,6 +1752,11 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
                 itemWorkflow=itemWorkflow)
             return True
         return False
+
+    def extraAdviceTypes(self):
+        '''See doc in interfaces.py.'''
+        return ("positive_finance", "positive_with_remarks_finance",
+                "negative_finance", "not_required_finance")
 
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):

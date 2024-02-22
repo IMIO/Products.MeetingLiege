@@ -137,7 +137,8 @@ def onAdviceAfterTransition(advice, event):
         advice.historize_if_relevant(FINANCE_ADVICE_HISTORIZE_COMMENTS)
 
         # final state of the wf, make sure advice is no more hidden during redaction
-        advice.advice_hide_during_redaction = False
+        # XXX managed by ToolPloneMeeting.advisersConfig.show_advice_on_final_wf_transition
+        # advice.advice_hide_during_redaction = False
         # if item was still in state 'proposed_to_finance_waiting_advices', it is automatically validated
         # and a specific message is added to the wf history regarding this
         # validate or send the item back to director depending on advice_type

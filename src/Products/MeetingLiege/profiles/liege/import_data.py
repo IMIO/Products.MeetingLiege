@@ -777,3 +777,14 @@ councilMeeting.category_group_activated_attrs = {
 data = PloneMeetingConfiguration(meetingFolderTitle='Mes séances',
                                  meetingConfigs=(collegeMeeting, councilMeeting),
                                  orgs=orgs)
+data.advisersConfig = (
+    {'advice_types': ['positive_finance',
+                      'positive_with_remarks_finance',
+                      'negative_finance',
+                      'not_required_finance'],
+     'base_wf': 'meetingadviceliege_workflow',
+     'default_advice_type': 'positive_finance',
+     'org_uids': [dfcompta.id, dfcontrol.id],
+     'portal_type': 'meetingadvicefinances',
+     'show_advice_on_final_wf_transition': '1',
+     'wf_adaptations': []},)

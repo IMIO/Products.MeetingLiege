@@ -49,6 +49,7 @@ from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowCon
 from Products.MeetingLiege.utils import bg_group_uid
 from Products.MeetingLiege.utils import finance_group_uids
 from Products.MeetingLiege.utils import gm_group_uid
+from Products.PloneMeeting.utils import isPowerObserverForCfg
 from Products.MeetingLiege.utils import not_copy_group_uids
 from Products.MeetingLiege.utils import treasury_group_cec_uid
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
@@ -725,7 +726,7 @@ class CustomMeetingItem(MeetingItem):
         if self.__old_pm_show_budget_infos():
             tool = api.portal.get_tool('portal_plonemeeting')
             cfg = tool.getMeetingConfig(self)
-            if not tool.isPowerObserverForCfg(cfg, power_observer_types=['restrictedpowerobservers']):
+            if not isPowerObserverForCfg(cfg, power_observer_types=['restrictedpowerobservers']):
                 return True
     MeetingItem.show_budget_infos = show_budget_infos
 
@@ -771,9 +772,9 @@ class CustomMeetingItem(MeetingItem):
                             'finance_advice_suspended_because_item_sent_back_to_proposing_group',
                             domain="PloneMeeting",
                             context=item.REQUEST)}
-        return {'displayDefaultComplementaryMessage': True,
-                'displayAdviceReviewState': True,
-                'customAdviceMessage': None}
+        res = self.context.getCustomAdviceMessageFor(advice)
+        res['displayAdviceReviewState'] = True
+        return res
 
     def getFinanceGroupUIDForItem(self, checkAdviceIndex=False):
         '''Return the finance group UID the advice is asked

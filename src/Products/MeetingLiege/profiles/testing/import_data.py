@@ -62,9 +62,7 @@ collegeMeeting.itemPositiveDecidedStates = ['accepted', 'accepted_but_modified']
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
 collegeMeeting.itemCopyGroupsStates = ['validated']
-collegeMeeting.usedAdviceTypes = ('positive_finance', 'positive_with_remarks_finance',
-                                  'negative_finance', 'not_required_finance',
-                                  'positive', 'positive_with_remarks', 'negative', 'nil')
+collegeMeeting.usedAdviceTypes = ('positive', 'positive_with_remarks', 'negative', 'nil')
 # Conseil communal
 councilMeeting = deepcopy(pm_import_data.meetingPga)
 councilMeeting.id = 'meeting-config-council'

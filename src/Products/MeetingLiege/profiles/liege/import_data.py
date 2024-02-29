@@ -501,9 +501,7 @@ collegeMeeting.powerObservers = (
 
 collegeMeeting.meetingAppDefaultView = 'searchmyitems'
 collegeMeeting.useAdvices = True
-collegeMeeting.usedAdviceTypes = ('positive_finance', 'positive_with_remarks_finance',
-                                  'negative_finance', 'not_required_finance',
-                                  'positive', 'positive_with_remarks', 'negative', 'nil')
+collegeMeeting.usedAdviceTypes = ('positive', 'positive_with_remarks', 'negative', 'nil')
 collegeMeeting.itemAdviceStates = ('itemcreated_waiting_advices',
                                    'proposed_to_internal_reviewer_waiting_advices')
 collegeMeeting.itemAdviceEditStates = ('itemcreated_waiting_advices',

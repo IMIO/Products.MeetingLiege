@@ -1001,10 +1001,8 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         financialAdvice = item.getFinanceAdvice()
         adviceData = item.getAdviceDataFor(item, financialAdvice)
-        res['comment'] = 'comment' in adviceData\
-            and safe_encode(adviceData['comment']) or ''
-        advice_id = 'advice_id' in adviceData\
-            and adviceData['advice_id'] or ''
+        res['comment'] = safe_encode(adviceData.get('comment') or '')
+        advice_id = adviceData.get('advice_id')
         signature_event = advice_id and getLastWFAction(getattr(item, advice_id), 'signFinancialAdvice') or ''
         res['out_of_financial_dpt'] = 'time' in signature_event and signature_event['time'] or ''
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\

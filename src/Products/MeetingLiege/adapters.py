@@ -49,7 +49,6 @@ from Products.MeetingLiege.interfaces import IMeetingItemCouncilLiegeWorkflowCon
 from Products.MeetingLiege.utils import bg_group_uid
 from Products.MeetingLiege.utils import finance_group_uids
 from Products.MeetingLiege.utils import gm_group_uid
-from Products.PloneMeeting.utils import isPowerObserverForCfg
 from Products.MeetingLiege.utils import not_copy_group_uids
 from Products.MeetingLiege.utils import treasury_group_cec_uid
 from Products.PloneMeeting.adapters import CompoundCriterionBaseAdapter
@@ -75,6 +74,7 @@ from Products.PloneMeeting.model.adaptations import _addDecidedState
 from Products.PloneMeeting.model.adaptations import _addIsolatedState
 from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
 from Products.PloneMeeting.utils import get_current_user_id
+from Products.PloneMeeting.utils import isPowerObserverForCfg
 from Products.PloneMeeting.utils import org_id_to_uid
 from Products.PloneMeeting.workflows.advice import MeetingAdviceWorkflowActions
 from Products.PloneMeeting.workflows.advice import MeetingAdviceWorkflowConditions

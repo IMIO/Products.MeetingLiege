@@ -38,7 +38,7 @@ class testCustomContacts(MeetingLiegeTestCase):
 
         with self.assertRaises(BeforeDeleteException) as cm:
             own_org.manage_delObjects([new_org_id])
-        self.assertEquals(cm.exception.message, 'can_not_delete_meetinggroup_archivingrefs')
+        self.assertEqual(cm.exception.message, 'can_not_delete_meetinggroup_archivingrefs')
         cfg.setArchivingRefs((
             {'active': '1',
              'restrict_to_groups': [],

@@ -263,10 +263,10 @@ class testCustomAdvices(MeetingLiegeTestCase):
                'advice_observations': richtextval(u'<p>My observation vendors</p>')})
         finance_keys = vocab(finance_advice).by_value.keys()
         finance_keys.sort()
-        self.assertEquals(finance_keys,
-                          ['negative_finance', 'not_required_finance',
-                           'positive_finance', 'positive_with_remarks_finance'])
+        self.assertEqual(finance_keys,
+                         ['negative_finance', 'not_required_finance',
+                          'positive_finance', 'positive_with_remarks_finance'])
         vendors_keys = vocab(vendors_advice).by_value.keys()
         vendors_keys.sort()
-        self.assertEquals(vendors_keys,
-                          ['negative', 'nil', 'positive', 'positive_with_remarks'])
+        self.assertEqual(vendors_keys,
+                         ['negative', 'nil', 'positive', 'positive_with_remarks'])

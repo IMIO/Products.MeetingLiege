@@ -175,6 +175,9 @@ class MeetingLiegeTestingHelpers(PloneMeetingTestingHelpers):
                 select_org_for_function(org_uid, 'financialcontrollers')
                 select_org_for_function(org_uid, 'financialmanagers')
                 select_org_for_function(org_uid, 'financialreviewers')
+        # configure especially advisersConfig
+        initializer.profileData.advisersConfig = liege_import_data.data.advisersConfig
+        initializer._init_tool(force=True)
         # clean forever cache on utils finance_group_uids
         cleanForeverCache()
 

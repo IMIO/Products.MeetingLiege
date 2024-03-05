@@ -4,22 +4,12 @@
 #
 
 from plone.app.testing.bbb import _createMemberarea
-from Products.MeetingLiege.adapters import customWfAdaptations
-from Products.MeetingLiege.adapters import LIEGE_WAITING_ADVICES_FROM_STATES
 from Products.MeetingLiege.config import PROJECTNAME
 from Products.MeetingLiege.profiles.zbourgmestre import import_data as bg_import_data
 from Products.MeetingLiege.testing import ML_TESTING_PROFILE_FUNCTIONAL
 from Products.MeetingLiege.tests.helpers import MeetingLiegeTestingHelpers
 from Products.PloneMeeting.exportimport.content import ToolInitializer
-from Products.PloneMeeting.MeetingConfig import MeetingConfig
-from Products.PloneMeeting.model import adaptations
 from Products.PloneMeeting.tests.PloneMeetingTestCase import PloneMeetingTestCase
-
-
-# monkey patch the MeetingConfig.wfAdaptations again because it is done in
-# adapters.py but overrided by Products.MeetingCommunes here in the tests...
-MeetingConfig.wfAdaptations += customWfAdaptations
-adaptations.WAITING_ADVICES_FROM_STATES = LIEGE_WAITING_ADVICES_FROM_STATES
 
 
 class MeetingLiegeTestCase(PloneMeetingTestCase, MeetingLiegeTestingHelpers):

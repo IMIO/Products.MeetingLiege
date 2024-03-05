@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.2.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Adapted code for `ToolPloneMeeting.advisersConfig`, added upgrade step to 4201.
+  [gbastien]
 
 4.2.9 (2023-10-05)
 ------------------

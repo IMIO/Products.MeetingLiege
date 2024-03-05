@@ -2,6 +2,7 @@
 
 from Products.CMFCore.permissions import setDefaultRoles
 from Products.PloneMeeting import config as PMconfig
+from Products.PloneMeeting.config import ADVICE_STATES_MAPPING
 
 
 __author__ = """Gauthier Bastien <g.bastien@imio.be>"""
@@ -53,31 +54,15 @@ FINANCE_GROUP_SUFFIXES = ('financialcontrollers',
                           'financialreviewers',
                           'financialmanagers')
 
-# LIEGEMEETINGREVIEWERS = {
-#     'meetingitembourgmestre_workflow': OrderedDict(
-#         [('reviewers', ['proposed_to_director', 'proposed_to_general_manager', 'proposed_to_cabinet_reviewer']),
-#          ('internalreviewers', ['proposed_to_internal_reviewer']),
-#          ('administrativereviewers', ['proposed_to_administrative_reviewer']),
-#          ('creators', ['proposed_to_cabinet_manager'])]),
-#     'meetingitemcollegeliege_workflow': OrderedDict(
-#         [('reviewers', ['proposed_to_director']),
-#          ('internalreviewers', ['proposed_to_internal_reviewer']),
-#          ('administrativereviewers', ['proposed_to_administrative_reviewer'])]),
-# }
-# PMconfig.MEETINGREVIEWERS.update(LIEGEMEETINGREVIEWERS)
-
-LIEGE_ADVICE_STATES_ALIVE = ('advice_under_edit',
-                             'proposed_to_financial_controller',
-                             'proposed_to_financial_reviewer',
-                             'proposed_to_financial_manager',
-                             'financial_advice_signed', )
-LIEGE_ADVICE_STATES_ENDED = ('advice_given', )
-PMconfig.ADVICE_STATES_ALIVE = LIEGE_ADVICE_STATES_ALIVE
-PMconfig.ADVICE_STATES_ENDED = LIEGE_ADVICE_STATES_ENDED
+ADVICE_STATES_MAPPING.update(
+    {'proposed_to_financial_controller': 'financialcontrollers',
+     'proposed_to_financial_reviewer': 'financialreviewers',
+     'proposed_to_financial_manager': 'financialmanagers',
+     'financial_advice_signed': 'financialmanagers',
+     })
 
 ITEM_MAIN_INFOS_HISTORY = 'main_infos_history'
 
-# finance groups ids
 FINANCE_GROUP_IDS = ['df-contrale', 'df-comptabilita-c-et-audit-financier', ]
 
 TREASURY_GROUP_ID = 'df-controle-tresorerie'

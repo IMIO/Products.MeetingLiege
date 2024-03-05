@@ -250,7 +250,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmReviewer2 is adviser for vendors
         self.changeUser('pmReviewer2')
         advice = createContentInContainer(item,
-                                          'meetingadvice',
+                                          item.adapted()._advicePortalTypeForAdviser(self.vendors_uid),
                                           **{'advice_group': self.vendors_uid,
                                              'advice_type': u'positive',
                                              'advice_comment': richtextval(u'My comment vendors')})
@@ -293,7 +293,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # pmAdviser1 is adviser for developers
         self.changeUser('pmAdviser1')
         createContentInContainer(item,
-                                 'meetingadvice',
+                                 item.adapted()._advicePortalTypeForAdviser(self.developers_uid),
                                  **{'advice_group': self.developers_uid,
                                     'advice_type': u'positive',
                                     'advice_comment': richtextval(u'My comment developers')})
@@ -405,7 +405,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # give the advice
         advice = createContentInContainer(
             item,
-            'meetingadvicefinances',
+            item.adapted()._advicePortalTypeForAdviser(financial_group_uids[0]),
             **{'advice_group': financial_group_uids[0],
                'advice_type': u'positive_with_remarks_finance',
                'advice_comment': richtextval(u'<p>My comment finance</p>'),
@@ -479,7 +479,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.do(advice, 'proposeToFinancialReviewer')
         # can no more edit, but still view
         self.assertTrue(self.hasPermission(View, advice))
-        self.assertTrue(not self.hasPermission(ModifyPortalContent, advice))
+        self.assertFalse(self.hasPermission(ModifyPortalContent, advice))
         # no more addable/editable
         toAdd, toEdit = item.getAdvicesGroupsInfosForUser()
         self.assertTrue(not toAdd and not toEdit)
@@ -678,7 +678,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         changeCompleteness()
         # give the advice
         advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
+                                          item.adapted()._advicePortalTypeForAdviser(financial_group_uids[0]),
                                           **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': richtextval(u'<p>My comment finance</p>'),
@@ -750,7 +750,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         item.setCompleteness('completeness_complete')
         item._update_after_edit()
         advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
+                                          item.adapted()._advicePortalTypeForAdviser(financial_group_uids[0]),
                                           **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': richtextval(u'My comment finance')})
@@ -999,7 +999,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # give the advice
         self.changeUser('pmFinController')
         advice = createContentInContainer(item,
-                                          'meetingadvicefinances',
+                                          item.adapted()._advicePortalTypeForAdviser(financial_group_uids[0]),
                                           **{'advice_group': financial_group_uids[0],
                                              'advice_type': u'positive_finance',
                                              'advice_comment': richtextval(u'My comment finance')})
@@ -1131,7 +1131,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         changeCompleteness()
         advice = createContentInContainer(
             item,
-            'meetingadvicefinances',
+            item.adapted()._advicePortalTypeForAdviser(financial_group_uids[0]),
             **{'advice_group': financial_group_uids[0],
                'advice_type': u'positive_finance',
                'advice_comment': richtextval(u'<p>My comment finance</p>'),
@@ -2020,7 +2020,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmCreator2')
         advice = createContentInContainer(
             item,
-            'meetingadvice',
+            item.adapted()._advicePortalTypeForAdviser(treasury_org_uid),
             **{'advice_group': treasury_org_uid,
                'advice_type': u'negative',
                'advice_comment': richtextval(u'My negative comment')})

@@ -74,6 +74,7 @@ from Products.PloneMeeting.model.adaptations import _addDecidedState
 from Products.PloneMeeting.model.adaptations import _addIsolatedState
 from Products.PloneMeeting.ToolPloneMeeting import ToolPloneMeeting
 from Products.PloneMeeting.utils import get_current_user_id
+from Products.PloneMeeting.utils import isPowerObserverForCfg
 from Products.PloneMeeting.utils import org_id_to_uid
 from Products.PloneMeeting.workflows.advice import MeetingAdviceWorkflowActions
 from Products.PloneMeeting.workflows.advice import MeetingAdviceWorkflowConditions
@@ -725,7 +726,7 @@ class CustomMeetingItem(MeetingItem):
         if self.__old_pm_show_budget_infos():
             tool = api.portal.get_tool('portal_plonemeeting')
             cfg = tool.getMeetingConfig(self)
-            if not tool.isPowerObserverForCfg(cfg, power_observer_types=['restrictedpowerobservers']):
+            if not isPowerObserverForCfg(cfg, power_observer_types=['restrictedpowerobservers']):
                 return True
     MeetingItem.show_budget_infos = show_budget_infos
 
@@ -771,9 +772,9 @@ class CustomMeetingItem(MeetingItem):
                             'finance_advice_suspended_because_item_sent_back_to_proposing_group',
                             domain="PloneMeeting",
                             context=item.REQUEST)}
-        return {'displayDefaultComplementaryMessage': True,
-                'displayAdviceReviewState': True,
-                'customAdviceMessage': None}
+        res = self.context.getCustomAdviceMessageFor(advice)
+        res['displayAdviceReviewState'] = True
+        return res
 
     def getFinanceGroupUIDForItem(self, checkAdviceIndex=False):
         '''Return the finance group UID the advice is asked
@@ -802,23 +803,6 @@ class CustomMeetingItem(MeetingItem):
         if advice.query_state() in ('financial_advice_signed', ):
             return False
         return True
-
-    def _advicePortalTypeForAdviser(self, org_uid):
-        """Return the meetingadvicefinances for financial groups, meetingadvice for others."""
-        financial_group_uids = self.tool.finance_group_uids()
-        if org_uid in financial_group_uids:
-            return "meetingadvicefinances"
-        else:
-            return "meetingadvice"
-
-    def _adviceTypesForAdviser(self, meeting_advice_portal_type):
-        """Return the advice types (positive, negative, ...) for given p_meeting_advice_portal_type.
-           By default we always use every MeetingConfig.usedAdviceTypes but this is useful
-           when using several portal_types for meetingadvice and some may use particular advice types."""
-        if meeting_advice_portal_type == 'meetingadvice':
-            return [t for t in self.cfg.getUsedAdviceTypes() if not t.endswith('_finance')]
-        else:
-            return [t for t in self.cfg.getUsedAdviceTypes() if t.endswith('_finance')]
 
     def _sendAdviceToGiveToGroup(self, org_uid):
         """Do not send an email to FINANCE_GROUP_IDS."""
@@ -1017,10 +1001,8 @@ class CustomMeetingItem(MeetingItem):
         item = self.getSelf()
         financialAdvice = item.getFinanceAdvice()
         adviceData = item.getAdviceDataFor(item, financialAdvice)
-        res['comment'] = 'comment' in adviceData\
-            and safe_encode(adviceData['comment']) or ''
-        advice_id = 'advice_id' in adviceData\
-            and adviceData['advice_id'] or ''
+        res['comment'] = safe_encode(adviceData.get('comment') or '')
+        advice_id = adviceData.get('advice_id')
         signature_event = advice_id and getLastWFAction(getattr(item, advice_id), 'signFinancialAdvice') or ''
         res['out_of_financial_dpt'] = 'time' in signature_event and signature_event['time'] or ''
         res['out_of_financial_dpt_localized'] = res['out_of_financial_dpt']\
@@ -1662,11 +1644,6 @@ class CustomMeetingConfig(MeetingConfig):
             infos.update(finance_infos)
         return infos
 
-    def extraAdviceTypes(self):
-        '''See doc in interfaces.py.'''
-        return ("positive_finance", "positive_with_remarks_finance",
-                "negative_finance", "not_required_finance")
-
     def _adviceConditionsInterfaceFor(self, advice_obj):
         '''See doc in interfaces.py.'''
         if advice_obj.portal_type == 'meetingadvicefinances':
@@ -1774,6 +1751,11 @@ class CustomToolPloneMeeting(ToolPloneMeeting):
                 itemWorkflow=itemWorkflow)
             return True
         return False
+
+    def extraAdviceTypes(self):
+        '''See doc in interfaces.py.'''
+        return ("positive_finance", "positive_with_remarks_finance",
+                "negative_finance", "not_required_finance")
 
 
 class MeetingCollegeLiegeWorkflowActions(MeetingWorkflowActions):

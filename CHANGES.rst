@@ -4,8 +4,8 @@ Products.MeetingLiege Changelog
 4.2.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Removed field `advice_substep_number` from `meetingadvicefinances.xml`.
+  [gbastien]
 
 4.2.10 (2024-03-05)
 -------------------

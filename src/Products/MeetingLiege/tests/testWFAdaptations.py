@@ -44,7 +44,7 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
         """Bypass, not relevant..."""
         pass
 
-    def test_pm_WFA_waiting_advices(self):
+    def test_pm_WFA_waiting_advices_base(self):
         """Bypass, tested in testCustomWorkflows.py..."""
         pass
 

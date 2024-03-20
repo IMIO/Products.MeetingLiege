@@ -6,6 +6,10 @@ Products.MeetingLiege Changelog
 
 - Removed field `advice_substep_number` from `meetingadvicefinances.xml`.
   [gbastien]
+- Fixed testing `import_data` configs title.
+  [gbastien]
+- Renamed `test_pm_WFA_waiting_advices` to `test_pm_WFA_waiting_advices_base`.
+  [gbastien]
 
 4.2.10 (2024-03-05)
 -------------------

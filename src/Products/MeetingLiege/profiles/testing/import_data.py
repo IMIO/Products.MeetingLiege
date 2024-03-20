@@ -30,7 +30,7 @@ developers.internalreviewers.append(pmManager)
 # Meeting configurations -------------------------------------------------------
 collegeMeeting = deepcopy(pm_import_data.meetingPma)
 collegeMeeting.id = 'meeting-config-college'
-collegeMeeting.Title = 'Collège Communal'
+collegeMeeting.title = 'Collège Communal'
 collegeMeeting.folderTitle = 'Collège Communal'
 collegeMeeting.shortName = 'meeting-config-college'
 collegeMeeting.id = 'meeting-config-college'
@@ -66,7 +66,7 @@ collegeMeeting.usedAdviceTypes = ('positive', 'positive_with_remarks', 'negative
 # Conseil communal
 councilMeeting = deepcopy(pm_import_data.meetingPga)
 councilMeeting.id = 'meeting-config-council'
-councilMeeting.Title = 'Conseil Communal'
+councilMeeting.title = 'Conseil Communal'
 councilMeeting.folderTitle = 'Conseil Communal'
 councilMeeting.shortName = 'meeting-config-council'
 councilMeeting.id = 'meeting-config-council'

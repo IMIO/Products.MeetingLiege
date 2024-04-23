@@ -151,7 +151,7 @@ LIEGE_WAITING_ADVICES_FROM_STATES = {
         {'from_states': ('proposed_to_director', ),
          'back_states': ('proposed_to_internal_reviewer',
                          'proposed_to_director', ),
-         'use_custom_icon': False,
+         'use_custom_icon': True,
          # is translated to "Remove from meeting"
          'use_custom_back_transition_title_for': ("validated", ),
          # use "validate" as back transition to state "validated"
@@ -1906,6 +1906,13 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
 
     implements(IMeetingItemCollegeLiegeWorkflowConditions)
     security = ClassSecurityInfo()
+
+    def get_waiting_advices_icon_infos(self):
+        """Use custom icon when waiting finances advice."""
+        res = super(MeetingItemCollegeLiegeWorkflowConditions, self).get_waiting_advices_icon_infos()
+        if self.review_state == 'proposed_to_finance_waiting_advices':
+            res = ('wait_advices_from_proposed_to_director.png', res[1])
+        return res
 
     security.declarePublic('mayWait_advices')
 

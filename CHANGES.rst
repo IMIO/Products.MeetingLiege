@@ -10,6 +10,9 @@ Products.MeetingLiege Changelog
   [gbastien]
 - Renamed `test_pm_WFA_waiting_advices` to `test_pm_WFA_waiting_advices_base`.
   [gbastien]
+- Use custom icon for WF transition `wait_advices_from_proposed_to_director`
+  to use a `€` icon.
+  [gbastien]
 
 4.2.10 (2024-03-05)
 -------------------

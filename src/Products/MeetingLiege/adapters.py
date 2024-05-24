@@ -1665,7 +1665,8 @@ class CustomMeetingConfig(MeetingConfig):
     def _custom_reviewersFor(self):
         '''Manage reviewersFor Bourgmestre because as some 'creators' suffixes are
            used after reviewers levels, this break the _highestReviewerLevel and other
-           related hierarchic level functionalities.'''
+           related hierarchic level functionalities.
+           This is done so order is correct for 'creators'.'''
         cfg = self.getSelf()
         if cfg.getId() == 'meeting-config-bourgmestre':
             return OrderedDict(

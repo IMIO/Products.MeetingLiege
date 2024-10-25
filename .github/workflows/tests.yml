@@ -5,7 +5,15 @@ on:
   repository_dispatch:
   push:
     branches:
-      - gha
+      - master
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - master
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -20,6 +28,7 @@ jobs:
         python-version: ["2.7"]
         plone-version: ["4.3"]
         experimental: [false]
+    if: ${{ !github.event_name == 'pull_request' || !github.event.pull_request.draft }}
     steps:
       - name: Needed for local development
         if: ${{ env.ACT }}

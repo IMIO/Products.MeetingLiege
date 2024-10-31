@@ -141,7 +141,7 @@ def onAdviceAfterTransition(advice, event):
         # advice.advice_hide_during_redaction = False
         # if item was still in state 'proposed_to_finance_waiting_advices', it is automatically validated
         # and a specific message is added to the wf history regarding this
-        # validate or send the item back to director depending on advice_type
+        # validate or send the item back to internal reviewer depending on advice_type
         if itemState == 'proposed_to_finance_waiting_advices':
             if advice.advice_type in ('positive_finance',
                                       'positive_with_remarks_finance',
@@ -151,13 +151,11 @@ def onAdviceAfterTransition(advice, event):
                     item, 'validate', comment='item_wf_changed_finance_advice_positive')
                 item.REQUEST.set('mayValidate', False)
             else:
-                # if advice is negative, we automatically send the item back to the director
-                item.REQUEST.set('mayBackToProposedToDirector', True)
+                # if advice is negative, we automatically send the item back to the internal reviewer
                 wfTool.doActionFor(
                     item,
-                    'backTo_proposed_to_director_from_waiting_advices',
+                    'backTo_proposed_to_internal_reviewer_from_waiting_advices',
                     comment='item_wf_changed_finance_advice_negative')
-                item.REQUEST.set('mayBackToProposedToDirector', False)
 
 
 def onAdvicesUpdated(item, event):

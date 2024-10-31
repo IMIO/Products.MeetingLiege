@@ -874,6 +874,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         ask_advice_again = advice1.restrictedTraverse('@@change-advice-asked-again')
         ask_advice_again()
+        self.do(item1, 'proposeToDirector')
         self.do(item1, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Set the completeness to incomplete with a comment.
@@ -997,6 +998,7 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.changeUser('pmManager')
         ask_advice_again = advice3.restrictedTraverse('@@change-advice-asked-again')
         ask_advice_again()
+        self.do(item3, 'proposeToDirector')
         self.do(item3, 'wait_advices_from_proposed_to_director')
         self.changeUser('pmFinController')
         # Item is still complete.
@@ -1107,7 +1109,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         view = folder.restrictedTraverse('document_generation_helper_view')
         catalog = api.portal.get_tool('portal_catalog')
         results = view.printFDStats(catalog(portal_type='MeetingItemCollege', sort_on='id'))
-
         self.assertEqual(results[0]['title'], "Item1 with advice")
         self.assertEqual(results[0]['meeting_date'], "")
         self.assertEqual(results[0]['group'], "Developers")

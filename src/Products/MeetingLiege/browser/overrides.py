@@ -211,9 +211,10 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
             finance_proposals = []
             first_time_complete = True
             for state in full_history:
-                # keep the history when advice is positive, negative or timed
-                # out.
-                if (state['action'] == 'backTo_proposed_to_director_from_waiting_advices' and
+                # keep the history when advice is positive, negative or timed out.
+                # formerly item with negative advice was auto sent back to director, now it is to internal reviewer
+                if (state['action'] in
+                        ('backTo_proposed_to_director_from_waiting_advices', 'backTo_proposed_to_internal_reviewer_from_waiting_advices') and
                     state['comments'] == 'item_wf_changed_finance_advice_negative') or \
                    (state['action'] == 'validate' and
                     (state['comments'] == 'item_wf_changed_finance_advice_positive' or
@@ -302,7 +303,7 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     res['end_advice'] = end_advice
                     if end_advice == 'OUI':
                         end_advice = 'NON'
-                elif state['action'] == 'backTo_proposed_to_director_from_waiting_advices':
+                elif state['comments'] == 'item_wf_changed_finance_advice_negative':
                     res['end_advice'] = end_advice
                     res['advice_type'] = 'Avis finance défavorable'
                     if end_advice == 'OUI':
@@ -337,9 +338,9 @@ class MLFolderDocumentGenerationHelperView(FolderDocumentGenerationHelperView):
                     res['end_advice'] = ''
                     res['advice_type'] = 'Avis finance expiré'
                 # Some items had their advice deleted. So they still have
-                # the backTo_proposed_to_director_from_waiting_advices action in history, even if
+                # the item_wf_changed_finance_advice_negative comments in history, even if
                 # there is no more advice given.
-                elif state['action'] == 'backTo_proposed_to_director_from_waiting_advices':
+                elif state['comments'] == 'item_wf_changed_finance_advice_negative':
                     res['end_advice'] = ''
                     res['advice_type'] = 'Avis finance défavorable'
                 # Yeah, you would not expect to find a positive advice in

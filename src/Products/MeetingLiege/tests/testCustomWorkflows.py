@@ -525,7 +525,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # moreover, when signed, the advice is automatically set to advice_hide_during_redaction=False
         self.assertTrue(advice.advice_hide_during_redaction)
         self.do(advice, 'signFinancialAdvice')
-        self.assertEqual(item.query_state(), 'proposed_to_director')
+        self.assertEqual(item.query_state(), 'proposed_to_internal_reviewer')
         self.assertEqual(advice.query_state(), 'advice_given')
         self.assertFalse(advice.advice_hide_during_redaction)
         # when an advice is signed, it is automatically historized
@@ -538,6 +538,7 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         # as no emergency is asked, the item can not be validated
         self.changeUser('pmReviewer1')
         ask_advice_again()
+        self.do(item, 'proposeToDirector')
         self.assertEqual(self.transitions(item), ['backToItemCreated',
                                                   'backToProposedToAdministrativeReviewer',
                                                   'backToProposedToInternalReviewer',
@@ -1023,13 +1024,14 @@ class testCustomWorkflows(MeetingLiegeTestCase):
         self.changeUser('pmFinManager')
         self.do(advice, 'signFinancialAdvice')
         # item was sent back to director
-        self.assertEqual(item.query_state(), 'proposed_to_director')
+        self.assertEqual(item.query_state(), 'proposed_to_internal_reviewer')
         self.assertEqual(advice.query_state(), 'advice_given')
         self.assertEqual(indexAdvisers(item)(), catalog.getIndexDataForUID(itemPath)['indexAdvisers'])
         # send item again to finance
         self.changeUser('pmReviewer1')
         ask_advice_again = advice.restrictedTraverse('@@change-advice-asked-again')
         ask_advice_again()
+        self.do(item, 'proposeToDirector')
         self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertEqual(item.query_state(), 'proposed_to_finance_waiting_advices')
         self.assertEqual(indexAdvisers(item)(), catalog.getIndexDataForUID(itemPath)['indexAdvisers'])

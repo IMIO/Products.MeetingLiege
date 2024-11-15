@@ -46,7 +46,7 @@ jobs:
         uses: IMIO/gha/plone-package-test-notify@v4
         env:
           cache-name: cache-eggs
-          PM_BRANCH_NAME: ${{ inputs.branch_name || github.head_ref || github.ref_name }}
+          PM_BRANCH_NAME: ${{ inputs.branch_name || 'master' }}
         with:
           CACHE_KEY: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.python-version }}
           TEST_COMMAND: OO_SERVER=localhost OO_PORT=2002 bin/testliege --layer=\!ROBOT --test=\!\(testSetup\|testPerf\) -s Products.MeetingLiege

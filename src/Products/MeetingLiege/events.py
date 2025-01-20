@@ -254,21 +254,6 @@ def onItemAfterTransition(item, event):
             extra_infos={'historized_data': data})
 
 
-def onOrgWillBeRemoved(current_org, event):
-    '''Checks if the current organization can be deleted:
-      - it can not be used in MeetingConfig.archivingRefs.'''
-    if event.object.meta_type == 'Plone Site':
-        return
-
-    current_org_uid = current_org.UID()
-    tool = api.portal.get_tool('portal_plonemeeting')
-    for cfg in tool.objectValues('MeetingConfig'):
-        # The meetingGroup can be used in archivingRefs.
-        for archivinfRef in cfg.getArchivingRefs():
-            if current_org_uid in archivinfRef['restrict_to_groups']:
-                raise BeforeDeleteException("can_not_delete_meetinggroup_archivingrefs")
-
-
 def onItemListTypeChanged(item, event):
     '''Called when MeetingItem.listType is changed :
        - if going to 'addendum', adapt itemNumber if not already a subnumber;

@@ -172,10 +172,6 @@ msgstr ""
 msgid "no_finance_advice"
 msgstr ""
 
-#. Default: "Archiving references"
-msgid "MeetingLiege_label_archivingRefs"
-msgstr ""
-
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
 msgstr ""
@@ -184,16 +180,8 @@ msgstr ""
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr ""
 
-#. Default: "Enter archiving references that will be useable on items of this meeting config."
-msgid "archiving_refs_descr"
-msgstr ""
-
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
-msgstr ""
-
-#. Default: "Archiving reference"
-msgid "MeetingLiege_label_archivingRef"
 msgstr ""
 
 #. Default: "Items to control completeness of"
@@ -282,10 +270,6 @@ msgstr ""
 
 #. Default: " "
 msgid "item_observations_descr"
-msgstr ""
-
-#. Default: " "
-msgid "MeetingLiege_descr_archivingRef"
 msgstr ""
 
 #. Default: " "
@@ -434,10 +418,6 @@ msgid "Access the College item containing given finance advice."
 msgstr ""
 
 #searches
-#. Default: "Please select an archiving reference."
-msgid "archivingRef_required"
-msgstr ""
-
 #. Default: "Synthesis finance advices"
 msgid "searchitemswithfinanceadvice"
 msgstr ""

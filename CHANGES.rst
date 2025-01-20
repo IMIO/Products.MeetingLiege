@@ -7,6 +7,9 @@ Products.MeetingLiege Changelog
 - When finances advice is negative, automatically send the item back to the
   internal reviewer instead sending it back to the director.
   [gbastien]
+- Removed custom field `MeetingItem.archivingRef`,
+  we use `MeetingItem.classifier` instead.
+  [gbastien]
 
 4.2.11 (2024-04-23)
 -------------------

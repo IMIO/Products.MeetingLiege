@@ -75,18 +75,6 @@
                 <span tal:condition="not:nocall:proposingGroup">-</span>
             </div>
 
-            <tal:comment replace="nothing">XXX added by MeetingLiege, archiving reference</tal:comment>
-            <div class="discreet"
-                 tal:define="archivingRef context/getArchivingRef"
-                 tal:condition="python: 'archivingRef' in usedAttrs">
-                <span class="item_attribute_label"
-                      i18n:translate="MeetingLiege_label_archivingRef"></span>:&nbsp;&nbsp;
-                <span tal:condition="python: not archivingRef == '_none_'">
-                     <metal:archivingRef use-macro="python: here.widget('archivingRef', mode='view')" />
-                </span>
-                <span tal:condition="python: archivingRef == '_none_'">-</span>
-            </div>
-
             <tal:comment replace="nothing">Associated groups</tal:comment>
             <div class="discreet" tal:condition="python: 'associatedGroups' in usedAttrs"
                                   tal:define="associatedGroups python: context.getAssociatedGroups();">
@@ -144,7 +132,7 @@
                      i18n:translate="legend_details" i18n:domain="plone">Details</a>
             </div>
 
-            <tal:comment replace="nothing">Copy groups for this item</tal:comment>
+            <tal:comment replace="nothing">Copy groups</tal:comment>
             <tal:copyGroups condition="python: context.attribute_is_used('copyGroups')">
                 <div class="discreet" tal:define="copyGroups python: context.getAllCopyGroups();
                                                   copy_groups_have_access python: context.check_copy_groups_have_access();">
@@ -161,6 +149,24 @@
                     <span tal:condition="not: copyGroups">-</span>
                 </div>
             </tal:copyGroups>
+
+            <tal:comment replace="nothing">Restricted copy groups</tal:comment>
+            <tal:restrictedCopyGroups condition="python: context.attribute_is_used('restrictedCopyGroups')">
+                <div class="discreet" tal:define="restrictedCopyGroups python: context.getAllRestrictedCopyGroups();
+                                                  restricted_copy_groups_have_access python: context.check_copy_groups_have_access(restricted=True);">
+                    <span tal:attributes="class python: restricted_copy_groups_have_access and 'green-colored pmHelp' or 'pmHelp';
+                                          title python: context.getCopyGroupsHelpMsg(cfg, restricted=True);"
+                          i18n:attributes="title">
+                      <span class="item_attribute_label"
+                            i18n:translate="PloneMeeting_label_restrictedCopyGroups"></span>
+                      <span class="fa fa-question-circle help-doc"></span>
+                    </span>:&nbsp;&nbsp;
+                    <tal:displayRestrictedCopyGroups condition="restrictedCopyGroups">
+                        <span tal:replace="structure python: context.displayCopyGroups(restricted=True)">Restricted copy groups</span>
+                    </tal:displayRestrictedCopyGroups>
+                    <span tal:condition="not: restrictedCopyGroups">-</span>
+                </div>
+            </tal:restrictedCopyGroups>
 
             <tal:comment replace="nothing">Item is signed?</tal:comment>
             <div class="discreet"
@@ -447,7 +453,7 @@
                          class_to_use python: (predecessors or linkedItems) and 'item_attribute_label highlightValue' or 'item_attribute_label';">
         <div id="linked-items"
              class="collapsible discreet not-auto-collapsible-activable"
-             onclick="toggleDetails('collapsible-linked-items', toggle_parent_active=true, parent_tag=null, load_view='@@load_linked_items');">
+             onclick="toggleDetails('collapsible-linked-items', toggle_parent_active=true, parent_tag=null, load_view='@@load-linked-items');">
           <span tal:condition="showManuallyLinkedItems"
                 class="item_attribute_label"
                 tal:attributes="class class_to_use"
@@ -509,6 +515,11 @@
     <tal:comment replace="nothing">Label for Council</tal:comment>
     <tal:field define="fieldName python: 'labelForCouncil'; ajaxEdit python:True"
                condition="python: context.portal_type == 'MeetingItemCouncil'">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Emergency motivation</tal:comment>
+    <tal:field define="fieldName python: 'emergencyMotivation'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 

@@ -42,7 +42,6 @@ collegeMeeting.usedItemAttributes = ['budgetInfos',
                                      'toDiscuss',
                                      'completeness',
                                      'otherMeetingConfigsClonableToPrivacy',
-                                     'archivingRef',
                                      'motivation',
                                      'textCheckList',
                                      'itemIsSigned']

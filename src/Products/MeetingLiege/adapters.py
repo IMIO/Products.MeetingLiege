@@ -673,22 +673,6 @@ class CustomMeetingItem(MeetingItem):
             (item.showClonableToOtherMCs() and
              self.tool.isManager(self.cfg))
 
-    security.declarePrivate('validate_archivingRef')
-
-    def validate_archivingRef(self, value):
-        '''Field is required.'''
-        # Value could be '_none_' if it was displayed as listbox or None if
-        # it was displayed as radio buttons...  Use 'flex' format
-        tool = api.portal.get_tool('portal_plonemeeting')
-        cfg = tool.getMeetingConfig(self)
-        if (not self.isDefinedInTool()) and \
-           ('archivingRef' in cfg.getUsedItemAttributes()) and \
-           (value == '_none_' or not value):
-            return translate('archivingRef_required',
-                             domain='PloneMeeting',
-                             context=self.REQUEST)
-    MeetingItem.validate_archivingRef = validate_archivingRef
-
     security.declareProtected(ModifyPortalContent, 'setCategory')
 
     # we will monkeypatch MeetingItem.setCategory but we need to call original code
@@ -738,7 +722,7 @@ class CustomMeetingItem(MeetingItem):
         '''
         res = ['financeAdvice', 'decisionEnd', 'toDiscuss']
         if cloned_to_same_mc:
-            res = res + ['labelForCouncil', 'archivingRef', 'textCheckList',
+            res = res + ['labelForCouncil', 'textCheckList',
                          'otherMeetingConfigsClonableToFieldLabelForCouncil']
         return res
 
@@ -939,42 +923,6 @@ class CustomMeetingItem(MeetingItem):
             res.append((finance_group_uid, get_organization(finance_group_uid).Title()))
         return DisplayList(tuple(res))
     MeetingItem.listFinanceAdvices = listFinanceAdvices
-
-    security.declarePrivate('listArchivingRefs')
-
-    def listArchivingRefs(self):
-        '''Vocabulary for the 'archivingRef' field.
-           In view mode, just find corresponding record.'''
-        storedArchivingRef = self.getArchivingRef()
-        res = []
-        tool = api.portal.get_tool('portal_plonemeeting')
-        cfg = tool.getMeetingConfig(self)
-        if self.REQUEST.getURL().endswith('/meetingitem_view'):
-            for ref in cfg.getArchivingRefs():
-                if ref['row_id'] == storedArchivingRef:
-                    res.append((ref['row_id'], ref['label']))
-                    break
-        else:
-            userGroups = set(tool.get_orgs_for_user(the_objects=False))
-            isManager = tool.isManager(cfg)
-            for ref in cfg.getArchivingRefs():
-                # if ref is not active, continue
-                if ref['active'] == '0':
-                    continue
-                # only keep an active archiving ref if :
-                # current user isManager
-                # it is the currently selected archiving ref
-                # if ref is restricted to some groups and current member of this group
-                if not isManager and \
-                   not ref['row_id'] == storedArchivingRef and \
-                   (ref['restrict_to_groups'] and not set(ref['restrict_to_groups']).intersection(userGroups)):
-                    continue
-                res.append((ref['row_id'], ref['label']))
-            res.insert(0, ('_none_', translate('make_a_choice',
-                                               domain='PloneMeeting',
-                                               context=self.REQUEST)))
-        return DisplayList(tuple(res))
-    MeetingItem.listArchivingRefs = listArchivingRefs
 
     security.declarePublic('needFinanceAdviceOf')
 
@@ -1467,57 +1415,6 @@ class CustomMeetingConfig(MeetingConfig):
 
     def __init__(self, item):
         self.context = item
-
-    security.declarePrivate('listActiveOrgsForArchivingRefs')
-
-    def listActiveOrgsForArchivingRefs(self):
-        """
-          Vocabulary for the archivingRefs.restrict_to_orgs DatagridField attribute.
-          It returns every active organizations.
-        """
-        res = []
-        for org in get_organizations():
-            res.append((org.UID(), org.Title()))
-        # make sure that if a configuration was defined for a group
-        # that is now inactive, it is still displayed
-        storedArchivingRefsOrgs = [
-            archivingRef['restrict_to_groups'] for archivingRef in self.getArchivingRefs()]
-        if storedArchivingRefsOrgs:
-            orgsInVocab = [org[0] for org in res]
-            for storedArchivingRefsOrg in storedArchivingRefsOrgs:
-                for org_uid in storedArchivingRefsOrg:
-                    if org_uid not in orgsInVocab:
-                        org = get_organization(org_uid)
-                        res.append((org_uid, org.Title()))
-        return DisplayList(res).sortedByValue()
-    MeetingConfig.listActiveOrgsForArchivingRefs = listActiveOrgsForArchivingRefs
-
-    security.declareProtected('Modify portal content', 'setArchivingRefs')
-
-    def setArchivingRefs(self, value, **kwargs):
-        '''Overrides the field 'archivingRefs' mutator to manage
-           the 'row_id' column manually.  If empty, we need to add a
-           unique id into it.'''
-        # value contains a list of 'ZPublisher.HTTPRequest', to be compatible
-        # if we receive a 'dict' instead, we use v.get()
-        for v in value:
-            # don't process hidden template row as input data
-            if v.get('orderindex_', None) == "template_row_marker":
-                continue
-            if not v.get('row_id', None):
-                if isinstance(v, dict):
-                    v['row_id'] = self.generateUniqueId()
-                else:
-                    v.row_id = self.generateUniqueId()
-        self.getField('archivingRefs').set(self, value, **kwargs)
-    MeetingConfig.setArchivingRefs = setArchivingRefs
-
-    def _dataForArchivingRefRowId(self, row_id):
-        '''Returns the data for the given p_row_id from the field 'archivingRefs'.'''
-        cfg = self.getSelf()
-        for archivingRef in cfg.getArchivingRefs():
-            if archivingRef['row_id'] == row_id:
-                return dict(archivingRef)
 
     def _extraSearchesInfo(self, infos):
         """Add some specific searches."""

@@ -36,10 +36,6 @@
     <metal:field use-macro="python:here.widget('associatedGroups', mode='edit')"/>
     <metal:field use-macro="python:here.widget('category', mode='edit')"/>
     <metal:field use-macro="python:here.widget('classifier', mode='edit')"/>
-
-    <tal:comment replace="nothing">XXX added by MeetingLiege</tal:comment>
-    <metal:field use-macro="python:here.widget('archivingRef', mode='edit')"/>
-
     <metal:field use-macro="python:here.widget('committees', mode='edit')"/>
 
     <tal:comment replace="nothing">XXX added by MeetingLiege, finance advice</tal:comment>
@@ -49,6 +45,7 @@
 
     <metal:field use-macro="python:here.widget('optionalAdvisers', mode='edit')"/>
     <metal:field use-macro="python:here.widget('copyGroups', mode='edit')"/>
+    <metal:field use-macro="python:here.widget('restrictedCopyGroups', mode='edit')"/>
 
     <metal:field use-macro="python:here.widget('preferredMeeting', mode='edit')"/>
     <metal:field use-macro="python:here.widget('meetingDeadlineDate', mode='edit')"/>

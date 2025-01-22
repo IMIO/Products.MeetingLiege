@@ -40,10 +40,6 @@ msgstr "Conseil communal"
 msgid "MeetingAdviceFinances"
 msgstr "Avis finances"
 
-#. Default: " "
-msgid "MeetingLiege_descr_archivingRef"
-msgstr "Code destiné à permettre au Service des archives de classer de façon informatique le dossier"
-
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr "Sélectionnez ici le service DF qui devra émettre un avis de légalité sur le point."
@@ -63,14 +59,6 @@ msgstr "Cette séance arrête l'ordre du jour du prochain Conseil communal?"
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
 msgstr "Numéro de sous-étape"
-
-#. Default: "Archiving reference"
-msgid "MeetingLiege_label_archivingRef"
-msgstr "Code archivage"
-
-#. Default: "Archiving references"
-msgid "MeetingLiege_label_archivingRefs"
-msgstr "Codes archivage"
 
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
@@ -155,14 +143,6 @@ msgstr " "
 #. Default: ", complete purpose"
 msgid "and_description"
 msgstr ", objet complet"
-
-#. Default: "Please select an archiving reference."
-msgid "archivingRef_required"
-msgstr "Veuillez sélectionner un code archivage."
-
-#. Default: "Enter archiving references that will be useable on items of this meeting config."
-msgid "archiving_refs_descr"
-msgstr "Encodez les codes archivages qui pourront être utilisés par les points de cette configuration de séance."
 
 #. Default: "The completeness has been asked again by the application when the item has been proposed to the finances."
 msgid "completeness_asked_again_by_app"

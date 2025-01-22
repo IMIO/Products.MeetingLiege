@@ -10,23 +10,3 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: datagridfield\n"
-
-#. Default: "Code"
-msgid "Archiving reference code"
-msgstr ""
-
-#. Default: "Label"
-msgid "Archiving reference label"
-msgstr ""
-
-#. Default: "Finance advice"
-msgid "Archiving reference finance advice"
-msgstr ""
-
-#. Default: "Restrict to selected groups"
-msgid "Archiving reference restrict to selected groups"
-msgstr ""
-
-#. Default: "Active?"
-msgid "Archiving reference active?"
-msgstr ""

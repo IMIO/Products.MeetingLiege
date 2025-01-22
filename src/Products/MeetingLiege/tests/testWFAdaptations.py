@@ -60,10 +60,6 @@ class testWFAdaptations(MeetingLiegeTestCase, pmtwfa):
         """Bypass as most WFA not used..."""
         pass
 
-    def _beforeValidateItemFields(self, item):
-        """Set an "archivingRef"."""
-        item.setArchivingRef(item.listArchivingRefs()[-1])
-
 
 def test_suite():
     from unittest import TestSuite, makeSuite

@@ -1291,35 +1291,6 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.do(item, 'wait_advices_from_proposed_to_director')
         self.assertEqual(item.getTakenOverBy(), 'pmFinController')
 
-    def test_ListArchivingRefsRestrictToGroups(self):
-        """MeetingItem.archivingRefs vocabulary, available values may be restricted
-           depending on current user groups."""
-        self.changeUser('siteadmin')
-        cfg = self.meetingConfig
-        cfg.setArchivingRefs((
-            {'active': '1',
-             'restrict_to_groups': [self.vendors_uid],
-             'row_id': '1',
-             'code': '1',
-             'label': "1"},
-            {'active': '1',
-             'restrict_to_groups': [],
-             'row_id': '2',
-             'code': '2',
-             'label': '2'},))
-        self.changeUser('pmCreator1')
-        item = self.create('MeetingItem')
-        self.assertEqual(self.request.getURL(), 'http://nohost')
-        self.assertFalse('1' in item.listArchivingRefs())
-        self.assertTrue('2' in item.listArchivingRefs())
-        # view is optimized to only return stored value
-        self.request['URL'] = item.absolute_url() + ('/meetingitem_view')
-        self.assertFalse(item.listArchivingRefs())
-        item.setArchivingRef('1')
-        self.assertEqual(item.listArchivingRefs().keys(), ['1'])
-        item.setArchivingRef('2')
-        self.assertEqual(item.listArchivingRefs().keys(), ['2'])
-
     def test_TreasuryCopyGroup(self):
         """TREASURY_GROUP_ID 'incopy' suffix is set in copy of items
            having finances advice when at least validated."""

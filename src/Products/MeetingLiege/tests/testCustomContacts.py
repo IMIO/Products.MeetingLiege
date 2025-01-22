@@ -1,59 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from collective.contact.plonegroup.utils import get_own_organization
 from collective.contact.plonegroup.utils import get_plone_groups
-from OFS.ObjectManager import BeforeDeleteException
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 
 
 class testCustomContacts(MeetingLiegeTestCase):
     ''' '''
-
-    def test_OrgNotRemovableIfUsed(self):
-        """An organization may not be removed if used in :
-           - MeetingConfig.archivingRefs."""
-        self.changeUser('siteadmin')
-        cfg = self.meetingConfig
-        own_org = get_own_organization()
-
-        # create a new organization so it is used nowhere
-        new_org = self.create('organization', id='new_org', title=u'New org', acronym='NO1')
-        new_org_id = new_org.getId()
-        new_org_uid = new_org.UID()
-        self._enableField('category')
-        self._select_organization(new_org_uid)
-        self.assertTrue(new_org_uid in cfg.listActiveOrgsForArchivingRefs())
-        cfg.setArchivingRefs((
-            {'active': '1',
-             'restrict_to_groups': [new_org_uid, ],
-             'row_id': '1',
-             'code': '1',
-             'label': "1"},
-            {'active': '1',
-             'restrict_to_groups': [],
-             'row_id': '2',
-             'code': '2',
-             'label': '2'},))
-        self._select_organization(new_org_uid, remove=True)
-
-        with self.assertRaises(BeforeDeleteException) as cm:
-            own_org.manage_delObjects([new_org_id])
-        self.assertEqual(cm.exception.message, 'can_not_delete_meetinggroup_archivingrefs')
-        cfg.setArchivingRefs((
-            {'active': '1',
-             'restrict_to_groups': [],
-             'row_id': '1',
-             'code': '1',
-             'label': "1"},
-            {'active': '1',
-             'restrict_to_groups': [],
-             'row_id': '2',
-             'code': '2',
-             'label': '2'},))
-
-        # now it is removable
-        own_org.manage_delObjects([new_org_id, ])
-        self.assertIsNone(own_org.get(new_org_id, None))
 
     def test_ExtraSuffixesForFinanceOrgs(self):
         """Finances related organizations get extra suffixes."""

@@ -39,10 +39,6 @@ msgstr "Council"
 msgid "MeetingAdviceFinances"
 msgstr ""
 
-#. Default: " "
-msgid "MeetingLiege_descr_archivingRef"
-msgstr " "
-
 #. Default: "If necessary, select the financial service that will have to give the legal financial advice on this item."
 msgid "MeetingLiege_descr_financeAdvice"
 msgstr "If necessary, select the financial service that will have to give the legal financial advice on this item."
@@ -62,14 +58,6 @@ msgstr "This meeting adopts next council agenda"
 #. Default: "Sub-step number"
 msgid "MeetingLiege_label_advice_substep_number"
 msgstr "Sub-step number"
-
-#. Default: "Archiving reference"
-msgid "MeetingLiege_label_archivingRef"
-msgstr "Archiving reference"
-
-#. Default: "Archiving references"
-msgid "MeetingLiege_label_archivingRefs"
-msgstr "Archiving references"
 
 #. Default: "Financial advice"
 msgid "MeetingLiege_label_financeAdvice"
@@ -155,14 +143,6 @@ msgstr " "
 #. Default: ", complete purpose"
 msgid "and_description"
 msgstr ", complete purpose"
-
-#. Default: "Please select an archiving reference."
-msgid "archivingRef_required"
-msgstr "Please select an archiving reference."
-
-#. Default: "Enter archiving references that will be useable on items of this meeting config."
-msgid "archiving_refs_descr"
-msgstr "Enter archiving references that will be useable on items of this meeting config."
 
 #. Default: "The completeness has been asked again by the application when the item has been proposed to the finances."
 msgid "completeness_asked_again_by_app"

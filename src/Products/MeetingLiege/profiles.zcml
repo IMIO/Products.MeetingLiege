@@ -55,4 +55,12 @@
       handler="Products.MeetingLiege.migrations.migrate_to_4201.migrate"
       profile="Products.MeetingLiege:default" />
 
+  <genericsetup:upgradeStep
+      title="Go to MeetingLiege 4202"
+      description=""
+      source="4201"
+      destination="4202"
+      handler="Products.MeetingLiege.migrations.migrate_to_4202.migrate"
+      profile="Products.MeetingLiege:default" />
+
 </configure>

@@ -2,8 +2,6 @@
 #
 # File: testMeetingConfig.py
 #
-# Copyright (c) 2007-2013 by Imio.be
-#
 # GNU General Public License (GPL)
 #
 
@@ -27,6 +25,7 @@ class testMeetingConfig(MeetingLiegeTestCase, pmtmc):
 
     def test_pm_Validate_itemWFValidationLevels_removed_depending_used_state_item(self):
         """Bypass..."""
+        pass
 
 
 def test_suite():

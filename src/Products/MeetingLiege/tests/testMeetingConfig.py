@@ -23,7 +23,7 @@ class testMeetingConfig(MeetingLiegeTestCase, pmtmc):
                 api.group.remove_user(groupname=group_id, username=extra_user_id)
         super(testMeetingConfig, self).test_pm_UpdatePersonalLabels()
 
-    def test_pm_Validate_itemWFValidationLevels_removed_depending_used_state_item(self):
+    def test_pm_Validate_itemWFValidationLevels_removed_used_state_in_config(self):
         """Bypass..."""
         pass
 

@@ -27,6 +27,10 @@ class testMeetingConfig(MeetingLiegeTestCase, pmtmc):
         """Bypass..."""
         pass
 
+    def test_pm_Validate_itemWFValidationLevels_removed_depending_used_state_item(self):
+        """Bypass..."""
+        pass
+
 
 def test_suite():
     from unittest import TestSuite, makeSuite

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.12 (unreleased)
+4.2.12 (2025-02-04)
 -------------------
 
 - When finances advice is negative, automatically send the item back to the

@@ -1891,7 +1891,7 @@ class MeetingItemCollegeLiegeWorkflowConditions(MeetingItemWorkflowConditions):
         res = False
         meeting = self.context.getMeeting()
         if _checkPermission(ReviewPortalContent, self.context) and \
-           meeting and (meeting.query_state() in ['decided', 'closed', ]):
+           meeting and meeting.adapted().is_decided():
             res = True
         return res
 

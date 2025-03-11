@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Adapted `MeetingItemCollegeLiegeWorkflowConditions.mayDecide` to use
+  `Meeting.is_decided` so it fixes `testWFAdaptations.test_pm_WFA_no_decide`.
+  [gbastien]
 
 4.2.12 (2025-02-04)
 -------------------

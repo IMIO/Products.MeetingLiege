@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+#
+# File: testAnnexes.py
+#
+# GNU General Public License (GPL)
+#
 
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.PloneMeeting.tests.testAnnexes import testAnnexes as pmta

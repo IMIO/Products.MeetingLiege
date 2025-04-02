@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.13 (unreleased)
+4.2.13 (2025-04-02)
 -------------------
 
 - Adapted `MeetingItemCollegeLiegeWorkflowConditions.mayDecide` to use

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.14 (unreleased)
+4.2.14 (2025-08-28)
 -------------------
 
 - In `MLItemDocumentGenerationHelperView.printActeContentForCouncil`, insert

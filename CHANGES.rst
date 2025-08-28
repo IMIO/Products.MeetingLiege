@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- In `MLItemDocumentGenerationHelperView.printActeContentForCouncil`, insert
+  `votesResult` before `decisionEnd` when `include_decisionEnd=True`.
+  [gbastien]
 
 4.2.13 (2025-04-02)
 -------------------

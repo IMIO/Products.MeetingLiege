@@ -140,7 +140,9 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         body += self.printCollegeProposalInfos().encode("utf-8")
         body += self.context.getDecision()
         body += self.context.getDecisionSuite()
+        # include decisionEnd and votesResult
         if include_decisionEnd:
+            body += self.context.getVotesResult().strip()
             body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
         if self.context.getSendToAuthority():
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \

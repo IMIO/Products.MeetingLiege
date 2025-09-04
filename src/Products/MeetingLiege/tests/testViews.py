@@ -35,19 +35,19 @@ class testViews(MeetingLiegeTestCase, pmtv):
             self.motivationText +
             "<p>Sur proposition du Coll&#232;ge communal, et apr&#232;s examen "
             "du dossier par la Commission comp&#233;tente ;</p>" +
-            self.decisionText + votes_result + decision_end)
+            self.decisionText + decision_end + votes_result)
         self.assertEqual(
             data["deliberation_motivation"],
             self.motivationText +
             "<p>Sur proposition du Coll&#232;ge communal, et apr&#232;s examen "
             "du dossier par la Commission comp&#233;tente ;</p>" +
-            self.decisionText + votes_result + decision_end)
+            self.decisionText + decision_end + votes_result)
         self.assertEqual(
             data["deliberation_decision"],
             self.motivationText +
             "<p>Sur proposition du Coll&#232;ge communal, et apr&#232;s examen "
             "du dossier par la Commission comp&#233;tente ;</p>" +
-            self.decisionText + votes_result + decision_end)
+            self.decisionText + decision_end + votes_result)
         self.assertEqual(
             data["public_deliberation"],
             self.motivationText +
@@ -59,7 +59,7 @@ class testViews(MeetingLiegeTestCase, pmtv):
             self.motivationText +
             "<p>Sur proposition du Coll&#232;ge communal, et apr&#232;s examen "
             "du dossier par la Commission comp&#233;tente ;</p>" +
-            self.decisionText + votes_result + decision_end)
+            self.decisionText + decision_end + votes_result)
         return item, view, helper, data
 
 

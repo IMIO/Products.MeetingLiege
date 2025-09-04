@@ -142,8 +142,9 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         body += self.context.getDecisionSuite()
         # include decisionEnd and votesResult
         if include_decisionEnd:
-            body += self.context.getVotesResult().strip()
             body += self.context.getDecisionEnd() and self.context.getDecisionEnd() or ''
+            votes_result = self.context.getVotesResult()
+            body += votes_result and votes_result.strip()
         if self.context.getSendToAuthority():
             body += "<p>Conformément aux prescrits des articles L3111-1 et suivants " \
                     "du Code de la démocratie locale et de la décentralisation relatifs "\

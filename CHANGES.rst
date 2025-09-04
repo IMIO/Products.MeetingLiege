@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- In `MLItemDocumentGenerationHelperView.printActeContentForCouncil`, display
+  `decisionEnd` before `votesResult` (swap the 2 fields).
+  [gbastien]
 
 4.2.14 (2025-08-28)
 -------------------

@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+
+from ftw.labels.interfaces import ILabelJar
+from Products.PloneMeeting.migrations import Migrator
+
+import logging
+
+
+logger = logging.getLogger('MeetingLiege')
+
+
+class Migrate_To_4203(Migrator):
+
+    def _configureLabels(self):
+        """Configure labels:
+           - labels jar;
+           - MeetingConfig.labelsConfig."""
+        logger.info('Configuring labels...')
+        # update College labels jar
+        college_cfg = self.tool.get('meeting-config-college')
+        ILabelJar(college_cfg).storage.clear()
+        college_jar = {
+            'convention-a-signer-1': {'color': 'red', 'label_id': 'convention-a-signer-1', 'by_user': False, 'title': '! Convention \xc3\xa0 signer'},
+            'mfe': {'color': 'yellow-light', 'label_id': 'mfe', 'by_user': False, 'title': '\xe2\x97\x99 MauldeC'},
+            'a-da-c-lai-1': {'color': 'green', 'label_id': 'a-da-c-lai-1', 'by_user': False, 'title': 'A d\xc3\xa9lai'},
+            'en-attente-de-lapprobation-du-budget': {'color': 'cadetblue-light', 'label_id': 'en-attente-de-lapprobation-du-budget', 'by_user': False, 'title': "\xe2\x99\xa6 EN ATTENTE DE L'APPROBATION DU BUDGET"},
+            'naoualc': {'color': 'yellow-light', 'label_id': 'naoualc', 'by_user': False, 'title': '\xe2\x97\x99 NaoualC'},
+            'urgent': {'color': 'red', 'label_id': 'urgent', 'by_user': False, 'title': 'Urgent'},
+            'pour-pra-c-cision-s': {'color': 'orange', 'label_id': 'pour-pra-c-cision-s', 'by_user': False, 'title': 'Pour Pr\xc3\xa9cision(s)'},
+            'a-publier-publication-officielle': {'color': 'cadetblue-light', 'label_id': 'a-publier-publication-officielle', 'by_user': False, 'title': '\xe2\x99\xa6 A PUBLIER (Publication officielle)'},
+            'sans-objet': {'color': 'purple', 'label_id': 'sans-objet', 'by_user': False, 'title': 'Sans Objet'},
+            'jja': {'color': 'yellow-light', 'label_id': 'jja', 'by_user': False, 'title': '\xe2\x97\x99 JulietteJ'},
+            'en-suspens': {'color': 'cornflowerblue-light', 'label_id': 'en-suspens', 'by_user': True, 'title': 'En suspens'},
+            'a-conserver': {'color': 'cadetblue-light', 'label_id': 'a-conserver', 'by_user': False, 'title': '\xe2\x99\xa6 A CONSERVER'},
+            'allessandram': {'color': 'yellow-light', 'label_id': 'allessandram', 'by_user': False, 'title': '\xe2\x97\x99 AllessandraM'},
+            'a-da-c-lai': {'color': 'yellow', 'label_id': 'a-da-c-lai', 'by_user': False, 'title': 'Attention'},
+            'ok-1': {'color': 'cadetblue-light', 'label_id': 'ok-1', 'by_user': False, 'title': '\xe2\x99\xa6 VU (OK)'},
+            'notifia': {'color': 'cadetblue-light', 'label_id': 'notifia', 'by_user': False, 'title': '\xe2\x99\xa6 NOTIFI\xc3\x89'},
+            'lu': {'color': 'cornflowerblue-light', 'label_id': 'lu', 'by_user': True, 'title': 'Lu'},
+            'convention-transmise-au-tiers': {'color': 'cadetblue-light', 'label_id': 'convention-transmise-au-tiers', 'by_user': False, 'title': '\xe2\x99\xa6 CONVENTION TRANSMISE AU TIERS'},
+            'a-examiner': {'color': 'purple-light', 'label_id': 'a-examiner', 'by_user': False, 'title': '# A Examiner'},
+            'auroreg': {'color': 'yellow-light', 'label_id': 'auroreg', 'by_user': False, 'title': '\xe2\x97\x99 AuroreG'},
+            'en-attente': {'color': 'cadetblue-light', 'label_id': 'en-attente', 'by_user': False, 'title': '\xe2\x99\xa6 EN ATTENTE'},
+            'attention-1': {'color': 'cornflowerblue-light', 'label_id': 'attention-1', 'by_user': True, 'title': 'Attention'},
+            'a-rectifier': {'color': 'orange', 'label_id': 'a-rectifier', 'by_user': False, 'title': 'A rectifier'},
+            'suivi': {'color': 'cornflowerblue-light', 'label_id': 'suivi', 'by_user': True, 'title': 'A suivre'},
+            'point-en-retour-collage': {'color': 'purple-light', 'label_id': 'point-en-retour-collage', 'by_user': False, 'title': '# Point en Retour Coll\xc3\xa8ge'},
+            'a-soumettre-au-dg': {'color': 'purple-light', 'label_id': 'a-soumettre-au-dg', 'by_user': False, 'title': '# \xc3\x80 soumettre au DG'},
+            'a-accepter-avec-retour': {'color': 'purple-light', 'label_id': 'a-accepter-avec-retour', 'by_user': False, 'title': '# \xc3\x80 accepter avec Retour'},
+            'alicet': {'color': 'yellow-light', 'label_id': 'alicet', 'by_user': False, 'title': '\xe2\x97\x99 AliceT'},
+            'traita-c': {'color': 'cornflowerblue-light', 'label_id': 'traita-c', 'by_user': True, 'title': 'Trait\xc3\xa9'},
+            'a-notifier': {'color': 'cadetblue-light', 'label_id': 'a-notifier', 'by_user': False, 'title': '\xe2\x99\xa6 A NOTIFIER'},
+            'a-discuter': {'color': 'cadetblue-light', 'label_id': 'a-discuter', 'by_user': False, 'title': '\xe2\x99\xa6 A DISCUTER'},
+            'dossier-instruit': {'color': 'orange', 'label_id': 'dossier-instruit', 'by_user': False, 'title': 'Dossier instruit'},
+            'en-attente-davis-technique': {'color': 'cadetblue-light', 'label_id': 'en-attente-davis-technique', 'by_user': False, 'title': "\xe2\x99\xa6 EN ATTENTE D'AVIS TECHNIQUE"},
+            'en-attente-1': {'color': 'cornflowerblue-light', 'label_id': 'en-attente-1', 'by_user': True, 'title': 'En attente'},
+            'dossier-subsidia-c': {'color': 'cornflowerblue', 'label_id': 'dossier-subsidia-c', 'by_user': False, 'title': 'Dossier subsidi\xc3\xa9'},
+            'a-corriger': {'color': 'cadetblue', 'label_id': 'a-corriger', 'by_user': False, 'title': 'Pour Correction'},
+            'marcelinof': {'color': 'yellow-light', 'label_id': 'marcelinof', 'by_user': False, 'title': '\xe2\x97\x99 MarcelinoF'},
+            'pme': {'color': 'yellow-light', 'label_id': 'pme', 'by_user': False, 'title': '\xe2\x97\x99 PhilippeM'},
+            'alainv': {'color': 'yellow-light', 'label_id': 'alainv', 'by_user': False, 'title': '\xe2\x97\x99 AlainV'},
+            'en-attente-2': {'color': 'purple-light', 'label_id': 'en-attente-2', 'by_user': False, 'title': '# En attente'},
+            'hhoj': {'color': 'purple-light', 'label_id': 'hhoj', 'by_user': False, 'title': '# HHOJ'},
+            'notifi': {'color': 'cornflowerblue-light', 'label_id': 'notifi', 'by_user': True, 'title': 'Notifi\xc3\xa9'},
+            'pour-compla-c-tude': {'color': 'cornflowerblue', 'label_id': 'pour-compla-c-tude', 'by_user': False, 'title': 'Pour compl\xc3\xa9tude'},
+            'a-corriger-1': {'color': 'cadetblue-light', 'label_id': 'a-corriger-1', 'by_user': False, 'title': '\xe2\x99\xa6 A CORRIGER'}}
+        ILabelJar(college_cfg).storage.update(college_jar)
+        # update College labelsConfig
+        college_labels_config = (
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': '*', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': 'python: cfg.isManager(cfg) or checkPermission("Modify portal content", context)'},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_adminpolicepowerobservers', 'configgroup_powerobservers_2022-11-10.1545741050', 'configgroup_powerobservers_2022-11-15.2439325041', 'configgroup_restrictedpowerobservers', 'configgroup_powerobservers', 'reader_copy_groups'], 'view_groups_excluding': '1', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'convention-a-signer-1', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'notifia', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-soumettre-au-dg', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-examiner', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'hhoj', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-accepter-avec-retour', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'point-en-retour-collage', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'en-attente-2', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'jja', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'alainv', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'alicet', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'allessandram', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'auroreg', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'marcelinof', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'mfe', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'naoualc', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'view_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()", 'view_access_on_cache': '0', 'label_id': 'pme', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': "python: '47c8b6c7aa7a40cf8ecfeaf7ceb6a34c_advisers' in utils.get_plone_groups_for_user()"},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-conserver', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-notifier', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'convention-transmise-au-tiers', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'en-attente', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'en-attente-davis-technique', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'en-attente-de-lapprobation-du-budget', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'ok-1', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-corriger-1', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-discuter', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['configgroup_meetingmanagers', 'suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-publier-publication-officielle', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''})
+        college_cfg.setLabelsConfig(college_labels_config)
+
+    def run(self,
+            profile_name=u'profile-Products.MeetingLiege:default',
+            extra_omitted=[]):
+
+        # configure labels before PloneMeeting's upgrade
+        self._configureLabels()
+        # this will upgrade Products.PloneMeeting and dependencies
+        self.upgradeAll(omit=[profile_name.replace('profile-', '')])
+
+
+# The migration function -------------------------------------------------------
+def migrate(context):
+    '''This migration function:
+
+       1) Configure labels;
+       2) Execute PloneMeeting's labels upgrade.
+    '''
+    migrator = Migrate_To_4203(context)
+    migrator.run()
+    migrator.finish()

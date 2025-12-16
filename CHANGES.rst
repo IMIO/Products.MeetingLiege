@@ -1,8 +1,8 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.16.1 (unreleased)
-----------------------
+4.2.16.1 (2025-12-16)
+---------------------
 
 - Fixed version `4203` in `metadata.xml`.
   [gbastien]

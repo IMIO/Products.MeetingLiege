@@ -1,11 +1,11 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.17 (unreleased)
--------------------
+4.2.16.1 (unreleased)
+----------------------
 
-- Nothing changed yet.
-
+- Fixed version `4203` in `metadata.xml`.
+  [gbastien]
 
 4.2.16 (2025-12-16)
 -------------------

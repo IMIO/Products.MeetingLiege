@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.16 (unreleased)
+4.2.16 (2025-12-16)
 -------------------
 
 - Added `Migrate_To_4203._configureLabels` to configure College labels

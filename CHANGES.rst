@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.16 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added `Migrate_To_4203._configureLabels` to configure College labels
+  before PloneMeeting's labels migration.
+  [gbastien]
 
 4.2.15 (2025-09-04)
 -------------------

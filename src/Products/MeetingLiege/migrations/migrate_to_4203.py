@@ -18,6 +18,7 @@ class Migrate_To_4203(Migrator):
         logger.info('Configuring labels...')
         # update College labels jar
         college_cfg = self.tool.get('meeting-config-college')
+        council_cfg = self.tool.get('meeting-config-council')
         ILabelJar(college_cfg).storage.clear()
         college_jar = {
             'convention-a-signer-1': {'color': 'red', 'label_id': 'convention-a-signer-1', 'by_user': False, 'title': '! Convention \xc3\xa0 signer'},
@@ -96,6 +97,15 @@ class Migrate_To_4203(Migrator):
             {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-discuter', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
             {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['configgroup_meetingmanagers', 'suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'view_access_on': '', 'view_access_on_cache': '1', 'label_id': 'a-publier-publication-officielle', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''})
         college_cfg.setLabelsConfig(college_labels_config)
+        council_labels_config = (
+            {'edit_groups': [], 'view_groups': [], 'view_groups_excluding': '0', 'label_id': '*', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '0', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': 'python: cfg.isManager(cfg) or checkPermission("Modify portal content", context)'},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_adminpolicepowerobservers', 'configgroup_powerobservers_2022-11-10.2745010496', 'configgroup_powerobservers_2021-05-25.2331452164', 'configgroup_restrictedpowerobservers', 'configgroup_powerobservers', 'reader_copy_groups'], 'view_groups_excluding': '1', 'label_id': 'convention-a-signer-1', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['configgroup_meetingmanagers'], 'view_groups': ['configgroup_meetingmanagers'], 'view_groups_excluding': '0', 'label_id': 'va-c-rifia-c', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['configgroup_meetingmanagers', 'suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'label_id': 'a-a-publier', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'label_id': 'a-convention-transmis-au-tiers', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'label_id': 'a-notifia', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''},
+            {'edit_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups': ['suffix_proposing_group_creators', 'suffix_proposing_group_reviewers', 'suffix_proposing_group_observers', 'suffix_proposing_group_administrativereviewers', 'suffix_proposing_group_internalreviewers'], 'view_groups_excluding': '0', 'label_id': 'a-a-notifier', 'view_access_on_cache': '1', 'view_access_on': '', 'edit_access_on_cache': '1', 'view_states': [], 'edit_groups_excluding': '0', 'edit_states': [], 'update_local_roles': '0', 'edit_access_on': ''})
+        council_cfg.setLabelsConfig(council_labels_config)
 
     def run(self,
             profile_name=u'profile-Products.MeetingLiege:default',
@@ -111,7 +121,7 @@ class Migrate_To_4203(Migrator):
 def migrate(context):
     '''This migration function:
 
-       1) Configure labels;
+       1) Configure labels for College and Council;
        2) Execute PloneMeeting's labels upgrade.
     '''
     migrator = Migrate_To_4203(context)

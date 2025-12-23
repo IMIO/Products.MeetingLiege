@@ -12,8 +12,8 @@ discreetColor:string=#4A494F
 editBarColor:string=#CA005D
 tableHeaderBackgroundColor:string=#e7e7e7
 tableHeaderTextColor:string=#4A494F
-evenRowBackgroundColor:string=#fdfdfd
-oddRowBackgroundColor:string=transparent
+evenRowBackgroundColor:string=#f4f4f4
+oddRowBackgroundColor:string=white
 fontBaseSize:string=90%
 fontColor:string=Black
 fontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
@@ -41,4 +41,3 @@ navBorderColor:string=lightgrey
 portletHeaderBackgroundColor:string=#CA005D
 backgroundFieldset:string=#f2f2f2
 title:string=Plone's color, font, logo and border defaults
-

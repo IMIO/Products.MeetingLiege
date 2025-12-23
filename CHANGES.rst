@@ -7,6 +7,8 @@ Products.MeetingLiege Changelog
 - Adapatble method `MeetingIem._advicePortalTypeForAdviser` was moved to
   `ToolPloneMeeting` (no more adaptable).
   [gbastien]
+- Fixed `evenRowBackgroundColor` and `evenRowBackgroundColor` CSS properties.
+  [gbastien]
 
 4.2.16.2 (2025-12-22)
 ---------------------

@@ -4,8 +4,9 @@ Products.MeetingLiege Changelog
 4.2.16.3 (unreleased)
 ---------------------
 
-- Nothing changed yet.
-
+- Adapatble method `MeetingIem._advicePortalTypeForAdviser` was moved to
+  `ToolPloneMeeting` (no more adaptable).
+  [gbastien]
 
 4.2.16.2 (2025-12-22)
 ---------------------

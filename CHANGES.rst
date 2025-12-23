@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.16.3 (unreleased)
+4.2.16.3 (2025-12-23)
 ---------------------
 
 - Adapatble method `MeetingIem._advicePortalTypeForAdviser` was moved to

@@ -1,7 +1,7 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.16.4 (unreleased)
+4.2.16.4 (2026-01-20)
 ---------------------
 
 - Added extra new value `mathildet` for College `labels jar` during migration

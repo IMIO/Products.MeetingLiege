@@ -60,7 +60,7 @@ collegeMeeting.itemDecidedStates = ['accepted', 'delayed', 'accepted_but_modifie
 collegeMeeting.itemPositiveDecidedStates = ['accepted', 'accepted_but_modified']
 collegeMeeting.itemAdviceStates = ('proposed_to_director')
 collegeMeeting.itemAdviceEditStates = ('proposed_to_director', 'validated')
-collegeMeeting.itemCopyGroupsStates = ['validated']
+collegeMeeting.itemCopyGroupsStates = ['validated', 'accepted']
 collegeMeeting.usedAdviceTypes = ('positive', 'positive_with_remarks', 'negative', 'nil')
 # Conseil communal
 councilMeeting = deepcopy(pm_import_data.meetingPga)
@@ -98,7 +98,7 @@ councilMeeting.itemAdviceViewStates = ()
 councilMeeting.listTypes = DEFAULT_LIST_TYPES + [{'identifier': 'addendum',
                                                   'label': 'Addendum',
                                                   'used_in_inserting_method': ''}, ]
-councilMeeting.itemCopyGroupsStates = ['validated']
+councilMeeting.itemCopyGroupsStates = ['validated', 'accepted']
 councilMeeting.powerObservers[0]['item_states'] = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
 councilMeeting.powerObservers[1]['item_states'] = ('presented', 'itemfrozen', 'accepted', 'delayed', 'refused')
 councilMeeting.powerObservers[1]['item_access_on'] = \

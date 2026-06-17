@@ -91,6 +91,9 @@
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
 
+    <tal:field define="fieldName python: 'emergencyMotivation'">
+      <metal:f use-macro="context/@@pm-macros/editContentField"/>
+    </tal:field>
     <tal:field define="fieldName python: 'motivation'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
@@ -108,6 +111,11 @@
     <tal:clonableToOtherMCsWithExtraFields condition="showAdvancedClonableToOtherMCs">
         <metal:f use-macro="context/@@pm-macros/otherMeetingConfigsClonable"/>
     </tal:clonableToOtherMCsWithExtraFields>
+
+    <!-- groupsInChargeNotes field is not integrated in the edit form and only editable thru view/quick edit
+    <tal:field define="fieldName python: 'groupsInChargeNotes'">
+      <metal:f use-macro="context/@@pm-macros/editContentField"/>
+    </tal:field-->
 
     <tal:field define="fieldName python: 'inAndOutMoves'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
@@ -142,6 +150,14 @@
     <tal:field define="fieldName python: 'internalNotes'">
       <metal:f use-macro="context/@@pm-macros/editContentField"/>
     </tal:field>
+
+    <!-- follow-up related fields are not integrated in the edit form and only editable thru view/quick edit
+    <tal:field define="fieldName python: 'neededFollowUp'">
+      <metal:f use-macro="context/@@pm-macros/editContentField"/>
+    </tal:field>
+    <tal:field define="fieldName python: 'providedFollowUp'">
+      <metal:f use-macro="context/@@pm-macros/editContentField"/>
+    </tal:field -->
 
     <metal:field use-macro="python:here.widget('templateUsingGroups', mode='edit')"/>
     <metal:field use-macro="python:here.widget('meetingTransitionInsertingMe', mode='edit')"/>

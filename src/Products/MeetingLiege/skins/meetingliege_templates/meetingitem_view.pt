@@ -197,7 +197,7 @@
                                    class string:${edit_css_classes} item_${context/getEmergency}">
                     <span metal:use-macro="python: here.widget('emergency', mode='view')" />
                 </span>
-                <span class="discreet"> — <a href="item-emergency-history" class="link-overlay-pm" i18n:translate="" i18n:domain="plone">History</a></span>
+                <span class="discreet"> — <a href="item-emergency-history" class="link-overlay-pm-info" i18n:translate="" i18n:domain="plone">History</a></span>
             </div>
 
             <tal:comment replace="nothing">Item completeness</tal:comment>
@@ -211,7 +211,7 @@
                                    class string:${edit_css_classes} item_${context/getCompleteness}">
                     <span metal:use-macro="python: here.widget('completeness', mode='view')" />
                 </span>
-                <span class="discreet"> — <a href="item-completeness-history" class="link-overlay-pm" i18n:translate="" i18n:domain="plone">History</a></span>
+                <span class="discreet"> — <a href="item-completeness-history" class="link-overlay-pm-info" i18n:translate="" i18n:domain="plone">History</a></span>
             </div>
 
             <tal:comment replace="nothing">XXX added by MeetingLiege, finance advice</tal:comment>
@@ -383,8 +383,7 @@
                               parent_tag=null,
                               load_view='@@load_item_assembly_and_signatures',
                               base_url=null,
-                              toggle_type='${toggle_type}',
-                              sync=false);;initializeItemAttendeesDND();"
+                              toggle_type='${toggle_type}');;initializeItemAttendeesDND();"
            class="collapsible discreet not-auto-collapsible-activable">
           <span class="meeting_attribute_label" i18n:translate="redefinable_assembly_and_signatures">
               <span i18n:name="assembly"
@@ -473,6 +472,23 @@
           </div>
         </div>
     </tal:defines>
+
+    <tal:comment replace="nothing">Externals linked elements</tal:comment>
+    <tal:external-infos condition="python: context.restrictedTraverse('@@load-external-infos').show_section()">
+        <div id="external-infos"
+             class="collapsible discreet not-auto-collapsible-activable"
+             tal:attributes="data-external-user-id python: request.get('external_user_id', '');
+                             onclick string:toggleDetails('collapsible-external-infos', toggle_parent_active=true, parent_tag=null, load_view='@@load-external-infos?external_user_id=' + encodeURIComponent(this.getAttribute('data-external-user-id')));;">
+          <span class="item_attribute_label" i18n:translate="external_linked_elements">
+              External linked elements
+          </span>
+        </div>
+        <div id="collapsible-external-infos" class="collapsible-content discreet">
+          <div class="collapsible-inner-content">
+             <img tal:attributes="src string:${portal_url}/spinner_small.gif" />
+          </div>
+        </div>
+    </tal:external-infos>
 
     <tal:comment replace="nothing">Description</tal:comment>
     <tal:field define="fieldName python: 'description'; ajaxEdit python:True">
@@ -649,13 +665,8 @@
       </div>
     </tal:textCheckList>
 
-    <tal:comment replace="nothing">In and out moves</tal:comment>
-    <tal:field define="fieldName python: 'inAndOutMoves'; ajaxEdit python:True">
-       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
-    </tal:field>
-
-    <tal:comment replace="nothing">Notes</tal:comment>
-    <tal:field define="fieldName python: 'notes'; ajaxEdit python:True">
+    <tal:comment replace="nothing">Groups in charge notes</tal:comment>
+    <tal:field define="fieldName python: 'groupsInChargeNotes'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
@@ -666,6 +677,16 @@
 
     <tal:comment replace="nothing">Committee transcript</tal:comment>
     <tal:field define="fieldName python: 'committeeTranscript'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">In and out moves</tal:comment>
+    <tal:field define="fieldName python: 'inAndOutMoves'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Notes</tal:comment>
+    <tal:field define="fieldName python: 'notes'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 
@@ -706,6 +727,16 @@
 
     <tal:comment replace="nothing">Internal notes</tal:comment>
     <tal:field define="fieldName python: 'internalNotes'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Needed follow up</tal:comment>
+    <tal:field define="fieldName python: 'neededFollowUp'; ajaxEdit python:True">
+       <metal:f use-macro="context/@@pm-macros/viewContentField"/>
+    </tal:field>
+
+    <tal:comment replace="nothing">Provided follow up</tal:comment>
+    <tal:field define="fieldName python: 'providedFollowUp'; ajaxEdit python:True">
        <metal:f use-macro="context/@@pm-macros/viewContentField"/>
     </tal:field>
 

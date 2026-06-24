@@ -1,8 +1,8 @@
 Products.MeetingLiege Changelog
 ===============================
 
-4.2.16.5 (unreleased)
----------------------
+4.2.17 (unreleased)
+-------------------
 
 - Fixed `test_pm_FollowUp`.
   [gbastien]

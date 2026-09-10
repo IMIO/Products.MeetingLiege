@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from imio.helpers.cache import get_plone_groups_for_user
+from imio.helpers.xhtml import addClassToContent
 from imio.history.interfaces import IImioHistory
 from imio.history.utils import getLastWFAction
 from plone import api
@@ -112,7 +113,7 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
                 u"et après examen du dossier par la Commission compétente ;</p>"
         return sentence
 
-    def printActeContentForCollege(self):
+    def printActeContentForCollege(self, decision_css_class='mltdecision'):
         """Printed on a College item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation()
         legalTextForFDAdvice = self.context.adapted().getLegalTextForFDAdvice().strip()
@@ -121,7 +122,10 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
         category = self.context.getCategory(theObject=True)
         representative = category and category.Description().split('|')[1] or "Monsieur / Madame X"
         body += "<p>Sur proposition de %s,<br></p>" % representative
-        body += self.context.getDecision()
+        decision = self.context.getDecision()
+        if decision_css_class:
+            decision = addClassToContent(decision, css_class=decision_css_class)
+        body += decision
         body += self.context.getDecisionSuite()
         body += self.context.getDecisionEnd()
         if self.context.getSendToAuthority():
@@ -131,14 +135,17 @@ class MLItemDocumentGenerationHelperView(ItemDocumentGenerationHelperView):
                     "transmises aux Autorités de Tutelle.</p>"
         return body
 
-    def printActeContentForCouncil(self, include_decisionEnd=True, include_observations=True):
+    def printActeContentForCouncil(self, include_decisionEnd=True, include_observations=True, decision_css_class='mltdecision'):
         """Printed on a Council item, get the whole body of the acte in one shot."""
         body = self.context.getMotivation() or ''
         legalTextForFDAdvice = self.context.adapted().getLegalTextForFDAdvice().strip()
         if legalTextForFDAdvice:
             body += legalTextForFDAdvice
         body += self.printCollegeProposalInfos().encode("utf-8")
-        body += self.context.getDecision()
+        decision = self.context.getDecision()
+        if decision_css_class:
+            decision = addClassToContent(decision, css_class=decision_css_class)
+        body += decision
         body += self.context.getDecisionSuite()
         # include decisionEnd and votesResult
         if include_decisionEnd:

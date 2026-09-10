@@ -645,6 +645,52 @@ class testCustomMeetingItem(MeetingLiegeTestCase):
         self.assertEqual(item2.adapted().getLegalTextForFDAdvice(isMeeting=True), res5)
         self.assertEqual(item3.adapted().getLegalTextForFDAdvice(isMeeting=True), res6)
 
+    def test_PrintActeContent(self):
+        """Test the MLItemDocumentGenerationHelperView.printActeContentForCollege
+           and MLItemDocumentGenerationHelperView.printActeContentForCouncil methods."""
+        self.changeUser('pmCreator1')
+        item = self.create(
+            'MeetingItem',
+            motivation="<p>Motivation line 1.</p><p>Motivation line 2.</p>",
+            decision="<p>Decision line 1.</p><p>Decision line 2.</p>",
+            decisionSuite="<p>Decision suite line 1.</p><p>Decision suite line 2.</p>",
+            decisionEnd="<p>Decision end line 1.</p><p>Decision end line 2.</p>",
+            sendToAuthority=True)
+        view = item.restrictedTraverse('@@document-generation')
+        helper = view.get_generation_context_helper()
+        self.assertEqual(
+            helper.printActeContentForCollege(),
+            '<p>Motivation line 1.</p><p>Motivation line 2.</p>'
+            '<p>Sur proposition de Monsieur / Madame X,<br></p>'
+            '<p class="mltdecision">Decision line 1.</p>'
+            '<p class="mltdecision">Decision line 2.</p>'
+            '<p>Decision suite line 1.</p>'
+            '<p>Decision suite line 2.</p>'
+            '<p>Decision end line 1.</p>'
+            '<p>Decision end line 2.</p>'
+            '<p>Conform\xc3\xa9ment aux prescrits des articles L3111-1 et '
+            'suivants du Code de la d\xc3\xa9mocratie locale et de la '
+            'd\xc3\xa9centralisation relatifs \xc3\xa0 la Tutelle, la '
+            'pr\xc3\xa9sente d\xc3\xa9cision et ses pi\xc3\xa8ces justificatives '
+            'sont transmises aux Autorit\xc3\xa9s de Tutelle.</p>')
+        self.assertEqual(
+            helper.printActeContentForCouncil(),
+            '<p>Motivation line 1.</p>'
+            '<p>Motivation line 2.</p>'
+            '<p>Sur proposition du Coll\xc3\xa8ge communal, et apr\xc3\xa8s '
+            'examen du dossier par la Commission comp\xc3\xa9tente ;</p>'
+            '<p class="mltdecision">Decision line 1.</p>'
+            '<p class="mltdecision">Decision line 2.</p>'
+            '<p>Decision suite line 1.</p>'
+            '<p>Decision suite line 2.</p>'
+            '<p>Decision end line 1.</p>'
+            '<p>Decision end line 2.</p>'
+            '<p>Conform\xc3\xa9ment aux prescrits des articles L3111-1 et '
+            'suivants du Code de la d\xc3\xa9mocratie locale et de la '
+            'd\xc3\xa9centralisation relatifs \xc3\xa0 la Tutelle, la '
+            'pr\xc3\xa9sente d\xc3\xa9cision et ses pi\xc3\xa8ces justificatives '
+            'sont transmises\xc2\xa0aux Autorit\xc3\xa9s de Tutelle.</p>')
+
     def test_MayGenerateFDAdvice(self):
         '''An advice can be generated when:
             -at least one advice is asked.

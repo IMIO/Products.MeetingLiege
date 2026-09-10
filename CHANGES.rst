@@ -4,8 +4,13 @@ Products.MeetingLiege Changelog
 4.2.18 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Added parameter `decision_css_class="mltdecision"` to
+  `MLItemDocumentGenerationHelperView.printActeContentForCollege` and
+  `MLItemDocumentGenerationHelperView.printActeContentForCouncil` so the
+  `mltdecision` class is added to every parapgrah of the `decision` field
+  and this can be managed in the rendered document to make sure the decision
+  is not split on several pages.
+  [gbastien]
 
 4.2.17 (2026-06-24)
 -------------------

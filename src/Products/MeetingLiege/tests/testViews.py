@@ -5,15 +5,18 @@
 # GNU General Public License (GPL)
 #
 
+from imio.helpers.xhtml import addClassToContent
 from Products.MeetingLiege.tests.MeetingLiegeTestCase import MeetingLiegeTestCase
 from Products.PloneMeeting.tests.testViews import testViews as pmtv
 
 
-class testViews(MeetingLiegeTestCase, pmtv):
+class TestViews(MeetingLiegeTestCase, pmtv):
     ''' '''
 
     def test_pm_deliberation_for_restapi(self):
         """Override and print_deliberation was overrided."""
+        # decision text paragraphs use css class
+        self.decisionText = addClassToContent(self.decisionText, css_class="mltdecision")
         self._enableField(["decisionEnd", "votesResult"])
         votes_result = '<p>Votes result.</p>'
         decision_end = '<p>Decision end.</p>'
@@ -66,5 +69,5 @@ class testViews(MeetingLiegeTestCase, pmtv):
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
-    suite.addTest(makeSuite(testViews, prefix='test_pm_'))
+    suite.addTest(makeSuite(TestViews, prefix='test_pm_'))
     return suite

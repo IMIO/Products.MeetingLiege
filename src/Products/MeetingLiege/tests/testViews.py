@@ -26,6 +26,8 @@ class TestViews(MeetingLiegeTestCase, pmtv):
             motivation=self.motivationText,
             decision=self.decisionText,
             decisionEnd=decision_end)
+        # decision text paragraphs use css class
+        self.decisionText = addClassToContent(self.decisionText, css_class="mltdecision")
         # set votesResult after as not permitted normally, only editable by
         # MeetingManager on a presented item
         item.setVotesResult(votes_result)

@@ -30,6 +30,8 @@ jobs:
       gh_token: ${{ secrets.TOKEN_GITHUB_RO }}
       mattermost_webhook_url: ${{ secrets.DELIB_MATTERMOST_WEBHOOK_URL }}
     with:
+      environment_variables: |
+        PM_BRANCH_NAME=${{ inputs.branch_name || 'master' }}
       requirements_file: requirements-tests.txt
       runner_label: gha-runners-delib-py2
       soffice: true
